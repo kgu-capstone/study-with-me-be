@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Token [Repository Layer] -> TokenRepository 테스트")
+@DisplayName("Auth [Repository Layer] -> TokenRepository 테스트")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 class TokenRepositoryTest extends RepositoryTest {

@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Token [Service Layer] -> TokenReissueService 테스트")
+@DisplayName("Auth [Service Layer] -> TokenReissueService 테스트")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 class TokenReissueServiceTest extends ServiceTest {
@@ -24,7 +24,8 @@ class TokenReissueServiceTest extends ServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @Nested
-    class 토큰_재발급 {
+    @DisplayName("토큰 재발급")
+    class reissueTokens {
         @Test
         void RefreshToken이_유효하지_않으면_예외가_발생한다() {
             // given

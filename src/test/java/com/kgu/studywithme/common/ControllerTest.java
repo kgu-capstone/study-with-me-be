@@ -1,6 +1,8 @@
 package com.kgu.studywithme.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kgu.studywithme.auth.controller.TokenReissueApiController;
+import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -13,7 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 
-@WebMvcTest
+@WebMvcTest({
+        TokenReissueApiController.class
+})
 @AutoConfigureRestDocs
 public abstract class ControllerTest {
     @Autowired
@@ -24,6 +28,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    protected TokenReissueService tokenReissueService;
 
     protected OperationRequestPreprocessor applyRequestPreprocessor() {
         return Preprocessors.preprocessRequest(prettyPrint());
