@@ -43,7 +43,6 @@ dependencies {
 	// Crypto Module
 	implementation 'org.springframework.security:spring-security-crypto:5.7.5'
 
-
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
