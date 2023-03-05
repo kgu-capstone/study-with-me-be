@@ -20,6 +20,7 @@ class MemberTest {
 
         assertAll(
                 () -> assertThat(member.getName()).isEqualTo(SEO_JI_WON.getName()),
+                () -> assertThat(member.getNicknameValue()).isEqualTo(SEO_JI_WON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(SEO_JI_WON.getEmail()),
                 () -> assertThat(ENCODER.matches(SEO_JI_WON.getPassword(), member.getPasswordValue())).isTrue(),
                 () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
@@ -46,5 +47,24 @@ class MemberTest {
 
         // then
         assertThat(ENCODER.matches(diff, member.getPasswordValue())).isTrue();
+    }
+
+    @Test
+    @DisplayName("닉네임을 변경한다")
+    void changeNickname() {
+        // given
+        Member member = SEO_JI_WON.toMember();
+        final String same = SEO_JI_WON.getNickname();
+        final String diff = SEO_JI_WON.getNickname() + "diff";
+
+        // when
+        assertThatThrownBy(() -> member.changeNickname(same))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(MemberErrorCode.NICKNAME_SAME_AS_BEFORE.getMessage());
+
+        member.changeNickname(diff);
+
+        // then
+        assertThat(member.getNicknameValue()).isEqualTo(diff);
     }
 }

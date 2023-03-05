@@ -12,6 +12,8 @@ public enum MemberErrorCode implements ErrorCode {
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호는 영문/숫자/특수문자를 각각 하나 이상 포함해야 하고 8자 이상 25자 이하여야 합니다."),
     PASSWORD_SAME_AS_BEFORE(HttpStatus.CONFLICT, "MEMBER_003", "이전과 동일한 비밀번호로 변경할 수 없습니다."),
     INVALID_REGION(HttpStatus.BAD_REQUEST, "MEMBER_004", "거주지를 정확하게 입력해주세요."),
+    INVALID_NICKNAME_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_005", "닉네임 형식에 맞지 않습니다."),
+    NICKNAME_SAME_AS_BEFORE(HttpStatus.BAD_REQUEST, "MEMBER_006", "이전과 동일한 닉네임으로 변경할 수 없습니다."),
     ;
 
     private final HttpStatus status;

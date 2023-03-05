@@ -24,6 +24,9 @@ public class Member {
     private String name;
 
     @Embedded
+    private Nickname nickname;
+
+    @Embedded
     private Email email;
 
     @Embedded
@@ -43,8 +46,9 @@ public class Member {
     private Region region;
 
     @Builder
-    private Member(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
+    private Member(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
         this.name = name;
+        this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.birth = birth;
@@ -53,8 +57,15 @@ public class Member {
         this.region = region;
     }
 
-    public static Member createMember(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
-        return new Member(name, email, password, birth, phone, gender, region);
+    public static Member createMember(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
+        return new Member(name, nickname, email, password, birth, phone, gender, region);
+    }
+
+    public void changeNickname(String changeNickname) {
+        if (this.nickname.isSameNickname(changeNickname)) {
+            throw StudyWithMeException.type(MemberErrorCode.NICKNAME_SAME_AS_BEFORE);
+        }
+        this.nickname = this.nickname.update(changeNickname);
     }
 
     public void changePassword(String changePassword, PasswordEncoder encoder) {
@@ -65,6 +76,10 @@ public class Member {
     }
 
     // Add Getter
+    public String getNicknameValue() {
+        return nickname.getValue();
+    }
+
     public String getPasswordValue() {
         return password.getValue();
     }
