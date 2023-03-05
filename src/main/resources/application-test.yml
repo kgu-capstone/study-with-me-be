@@ -1,7 +1,7 @@
 spring:
   config:
     import:
-      - security/application.yml
+      - security/application-external.yml
       - application-test-datasource.yml
       - application-logging.yml
       - application-mapping.yml
