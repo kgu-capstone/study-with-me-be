@@ -13,9 +13,8 @@ import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
 
 @Getter
 @RequiredArgsConstructor
-@SuppressWarnings("NonAsciiCharacters")
 public enum MemberFixture {
-    지원("서지원", "sjiwon4491@gmail.com", "abcABC123!@#", LocalDate.of(2000, 1, 18), Gender.MALE, "안양"),
+    SEO_JI_WON("서지원", "sjiwon4491@gmail.com", "abcABC123!@#", LocalDate.of(2000, 1, 18), Gender.MALE, "안양"),
     ;
 
     private final String name;
