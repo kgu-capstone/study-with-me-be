@@ -1,9 +1,6 @@
 package com.kgu.studywithme.fixture;
 
-import com.kgu.studywithme.member.domain.Email;
-import com.kgu.studywithme.member.domain.Gender;
-import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.domain.Password;
+import com.kgu.studywithme.member.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +11,7 @@ import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    SEO_JI_WON("서지원", "sjiwon4491@gmail.com", "abcABC123!@#", LocalDate.of(2000, 1, 18), Gender.MALE, "안양"),
+    SEO_JI_WON("서지원", "sjiwon4491@gmail.com", "abcABC123!@#", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
     ;
 
     private final String name;
@@ -22,7 +19,8 @@ public enum MemberFixture {
     private final String password;
     private final LocalDate birth;
     private final Gender gender;
-    private final String location;
+    private final String province;
+    private final String city;
 
     public Member toMember() {
         return Member.builder()
@@ -32,7 +30,7 @@ public enum MemberFixture {
                 .birth(birth)
                 .phone(generateRandomPhoneNumber())
                 .gender(gender)
-                .location(location)
+                .region(Region.of(province, city))
                 .build();
     }
 

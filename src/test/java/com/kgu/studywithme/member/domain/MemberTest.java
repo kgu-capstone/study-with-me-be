@@ -24,7 +24,8 @@ class MemberTest {
                 () -> assertThat(ENCODER.matches(SEO_JI_WON.getPassword(), member.getPasswordValue())).isTrue(),
                 () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(SEO_JI_WON.getGender()),
-                () -> assertThat(member.getLocation()).isEqualTo(SEO_JI_WON.getLocation())
+                () -> assertThat(member.getRegionProvince()).isEqualTo(SEO_JI_WON.getProvince()),
+                () -> assertThat(member.getRegionCity()).isEqualTo(SEO_JI_WON.getCity())
         );
     }
 

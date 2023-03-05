@@ -39,22 +39,22 @@ public class Member {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Column(name = "location", nullable = false)
-    private String location;
+    @Embedded
+    private Region region;
 
     @Builder
-    private Member(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, String location) {
+    private Member(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.birth = birth;
         this.phone = phone;
         this.gender = gender;
-        this.location = location;
+        this.region = region;
     }
 
-    public static Member createMember(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, String location) {
-        return new Member(name, email, password, birth, phone, gender, location);
+    public static Member createMember(String name, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
+        return new Member(name, email, password, birth, phone, gender, region);
     }
 
     public void changePassword(String changePassword, PasswordEncoder encoder) {
@@ -71,5 +71,13 @@ public class Member {
 
     public String getEmailValue() {
         return email.getValue();
+    }
+
+    public String getRegionProvince() {
+        return region.getProvince();
+    }
+
+    public String getRegionCity() {
+        return region.getCity();
     }
 }
