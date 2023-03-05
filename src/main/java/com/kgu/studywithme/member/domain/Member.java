@@ -1,5 +1,6 @@
 package com.kgu.studywithme.member.domain;
 
+import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import lombok.AccessLevel;
@@ -10,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,6 +48,16 @@ public class Member {
     @Embedded
     private Region region;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "interest",
+            joinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "category"})
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private Set<Category> interests = new HashSet<>();
+
     @Builder
     private Member(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
         this.name = name;
@@ -59,6 +72,10 @@ public class Member {
 
     public static Member createMember(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
         return new Member(name, nickname, email, password, birth, phone, gender, region);
+    }
+
+    public void addCategoriesToInterests(Set<Category> categories) {
+        interests.addAll(categories);
     }
 
     public void changeNickname(String changeNickname) {
