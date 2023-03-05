@@ -4,7 +4,9 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -21,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Auth [Controller Layer] -> TokenReissueApiController 테스트")
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@SuppressWarnings("NonAsciiCharacters")
 class TokenReissueApiControllerTest extends ControllerTest {
     @Nested
     @DisplayName("토큰 재발급 API 테스트 [POST /api/token/reissue]")
@@ -30,7 +30,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/token/reissue";
 
         @Test
-        void Authorization_Header에_RefreshToken이_없으면_예외가_발생한다() throws Exception {
+        @DisplayName("Authorization Header에 RefreshToken이 없으면 예외가 발생한다")
+        void withoutRefreshToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL);
@@ -60,7 +61,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
         }
 
         @Test
-        void 만료된_RefreshToken으로_인해_토큰_재발급에_실패한다() throws Exception {
+        @DisplayName("만료된 RefreshToken으로 인해 토큰 재발급에 실패한다")
+        void expiredRefreshToken() throws Exception {
             // given
             given(jwtTokenProvider.getId(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_EXPIRED_TOKEN));
 
@@ -97,7 +99,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
         }
 
         @Test
-        void 이미_사용한_RefresToken이거나_조작된_RefreshToken이면_재발급에_실패한다() throws Exception {
+        @DisplayName("이미 사용했거나 조작된 RefreshToken이면 토큰 재발급에 실패한다")
+        void invalidRefreshToken() throws Exception {
             // given
             given(jwtTokenProvider.getId(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_INVALID_TOKEN));
 
@@ -134,9 +137,10 @@ class TokenReissueApiControllerTest extends ControllerTest {
         }
 
         @Test
-        void RefresToken으로_AccessToken과_RefreshToken을_재발급받는다() throws Exception {
+        @DisplayName("RefreshToken으로 AccessToken과 RefreshToken을 재발급받는다")
+        void reissueSuccess() throws Exception {
             // given
-            given(jwtTokenProvider.getId(REFRESH_TOKEN)).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
             TokenResponse response = TokenResponse.builder()
                     .accessToken(ACCESS_TOKEN)
