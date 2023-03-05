@@ -3,8 +3,6 @@ package com.kgu.studywithme.auth.utils;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,15 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Auth [Utils] -> JwtTokenProvider 테스트")
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@SuppressWarnings("NonAsciiCharacters")
 class JwtTokenProviderTest {
     private static final String SECRET_KEY = "asldfjsadlfjalksjf01jf02j9012f0120f12jf1j29v0saduf012ue101212c01";
     private static final JwtTokenProvider INVALID_PROVIDER = new JwtTokenProvider(SECRET_KEY, 0L, 0L);
     private static final JwtTokenProvider VALID_PROVIDER = new JwtTokenProvider(SECRET_KEY, 7200L, 7200L);
 
     @Test
-    void AccessToken과_RefreshToken을_발급한다() {
+    @DisplayName("AccessToken과 RefreshToken을 발급한다")
+    void issueAccessTokenAndRefreshToken() {
         // given
         final Long memberId = 1L;
         
@@ -37,7 +34,8 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void Token의_Payload를_추출한다() {
+    @DisplayName("Token의 Payload를 추출한다")
+    void extractTokenPayload() {
         // given
         final Long memberId = 1L;
 
@@ -49,7 +47,8 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void Token_만료에_대한_유효성을_검증한다() {
+    @DisplayName("Token 만료에 대한 유효성을 검증한다")
+    void validateTokenExpire() {
         // given
         final Long memberId = 1L;
 
@@ -65,7 +64,8 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void Token_조작에_대한_유효성을_검증한다() {
+    @DisplayName("Token 조작에 대한 유효성을 검증한다")
+    void validateTokenManipulation() {
         // given
         final Long memberId = 1L;
 

@@ -1,7 +1,9 @@
 spring:
   config:
+    activate:
+      on-profile: local
     import:
       - security/application.yml
-      - application-test-datasource.yml
+      - security/application-local-datasource.yml
       - application-logging.yml
       - application-mapping.yml

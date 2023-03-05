@@ -2,8 +2,6 @@ package com.kgu.studywithme.auth.domain;
 
 import com.kgu.studywithme.common.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,14 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Auth [Repository Layer] -> TokenRepository 테스트")
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@SuppressWarnings("NonAsciiCharacters")
 class TokenRepositoryTest extends RepositoryTest {
     @Autowired
     private TokenRepository tokenRepository;
 
     @Test
-    void 사용자_ID를_통해서_보유하고_있는_RefreshToken을_조회한다() {
+    @DisplayName("사용자 ID(PK)를 통해서 보유하고 있는 RefreshToken을 조회한다")
+    void findRefreshTokenWithMemberId() {
         // given
         final Long memberId = 1L;
         final String refreshToken = "hello_world_refresh_token";
@@ -41,7 +38,8 @@ class TokenRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    void RTR정책에_의해서_사용자가_보유하고_있는_RefreshToken을_재발급한다() {
+    @DisplayName("RTR정책에 의해서 사용자가 보유하고 있는 RefreshToken을 재발급한다")
+    void reissueRefreshTokenByRtrPolicy() {
         // given
         final Long memberId = 1L;
         final String refreshToken = "hello_world_refresh_token";
@@ -57,7 +55,8 @@ class TokenRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    void 사용자가_보유하고_있는_RefreshToken인지_확인한다() {
+    @DisplayName("사용자가 보유하고 있는 RefreshToken인지 확인한다")
+    void checkMemberHasSpecificRefreshToken() {
         // given
         final Long memberId = 1L;
         final String refreshToken = "hello_world_refresh_token";
@@ -76,7 +75,8 @@ class TokenRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    void 사용자가_보유하고_있는_RefreshToken을_삭제한다() {
+    @DisplayName("사용자가 보유하고 있는 RefreshToken을 삭제한다")
+    void deleteRefreshTokenByMemberId() {
         // given
         final Long memberId = 1L;
         final String refreshToken = "hello_world_refresh_token";
