@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: dev
     import:
-      - security/application.yml
+      - security/application-external.yml
       - security/application-dev-datasource.yml
       - application-logging.yml
       - application-mapping.yml
