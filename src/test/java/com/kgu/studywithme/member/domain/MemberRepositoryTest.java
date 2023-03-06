@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -74,6 +76,24 @@ class MemberRepositoryTest extends RepositoryTest {
         assertAll(
                 () -> assertThat(actual1).isTrue(),
                 () -> assertThat(actual2).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("이메일로 사용자를 조회한다")
+    void findByEmail() {
+        // given
+        final Email same = member.getEmail();
+        final Email diff = Email.from("diff" + member.getEmailValue());
+
+        // when
+        Optional<Member> findMember1 = memberRepository.findByEmail(same);
+        Optional<Member> findMember2 = memberRepository.findByEmail(diff);
+
+        // then
+        assertAll(
+                () -> assertThat(findMember1).isPresent(),
+                () -> assertThat(findMember2).isEmpty()
         );
     }
 }
