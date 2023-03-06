@@ -18,6 +18,7 @@ public enum MemberErrorCode implements ErrorCode {
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_008", "이미 사용중인 닉네임입니다."),
     DUPLICATE_PHONE(HttpStatus.CONFLICT, "MEMBER_009", "이미 사용중인 전화번호입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_010", "사용자 정보를 찾을 수 없습니다."),
+    WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "MEMBER_011", "비밀번호가 일치하지 않습니다."),
     ;
 
     private final HttpStatus status;
