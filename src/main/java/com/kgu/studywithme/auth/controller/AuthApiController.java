@@ -3,6 +3,7 @@ package com.kgu.studywithme.auth.controller;
 import com.kgu.studywithme.auth.controller.dto.request.LoginRequest;
 import com.kgu.studywithme.auth.service.AuthService;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
+import com.kgu.studywithme.global.annotation.ExtractPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,5 +23,11 @@ public class AuthApiController {
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
         TokenResponse tokenResponse = authService.login(request.email(), request.password());
         return ResponseEntity.ok(tokenResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@ExtractPayload Long memberId) {
+        authService.logout(memberId);
+        return ResponseEntity.noContent().build();
     }
 }
