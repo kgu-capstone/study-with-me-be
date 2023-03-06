@@ -6,6 +6,5 @@ public record TokenResponse(
         String accessToken, String refreshToken
 ) {
     @Builder
-    public TokenResponse {
-    }
+    public TokenResponse {}
 }

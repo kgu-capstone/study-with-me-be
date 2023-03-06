@@ -12,7 +12,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class ArgumentResolverConfiguration implements WebMvcConfigurer {
+public class AdditionalWebConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
