@@ -1,0 +1,32 @@
+= 로그인 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 로그인
+=== 1. 이메일에 해당하는 사용자가 없으면 로그인에 실패한다
+HTTP Request
+include::{snippets}/AuthApi/Login/Failure/Case1/http-request.adoc[]
+include::{snippets}/AuthApi/Login/Failure/Case1/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/AuthApi/Login/Failure/Case1/response-body.adoc[]
+
+=== 2. 비밀번호가 일치하지 않으면 로그인에 실패한다
+HTTP Request
+include::{snippets}/AuthApi/Login/Failure/Case2/http-request.adoc[]
+include::{snippets}/AuthApi/Login/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/AuthApi/Login/Failure/Case2/response-body.adoc[]
+
+=== 3. 정보가 모두 일치하면 로그인에 성공하고 Access Token & Refresh Token을 발급받는다
+HTTP Request
+include::{snippets}/AuthApi/Login/Success/http-request.adoc[]
+include::{snippets}/AuthApi/Login/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/AuthApi/Login/Success/response-body.adoc[]
+include::{snippets}/AuthApi/Login/Success/response-fields.adoc[]
