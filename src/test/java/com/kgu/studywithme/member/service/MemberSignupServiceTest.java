@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Service Layer] -> MemberSignupService 테스트")
 class MemberSignupServiceTest extends ServiceTest {
@@ -92,9 +92,11 @@ class MemberSignupServiceTest extends ServiceTest {
             Long savedMemberId = memberSignupService.signUp(member, CATEGORIES);
 
             // then
-            Optional<Member> findMember = memberRepository.findById(member.getId());
-            assertThat(findMember).isPresent();
-            assertThat(findMember.get().getId()).isEqualTo(savedMemberId);
+            Member findMember = memberRepository.findById(member.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findMember.getId()).isEqualTo(savedMemberId),
+                    () -> assertThat(findMember.getInterests()).contains(PROGRAMMING, INTERVIEW, LANGUAGE)
+            );
         }
     }
 
