@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -87,5 +89,19 @@ class AuthServiceTest extends ServiceTest {
                     }
             );
         }
+    }
+
+    @Test
+    @DisplayName("로그아웃을 진행하면 사용자에게 발급되었던 RefreshToken이 DB에서 삭제된다")
+    void logout() {
+        // given
+        final Long memberId = member.getId();
+
+        // when
+        authService.logout(memberId);
+
+        // then
+        Optional<Token> findToken = tokenRepository.findByMemberId(memberId);
+        assertThat(findToken).isEmpty();
     }
 }

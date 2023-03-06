@@ -47,4 +47,9 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    @Transactional
+    public void logout(Long memberId) {
+        tokenManager.deleteRefreshTokenByMemberId(memberId);
+    }
 }
