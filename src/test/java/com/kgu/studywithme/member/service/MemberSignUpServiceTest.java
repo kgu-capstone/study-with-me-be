@@ -1,5 +1,6 @@
 package com.kgu.studywithme.member.service;
 
+import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.*;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
@@ -19,15 +20,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Service Layer] -> MemberSignupService 테스트")
-class MemberSignupServiceTest extends ServiceTest {
+class MemberSignUpServiceTest extends ServiceTest {
     @Autowired
-    private MemberSignupService memberSignupService;
+    private MemberSignUpService memberSignupService;
 
-    private static final List<Long> CATEGORIES = List.of(PROGRAMMING.getId(), INTERVIEW.getId(), LANGUAGE.getId());
+    private static final Set<Category> CATEGORIES = Set.of(PROGRAMMING, INTERVIEW, LANGUAGE);
 
     @Nested
     @DisplayName("회원가입을 진행할 때 ")
-    class Signup {
+    class signUp {
         @Test
         @DisplayName("이미 사용하고 있는 이메일이면 회원가입에 실패한다")
         void duplicateEmail() {

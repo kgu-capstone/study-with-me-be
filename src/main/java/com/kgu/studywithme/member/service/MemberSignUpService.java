@@ -7,20 +7,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class MemberSignupService {
+public class MemberSignUpService {
     private final MemberValidator memberValidator;
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long signUp(Member member, List<Long> categories) {
+    public Long signUp(Member member, Set<Category> interestCategories) {
         validateUniqueFields(member);
-        applyInterestCategories(member, categories);
+        member.addCategoriesToInterests(interestCategories);
         return memberRepository.save(member).getId();
     }
 
@@ -28,13 +27,5 @@ public class MemberSignupService {
         memberValidator.validateEmail(member.getEmail());
         memberValidator.validateNickname(member.getNickname());
         memberValidator.validatePhone(member.getPhone());
-    }
-
-    private void applyInterestCategories(Member member, List<Long> categories) {
-        member.addCategoriesToInterests(
-                categories.stream()
-                        .map(Category::from)
-                        .collect(Collectors.toSet())
-        );
     }
 }
