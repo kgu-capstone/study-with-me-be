@@ -14,6 +14,9 @@ public enum MemberErrorCode implements ErrorCode {
     INVALID_REGION(HttpStatus.BAD_REQUEST, "MEMBER_004", "거주지를 정확하게 입력해주세요."),
     INVALID_NICKNAME_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_005", "닉네임 형식에 맞지 않습니다."),
     NICKNAME_SAME_AS_BEFORE(HttpStatus.BAD_REQUEST, "MEMBER_006", "이전과 동일한 닉네임으로 변경할 수 없습니다."),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_007", "이미 사용중인 이메일입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_008", "이미 사용중인 닉네임입니다."),
+    DUPLICATE_PHONE(HttpStatus.CONFLICT, "MEMBER_009", "이미 사용중인 전화번호입니다"),
     ;
 
     private final HttpStatus status;
