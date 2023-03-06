@@ -1,0 +1,24 @@
+= 회원가입 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 회원가입
+=== 1. 중복되는 값(닉네임)에 의해서 회원가입에 실패한다
+==== 중복 체크 -> 닉네임 / 이메일 / 전화번호
+HTTP Request
+include::{snippets}/MemberApi/SignUp/Failure/http-request.adoc[]
+include::{snippets}/MemberApi/SignUp/Failure/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/SignUp/Failure/response-body.adoc[]
+
+=== 2. 회원가입에 성공한다
+HTTP Request
+include::{snippets}/MemberApi/SignUp/Success/http-request.adoc[]
+include::{snippets}/MemberApi/SignUp/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/SignUp/Success/http-response.adoc[]
