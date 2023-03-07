@@ -12,7 +12,6 @@ public class OAuthProperties {
     private final String grantType;
     private final String clientId;
     private final String clientSecret;
-    private final String clientAuthenticationMethod;
     private final String redirectUrl;
     private final Set<String> scope;
     private final String authUrl;
@@ -23,7 +22,6 @@ public class OAuthProperties {
             @Value("${oauth2.google.grant-type}") String grantType,
             @Value("${oauth2.google.client-id}") String clientId,
             @Value("${oauth2.google.client-secret}") String clientSecret,
-            @Value("${oauth2.google.client-authentication-method}") String clientAuthenticationMethod,
             @Value("${oauth2.google.redirect-url}") String redirectUrl,
             @Value("${oauth2.google.scope}") Set<String> scope,
             @Value("${oauth2.google.auth-url}") String authUrl,
@@ -33,7 +31,6 @@ public class OAuthProperties {
         this.grantType = grantType;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.clientAuthenticationMethod = clientAuthenticationMethod;
         this.redirectUrl = redirectUrl;
         this.scope = scope;
         this.authUrl = authUrl;
