@@ -18,7 +18,6 @@ public class OAuthProperties {
     private final String authUrl;
     private final String tokenUrl;
     private final String userInfoUrl;
-    private final String usernameAttribute;
 
     public OAuthProperties(
             @Value("${oauth2.google.grant-type}") String grantType,
@@ -29,8 +28,7 @@ public class OAuthProperties {
             @Value("${oauth2.google.scope}") Set<String> scope,
             @Value("${oauth2.google.auth-url}") String authUrl,
             @Value("${oauth2.google.token-url}") String tokenUrl,
-            @Value("${oauth2.google.user-info-url}") String userInfoUrl,
-            @Value("${oauth2.google.username-attribute}") String usernameAttribute
+            @Value("${oauth2.google.user-info-url}") String userInfoUrl
     ) {
         this.grantType = grantType;
         this.clientId = clientId;
@@ -41,6 +39,5 @@ public class OAuthProperties {
         this.authUrl = authUrl;
         this.tokenUrl = tokenUrl;
         this.userInfoUrl = userInfoUrl;
-        this.usernameAttribute = usernameAttribute;
     }
 }
