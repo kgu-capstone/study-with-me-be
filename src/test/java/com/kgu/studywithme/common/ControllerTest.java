@@ -10,12 +10,14 @@ import com.kgu.studywithme.auth.service.AuthService;
 import com.kgu.studywithme.auth.service.OAuthService;
 import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
+import com.kgu.studywithme.common.config.MockMvcConfiguration;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
@@ -29,6 +31,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
         AuthApiController.class,
         OAuthApiController.class
 })
+@Import(MockMvcConfiguration.class)
 @AutoConfigureRestDocs
 public abstract class ControllerTest {
     @Autowired
