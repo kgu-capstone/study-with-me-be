@@ -52,9 +52,10 @@ class OAuthServiceTest extends ServiceTest {
         // given
         GoogleTokenResponse googleTokenResponse = GoogleTokenResponse.builder()
                 .tokenType(BEARER_TOKEN)
+                .idToken(ID_TOKEN)
                 .accessToken(ACCESS_TOKEN)
-                .refreshToken(REFRESH_TOKEN)
-                .expiresIn(7200L)
+                .scope(SCOPE)
+                .expiresIn(3600)
                 .build();
         GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
                 .name(SEO_JI_WON.getName())
@@ -81,9 +82,10 @@ class OAuthServiceTest extends ServiceTest {
 
         GoogleTokenResponse googleTokenResponse = GoogleTokenResponse.builder()
                 .tokenType(BEARER_TOKEN)
+                .idToken(ID_TOKEN)
                 .accessToken(ACCESS_TOKEN)
-                .refreshToken(REFRESH_TOKEN)
-                .expiresIn(7200L)
+                .scope(SCOPE)
+                .expiresIn(3600)
                 .build();
         GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
                 .name(SEO_JI_WON.getName())
