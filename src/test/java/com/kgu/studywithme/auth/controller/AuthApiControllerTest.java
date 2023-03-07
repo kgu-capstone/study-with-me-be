@@ -200,7 +200,8 @@ class AuthApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
-                    .header(AUTHORIZATION, BEARER_TOKEN + ACCESS_TOKEN);
+//                    .header(AUTHORIZATION, BEARER_TOKEN + ACCESS_TOKEN);
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
             mockMvc.perform(requestBuilder)
