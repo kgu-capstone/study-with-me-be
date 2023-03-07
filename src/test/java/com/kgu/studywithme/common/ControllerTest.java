@@ -3,8 +3,11 @@ package com.kgu.studywithme.common;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kgu.studywithme.auth.controller.AuthApiController;
+import com.kgu.studywithme.auth.controller.OAuthApiController;
 import com.kgu.studywithme.auth.controller.TokenReissueApiController;
+import com.kgu.studywithme.auth.infra.oauth.OAuthUri;
 import com.kgu.studywithme.auth.service.AuthService;
+import com.kgu.studywithme.auth.service.OAuthService;
 import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.member.controller.MemberApiController;
@@ -23,7 +26,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 @WebMvcTest({
         TokenReissueApiController.class,
         MemberApiController.class,
-        AuthApiController.class
+        AuthApiController.class,
+        OAuthApiController.class
 })
 @AutoConfigureRestDocs
 public abstract class ControllerTest {
@@ -44,6 +48,12 @@ public abstract class ControllerTest {
 
     @MockBean
     protected AuthService authService;
+
+    @MockBean
+    protected OAuthUri oAuthUri;
+
+    @MockBean
+    protected OAuthService oAuthService;
 
     protected OperationRequestPreprocessor applyRequestPreprocessor() {
         return Preprocessors.preprocessRequest(prettyPrint());
