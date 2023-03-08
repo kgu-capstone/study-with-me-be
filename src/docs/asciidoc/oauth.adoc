@@ -23,6 +23,7 @@ include::{snippets}/OAuthApi/Login/Success/request-fields.adoc[]
 
 HTTP Response
 include::{snippets}/OAuthApi/Login/Failure/response-body.adoc[]
+include::{snippets}/OAuthApi/Login/Failure/response-fields.adoc[]
 
 === 2. Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다
 HTTP Request
