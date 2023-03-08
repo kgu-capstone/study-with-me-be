@@ -49,8 +49,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case1",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
                                             fieldWithPath("errorCode").description("커스텀 예외 코드"),
@@ -84,8 +84,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case2",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Refresh Token")
                                     ),
@@ -122,8 +122,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case3",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Refresh Token")
                                     ),
@@ -163,8 +163,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "TokenReissueApi/Success",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Refresh Token")
                                     ),

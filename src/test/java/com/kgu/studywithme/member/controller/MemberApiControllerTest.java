@@ -52,19 +52,22 @@ class MemberApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "MemberApi/SignUp/Failure",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("name").description("이름"),
                                             fieldWithPath("nickname").description("닉네임"),
-                                            fieldWithPath("email").description("이메일 [@gmail.com]"),
+                                            fieldWithPath("email").description("이메일")
+                                                    .attributes(constraint("@gmail.com")),
                                             fieldWithPath("password").description("비밀번호"),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
-                                            fieldWithPath("gender").description("성별 [M / F]"),
+                                            fieldWithPath("gender").description("성별")
+                                                    .attributes(constraint("M / F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
-                                            fieldWithPath("categories").description("관심사 Enum ID [스터디 카테고리 한정]")
+                                            fieldWithPath("categories").description("관심사 Enum ID")
+                                                    .attributes(constraint("스터디 카테고리 ID 한정"))
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -95,19 +98,22 @@ class MemberApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "MemberApi/SignUp/Success",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("name").description("이름"),
                                             fieldWithPath("nickname").description("닉네임"),
-                                            fieldWithPath("email").description("이메일 [@gmail.com]"),
+                                            fieldWithPath("email").description("이메일")
+                                                    .attributes(constraint("@gmail.com")),
                                             fieldWithPath("password").description("비밀번호"),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
-                                            fieldWithPath("gender").description("성별 [M / F]"),
+                                            fieldWithPath("gender").description("성별")
+                                                    .attributes(constraint("M / F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
-                                            fieldWithPath("categories").description("관심사 Enum ID [스터디 카테고리 한정]")
+                                            fieldWithPath("categories").description("관심사 Enum ID")
+                                                    .attributes(constraint("스터디 카테고리 ID 한정"))
                                     )
                             )
                     );
