@@ -1,0 +1,35 @@
+= Google OAuth 인증 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== Authorization Code 요청을 위한 URI
+=== Authorization Code 요청을 위한 URI를 생성한다
+HTTP Request
+include::{snippets}/OAuthApi/Access/http-request.adoc[]
+include::{snippets}/OAuthApi/Access/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/OAuthApi/Access/response-body.adoc[]
+include::{snippets}/OAuthApi/Access/response-fields.adoc[]
+
+== Google OAuth 인증
+=== 1. Google 이메일에 해당하는 사용자가 DB에 존재하지 않을 경우 예외가 발생하고 추가정보 기입을 통해서 회원가입을 진행한다
+HTTP Request
+include::{snippets}/OAuthApi/Login/Failure/http-request.adoc[]
+include::{snippets}/OAuthApi/Login/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/OAuthApi/Login/Failure/response-body.adoc[]
+include::{snippets}/OAuthApi/Login/Failure/response-fields.adoc[]
+
+=== 2. Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다
+HTTP Request
+include::{snippets}/OAuthApi/Login/Success/http-request.adoc[]
+include::{snippets}/OAuthApi/Login/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/OAuthApi/Login/Success/response-body.adoc[]
+include::{snippets}/OAuthApi/Login/Success/response-fields.adoc[]

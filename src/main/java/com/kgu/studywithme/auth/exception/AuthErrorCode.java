@@ -11,6 +11,7 @@ public enum AuthErrorCode implements ErrorCode {
     AUTH_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_001", "토큰의 유효기간이 만료되었습니다."),
     AUTH_INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_002", "토큰이 유효하지 않습니다."),
     INVALID_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_003", "권한이 없습니다."),
+    GOOGLE_OAUTH_EXCEPTION(HttpStatus.FORBIDDEN, "AUTH_004", "Google 서버 요청 간 에러가 발생하였습니다."),
     ;
 
     private final HttpStatus status;

@@ -1,11 +1,14 @@
 package com.kgu.studywithme.global.exception;
 
+import com.kgu.studywithme.auth.infra.oauth.dto.response.OAuthUserResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -21,6 +24,22 @@ public class ApiGlobalExceptionHandler {
         return ResponseEntity
                 .status(code.getStatus())
                 .body(ErrorResponse.from(code));
+    }
+
+    @ExceptionHandler(StudyWithMeOAuthException.class)
+    public ResponseEntity<OAuthUserResponse> studyWithMeOAuthException(StudyWithMeOAuthException exception) {
+        OAuthUserResponse response = exception.getResponse();
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    /**
+     * 요청 파라미터 Validation 전용 ExceptionHandler
+     */
+    @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> unsatisfiedServletRequestParameterException(UnsatisfiedServletRequestParameterException e) {
+        return convert(GlobalErrorCode.VALIDATION_ERROR);
     }
 
     /**
