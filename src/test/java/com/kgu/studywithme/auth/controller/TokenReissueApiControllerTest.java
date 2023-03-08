@@ -69,7 +69,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
-                    .header(AUTHORIZATION, BEARER_TOKEN + REFRESH_TOKEN);
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, REFRESH_TOKEN));
 
             // then
             final AuthErrorCode expectedError = AuthErrorCode.AUTH_EXPIRED_TOKEN;
@@ -107,7 +107,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
-                    .header(AUTHORIZATION, BEARER_TOKEN + REFRESH_TOKEN);
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, REFRESH_TOKEN));
 
             // then
             final AuthErrorCode expectedError = AuthErrorCode.AUTH_INVALID_TOKEN;
@@ -151,7 +151,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
-                    .header(AUTHORIZATION, BEARER_TOKEN + REFRESH_TOKEN);
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, REFRESH_TOKEN));
 
             // then
             mockMvc.perform(requestBuilder)
