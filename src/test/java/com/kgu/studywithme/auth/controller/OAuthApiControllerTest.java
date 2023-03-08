@@ -68,8 +68,8 @@ class OAuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "OAuthApi/Access",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestParameters(
                                             parameterWithName("redirectUrl").description("Authorization Code와 함께 redirect될 URI")
                                     ),
@@ -118,11 +118,12 @@ class OAuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "OAuthApi/Login/Failure",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("code").description("Authorization Code"),
-                                            fieldWithPath("redirectUrl").description("redirectUrl [Authorization Code 요청 시 redirectUrl과 반드시 동일한 값]")
+                                            fieldWithPath("redirectUrl").description("redirectUrl")
+                                                    .attributes(constraint("Authorization Code 요청 시 redirectUrl과 반드시 동일한 값"))
                                     ),
                                     responseFields(
                                             fieldWithPath("name").description("회원가입 진행 시 이름 기본값 [Read-Only]"),
@@ -160,11 +161,12 @@ class OAuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "OAuthApi/Login/Success",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("code").description("Authorization Code"),
-                                            fieldWithPath("redirectUrl").description("redirectUrl [Authorization Code 요청 시 redirectUrl과 반드시 동일한 값]")
+                                            fieldWithPath("redirectUrl").description("redirectUrl")
+                                                    .attributes(constraint("Authorization Code 요청 시 redirectUrl과 반드시 동일한 값"))
                                     ),
                                     responseFields(
                                             fieldWithPath("accessToken").description("발급된 Access Token (Expire - 2시간)"),

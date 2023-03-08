@@ -59,8 +59,8 @@ class AuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "AuthApi/Login/Failure/Case1",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("email").description("로그인 이메일"),
                                             fieldWithPath("password").description("로그인 비밀번호")
@@ -100,8 +100,8 @@ class AuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "AuthApi/Login/Failure/Case2",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("email").description("로그인 이메일"),
                                             fieldWithPath("password").description("로그인 비밀번호")
@@ -142,8 +142,8 @@ class AuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "AuthApi/Login/Success",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestFields(
                                             fieldWithPath("email").description("로그인 이메일"),
                                             fieldWithPath("password").description("로그인 비밀번호")
@@ -182,8 +182,8 @@ class AuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "AuthApi/Logout/Failure",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
                                             fieldWithPath("errorCode").description("커스텀 예외 코드"),
@@ -209,8 +209,8 @@ class AuthApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "AuthApi/Logout/Success",
-                                    applyRequestPreprocessor(),
-                                    applyResponsePreprocessor(),
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     )
