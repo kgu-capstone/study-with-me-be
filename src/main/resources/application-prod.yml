@@ -6,4 +6,3 @@ spring:
       - security/application-external.yml
       - security/application-prod-datasource.yml
       - application-logging.yml
-      - application-mapping.yml
