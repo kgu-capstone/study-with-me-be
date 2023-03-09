@@ -1,7 +1,46 @@
 spring:
-  config:
-    import:
-      - security/application-test-external.yml
-      - application-test-datasource.yml
-      - application-logging.yml
-      - application-mapping.yml
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MYSQL;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        default_batch_fetch_size: 50
+
+  sql:
+    init:
+      mode: NEVER
+
+jwt:
+  secret-key: abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  access-token-validity: 1234
+  refresh-token-validity: 1234
+
+oauth2:
+  google:
+    grant-type: authorization_code
+    client-id: client_id
+    client-secret: client_secret
+    redirect-url: http://localhost:8080/login/oauth2/code/google
+    scope: openid, profile, email
+    auth-url: https://accounts.google.com/o/oauth2/v2/auth
+    token-url: https://www.googleapis.com/oauth2/v4/token
+    user-info-url: https://www.googleapis.com/oauth2/v3/userinfo
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
