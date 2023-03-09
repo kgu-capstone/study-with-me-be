@@ -51,7 +51,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-          token: ${{ secrets.JUNIT_RESULT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup Gradle Cache
         if: always()
