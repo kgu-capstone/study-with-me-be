@@ -30,16 +30,6 @@ jobs:
         with:
           timezone: Asia/Seoul
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Gradle 명령 실행을 위한 권한을 부여합니다
         run: chmod +x gradlew
 
@@ -52,9 +42,3 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cleanup Gradle Cache
-        if: always()
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
