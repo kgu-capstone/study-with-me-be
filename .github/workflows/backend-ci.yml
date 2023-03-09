@@ -10,7 +10,6 @@ on:
       - synchronize
 
 permissions:
-  contents: read
   checks: write
 
 jobs:
@@ -52,7 +51,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-          token: ${{ github.token }}
+          token: ${{ secrets.JUNIT_RESULT_TOKEN }}
 
       - name: Cleanup Gradle Cache
         if: always()
