@@ -10,6 +10,8 @@ import com.kgu.studywithme.auth.service.AuthService;
 import com.kgu.studywithme.auth.service.OAuthService;
 import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
+import com.kgu.studywithme.category.controller.CategoryApiController;
+import com.kgu.studywithme.category.service.CategoryService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         TokenReissueApiController.class,
         MemberApiController.class,
         AuthApiController.class,
-        OAuthApiController.class
+        OAuthApiController.class,
+        CategoryApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -65,6 +68,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected OAuthService oAuthService;
+
+    @MockBean
+    protected CategoryService categoryService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

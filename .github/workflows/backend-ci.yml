@@ -1,10 +1,6 @@
 name: Backend CI
 
 on:
-  push:
-    branches:
-      - develop
-      - feature/**
   pull_request:
     branches:
       - main
@@ -12,6 +8,10 @@ on:
     types:
       - opened
       - synchronize
+
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
           timezone: Asia/Seoul
 
       - name: Cache Gradle packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -48,14 +48,14 @@ jobs:
         run: ./gradlew clean build
 
       - name: 테스트 결과를 PR 코멘트로 등록합니다
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
 
       - name: 테스트 실패 시, 실패한 코드 라인에 Check 코멘트를 등록합니다
         uses: mikepenz/action-junit-report@v3
-        if: always()
+        if: failure()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ github.token }}
