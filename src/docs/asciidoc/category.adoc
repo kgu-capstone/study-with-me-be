@@ -1,0 +1,15 @@
+= 카테고리 조회 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 조회
+=== 전체 카테고리를 조회한다
+HTTP Request
+include::{snippets}/CategoryApi/FindAll/Success/http-request.adoc[]
+
+HTTP Response
+include::{snippets}/CategoryApi/FindAll/Success/response-body.adoc[]
+include::{snippets}/CategoryApi/FindAll/Success/response-fields.adoc[]

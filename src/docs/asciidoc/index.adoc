@@ -12,3 +12,5 @@ include::oauth.adoc[leveloffset=+1]
 include::token-reissue.adoc[leveloffset=+1]
 
 include::member-signup.adoc[leveloffset=+1]
+
+include::category.adoc[leveloffset=+1]
