@@ -18,6 +18,7 @@ bin/
 
 ### IntelliJ IDEA ###
 **/src/main/generated/
+**/src/main/resources/security/
 .idea
 *.iws
 *.iml
