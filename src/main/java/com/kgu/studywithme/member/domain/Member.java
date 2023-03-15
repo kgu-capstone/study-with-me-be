@@ -3,6 +3,8 @@ package com.kgu.studywithme.member.domain;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
+import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.StudyMember;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -57,6 +60,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Set<Category> interests = new HashSet<>();
+
+    @OneToMany(mappedBy = "member")
+    private Set<StudyMember> studyList = new HashSet<>();
 
     @Builder
     private Member(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
