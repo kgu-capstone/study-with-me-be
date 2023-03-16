@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class StudyService {
     private final StudyRepository studyRepository;
 
-    public List<StudyResponse> findAllWithCategory(Category category) {
+    public List<StudyResponse> findAllByCategory(Category category) {
         List<Study> studyList = studyRepository.findAllByCategory(category);
         return studyList.stream()
                 .map(StudyResponse::new)

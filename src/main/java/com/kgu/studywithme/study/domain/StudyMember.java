@@ -1,16 +1,12 @@
 package com.kgu.studywithme.study.domain;
 
 import com.kgu.studywithme.member.domain.Member;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyMember {
     @Id
@@ -28,4 +24,19 @@ public class StudyMember {
 
     @Enumerated(EnumType.STRING)
     private StudyMemberStatus status; // ADMIN, ONGOING, COMPLETED, LIKED
+
+    @Builder
+    public StudyMember(Study study, Member member, StudyMemberStatus status) {
+        this.study = study;
+        this.member = member;
+        this.status = status;
+    }
+
+    public static StudyMember createStudyMember(Study study, Member member, StudyMemberStatus status) {
+        return new StudyMember(study, member, status);
+    }
+
+    public void changeStatus(StudyMemberStatus status) {
+        this.status = status;
+    }
 }
