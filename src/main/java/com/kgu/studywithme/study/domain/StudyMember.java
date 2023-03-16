@@ -1,7 +1,10 @@
 package com.kgu.studywithme.study.domain;
 
 import com.kgu.studywithme.member.domain.Member;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 

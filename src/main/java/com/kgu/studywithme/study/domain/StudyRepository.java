@@ -1,7 +1,6 @@
 package com.kgu.studywithme.study.domain;
 
 import com.kgu.studywithme.category.domain.Category;
-import com.kgu.studywithme.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 

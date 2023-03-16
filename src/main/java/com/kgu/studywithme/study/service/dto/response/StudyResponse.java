@@ -1,14 +1,10 @@
 package com.kgu.studywithme.study.service.dto.response;
 
-import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyStatus;
 import lombok.Builder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 // main page에서 카드 형식일 때
 public record StudyResponse(

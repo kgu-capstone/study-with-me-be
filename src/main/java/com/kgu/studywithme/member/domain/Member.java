@@ -3,7 +3,6 @@ package com.kgu.studywithme.member.domain;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyMember;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter

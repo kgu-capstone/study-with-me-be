@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.domain;
 
-import com.kgu.studywithme.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

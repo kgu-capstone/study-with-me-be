@@ -5,7 +5,6 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyMember;
 import com.kgu.studywithme.study.domain.StudyMemberStatus;
-import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.exception.StudyMemberErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,7 +39,7 @@ public class Post { // 공지사항
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
-    private Member writer;
+    private StudyMember writer;
 
     @Column(name = "lastModifiedDate")
     private LocalDate lastModifiedDate;

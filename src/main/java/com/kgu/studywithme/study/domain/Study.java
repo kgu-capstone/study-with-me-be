@@ -2,7 +2,6 @@ package com.kgu.studywithme.study.domain;
 
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.post.domain.Post;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
@@ -11,11 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
