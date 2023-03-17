@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.kgu.studywithme.global.utils.PasswordEncoderUtils.ENCODER;
 import static com.kgu.studywithme.member.domain.Gender.FEMALE;
 import static com.kgu.studywithme.member.domain.Gender.MALE;
 
@@ -30,8 +29,8 @@ public record SignUpRequest(
         @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_EMAIL)
         String email,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_PASSWORD)
-        String password,
+        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_PROFILE_URL)
+        String profileUrl,
 
         @NotNull(message = MemberRequestValidationMessage.SignUp.MEMBER_BIRTH)
         @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -60,7 +59,7 @@ public record SignUpRequest(
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .password(Password.encrypt(password, ENCODER))
+                .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(phone)
                 .gender(convertStringToGender(gender))

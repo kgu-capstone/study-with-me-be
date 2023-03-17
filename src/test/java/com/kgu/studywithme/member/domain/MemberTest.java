@@ -10,7 +10,6 @@ import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
 import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
-import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +26,7 @@ class MemberTest {
                 () -> assertThat(member.getName()).isEqualTo(SEO_JI_WON.getName()),
                 () -> assertThat(member.getNicknameValue()).isEqualTo(SEO_JI_WON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(SEO_JI_WON.getEmail()),
-                () -> assertThat(ENCODER.matches(SEO_JI_WON.getPassword(), member.getPasswordValue())).isTrue(),
+                () -> assertThat(member.getProfileUrl()).isEqualTo(SEO_JI_WON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(SEO_JI_WON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(SEO_JI_WON.getProvince()),
@@ -50,32 +49,13 @@ class MemberTest {
                 () -> assertThat(member.getName()).isEqualTo(SEO_JI_WON.getName()),
                 () -> assertThat(member.getNicknameValue()).isEqualTo(SEO_JI_WON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(SEO_JI_WON.getEmail()),
-                () -> assertThat(ENCODER.matches(SEO_JI_WON.getPassword(), member.getPasswordValue())).isTrue(),
+                () -> assertThat(member.getProfileUrl()).isEqualTo(SEO_JI_WON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(SEO_JI_WON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(SEO_JI_WON.getProvince()),
                 () -> assertThat(member.getRegionCity()).isEqualTo(SEO_JI_WON.getCity()),
                 () -> assertThat(member.getInterests()).containsAll(interests)
         );
-    }
-
-    @Test
-    @DisplayName("비밀번호를 변경한다")
-    void changePassword() {
-        // given
-        Member member = SEO_JI_WON.toMember();
-        final String same = SEO_JI_WON.getPassword();
-        final String diff = SEO_JI_WON.getPassword() + "diff";
-
-        // when
-        assertThatThrownBy(() -> member.changePassword(same, ENCODER))
-                .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(MemberErrorCode.PASSWORD_SAME_AS_BEFORE.getMessage());
-
-        member.changePassword(diff, ENCODER);
-
-        // then
-        assertThat(ENCODER.matches(diff, member.getPasswordValue())).isTrue();
     }
 
     @Test
