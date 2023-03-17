@@ -5,7 +5,7 @@ import com.kgu.studywithme.auth.infra.oauth.OAuthConnector;
 import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleTokenResponse;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
-import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
+import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
@@ -99,7 +99,7 @@ class OAuthServiceTest extends ServiceTest {
         given(oAuthConnector.getUserInfo(ACCESS_TOKEN)).willReturn(googleUserResponse);
 
         // when
-        TokenResponse tokenResponse = oAuthService.login(authorizationCode, properties.getRedirectUrl());
+        LoginResponse tokenResponse = oAuthService.login(authorizationCode, properties.getRedirectUrl());
 
         // then
         assertAll(
