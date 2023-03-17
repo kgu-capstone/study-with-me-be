@@ -39,13 +39,15 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // then
             final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.status").exists())
-                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
-                    .andExpect(jsonPath("$.errorCode").exists())
-                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case1",
@@ -74,13 +76,15 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // then
             final AuthErrorCode expectedError = AuthErrorCode.AUTH_EXPIRED_TOKEN;
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.status").exists())
-                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
-                    .andExpect(jsonPath("$.errorCode").exists())
-                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andExpectAll(
+                            status().isUnauthorized(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case2",
@@ -112,13 +116,15 @@ class TokenReissueApiControllerTest extends ControllerTest {
             // then
             final AuthErrorCode expectedError = AuthErrorCode.AUTH_INVALID_TOKEN;
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.status").exists())
-                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
-                    .andExpect(jsonPath("$.errorCode").exists())
-                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andExpectAll(
+                            status().isUnauthorized(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
                     .andDo(
                             document(
                                     "TokenReissueApi/Failure/Case3",
@@ -155,11 +161,13 @@ class TokenReissueApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.accessToken").exists())
-                    .andExpect(jsonPath("$.accessToken").value(ACCESS_TOKEN))
-                    .andExpect(jsonPath("$.refreshToken").exists())
-                    .andExpect(jsonPath("$.refreshToken").value(REFRESH_TOKEN))
+                    .andExpectAll(
+                            status().isOk(),
+                            jsonPath("$.accessToken").exists(),
+                            jsonPath("$.accessToken").value(ACCESS_TOKEN),
+                            jsonPath("$.refreshToken").exists(),
+                            jsonPath("$.refreshToken").value(REFRESH_TOKEN)
+                    )
                     .andDo(
                             document(
                                     "TokenReissueApi/Success",
