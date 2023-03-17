@@ -16,7 +16,9 @@ import static com.kgu.studywithme.category.domain.Category.*;
 public enum MemberFixture {
     JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
             Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
-    GHOST("익명", "익명", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
+    GHOST("고스트", "고스트", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
+            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+    ANONYMOUS("익명", "익명", "anonymous@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
             Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ;
 

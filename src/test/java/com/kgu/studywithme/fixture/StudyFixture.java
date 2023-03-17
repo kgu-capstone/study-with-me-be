@@ -34,7 +34,7 @@ public enum StudyFixture {
     private final int capacity;
     private final Set<String> hashtags;
 
-    public Study toStudy(Member host, Set<String> hashtags) {
+    public Study toStudy(Member host) {
         return Study.builder()
                 .host(host)
                 .name(StudyName.from(name))

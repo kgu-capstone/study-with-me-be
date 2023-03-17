@@ -43,4 +43,8 @@ public class Participant extends BaseEntity {
     public static Participant applyInStudy(Study study, Member member) {
         return new Participant(study, member, APPLY);
     }
+
+    public boolean isSameMember(Member compare) {
+        return this.member.isSameMember(compare);
+    }
 }
