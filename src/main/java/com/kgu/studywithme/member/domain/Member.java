@@ -1,6 +1,7 @@
 package com.kgu.studywithme.member.domain;
 
 import com.kgu.studywithme.category.domain.Category;
+import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import lombok.AccessLevel;
@@ -17,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
