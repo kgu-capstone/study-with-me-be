@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public enum MemberFixture {
     JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
+    GHOST("익명", "익명", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
     ;
 
     private final String name;
