@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.*;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -66,9 +66,11 @@ class OAuthApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result").value(authorizationCodeRequestUri))
+                    .andExpectAll(
+                            status().isOk(),
+                            jsonPath("$.result").exists(),
+                            jsonPath("$.result").value(authorizationCodeRequestUri)
+                    )
                     .andDo(
                             document(
                                     "OAuthApi/Access",
@@ -97,8 +99,8 @@ class OAuthApiControllerTest extends ControllerTest {
         void throwExceptionIfGoogleAuthUserNotInDB() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(SEO_JI_WON.getName())
-                    .email(SEO_JI_WON.getEmail())
+                    .name(JIWON.getName())
+                    .email(JIWON.getEmail())
                     .picture("picture.png")
                     .build();
             given(oAuthService.login(authorizationCode, redirectUrl)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
@@ -112,13 +114,15 @@ class OAuthApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.name").exists())
-                    .andExpect(jsonPath("$.name").value(googleUserResponse.name()))
-                    .andExpect(jsonPath("$.email").exists())
-                    .andExpect(jsonPath("$.email").value(googleUserResponse.email()))
-                    .andExpect(jsonPath("$.picture").exists())
-                    .andExpect(jsonPath("$.picture").value(googleUserResponse.picture()))
+                    .andExpectAll(
+                            status().isUnauthorized(),
+                            jsonPath("$.name").exists(),
+                            jsonPath("$.name").value(googleUserResponse.name()),
+                            jsonPath("$.email").exists(),
+                            jsonPath("$.email").value(googleUserResponse.email()),
+                            jsonPath("$.picture").exists(),
+                            jsonPath("$.picture").value(googleUserResponse.picture())
+                    )
                     .andDo(
                             document(
                                     "OAuthApi/Login/Failure",
@@ -143,8 +147,8 @@ class OAuthApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(SEO_JI_WON.getName())
-                    .email(SEO_JI_WON.getEmail())
+                    .name(JIWON.getName())
+                    .email(JIWON.getEmail())
                     .picture("picture.png")
                     .build();
 
@@ -164,17 +168,19 @@ class OAuthApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.userInfo.name").exists())
-                    .andExpect(jsonPath("$.userInfo.name").value(SEO_JI_WON.getName()))
-                    .andExpect(jsonPath("$.userInfo.email").exists())
-                    .andExpect(jsonPath("$.userInfo.email").value(SEO_JI_WON.getEmail()))
-                    .andExpect(jsonPath("$.userInfo.picture").exists())
-                    .andExpect(jsonPath("$.userInfo.picture").value("picture.png"))
-                    .andExpect(jsonPath("$.accessToken").exists())
-                    .andExpect(jsonPath("$.accessToken").value(response.accessToken()))
-                    .andExpect(jsonPath("$.refreshToken").exists())
-                    .andExpect(jsonPath("$.refreshToken").value(response.refreshToken()))
+                    .andExpectAll(
+                            status().isOk(),
+                            jsonPath("$.userInfo.name").exists(),
+                            jsonPath("$.userInfo.name").value(JIWON.getName()),
+                            jsonPath("$.userInfo.email").exists(),
+                            jsonPath("$.userInfo.email").value(JIWON.getEmail()),
+                            jsonPath("$.userInfo.picture").exists(),
+                            jsonPath("$.userInfo.picture").value("picture.png"),
+                            jsonPath("$.accessToken").exists(),
+                            jsonPath("$.accessToken").value(response.accessToken()),
+                            jsonPath("$.refreshToken").exists(),
+                            jsonPath("$.refreshToken").value(response.refreshToken())
+                    )
                     .andDo(
                             document(
                                     "OAuthApi/Login/Success",
@@ -212,13 +218,15 @@ class OAuthApiControllerTest extends ControllerTest {
             // then
             final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.status").exists())
-                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
-                    .andExpect(jsonPath("$.errorCode").exists())
-                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
                     .andDo(
                             document(
                                     "OAuthApi/Logout/Failure",
@@ -244,8 +252,10 @@ class OAuthApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isNoContent())
-                    .andExpect(jsonPath("$").doesNotExist())
+                    .andExpectAll(
+                            status().isNoContent(),
+                            jsonPath("$").doesNotExist()
+                    )
                     .andDo(
                             document(
                                     "OAuthApi/Logout/Success",

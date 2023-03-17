@@ -42,24 +42,28 @@ class MemberApiControllerTest extends ControllerTest {
             // then
             final MemberErrorCode expectedError = MemberErrorCode.DUPLICATE_NICKNAME;
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isConflict())
-                    .andExpect(jsonPath("$.status").exists())
-                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
-                    .andExpect(jsonPath("$.errorCode").exists())
-                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
-                    .andExpect(jsonPath("$.message").exists())
-                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
                     .andDo(
                             document(
                                     "MemberApi/SignUp/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
+                                            fieldWithPath("name").description("이름")
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
-                                                    .attributes(constraint("@gmail.com")),
-                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL"),
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
+                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL")
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
@@ -93,19 +97,23 @@ class MemberApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$").doesNotExist())
+                    .andExpectAll(
+                            status().isCreated(),
+                            jsonPath("$").doesNotExist()
+                    )
                     .andDo(
                             document(
                                     "MemberApi/SignUp/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
+                                            fieldWithPath("name").description("이름")
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
-                                                    .attributes(constraint("@gmail.com")),
-                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL"),
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
+                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL")
+                                                    .attributes(constraint("서버 제공 [Read-Only]")),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")

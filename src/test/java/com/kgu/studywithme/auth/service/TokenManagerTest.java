@@ -2,6 +2,7 @@ package com.kgu.studywithme.auth.service;
 
 import com.kgu.studywithme.auth.domain.Token;
 import com.kgu.studywithme.common.ServiceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,16 +16,21 @@ class TokenManagerTest extends ServiceTest {
     @Autowired
     private TokenManager tokenManager;
 
+    private Long memberId;
+    private String refreshToken;
+
+    @BeforeEach
+    void setUp() {
+        memberId = 1L;
+        refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+    }
+
     @Nested
     @DisplayName("RefreshToken 동기화를 할 때 ")
     class synchronizedRefreshToken {
         @Test
         @DisplayName("RefreshToken을 보유하고 있지 않은 사용자에게는 새로운 RefreshToken을 발급한다")
         void reissueRefreshToken() {
-            // given
-            final Long memberId = 1L;
-            final String refreshToken = "hello_world_refresh_token";
-
             // when
             tokenManager.synchronizeRefreshToken(memberId, refreshToken);
 
@@ -37,8 +43,6 @@ class TokenManagerTest extends ServiceTest {
         @DisplayName("RefreshToken을 보유하고 있는 사용자에게는 새로운 RefreshToken으로 업데이트한다")
         void updateRefreshToken() {
             // given
-            final Long memberId = 1L;
-            final String refreshToken = "hello_world_refresh_token";
             tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
 
             // when
@@ -55,8 +59,6 @@ class TokenManagerTest extends ServiceTest {
     @DisplayName("RTR정책에 의해서 RefreshToken을 재발급한다")
     void reissueRefreshTokenByRtrPolicy() {
         // given
-        final Long memberId = 1L;
-        final String refreshToken = "hello_world_refresh_token";
         tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
 
         // when
@@ -72,8 +74,6 @@ class TokenManagerTest extends ServiceTest {
     @DisplayName("사용자가 보유하고 있는 RefreshToken을 삭제한다")
     void deleteRefreshTokenByMemberId() {
         // given
-        final Long memberId = 1L;
-        final String refreshToken = "hello_world_refresh_token";
         tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
 
         // when
@@ -87,8 +87,6 @@ class TokenManagerTest extends ServiceTest {
     @DisplayName("사용자가 보유하고 있는 RefreshToken인지 확인한다")
     void checkMemberHasSpecificRefreshToken() {
         // given
-        final Long memberId = 1L;
-        final String refreshToken = "hello_world_refresh_token";
         tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
 
         // when

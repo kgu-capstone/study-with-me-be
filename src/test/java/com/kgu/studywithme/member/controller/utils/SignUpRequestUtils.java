@@ -5,7 +5,7 @@ import com.kgu.studywithme.member.controller.dto.request.SignUpRequest;
 import java.util.List;
 
 import static com.kgu.studywithme.category.domain.Category.*;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 
 public class SignUpRequestUtils {
     private static final String MALE = "M";
@@ -14,23 +14,23 @@ public class SignUpRequestUtils {
 
     public static SignUpRequest createRequest() {
         return SignUpRequest.builder()
-                .name(SEO_JI_WON.getName())
-                .nickname(SEO_JI_WON.getNickname())
-                .email(SEO_JI_WON.getEmail())
-                .profileUrl(SEO_JI_WON.getProfileUrl())
-                .birth(SEO_JI_WON.getBirth())
+                .name(JIWON.getName())
+                .nickname(JIWON.getNickname())
+                .email(JIWON.getEmail())
+                .profileUrl(JIWON.getProfileUrl())
+                .birth(JIWON.getBirth())
                 .phone(generateRandomPhoneNumber())
                 .gender(MALE)
-                .province(SEO_JI_WON.getProvince())
-                .city(SEO_JI_WON.getCity())
+                .province(JIWON.getProvince())
+                .city(JIWON.getCity())
                 .categories(CATEGORIES)
                 .build();
     }
 
     private static String generateRandomPhoneNumber() {
-        String result = "010";
-        result += String.valueOf((int) (Math.random() * 9000 + 1000));
-        result += String.valueOf((int) (Math.random() * 9000 + 1000));
-        return result;
+        String first = "010";
+        String second = String.valueOf((int) (Math.random() * 9000 + 1000));
+        String third = String.valueOf((int) (Math.random() * 9000 + 1000));
+        return String.join("-", first, second, third);
     }
 }

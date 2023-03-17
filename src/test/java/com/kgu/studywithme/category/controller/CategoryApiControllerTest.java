@@ -45,9 +45,11 @@ class CategoryApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result").exists())
-                    .andExpect(jsonPath("$.result.size()").value(response.size()))
+                    .andExpectAll(
+                            status().isOk(),
+                            jsonPath("$.result").exists(),
+                            jsonPath("$.result.size()").value(response.size())
+                    )
                     .andDo(
                             document(
                                     "CategoryApi/FindAll/Success",
