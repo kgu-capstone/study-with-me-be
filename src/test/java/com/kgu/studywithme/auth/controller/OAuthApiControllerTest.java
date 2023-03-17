@@ -244,8 +244,11 @@ class OAuthApiControllerTest extends ControllerTest {
         @Test
         @DisplayName("로그아웃에 성공한다")
         void success() throws Exception {
-            // when
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+
+            // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
