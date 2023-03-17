@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    SEO_JI_WON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
+    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
     ;
 
     private final String name;
@@ -35,9 +35,9 @@ public enum MemberFixture {
     }
 
     private static String generateRandomPhoneNumber() {
-        String result = "010";
-        result += String.valueOf((int) (Math.random() * 9000 + 1000));
-        result += String.valueOf((int) (Math.random() * 9000 + 1000));
-        return result;
+        String first = "010";
+        String second = String.valueOf((int) (Math.random() * 9000 + 1000));
+        String third = String.valueOf((int) (Math.random() * 9000 + 1000));
+        return String.join("-", first, second, third);
     }
 }

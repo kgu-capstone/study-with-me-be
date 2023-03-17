@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -35,11 +35,10 @@ class MemberSignUpServiceTest extends ServiceTest {
         @DisplayName("이미 사용하고 있는 이메일이면 회원가입에 실패한다")
         void duplicateEmail() {
             // given
-            final Member member = SEO_JI_WON.toMember();
-            memberRepository.save(member);
+            final Member member = memberRepository.save(JIWON.toMember());
 
             // when - then
-            final Member newMember = createMember(
+            final Member newMember = createDuplicateMember(
                     member.getEmailValue(),
                     "diff" + member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
@@ -53,11 +52,10 @@ class MemberSignUpServiceTest extends ServiceTest {
         @DisplayName("이미 사용하고 있는 닉네임이면 회원가입에 실패한다")
         void duplicateNickname() {
             // given
-            final Member member = SEO_JI_WON.toMember();
-            memberRepository.save(member);
+            final Member member = memberRepository.save(JIWON.toMember());
 
             // when - then
-            final Member newMember = createMember(
+            final Member newMember = createDuplicateMember(
                     "diff" + member.getEmailValue(),
                     member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
@@ -71,11 +69,10 @@ class MemberSignUpServiceTest extends ServiceTest {
         @DisplayName("이미 사용하고 있는 전화번호면 회원가입에 실패한다")
         void duplicatePhone() {
             // given
-            final Member member = SEO_JI_WON.toMember();
-            memberRepository.save(member);
+            final Member member = memberRepository.save(JIWON.toMember());
 
             // when - then
-            final Member newMember = createMember(
+            final Member newMember = createDuplicateMember(
                     "diff" + member.getEmailValue(),
                     "diff" + member.getNicknameValue(),
                     member.getPhone()
@@ -89,7 +86,7 @@ class MemberSignUpServiceTest extends ServiceTest {
         @DisplayName("모든 중복 검사를 통과한다면 회원가입에 성공한다")
         void success() {
             // given
-            final Member member = SEO_JI_WON.toMember();
+            final Member member = JIWON.toMember();
 
             // when
             Long savedMemberId = memberSignupService.signUp(member, CATEGORIES);
@@ -103,16 +100,16 @@ class MemberSignUpServiceTest extends ServiceTest {
         }
     }
 
-    private Member createMember(String email, String nickname, String phone) {
+    private Member createDuplicateMember(String email, String nickname, String phone) {
         return Member.builder()
-                .name(SEO_JI_WON.getName())
+                .name(JIWON.getName())
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .profileUrl(SEO_JI_WON.getProfileUrl())
-                .birth(SEO_JI_WON.getBirth())
+                .profileUrl(JIWON.getProfileUrl())
+                .birth(JIWON.getBirth())
                 .phone(phone)
-                .gender(SEO_JI_WON.getGender())
-                .region(Region.of(SEO_JI_WON.getProvince(), SEO_JI_WON.getCity()))
+                .gender(JIWON.getGender())
+                .region(Region.of(JIWON.getProvince(), JIWON.getCity()))
                 .build();
     }
 }

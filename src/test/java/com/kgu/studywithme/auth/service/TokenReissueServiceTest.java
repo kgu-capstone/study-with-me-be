@@ -3,9 +3,9 @@ package com.kgu.studywithme.auth.service;
 import com.kgu.studywithme.auth.domain.Token;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
-import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,14 @@ class TokenReissueServiceTest extends ServiceTest {
     @Autowired
     private TokenReissueService tokenReissueService;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private Long memberId;
+    private String refreshToken;
+
+    @BeforeEach
+    void setUp() {
+        memberId = 1L;
+        refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+    }
 
     @Nested
     @DisplayName("토큰 재발급을 진행할 때 ")
@@ -29,10 +35,6 @@ class TokenReissueServiceTest extends ServiceTest {
         @Test
         @DisplayName("RefreshToken이 유효하지 않으면 예외가 발생한다")
         void throwExceptionByInvalidRefreshToken() {
-            // given
-            final Long memberId = 1L;
-            final String refreshToken = jwtTokenProvider.createRefreshToken(memberId); // DB에 저장하지 않음에 따라 유효하지 않은 토큰
-
             // when - then
             assertThatThrownBy(() -> tokenReissueService.reissueTokens(memberId, refreshToken))
                     .isInstanceOf(StudyWithMeException.class)
@@ -43,8 +45,6 @@ class TokenReissueServiceTest extends ServiceTest {
         @DisplayName("유효성이 확인된 RefreshToken을 통해서 AccessToken과 RefreshToken을 재발급받는다")
         void reissueSuccess() {
             // given
-            final Long memberId = 1L;
-            final String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
             tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
 
             // when

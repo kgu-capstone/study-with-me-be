@@ -10,7 +10,7 @@ import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
 import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -20,17 +20,17 @@ class MemberTest {
     @Test
     @DisplayName("멤버를 생성한다")
     void createMember() {
-        Member member = SEO_JI_WON.toMember();
+        Member member = JIWON.toMember();
 
         assertAll(
-                () -> assertThat(member.getName()).isEqualTo(SEO_JI_WON.getName()),
-                () -> assertThat(member.getNicknameValue()).isEqualTo(SEO_JI_WON.getNickname()),
-                () -> assertThat(member.getEmailValue()).isEqualTo(SEO_JI_WON.getEmail()),
-                () -> assertThat(member.getProfileUrl()).isEqualTo(SEO_JI_WON.getProfileUrl()),
-                () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
-                () -> assertThat(member.getGender()).isEqualTo(SEO_JI_WON.getGender()),
-                () -> assertThat(member.getRegionProvince()).isEqualTo(SEO_JI_WON.getProvince()),
-                () -> assertThat(member.getRegionCity()).isEqualTo(SEO_JI_WON.getCity())
+                () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
+                () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
+                () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
+                () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
+                () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
+                () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
+                () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
+                () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity())
         );
     }
 
@@ -41,19 +41,19 @@ class MemberTest {
         final Set<Category> interests = Set.of(PROGRAMMING, INTERVIEW);
 
         // when
-        Member member = SEO_JI_WON.toMember();
+        Member member = JIWON.toMember();
         member.addCategoriesToInterests(interests);
 
         // then
         assertAll(
-                () -> assertThat(member.getName()).isEqualTo(SEO_JI_WON.getName()),
-                () -> assertThat(member.getNicknameValue()).isEqualTo(SEO_JI_WON.getNickname()),
-                () -> assertThat(member.getEmailValue()).isEqualTo(SEO_JI_WON.getEmail()),
-                () -> assertThat(member.getProfileUrl()).isEqualTo(SEO_JI_WON.getProfileUrl()),
-                () -> assertThat(member.getBirth()).isEqualTo(SEO_JI_WON.getBirth()),
-                () -> assertThat(member.getGender()).isEqualTo(SEO_JI_WON.getGender()),
-                () -> assertThat(member.getRegionProvince()).isEqualTo(SEO_JI_WON.getProvince()),
-                () -> assertThat(member.getRegionCity()).isEqualTo(SEO_JI_WON.getCity()),
+                () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
+                () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
+                () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
+                () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
+                () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
+                () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
+                () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
+                () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
                 () -> assertThat(member.getInterests()).containsAll(interests)
         );
     }
@@ -62,9 +62,9 @@ class MemberTest {
     @DisplayName("닉네임을 변경한다")
     void changeNickname() {
         // given
-        Member member = SEO_JI_WON.toMember();
-        final String same = SEO_JI_WON.getNickname();
-        final String diff = SEO_JI_WON.getNickname() + "diff";
+        Member member = JIWON.toMember();
+        final String same = JIWON.getNickname();
+        final String diff = JIWON.getNickname() + "diff";
 
         // when
         assertThatThrownBy(() -> member.changeNickname(same))

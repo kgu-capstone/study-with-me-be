@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.*;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -99,8 +99,8 @@ class OAuthApiControllerTest extends ControllerTest {
         void throwExceptionIfGoogleAuthUserNotInDB() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(SEO_JI_WON.getName())
-                    .email(SEO_JI_WON.getEmail())
+                    .name(JIWON.getName())
+                    .email(JIWON.getEmail())
                     .picture("picture.png")
                     .build();
             given(oAuthService.login(authorizationCode, redirectUrl)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
@@ -147,8 +147,8 @@ class OAuthApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(SEO_JI_WON.getName())
-                    .email(SEO_JI_WON.getEmail())
+                    .name(JIWON.getName())
+                    .email(JIWON.getEmail())
                     .picture("picture.png")
                     .build();
 
@@ -171,9 +171,9 @@ class OAuthApiControllerTest extends ControllerTest {
                     .andExpectAll(
                             status().isOk(),
                             jsonPath("$.userInfo.name").exists(),
-                            jsonPath("$.userInfo.name").value(SEO_JI_WON.getName()),
+                            jsonPath("$.userInfo.name").value(JIWON.getName()),
                             jsonPath("$.userInfo.email").exists(),
-                            jsonPath("$.userInfo.email").value(SEO_JI_WON.getEmail()),
+                            jsonPath("$.userInfo.email").value(JIWON.getEmail()),
                             jsonPath("$.userInfo.picture").exists(),
                             jsonPath("$.userInfo.picture").value("picture.png"),
                             jsonPath("$.accessToken").exists(),
