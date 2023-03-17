@@ -4,7 +4,6 @@ import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.*;
-import com.kgu.studywithme.member.exception.MemberRequestValidationMessage;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,35 +19,35 @@ import static com.kgu.studywithme.member.domain.Gender.FEMALE;
 import static com.kgu.studywithme.member.domain.Gender.MALE;
 
 public record SignUpRequest(
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_NAME)
+        @NotBlank(message = "이름은 필수입니다.")
         String name,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_NICKNAME)
+        @NotBlank(message = "닉네임은 필수입니다.")
         String nickname,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_EMAIL)
+        @NotBlank(message = "이메일은 필수입니다.")
         String email,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_PROFILE_URL)
+        @NotBlank(message = "프로필 URL은 필수입니다.")
         String profileUrl,
 
-        @NotNull(message = MemberRequestValidationMessage.SignUp.MEMBER_BIRTH)
+        @NotNull(message = "생년월일은 필수입니다.")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate birth,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_PHONE)
+        @NotBlank(message = "전화번호는 필수입니다.")
         String phone,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_GENDER)
+        @NotBlank(message = "성별은 필수입니다.")
         String gender,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_REGION)
+        @NotBlank(message = "거주지는 필수입니다.")
         String province,
 
-        @NotBlank(message = MemberRequestValidationMessage.SignUp.MEMBER_REGION)
+        @NotBlank(message = "거주지는 필수입니다.")
         String city,
 
-        @NotEmpty(message = MemberRequestValidationMessage.SignUp.MEMBER_INTERESTS)
+        @NotEmpty(message = "관심사는 하나 이상 등록해야 합니다.")
         List<Long> categories
 ) {
     @Builder
