@@ -3,7 +3,7 @@ package com.kgu.studywithme.auth.service;
 import com.kgu.studywithme.auth.infra.oauth.OAuthConnector;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleTokenResponse;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
-import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
+import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import com.kgu.studywithme.member.domain.Email;
@@ -22,7 +22,7 @@ public class OAuthService {
     private final OAuthConnector oAuthConnector;
 
     @Transactional
-    public TokenResponse login(String code, String redirectUrl) {
+    public LoginResponse login(String code, String redirectUrl) {
         GoogleTokenResponse tokenResponse = (GoogleTokenResponse) oAuthConnector.getToken(code, redirectUrl);
         GoogleUserResponse userInfo = (GoogleUserResponse) oAuthConnector.getUserInfo(tokenResponse.accessToken());
 
@@ -31,7 +31,8 @@ public class OAuthService {
         String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
         tokenManager.synchronizeRefreshToken(memberId, refreshToken);
-        return TokenResponse.builder()
+        return LoginResponse.builder()
+                .userInfo(userInfo)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
