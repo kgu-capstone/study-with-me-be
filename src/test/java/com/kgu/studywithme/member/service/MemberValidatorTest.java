@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -24,7 +24,7 @@ class MemberValidatorTest extends ServiceTest {
 
     @BeforeEach
     void setUp() {
-        member = SEO_JI_WON.toMember();
+        member = JIWON.toMember();
         memberRepository.save(member);
     }
 

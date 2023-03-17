@@ -6,7 +6,6 @@ import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleTokenResponse;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
-import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import com.kgu.studywithme.member.domain.Member;
@@ -21,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.*;
-import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,9 +36,6 @@ class OAuthServiceTest extends ServiceTest {
 
     @MockBean
     private OAuthConnector oAuthConnector;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     private static String authorizationCode;
 
@@ -60,8 +56,8 @@ class OAuthServiceTest extends ServiceTest {
                 .expiresIn(3600)
                 .build();
         GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                .name(SEO_JI_WON.getName())
-                .email(SEO_JI_WON.getEmail())
+                .name(JIWON.getName())
+                .email(JIWON.getEmail())
                 .picture("picture.png")
                 .build();
 
@@ -79,8 +75,7 @@ class OAuthServiceTest extends ServiceTest {
     @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다")
     void success() {
         // given
-        Member member = SEO_JI_WON.toMember();
-        memberRepository.save(member);
+        final Member member = memberRepository.save(JIWON.toMember());
 
         GoogleTokenResponse googleTokenResponse = GoogleTokenResponse.builder()
                 .tokenType(BEARER_TOKEN)
@@ -90,8 +85,8 @@ class OAuthServiceTest extends ServiceTest {
                 .expiresIn(3600)
                 .build();
         GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                .name(SEO_JI_WON.getName())
-                .email(SEO_JI_WON.getEmail())
+                .name(JIWON.getName())
+                .email(JIWON.getEmail())
                 .picture("picture.png")
                 .build();
 
@@ -120,8 +115,8 @@ class OAuthServiceTest extends ServiceTest {
     @DisplayName("로그아웃을 진행하면 사용자에게 발급되었던 RefreshToken이 DB에서 삭제된다")
     void logout() {
         // given
-        Member member = SEO_JI_WON.toMember();
-        memberRepository.save(member);
+        final Member member = memberRepository.save(JIWON.toMember());
+        tokenRepository.save(Token.issueRefreshToken(member.getId(), REFRESH_TOKEN));
 
         // when
         oAuthService.logout(member.getId());
