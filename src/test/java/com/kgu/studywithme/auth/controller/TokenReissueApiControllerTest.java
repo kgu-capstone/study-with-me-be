@@ -66,7 +66,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
         @DisplayName("만료된 RefreshToken으로 인해 토큰 재발급에 실패한다")
         void expiredRefreshToken() throws Exception {
             // given
-            given(jwtTokenProvider.getId(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_EXPIRED_TOKEN));
+            given(jwtTokenProvider.isTokenValid(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_EXPIRED_TOKEN));
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -106,7 +106,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
         @DisplayName("이미 사용했거나 조작된 RefreshToken이면 토큰 재발급에 실패한다")
         void invalidRefreshToken() throws Exception {
             // given
-            given(jwtTokenProvider.getId(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_INVALID_TOKEN));
+            given(jwtTokenProvider.isTokenValid(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_INVALID_TOKEN));
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -146,6 +146,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
         @DisplayName("RefreshToken으로 AccessToken과 RefreshToken을 재발급받는다")
         void reissueSuccess() throws Exception {
             // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
             TokenResponse response = TokenResponse.builder()
