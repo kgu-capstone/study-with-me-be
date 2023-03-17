@@ -20,7 +20,7 @@ public class MemberApiController {
 
     @PostMapping
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        Long savedMemberId = memberSignupService.signUp(request.toEntity(), request.toInterestCategories());
+        Long savedMemberId = memberSignupService.signUp(request.toEntity());
         return ResponseEntity
                 .created(UriComponentsBuilder.fromPath("/api/members/{id}").build(savedMemberId))
                 .build();

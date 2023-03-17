@@ -62,12 +62,13 @@ public record SignUpRequest(
                 .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(phone)
-                .gender(convertStringToGender(gender))
+                .gender(convertStringToGender())
                 .region(Region.of(province, city))
+                .interests(convertStringToCategory())
                 .build();
     }
 
-    private Gender convertStringToGender(String gender) {
+    private Gender convertStringToGender() {
         if ("M".equalsIgnoreCase(gender)) {
             return MALE;
         } else if ("F".equalsIgnoreCase(gender)) {
@@ -77,7 +78,7 @@ public record SignUpRequest(
         }
     }
 
-    public Set<Category> toInterestCategories() {
+    private Set<Category> convertStringToCategory() {
         return categories.stream()
                 .map(Category::from)
                 .collect(Collectors.toSet());

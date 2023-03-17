@@ -1,6 +1,5 @@
 package com.kgu.studywithme.member.service;
 
-import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Email;
@@ -13,9 +12,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Set;
-
-import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class MemberSignUpServiceTest extends ServiceTest {
     @Autowired
     private MemberSignUpService memberSignupService;
-
-    private static final Set<Category> CATEGORIES = Set.of(PROGRAMMING, INTERVIEW, LANGUAGE);
 
     @Nested
     @DisplayName("회원가입을 진행할 때 ")
@@ -43,7 +37,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                     "diff" + member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember, CATEGORIES))
+            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_EMAIL.getMessage());
         }
@@ -60,7 +54,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                     member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember, CATEGORIES))
+            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_NICKNAME.getMessage());
         }
@@ -77,7 +71,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                     "diff" + member.getNicknameValue(),
                     member.getPhone()
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember, CATEGORIES))
+            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_PHONE.getMessage());
         }
@@ -89,13 +83,13 @@ class MemberSignUpServiceTest extends ServiceTest {
             final Member member = JIWON.toMember();
 
             // when
-            Long savedMemberId = memberSignupService.signUp(member, CATEGORIES);
+            Long savedMemberId = memberSignupService.signUp(member);
 
             // then
             Member findMember = memberRepository.findById(member.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findMember.getId()).isEqualTo(savedMemberId),
-                    () -> assertThat(findMember.getInterests()).contains(PROGRAMMING, INTERVIEW, LANGUAGE)
+                    () -> assertThat(findMember.getInterests()).containsAll(JIWON.getInterests())
             );
         }
     }
@@ -110,6 +104,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                 .phone(phone)
                 .gender(JIWON.getGender())
                 .region(Region.of(JIWON.getProvince(), JIWON.getCity()))
+                .interests(JIWON.getInterests())
                 .build();
     }
 }

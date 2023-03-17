@@ -1,16 +1,23 @@
 package com.kgu.studywithme.fixture;
 
+import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.kgu.studywithme.category.domain.Category.*;
 
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
-    GHOST("익명", "익명", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
+    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
+            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    GHOST("익명", "익명", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
+            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ;
 
     private final String name;
@@ -21,6 +28,7 @@ public enum MemberFixture {
     private final Gender gender;
     private final String province;
     private final String city;
+    private final Set<Category> interests;
 
     public Member toMember() {
         return Member.builder()
@@ -32,6 +40,7 @@ public enum MemberFixture {
                 .phone(generateRandomPhoneNumber())
                 .gender(gender)
                 .region(Region.of(province, city))
+                .interests(interests)
                 .build();
     }
 

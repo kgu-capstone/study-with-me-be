@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
-import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
+import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,32 +30,23 @@ class MemberTest {
                 () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
-                () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity())
+                () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
+                () -> assertThat(member.getInterests()).isEqualTo(JIWON.getInterests())
         );
     }
 
     @Test
-    @DisplayName("관심사와 함께 Member를 생성한다")
-    void createMemberWithInterests() {
+    @DisplayName("Member의 관심사를 수정한다")
+    void updateInterests() {
         // given
-        final Set<Category> interests = Set.of(PROGRAMMING, INTERVIEW);
+        Member member = JIWON.toMember();
 
         // when
-        Member member = JIWON.toMember();
-        member.addCategoriesToInterests(interests);
+        final Set<Category> interests = Set.of(APTITUDE_NCS, CERTIFICATION, ETC);
+        member.updateInterests(interests);
 
         // then
-        assertAll(
-                () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
-                () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
-                () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
-                () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
-                () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
-                () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
-                () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
-                () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
-                () -> assertThat(member.getInterests()).containsAll(interests)
-        );
+        assertThat(member.getInterests()).isEqualTo(interests);
     }
 
     @Test

@@ -9,7 +9,6 @@ import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import com.kgu.studywithme.member.domain.Member;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -123,6 +122,6 @@ class OAuthServiceTest extends ServiceTest {
 
         // then
         Optional<Token> findToken = tokenRepository.findByMemberId(member.getId());
-        Assertions.assertThat(findToken).isEmpty();
+        assertThat(findToken).isEmpty();
     }
 }

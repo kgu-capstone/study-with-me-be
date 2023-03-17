@@ -1,13 +1,10 @@
 package com.kgu.studywithme.member.service;
 
-import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,9 +14,8 @@ public class MemberSignUpService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long signUp(Member member, Set<Category> interestCategories) {
+    public Long signUp(Member member) {
         validateUniqueFields(member);
-        member.addCategoriesToInterests(interestCategories);
         return memberRepository.save(member).getId();
     }
 
