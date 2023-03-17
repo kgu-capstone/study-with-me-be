@@ -59,7 +59,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
                                                     .attributes(constraint("@gmail.com")),
-                                            fieldWithPath("password").description("비밀번호"),
+                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL"),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
@@ -105,7 +105,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
                                                     .attributes(constraint("@gmail.com")),
-                                            fieldWithPath("password").description("비밀번호"),
+                                            fieldWithPath("profileUrl").description("구글 프로필 이미지 URL"),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")

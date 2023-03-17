@@ -3,7 +3,10 @@ package com.kgu.studywithme.member.service;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.domain.*;
+import com.kgu.studywithme.member.domain.Email;
+import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.Nickname;
+import com.kgu.studywithme.member.domain.Region;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
-import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -106,7 +108,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                 .name(SEO_JI_WON.getName())
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .password(Password.encrypt("abcABC123!@#", ENCODER))
+                .profileUrl(SEO_JI_WON.getProfileUrl())
                 .birth(SEO_JI_WON.getBirth())
                 .phone(phone)
                 .gender(SEO_JI_WON.getGender())

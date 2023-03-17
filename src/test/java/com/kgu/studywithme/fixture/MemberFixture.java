@@ -6,18 +6,16 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
-import static com.kgu.studywithme.common.utils.PasswordEncoderUtils.ENCODER;
-
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    SEO_JI_WON("서지원", "서지원", "sjiwon4491@gmail.com", "abcABC123!@#", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
+    SEO_JI_WON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시"),
     ;
 
     private final String name;
     private final String nickname;
     private final String email;
-    private final String password;
+    private final String profileUrl;
     private final LocalDate birth;
     private final Gender gender;
     private final String province;
@@ -28,7 +26,7 @@ public enum MemberFixture {
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .password(Password.encrypt(password, ENCODER))
+                .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(generateRandomPhoneNumber())
                 .gender(gender)
