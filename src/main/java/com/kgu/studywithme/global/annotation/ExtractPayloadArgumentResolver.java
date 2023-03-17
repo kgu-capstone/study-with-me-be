@@ -27,11 +27,6 @@ public class ExtractPayloadArgumentResolver implements HandlerMethodArgumentReso
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = AuthorizationExtractor.extractToken(request)
                 .orElseThrow(() -> StudyWithMeException.type(AuthErrorCode.INVALID_PERMISSION));
-        validateTokenIntegrity(token);
         return jwtTokenProvider.getId(token);
-    }
-
-    private void validateTokenIntegrity(String token) {
-        jwtTokenProvider.isTokenValid(token);
     }
 }
