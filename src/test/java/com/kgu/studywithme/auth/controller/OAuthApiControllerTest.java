@@ -2,6 +2,7 @@ package com.kgu.studywithme.auth.controller;
 
 import com.kgu.studywithme.auth.controller.dto.request.OAuthLoginRequest;
 import com.kgu.studywithme.auth.controller.utils.OAuthLoginRequestUtils;
+import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
@@ -19,10 +20,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
-import static com.kgu.studywithme.common.utils.TokenUtils.REFRESH_TOKEN;
+import static com.kgu.studywithme.common.utils.TokenUtils.*;
 import static com.kgu.studywithme.fixture.MemberFixture.SEO_JI_WON;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -171,6 +175,68 @@ class OAuthApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("accessToken").description("발급된 Access Token (Expire - 2시간)"),
                                             fieldWithPath("refreshToken").description("발급된 Refresh Token (Expire - 2주)")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("로그아웃 API 테스트 [POST /api/oauth/logout]")
+    class logout {
+        private static final String BASE_URL = "/api/oauth/logout";
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 로그아웃에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .post(BASE_URL);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.status").exists())
+                    .andExpect(jsonPath("$.status").value(expectedError.getStatus().value()))
+                    .andExpect(jsonPath("$.errorCode").exists())
+                    .andExpect(jsonPath("$.errorCode").value(expectedError.getErrorCode()))
+                    .andExpect(jsonPath("$.message").exists())
+                    .andExpect(jsonPath("$.message").value(expectedError.getMessage()))
+                    .andDo(
+                            document(
+                                    "OAuthApi/Logout/Failure",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("로그아웃에 성공한다")
+        void success() throws Exception {
+            // when
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .post(BASE_URL)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isNoContent())
+                    .andExpect(jsonPath("$").doesNotExist())
+                    .andDo(
+                            document(
+                                    "OAuthApi/Logout/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
                                     )
                             )
                     );

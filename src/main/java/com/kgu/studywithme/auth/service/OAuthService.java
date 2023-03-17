@@ -42,4 +42,9 @@ public class OAuthService {
                 .orElseThrow(() -> new StudyWithMeOAuthException(userInfo))
                 .getId();
     }
+
+    @Transactional
+    public void logout(Long memberId) {
+        tokenManager.deleteRefreshTokenByMemberId(memberId);
+    }
 }

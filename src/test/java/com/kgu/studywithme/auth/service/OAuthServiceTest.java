@@ -10,12 +10,14 @@ import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import com.kgu.studywithme.member.domain.Member;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.*;
@@ -112,5 +114,20 @@ class OAuthServiceTest extends ServiceTest {
                     assertThat(findToken.getRefreshToken()).isEqualTo(tokenResponse.refreshToken());
                 }
         );
+    }
+
+    @Test
+    @DisplayName("로그아웃을 진행하면 사용자에게 발급되었던 RefreshToken이 DB에서 삭제된다")
+    void logout() {
+        // given
+        Member member = SEO_JI_WON.toMember();
+        memberRepository.save(member);
+
+        // when
+        oAuthService.logout(member.getId());
+
+        // then
+        Optional<Token> findToken = tokenRepository.findByMemberId(member.getId());
+        Assertions.assertThat(findToken).isEmpty();
     }
 }

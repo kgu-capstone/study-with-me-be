@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -32,8 +31,8 @@ public class Member {
     @Embedded
     private Email email;
 
-    @Embedded
-    private Password password;
+    @Column(name = "profile_url", nullable = false)
+    private String profileUrl;
 
     @Column(name = "birth", nullable = false, updatable = false)
     private LocalDate birth;
@@ -59,19 +58,19 @@ public class Member {
     private Set<Category> interests = new HashSet<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
+    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth, String phone, Gender gender, Region region) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
-        this.password = password;
+        this.profileUrl = profileUrl;
         this.birth = birth;
         this.phone = phone;
         this.gender = gender;
         this.region = region;
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, Password password, LocalDate birth, String phone, Gender gender, Region region) {
-        return new Member(name, nickname, email, password, birth, phone, gender, region);
+    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth, String phone, Gender gender, Region region) {
+        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region);
     }
 
     public void addCategoriesToInterests(Set<Category> categories) {
@@ -85,20 +84,9 @@ public class Member {
         this.nickname = this.nickname.update(changeNickname);
     }
 
-    public void changePassword(String changePassword, PasswordEncoder encoder) {
-        if (this.password.isSamePassword(changePassword, encoder)) {
-            throw StudyWithMeException.type(MemberErrorCode.PASSWORD_SAME_AS_BEFORE);
-        }
-        this.password = this.password.update(changePassword, encoder);
-    }
-
     // Add Getter
     public String getNicknameValue() {
         return nickname.getValue();
-    }
-
-    public String getPasswordValue() {
-        return password.getValue();
     }
 
     public String getEmailValue() {

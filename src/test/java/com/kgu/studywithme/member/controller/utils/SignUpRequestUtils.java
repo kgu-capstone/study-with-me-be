@@ -17,7 +17,7 @@ public class SignUpRequestUtils {
                 .name(SEO_JI_WON.getName())
                 .nickname(SEO_JI_WON.getNickname())
                 .email(SEO_JI_WON.getEmail())
-                .password(SEO_JI_WON.getPassword())
+                .profileUrl(SEO_JI_WON.getProfileUrl())
                 .birth(SEO_JI_WON.getBirth())
                 .phone(generateRandomPhoneNumber())
                 .gender(MALE)

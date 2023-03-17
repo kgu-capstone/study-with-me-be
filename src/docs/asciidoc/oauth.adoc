@@ -33,3 +33,19 @@ include::{snippets}/OAuthApi/Login/Success/request-fields.adoc[]
 HTTP Response
 include::{snippets}/OAuthApi/Login/Success/response-body.adoc[]
 include::{snippets}/OAuthApi/Login/Success/response-fields.adoc[]
+
+== 로그아웃
+=== 1. Authorization Header에 AccessToken이 없으면 로그아웃에 실패한다
+HTTP Request
+include::{snippets}/OAuthApi/Logout/Failure/http-request.adoc[]
+
+HTTP Response
+include::{snippets}/OAuthApi/Logout/Failure/response-body.adoc[]
+
+=== 2. 로그아웃에 성공한다
+HTTP Request
+include::{snippets}/OAuthApi/Logout/Success/http-request.adoc[]
+include::{snippets}/OAuthApi/Logout/Success/request-headers.adoc[]
+
+HTTP Response
+include::{snippets}/OAuthApi/Logout/Success/http-response.adoc[]

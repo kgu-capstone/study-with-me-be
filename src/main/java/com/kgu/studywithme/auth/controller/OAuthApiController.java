@@ -4,6 +4,7 @@ import com.kgu.studywithme.auth.controller.dto.request.OAuthLoginRequest;
 import com.kgu.studywithme.auth.infra.oauth.OAuthUri;
 import com.kgu.studywithme.auth.service.OAuthService;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
+import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.global.dto.SimpleResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,11 @@ public class OAuthApiController {
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid OAuthLoginRequest request) {
         TokenResponse response = oAuthService.login(request.code(), request.redirectUrl());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@ExtractPayload Long memberId) {
+        oAuthService.logout(memberId);
+        return ResponseEntity.noContent().build();
     }
 }

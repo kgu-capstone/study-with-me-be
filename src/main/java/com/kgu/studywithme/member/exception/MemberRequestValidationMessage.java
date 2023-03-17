@@ -5,7 +5,7 @@ public class MemberRequestValidationMessage {
         public static final String MEMBER_NAME = "이름은 필수입니다.";
         public static final String MEMBER_NICKNAME = "닉네임은 필수입니다.";
         public static final String MEMBER_EMAIL = "이메일은 필수입니다.";
-        public static final String MEMBER_PASSWORD = "비밀번호는 필수입니다.";
+        public static final String MEMBER_PROFILE_URL = "프로필 URL은 필수입니다.";
         public static final String MEMBER_BIRTH = "생년월일은 필수입니다.";
         public static final String MEMBER_PHONE = "전화번호는 필수입니다.";
         public static final String MEMBER_GENDER = "성별은 필수입니다.";

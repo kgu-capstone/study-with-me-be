@@ -2,11 +2,9 @@ package com.kgu.studywithme.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kgu.studywithme.auth.controller.AuthApiController;
 import com.kgu.studywithme.auth.controller.OAuthApiController;
 import com.kgu.studywithme.auth.controller.TokenReissueApiController;
 import com.kgu.studywithme.auth.infra.oauth.OAuthUri;
-import com.kgu.studywithme.auth.service.AuthService;
 import com.kgu.studywithme.auth.service.OAuthService;
 import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
@@ -38,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @WebMvcTest({
         TokenReissueApiController.class,
         MemberApiController.class,
-        AuthApiController.class,
         OAuthApiController.class,
         CategoryApiController.class
 })
@@ -59,9 +56,6 @@ public abstract class ControllerTest {
 
     @MockBean
     protected MemberSignUpService memberSignupService;
-
-    @MockBean
-    protected AuthService authService;
 
     @MockBean
     protected OAuthUri oAuthUri;
