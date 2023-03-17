@@ -2,8 +2,6 @@ package com.kgu.studywithme.member.domain;
 
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.BaseEntity;
-import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.exception.MemberErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,9 +75,6 @@ public class Member extends BaseEntity {
     }
 
     public void changeNickname(String changeNickname) {
-        if (this.nickname.isSameNickname(changeNickname)) {
-            throw StudyWithMeException.type(MemberErrorCode.NICKNAME_SAME_AS_BEFORE);
-        }
         this.nickname = this.nickname.update(changeNickname);
     }
 

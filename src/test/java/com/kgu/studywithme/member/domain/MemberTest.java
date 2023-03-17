@@ -1,8 +1,6 @@
 package com.kgu.studywithme.member.domain;
 
 import com.kgu.studywithme.category.domain.Category;
-import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +10,6 @@ import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member 도메인 테스트")
@@ -54,18 +51,13 @@ class MemberTest {
     void changeNickname() {
         // given
         Member member = JIWON.toMember();
-        final String same = JIWON.getNickname();
-        final String diff = JIWON.getNickname() + "diff";
 
         // when
-        assertThatThrownBy(() -> member.changeNickname(same))
-                .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(MemberErrorCode.NICKNAME_SAME_AS_BEFORE.getMessage());
-
-        member.changeNickname(diff);
+        final String change = JIWON.getNickname() + "diff";
+        member.changeNickname(change);
 
         // then
-        assertThat(member.getNicknameValue()).isEqualTo(diff);
+        assertThat(member.getNicknameValue()).isEqualTo(change);
     }
 
     @Test
