@@ -32,7 +32,7 @@ public class Email {
 
     private static void validateEmailPattern(String value) {
         if (isNotValidPattern(value)) {
-            throw StudyWithMeException.type(MemberErrorCode.INVALID_EMAIL_PATTERN);
+            throw StudyWithMeException.type(MemberErrorCode.INVALID_EMAIL);
         }
     }
 

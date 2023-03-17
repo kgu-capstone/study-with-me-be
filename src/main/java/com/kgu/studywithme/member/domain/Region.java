@@ -32,7 +32,7 @@ public class Region {
 
     private static void validateProvinceAndCityIsNotEmpty(String province, String city) {
         if (isEmptyText(province) || isEmptyText(city)) {
-            throw StudyWithMeException.type(MemberErrorCode.INVALID_REGION);
+            throw StudyWithMeException.type(MemberErrorCode.REGION_IS_BLANK);
         }
     }
 

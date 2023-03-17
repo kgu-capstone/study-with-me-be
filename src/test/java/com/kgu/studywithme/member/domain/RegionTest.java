@@ -40,7 +40,7 @@ class RegionTest {
     void constructFailure(String province, String city) {
         assertThatThrownBy(() -> Region.of(province, city))
                 .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(MemberErrorCode.INVALID_REGION.getMessage());
+                .hasMessage(MemberErrorCode.REGION_IS_BLANK.getMessage());
     }
 
     private static Stream<Arguments> invalidRegion() {

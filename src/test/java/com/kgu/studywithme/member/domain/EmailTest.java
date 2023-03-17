@@ -27,7 +27,7 @@ class EmailTest {
     void constructFailure(String value) {
         assertThatThrownBy(() -> Email.from(value))
                 .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(MemberErrorCode.INVALID_EMAIL_PATTERN.getMessage());
+                .hasMessage(MemberErrorCode.INVALID_EMAIL.getMessage());
     }
 
     @Test
