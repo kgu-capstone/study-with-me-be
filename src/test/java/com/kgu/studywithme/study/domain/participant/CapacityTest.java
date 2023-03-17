@@ -32,7 +32,7 @@ class CapacityTest {
                 .hasMessage(StudyErrorCode.CAPACITY_OUT_OF_RANGE.getMessage());
     }
 
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{index}: {0} - {1}")
     @MethodSource("isEqualOrOver")
     @DisplayName("생성한 Capacity에 대해서 비교값이 같거나 큰지 판별한다")
     void isEqualOrOver(int compareValue, boolean expected) {

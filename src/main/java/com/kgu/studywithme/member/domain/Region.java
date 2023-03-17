@@ -26,11 +26,11 @@ public class Region {
     }
 
     public static Region of(String province, String city) {
-        validateInputRegion(province, city);
+        validateProvinceAndCityIsNotEmpty(province, city);
         return new Region(province, city);
     }
 
-    private static void validateInputRegion(String province, String city) {
+    private static void validateProvinceAndCityIsNotEmpty(String province, String city) {
         if (isEmptyText(province) || isEmptyText(city)) {
             throw StudyWithMeException.type(MemberErrorCode.INVALID_REGION);
         }

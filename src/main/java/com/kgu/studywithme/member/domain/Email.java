@@ -39,4 +39,8 @@ public class Email {
     private static boolean isNotValidPattern(String email) {
         return !EMAIL_MATCHER.matcher(email).matches();
     }
+
+    public boolean isSameEmail(Email email) {
+        return this.value.equals(email.getValue());
+    }
 }

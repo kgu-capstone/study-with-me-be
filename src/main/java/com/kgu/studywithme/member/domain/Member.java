@@ -85,6 +85,10 @@ public class Member extends BaseEntity {
         this.nickname = this.nickname.update(changeNickname);
     }
 
+    public boolean isSameMember(Member member) {
+        return this.email.isSameEmail(member.getEmail());
+    }
+
     // Add Getter
     public String getNicknameValue() {
         return nickname.getValue();
