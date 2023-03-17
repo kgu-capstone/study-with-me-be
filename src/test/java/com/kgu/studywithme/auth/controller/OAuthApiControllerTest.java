@@ -5,7 +5,7 @@ import com.kgu.studywithme.auth.controller.utils.OAuthLoginRequestUtils;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
-import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
+import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,7 +142,14 @@ class OAuthApiControllerTest extends ControllerTest {
         @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다")
         void success() throws Exception {
             // given
-            TokenResponse response = TokenResponse.builder()
+            GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
+                    .name(SEO_JI_WON.getName())
+                    .email(SEO_JI_WON.getEmail())
+                    .picture("picture.png")
+                    .build();
+
+            LoginResponse response = LoginResponse.builder()
+                    .userInfo(googleUserResponse)
                     .accessToken(ACCESS_TOKEN)
                     .refreshToken(REFRESH_TOKEN)
                     .build();
@@ -158,6 +165,12 @@ class OAuthApiControllerTest extends ControllerTest {
             // then
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.userInfo.name").exists())
+                    .andExpect(jsonPath("$.userInfo.name").value(SEO_JI_WON.getName()))
+                    .andExpect(jsonPath("$.userInfo.email").exists())
+                    .andExpect(jsonPath("$.userInfo.email").value(SEO_JI_WON.getEmail()))
+                    .andExpect(jsonPath("$.userInfo.picture").exists())
+                    .andExpect(jsonPath("$.userInfo.picture").value("picture.png"))
                     .andExpect(jsonPath("$.accessToken").exists())
                     .andExpect(jsonPath("$.accessToken").value(response.accessToken()))
                     .andExpect(jsonPath("$.refreshToken").exists())
@@ -173,6 +186,9 @@ class OAuthApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("Authorization Code 요청 시 redirectUrl과 반드시 동일한 값"))
                                     ),
                                     responseFields(
+                                            fieldWithPath("userInfo.name").description("사용자 이름"),
+                                            fieldWithPath("userInfo.email").description("사용자 이메일"),
+                                            fieldWithPath("userInfo.picture").description("사용자 프로필 이미지 링크"),
                                             fieldWithPath("accessToken").description("발급된 Access Token (Expire - 2시간)"),
                                             fieldWithPath("refreshToken").description("발급된 Refresh Token (Expire - 2주)")
                                     )
