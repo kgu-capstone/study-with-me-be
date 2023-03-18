@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.domain.notice;
 
+import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "notice")
-public class Notice {
+public class Notice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
