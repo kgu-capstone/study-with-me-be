@@ -44,7 +44,11 @@ public class Participant extends BaseEntity {
         return new Participant(study, member, APPLY);
     }
 
-    public boolean isSameMember(Member compare) {
-        return this.member.isSameMember(compare);
+    public boolean isSameMember(Member other) {
+        return this.member.isSameMember(other);
+    }
+
+    public void updateStatus(ParticipantStatus status) {
+        this.status = status;
     }
 }

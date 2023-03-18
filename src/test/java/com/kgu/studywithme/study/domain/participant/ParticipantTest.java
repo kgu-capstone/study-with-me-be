@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPLY;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -52,5 +52,25 @@ class ParticipantTest {
                 Arguments.of(JIWON.toMember(), JIWON.toMember(), true),
                 Arguments.of(JIWON.toMember(), GHOST.toMember(), false)
         );
+    }
+
+    @Test
+    @DisplayName("참여 상태를 업데이트한다")
+    void updateParticipationStatus() {
+        final Study study = SPRING.toStudy(JIWON.toMember());
+        final Member member = GHOST.toMember();
+        Participant participant = Participant.applyInStudy(study, member);
+
+        /* to APPROVE */
+        participant.updateStatus(APPROVE);
+        assertThat(participant.getStatus()).isEqualTo(APPROVE);
+
+        /* to REJECT */
+        participant.updateStatus(REJECT);
+        assertThat(participant.getStatus()).isEqualTo(REJECT);
+
+        /* to CANCEL */
+        participant.updateStatus(CALCEL);
+        assertThat(participant.getStatus()).isEqualTo(CALCEL);
     }
 }
