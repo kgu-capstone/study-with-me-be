@@ -17,7 +17,7 @@ public class Description {
     private static final int MAXIMUM_LENGTH = 1000;
 
     @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String value;
 
     private Description(String value) {

@@ -17,7 +17,7 @@ import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Study 도메인 {Participant Entity} 테스트")
+@DisplayName("Study-Participant 도메인 테스트")
 class ParticipantTest {
     @Test
     @DisplayName("스터디에 참여 신청을 진행한 사용자를 생성한다")
