@@ -149,10 +149,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
-            TokenResponse response = TokenResponse.builder()
-                    .accessToken(ACCESS_TOKEN)
-                    .refreshToken(REFRESH_TOKEN)
-                    .build();
+            TokenResponse response = createTokenResponse();
             given(tokenReissueService.reissueTokens(1L, REFRESH_TOKEN)).willReturn(response);
 
             // when

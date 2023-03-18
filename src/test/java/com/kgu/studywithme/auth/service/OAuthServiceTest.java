@@ -47,18 +47,8 @@ class OAuthServiceTest extends ServiceTest {
     @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하지 않으면 예외를 발생시키고 추가적인 정보를 기입해서 회원가입을 진행해야 한다")
     void throwExceptionIfGoogleAuthUserNotInDB() {
         // given
-        GoogleTokenResponse googleTokenResponse = GoogleTokenResponse.builder()
-                .tokenType(BEARER_TOKEN)
-                .idToken(ID_TOKEN)
-                .accessToken(ACCESS_TOKEN)
-                .scope(SCOPE)
-                .expiresIn(3600)
-                .build();
-        GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                .name(JIWON.getName())
-                .email(JIWON.getEmail())
-                .picture("picture.png")
-                .build();
+        GoogleTokenResponse googleTokenResponse = createGoogleTokenResponse();
+        GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
 
         given(oAuthConnector.getToken(authorizationCode, properties.getRedirectUrl())).willReturn(googleTokenResponse);
         given(oAuthConnector.getUserInfo(ACCESS_TOKEN)).willReturn(googleUserResponse);
@@ -76,18 +66,8 @@ class OAuthServiceTest extends ServiceTest {
         // given
         final Member member = memberRepository.save(JIWON.toMember());
 
-        GoogleTokenResponse googleTokenResponse = GoogleTokenResponse.builder()
-                .tokenType(BEARER_TOKEN)
-                .idToken(ID_TOKEN)
-                .accessToken(ACCESS_TOKEN)
-                .scope(SCOPE)
-                .expiresIn(3600)
-                .build();
-        GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                .name(JIWON.getName())
-                .email(JIWON.getEmail())
-                .picture("picture.png")
-                .build();
+        GoogleTokenResponse googleTokenResponse = createGoogleTokenResponse();
+        GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
 
         given(oAuthConnector.getToken(authorizationCode, properties.getRedirectUrl())).willReturn(googleTokenResponse);
         given(oAuthConnector.getUserInfo(ACCESS_TOKEN)).willReturn(googleUserResponse);

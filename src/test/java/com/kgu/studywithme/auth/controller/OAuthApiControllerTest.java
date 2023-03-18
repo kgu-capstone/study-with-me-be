@@ -1,7 +1,6 @@
 package com.kgu.studywithme.auth.controller;
 
 import com.kgu.studywithme.auth.controller.dto.request.OAuthLoginRequest;
-import com.kgu.studywithme.auth.controller.utils.OAuthLoginRequestUtils;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
@@ -20,7 +19,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.kgu.studywithme.common.utils.TokenUtils.*;
+import static com.kgu.studywithme.auth.controller.utils.OAuthLoginRequestUtils.createOAuthLoginRequest;
+import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
+import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -98,15 +99,11 @@ class OAuthApiControllerTest extends ControllerTest {
         @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하지 않을 경우 예외가 발생하고 추가정보 기입을 통해서 회원가입을 진행한다")
         void throwExceptionIfGoogleAuthUserNotInDB() throws Exception {
             // given
-            GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(JIWON.getName())
-                    .email(JIWON.getEmail())
-                    .picture("picture.png")
-                    .build();
+            GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
             given(oAuthService.login(authorizationCode, redirectUrl)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
 
             // when
-            final OAuthLoginRequest request = OAuthLoginRequestUtils.createRequest(authorizationCode, redirectUrl);
+            final OAuthLoginRequest request = createOAuthLoginRequest(authorizationCode, redirectUrl);
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -146,21 +143,11 @@ class OAuthApiControllerTest extends ControllerTest {
         @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다")
         void success() throws Exception {
             // given
-            GoogleUserResponse googleUserResponse = GoogleUserResponse.builder()
-                    .name(JIWON.getName())
-                    .email(JIWON.getEmail())
-                    .picture("picture.png")
-                    .build();
-
-            LoginResponse response = LoginResponse.builder()
-                    .userInfo(googleUserResponse)
-                    .accessToken(ACCESS_TOKEN)
-                    .refreshToken(REFRESH_TOKEN)
-                    .build();
+            LoginResponse response = JIWON.toLoginResponse();
             given(oAuthService.login(authorizationCode, redirectUrl)).willReturn(response);
 
             // when
-            final OAuthLoginRequest request = OAuthLoginRequestUtils.createRequest(authorizationCode, redirectUrl);
+            final OAuthLoginRequest request = createOAuthLoginRequest(authorizationCode, redirectUrl);
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -175,7 +162,7 @@ class OAuthApiControllerTest extends ControllerTest {
                             jsonPath("$.userInfo.email").exists(),
                             jsonPath("$.userInfo.email").value(JIWON.getEmail()),
                             jsonPath("$.userInfo.picture").exists(),
-                            jsonPath("$.userInfo.picture").value("picture.png"),
+                            jsonPath("$.userInfo.picture").value(JIWON.getProfileUrl()),
                             jsonPath("$.accessToken").exists(),
                             jsonPath("$.accessToken").value(response.accessToken()),
                             jsonPath("$.refreshToken").exists(),

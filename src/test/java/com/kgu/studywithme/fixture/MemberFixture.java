@@ -1,5 +1,7 @@
 package com.kgu.studywithme.fixture;
 
+import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
+import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.*;
 import lombok.Getter;
@@ -10,6 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
+import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
+import static com.kgu.studywithme.common.utils.TokenUtils.REFRESH_TOKEN;
 
 @Getter
 @RequiredArgsConstructor
@@ -51,5 +55,21 @@ public enum MemberFixture {
         String second = String.valueOf((int) (Math.random() * 9000 + 1000));
         String third = String.valueOf((int) (Math.random() * 9000 + 1000));
         return String.join("-", first, second, third);
+    }
+
+    public LoginResponse toLoginResponse() {
+        return LoginResponse.builder()
+                .userInfo(toGoogleUserResponse())
+                .accessToken(ACCESS_TOKEN)
+                .refreshToken(REFRESH_TOKEN)
+                .build();
+    }
+
+    public GoogleUserResponse toGoogleUserResponse() {
+        return GoogleUserResponse.builder()
+                .name(name)
+                .email(email)
+                .picture(profileUrl)
+                .build();
     }
 }
