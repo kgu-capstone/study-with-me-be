@@ -26,6 +26,9 @@ public enum StudyErrorCode implements ErrorCode {
     STUDY_CAPACITY_IS_FULL(HttpStatus.CONFLICT, "STUDY_009", "스터디 모집 정원이 꽉 찼습니다."),
     MEMBER_IS_NOT_APPLIER(HttpStatus.CONFLICT, "STUDY_010", "스터디에 참여 신청을 한 사용자가 아닙니다."),
     MEMBER_IS_NOT_PARTICIPANT(HttpStatus.CONFLICT, "STUDY_011", "스터디 참여자가 아닙니다."),
+    PERIOD_START_DATE_MUST_BE_BEFORE_END_DATE(HttpStatus.CONFLICT, "STUDY_012", "과제 제출 기간의 시작일은 종료일 이전이어야 합니다."),
+    PERIOD_END_DATE_MUST_BE_SET_FROM_NOW_ON(HttpStatus.CONFLICT, "STUDY_012", "종료일은 과거일 수 없습니다."),
+    ALREADY_ASSIGNMENT_EXISTS_PER_WEEK(HttpStatus.CONFLICT, "STUDY_013", "해당 주차에는 이미 과제가 등록되어 있습니다."),
     ;
 
     private final HttpStatus status;

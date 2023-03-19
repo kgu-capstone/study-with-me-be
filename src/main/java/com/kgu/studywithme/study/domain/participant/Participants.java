@@ -107,7 +107,7 @@ public class Participants {
         return capacity.isEqualOrOver(getNumberOfApproveParticipants());
     }
 
-    private void validateMemberIsParticipant(Member participant) {
+    public void validateMemberIsParticipant(Member participant) {
         if (!isParticipant(participant)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT);
         }
