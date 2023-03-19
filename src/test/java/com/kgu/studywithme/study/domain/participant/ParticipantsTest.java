@@ -34,6 +34,38 @@ class ParticipantsTest {
     }
 
     @Nested
+    @DisplayName("스터디 팀장 권한 위임")
+    class delegateStudyHostAuthority {
+        @Test
+        @DisplayName("스터디 참여자가 아닌 사용자에게는 팀장 권한을 위임할 수 없다")
+        void failureByAnonymousMember() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+
+            // when - then
+            final Member anonymous = ANONYMOUS.toMember();
+            assertThatThrownBy(() -> participants.delegateStudyHostAuthority(anonymous))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+        }
+        
+        @Test
+        @DisplayName("팀장 권한 위임에 성공한다")
+        void success() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+            participants.apply(STUDY, PARTICIPANT);
+            participants.approve(PARTICIPANT);
+
+            // when
+            participants.delegateStudyHostAuthority(PARTICIPANT);
+
+            // then
+            assertThat(participants.getHost()).isEqualTo(PARTICIPANT);
+        }
+    }
+
+    @Nested
     @DisplayName("스터디 참여 신청")
     class apply {
         @Test
@@ -153,6 +185,16 @@ class ParticipantsTest {
     @Nested
     @DisplayName("스터디 참여 취소")
     class cancel {
+        @Test
+        @DisplayName("스터디 팀장은 팀장 권한을 위임하지 않는다면 참여 취소를 할 수 없다")
+        void failureByHost() {
+            Participants participants = Participants.of(HOST, CAPACITY);
+
+            assertThatThrownBy(() -> participants.cancel(HOST))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
+        }
+
         @Test
         @DisplayName("스터디 참여자가 아니면 참여 취소를 할 수 없다")
         void failureByNotParticipant() {

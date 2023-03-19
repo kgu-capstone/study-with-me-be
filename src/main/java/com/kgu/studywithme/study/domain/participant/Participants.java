@@ -39,6 +39,11 @@ public class Participants {
         return new Participants(host, capacity);
     }
 
+    public void delegateStudyHostAuthority(Member newHost) {
+        validateMemberIsParticipant(newHost);
+        host = newHost;
+    }
+
     public void apply(Study study, Member member) {
         validateMemberIsNotHost(member);
         validateMemberIsNotApplierAndParticipant(member);
@@ -57,6 +62,7 @@ public class Participants {
     }
 
     public void cancel(Member participant) {
+        validateMemberIsNotHost(participant);
         validateMemberIsParticipant(participant);
         updateMemberParticipationStatus(participant, CALCEL);
     }
