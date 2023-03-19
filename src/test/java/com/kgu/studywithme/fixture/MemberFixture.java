@@ -2,10 +2,12 @@ package com.kgu.studywithme.fixture;
 
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
+import com.kgu.studywithme.auth.service.dto.response.MemberInfo;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -18,17 +20,18 @@ import static com.kgu.studywithme.common.utils.TokenUtils.REFRESH_TOKEN;
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
-    GHOST("고스트", "고스트", "ghost@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
-    ANONYMOUS("익명", "익명", "anonymous@gmail.com", "profile_url", LocalDate.of(2000, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "google_profile_url", "https://source.boringavatars.com/beam/120/sjiwon4491@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    GHOST("고스트", "고스트", "ghost@gmail.com", "google_profile_url", "google_profile_url",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+    ANONYMOUS("익명", "익명", "anonymous@gmail.com", "google_profile_url", "https://source.boringavatars.com/beam/120/anonymous@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ;
 
     private final String name;
     private final String nickname;
     private final String email;
+    private final String googleProflieUrl;
     private final String profileUrl;
     private final LocalDate birth;
     private final Gender gender;
@@ -41,6 +44,7 @@ public enum MemberFixture {
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
+                .googleProflieUrl(googleProflieUrl)
                 .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(generateRandomPhoneNumber())
@@ -58,8 +62,11 @@ public enum MemberFixture {
     }
 
     public LoginResponse toLoginResponse() {
+        Member member = this.toMember();
+        ReflectionTestUtils.setField(member, "id", 1L);
+
         return LoginResponse.builder()
-                .userInfo(toGoogleUserResponse())
+                .member(MemberInfo.from(member))
                 .accessToken(ACCESS_TOKEN)
                 .refreshToken(REFRESH_TOKEN)
                 .build();

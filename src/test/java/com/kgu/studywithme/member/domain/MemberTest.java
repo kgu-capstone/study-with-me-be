@@ -23,6 +23,7 @@ class MemberTest {
                 () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
                 () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
+                () -> assertThat(member.getGoogleProflieUrl()).isEqualTo(JIWON.getGoogleProflieUrl()),
                 () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
@@ -58,6 +59,20 @@ class MemberTest {
 
         // then
         assertThat(member.getNicknameValue()).isEqualTo(change);
+    }
+
+    @Test
+    @DisplayName("Google OAuth 통신에 의해 응답받은 사용자 프로필 이미지로 업데이트한다")
+    void updateGoogleProfileUrl() {
+        // given
+        Member member = JIWON.toMember();
+
+        // when
+        final String googleProfileUrl = "new_google_profile_url";
+        member.updateGoogleProfileUrl(googleProfileUrl);
+
+        // then
+        assertThat(member.getGoogleProflieUrl()).isEqualTo(googleProfileUrl);
     }
 
     @Test
