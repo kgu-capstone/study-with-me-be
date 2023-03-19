@@ -44,7 +44,7 @@ class OAuthServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하지 않으면 예외를 발생시키고 추가적인 정보를 기입해서 회원가입을 진행해야 한다")
+    @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하지 않으면 예외를 발생하고 로그인에 실패한다")
     void throwExceptionIfGoogleAuthUserNotInDB() {
         // given
         GoogleTokenResponse googleTokenResponse = createGoogleTokenResponse();
@@ -61,7 +61,7 @@ class OAuthServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다")
+    @DisplayName("Google OAuth 인증을 진행할 때 해당 사용자가 DB에 존재하면 로그인에 성공하고 사용자 정보 및 토큰을 발급해준다")
     void success() {
         // given
         final Member member = memberRepository.save(JIWON.toMember());

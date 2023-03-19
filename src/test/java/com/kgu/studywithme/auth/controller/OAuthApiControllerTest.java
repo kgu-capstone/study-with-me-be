@@ -48,7 +48,7 @@ class OAuthApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("Google OAuth Authorization Code 요청을 위한 URI 조회 API 테스트 [GET /api/oauth/access]")
+    @DisplayName("Google OAuth Authorization Code 요청을 위한 URI 조회 API [GET /api/oauth/access]")
     class getAuthorizationCodeForAccessGoogle {
         private static final String BASE_URL = "/api/oauth/access";
         private static final String redirectUrl = "http://localhost:3000";
@@ -89,7 +89,7 @@ class OAuthApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("Google OAuth 인증 API 테스트 [POST /api/oauth/login]")
+    @DisplayName("Google OAuth 인증 API [POST /api/oauth/login]")
     class oAuthLogin {
         private static final String BASE_URL = "/api/oauth/login";
         private static final String authorizationCode = UUID.randomUUID().toString().replaceAll("-", "").repeat(2);
@@ -140,7 +140,7 @@ class OAuthApiControllerTest extends ControllerTest {
         }
         
         @Test
-        @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 토큰을 발급해준다")
+        @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하면 로그인에 성공하고 사용자 정보 및 토큰을 발급해준다")
         void success() throws Exception {
             // given
             LoginResponse response = JIWON.toLoginResponse();
@@ -191,7 +191,7 @@ class OAuthApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("로그아웃 API 테스트 [POST /api/oauth/logout]")
+    @DisplayName("로그아웃 API [POST /api/oauth/logout]")
     class logout {
         private static final String BASE_URL = "/api/oauth/logout";
 

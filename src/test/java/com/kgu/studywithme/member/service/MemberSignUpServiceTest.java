@@ -23,7 +23,7 @@ class MemberSignUpServiceTest extends ServiceTest {
     private MemberSignUpService memberSignupService;
 
     @Nested
-    @DisplayName("회원가입을 진행할 때 ")
+    @DisplayName("회원가입")
     class signUp {
         @Test
         @DisplayName("이미 사용하고 있는 이메일이면 회원가입에 실패한다")

@@ -26,7 +26,7 @@ class TokenManagerTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("RefreshToken 동기화를 할 때 ")
+    @DisplayName("RefreshToken 동기화")
     class synchronizedRefreshToken {
         @Test
         @DisplayName("RefreshToken을 보유하고 있지 않은 사용자에게는 새로운 RefreshToken을 발급한다")

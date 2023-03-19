@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Member [Controller Layer] -> MemberApiController 테스트")
 class MemberApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("회원가입 API 테스트 [POST /api/member]")
+    @DisplayName("회원가입 API [POST /api/member]")
     class signUp {
         private static final String BASE_URL = "/api/member";
 

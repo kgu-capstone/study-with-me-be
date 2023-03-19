@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class RegionTest {
     @ParameterizedTest(name = "{index}: {0} - {1}")
     @MethodSource("validRegion")
-    @DisplayName("Region[province / city]를 생성한다")
+    @DisplayName("Region[province / city]을 생성한다")
     void constructSuccess(String province, String city) {
         Region region = Region.of(province, city);
         assertAll(

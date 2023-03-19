@@ -26,7 +26,7 @@ class SubmitTest {
     private static final Assignment ASSIGNMENT = Assignment.createAssignment(1, PERIOD, STUDY, HOST, "과제 1", "과제입니다.");
 
     @Test
-    @DisplayName("Link Submit을 생성한다")
+    @DisplayName("Submit[With Link]을 생성한다")
     void constructWithLink() {
         final Upload upload = Upload.withLink("https://google.com");
         Submit submit = Submit.submitAssignment(ASSIGNMENT, HOST, upload);
@@ -41,7 +41,7 @@ class SubmitTest {
     }
 
     @Test
-    @DisplayName("File Submit을 생성한다")
+    @DisplayName("Submit[With File]을 생성한다")
     void constructWithFile() {
         final MultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "abc".getBytes());
         final UploadFile uploadFile = UploadFile.from(file);

@@ -24,7 +24,7 @@ class AssignmentsTest {
     private static final Period PERIOD = Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
 
     @Test
-    @DisplayName("스터디에 대한 과제 등록을 성공한다")
+    @DisplayName("스터디에 대한 과제를 등록한다")
     void registerSuccess() {
         final Assignment assignment = Assignment.createAssignment(1, PERIOD, STUDY, HOST, "첫번째 과제", "과제 입니다.");
         Assignments assignments = new Assignments();
