@@ -23,6 +23,7 @@ class MemberTest {
                 () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
                 () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
+                () -> assertThat(member.getGoogleProflieUrl()).isEqualTo(JIWON.getGoogleProflieUrl()),
                 () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
