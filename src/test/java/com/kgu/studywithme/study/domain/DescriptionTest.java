@@ -20,8 +20,16 @@ class DescriptionTest {
     }
 
     @Test
+    @DisplayName("Description이 공백이면 생성에 실패한다")
+    void constructFailureByEmpty() {
+        assertThatThrownBy(() -> Description.from(""))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.DESCRIPTION_IS_BLANK.getMessage());
+    }
+
+    @Test
     @DisplayName("Description이 1000자가 넘어갈 경우 생성에 실패한다")
-    void constructFailure() {
+    void constructFailureByOverflow() {
         final String value = "a".repeat(1001);
 
         assertThatThrownBy(() -> Description.from(value))

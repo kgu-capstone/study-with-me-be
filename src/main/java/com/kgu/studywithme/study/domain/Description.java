@@ -25,8 +25,15 @@ public class Description {
     }
 
     public static Description from(String value) {
+        validateDescriptionIsNotBlank(value);
         validateLengthIsInRange(value);
         return new Description(value);
+    }
+
+    private static void validateDescriptionIsNotBlank(String value) {
+        if (value.isBlank()) {
+            throw StudyWithMeException.type(StudyErrorCode.DESCRIPTION_IS_BLANK);
+        }
     }
 
     private static void validateLengthIsInRange(String value) {

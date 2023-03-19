@@ -17,6 +17,7 @@ public enum StudyErrorCode implements ErrorCode {
 
     // Description
     DESCRIPTION_LENGTH_OUT_OF_RANGE(HttpStatus.CONFLICT, "STUDY_004", "스터디 설명은 최대 1000자까지 가능합니다."),
+    DESCRIPTION_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_014", "스터디 설명은 공백을 허용하지 않습니다."),
 
     // Study
     ALREADY_CLOSED(HttpStatus.CONFLICT, "STUDY_005", "이미 종료된 스터디입니다."),
