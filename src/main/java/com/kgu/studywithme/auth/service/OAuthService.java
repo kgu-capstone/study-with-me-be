@@ -4,9 +4,11 @@ import com.kgu.studywithme.auth.infra.oauth.OAuthConnector;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleTokenResponse;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
+import com.kgu.studywithme.auth.service.dto.response.MemberInfo;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.global.exception.StudyWithMeOAuthException;
 import com.kgu.studywithme.member.domain.Email;
+import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,22 +28,23 @@ public class OAuthService {
         GoogleTokenResponse tokenResponse = (GoogleTokenResponse) oAuthConnector.getToken(code, redirectUrl);
         GoogleUserResponse userInfo = (GoogleUserResponse) oAuthConnector.getUserInfo(tokenResponse.accessToken());
 
-        Long memberId = findMemberOrException(userInfo);
-        String accessToken = jwtTokenProvider.createAccessToken(memberId);
-        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        Member member = findMemberOrException(userInfo);
+        member.updateGoogleProfileUrl(userInfo.picture()); // update google profile url
 
-        tokenManager.synchronizeRefreshToken(memberId, refreshToken);
+        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+        tokenManager.synchronizeRefreshToken(member.getId(), refreshToken); // sync RefreshToken
+
         return LoginResponse.builder()
-                .userInfo(userInfo)
+                .member(MemberInfo.from(member))
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private Long findMemberOrException(GoogleUserResponse userInfo) {
+    private Member findMemberOrException(GoogleUserResponse userInfo) {
         return memberRepository.findByEmail(Email.from(userInfo.email()))
-                .orElseThrow(() -> new StudyWithMeOAuthException(userInfo))
-                .getId();
+                .orElseThrow(() -> new StudyWithMeOAuthException(userInfo));
     }
 
     @Transactional

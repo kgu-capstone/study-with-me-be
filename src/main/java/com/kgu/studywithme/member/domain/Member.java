@@ -82,6 +82,10 @@ public class Member extends BaseEntity {
         this.nickname = this.nickname.update(changeNickname);
     }
 
+    public void updateGoogleProfileUrl(String googleProflieUrl) {
+        this.googleProflieUrl = googleProflieUrl;
+    }
+
     public void updateInterests(Set<Category> interests) {
         this.interests.clear();
         this.interests.addAll(interests);

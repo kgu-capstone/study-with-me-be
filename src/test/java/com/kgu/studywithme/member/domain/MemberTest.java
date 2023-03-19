@@ -62,6 +62,20 @@ class MemberTest {
     }
 
     @Test
+    @DisplayName("Google OAuth 통신에 의해 응답받은 사용자 프로필 이미지로 업데이트한다")
+    void updateGoogleProfileUrl() {
+        // given
+        Member member = JIWON.toMember();
+
+        // when
+        final String googleProfileUrl = "new_google_profile_url";
+        member.updateGoogleProfileUrl(googleProfileUrl);
+
+        // then
+        assertThat(member.getGoogleProflieUrl()).isEqualTo(googleProfileUrl);
+    }
+
+    @Test
     @DisplayName("이메일을 통해서 동일한 사용자인지 확인한다")
     void isSameMember() {
         // given

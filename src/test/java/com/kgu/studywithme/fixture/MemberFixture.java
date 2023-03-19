@@ -2,10 +2,12 @@ package com.kgu.studywithme.fixture;
 
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
+import com.kgu.studywithme.auth.service.dto.response.MemberInfo;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -60,8 +62,11 @@ public enum MemberFixture {
     }
 
     public LoginResponse toLoginResponse() {
+        Member member = this.toMember();
+        ReflectionTestUtils.setField(member, "id", 1L);
+
         return LoginResponse.builder()
-                .userInfo(toGoogleUserResponse())
+                .member(MemberInfo.from(member))
                 .accessToken(ACCESS_TOKEN)
                 .refreshToken(REFRESH_TOKEN)
                 .build();
