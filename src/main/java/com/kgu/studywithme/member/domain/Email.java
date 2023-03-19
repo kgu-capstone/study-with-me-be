@@ -32,11 +32,15 @@ public class Email {
 
     private static void validateEmailPattern(String value) {
         if (isNotValidPattern(value)) {
-            throw StudyWithMeException.type(MemberErrorCode.INVALID_EMAIL_PATTERN);
+            throw StudyWithMeException.type(MemberErrorCode.INVALID_EMAIL);
         }
     }
 
     private static boolean isNotValidPattern(String email) {
         return !EMAIL_MATCHER.matcher(email).matches();
+    }
+
+    public boolean isSameEmail(Email email) {
+        return this.value.equals(email.getValue());
     }
 }

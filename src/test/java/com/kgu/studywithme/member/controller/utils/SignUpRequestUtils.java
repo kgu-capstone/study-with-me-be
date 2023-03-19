@@ -9,10 +9,9 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 
 public class SignUpRequestUtils {
     private static final String MALE = "M";
-    private static final String FEMALE = "F";
     private static final List<Long> CATEGORIES = List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId());
 
-    public static SignUpRequest createRequest() {
+    public static SignUpRequest createSignUpRequest() {
         return SignUpRequest.builder()
                 .name(JIWON.getName())
                 .nickname(JIWON.getNickname())

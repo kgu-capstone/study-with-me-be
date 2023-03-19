@@ -2,8 +2,6 @@ package com.kgu.studywithme.member.domain;
 
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.BaseEntity;
-import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.exception.MemberErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,15 +49,15 @@ public class Member extends BaseEntity {
     @ElementCollection
     @CollectionTable(
             name = "interest",
-            joinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "category"})
+            joinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id")
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Set<Category> interests = new HashSet<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth, String phone, Gender gender, Region region) {
+    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
+                   String phone, Gender gender, Region region, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -68,21 +66,25 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.gender = gender;
         this.region = region;
+        this.interests = interests;
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth, String phone, Gender gender, Region region) {
-        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region);
-    }
-
-    public void addCategoriesToInterests(Set<Category> categories) {
-        interests.addAll(categories);
+    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
+                                      String phone, Gender gender, Region region, Set<Category> interests) {
+        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region, interests);
     }
 
     public void changeNickname(String changeNickname) {
-        if (this.nickname.isSameNickname(changeNickname)) {
-            throw StudyWithMeException.type(MemberErrorCode.NICKNAME_SAME_AS_BEFORE);
-        }
         this.nickname = this.nickname.update(changeNickname);
+    }
+
+    public void updateInterests(Set<Category> interests) {
+        this.interests.clear();
+        this.interests.addAll(interests);
+    }
+
+    public boolean isSameMember(Member member) {
+        return this.email.isSameEmail(member.getEmail());
     }
 
     // Add Getter

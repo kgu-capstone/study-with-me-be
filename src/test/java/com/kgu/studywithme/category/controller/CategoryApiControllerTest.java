@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Category [Controller Layer] -> CategoryApiController 테스트")
 class CategoryApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("전체 스터디 카테고리 조회 API 테스트 [GET /api/categories]")
+    @DisplayName("전체 스터디 카테고리 조회 API [GET /api/categories]")
     class findAllCategory {
         private static final String BASE_URL = "/api/categories";
 

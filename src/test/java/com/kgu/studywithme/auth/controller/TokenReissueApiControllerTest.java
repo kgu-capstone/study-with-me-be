@@ -25,12 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Auth [Controller Layer] -> TokenReissueApiController 테스트")
 class TokenReissueApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("토큰 재발급 API 테스트 [POST /api/token/reissue]")
+    @DisplayName("토큰 재발급 API [POST /api/token/reissue]")
     class reissueTokens {
         private static final String BASE_URL = "/api/token/reissue";
 
         @Test
-        @DisplayName("Authorization Header에 RefreshToken이 없으면 예외가 발생한다")
+        @DisplayName("Authorization Header에 RefreshToken이 없으면 토큰 재발급에 실패한다")
         void withoutRefreshToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -149,10 +149,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
-            TokenResponse response = TokenResponse.builder()
-                    .accessToken(ACCESS_TOKEN)
-                    .refreshToken(REFRESH_TOKEN)
-                    .build();
+            TokenResponse response = createTokenResponse();
             given(tokenReissueService.reissueTokens(1L, REFRESH_TOKEN)).willReturn(response);
 
             // when
