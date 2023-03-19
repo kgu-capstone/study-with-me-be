@@ -30,6 +30,9 @@ public class Member extends BaseEntity {
     @Embedded
     private Email email;
 
+    @Column(name = "google_profile_url", nullable = false)
+    private String googleProflieUrl;
+
     @Column(name = "profile_url", nullable = false)
     private String profileUrl;
 
@@ -56,11 +59,12 @@ public class Member extends BaseEntity {
     private Set<Category> interests = new HashSet<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
+    private Member(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
                    String phone, Gender gender, Region region, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
+        this.googleProflieUrl = googleProflieUrl;
         this.profileUrl = profileUrl;
         this.birth = birth;
         this.phone = phone;
@@ -69,9 +73,9 @@ public class Member extends BaseEntity {
         this.interests = interests;
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
+    public static Member createMember(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
                                       String phone, Gender gender, Region region, Set<Category> interests) {
-        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region, interests);
+        return new Member(name, nickname, email, googleProflieUrl, profileUrl, birth, phone, gender, region, interests);
     }
 
     public void changeNickname(String changeNickname) {
