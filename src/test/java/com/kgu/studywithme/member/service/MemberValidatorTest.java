@@ -24,8 +24,7 @@ class MemberValidatorTest extends ServiceTest {
 
     @BeforeEach
     void setUp() {
-        member = JIWON.toMember();
-        memberRepository.save(member);
+        member = memberRepository.save(JIWON.toMember());
     }
 
     @Test

@@ -38,16 +38,12 @@ public class Nickname {
     }
 
     private static void validateNicknamePattern(String value) {
-        if (isNotValidPattern(value)) {
-            throw StudyWithMeException.type(MemberErrorCode.INVALID_NICKNAME_PATTERN);
+        if (isInvalidPattern(value)) {
+            throw StudyWithMeException.type(MemberErrorCode.INVALID_NICKNAME);
         }
     }
 
-    private static boolean isNotValidPattern(String nickname) {
+    private static boolean isInvalidPattern(String nickname) {
         return !NICKNAME_MATCHER.matcher(nickname).matches();
-    }
-
-    public boolean isSameNickname(String compareNickname) {
-        return this.value.equals(compareNickname);
     }
 }

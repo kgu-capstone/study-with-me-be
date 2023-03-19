@@ -5,8 +5,8 @@
 :toc: left
 :toclevels: 2
 
-== 토큰 재발급 실패
-=== 1. Authorization Header에 RefreshToken이 없으면 예외가 발생한다
+== 토큰 재발급
+=== 1. Authorization Header에 RefreshToken이 없으면 토큰 재발급에 실패한다
 HTTP Request
 include::{snippets}/TokenReissueApi/Failure/Case1/http-request.adoc[]
 
@@ -21,7 +21,7 @@ include::{snippets}/TokenReissueApi/Failure/Case2/request-headers.adoc[]
 HTTP Response
 include::{snippets}/TokenReissueApi/Failure/Case2/response-body.adoc[]
 
-=== 3. 이미 사용한 RefresToken이거나 조작된 RefreshToken이면 재발급에 실패한다
+=== 3. 이미 사용했거나 조작된 RefreshToken이면 토큰 재발급에 실패한다
 HTTP Request
 include::{snippets}/TokenReissueApi/Failure/Case3/http-request.adoc[]
 include::{snippets}/TokenReissueApi/Failure/Case3/request-headers.adoc[]
@@ -29,8 +29,7 @@ include::{snippets}/TokenReissueApi/Failure/Case3/request-headers.adoc[]
 HTTP Response
 include::{snippets}/TokenReissueApi/Failure/Case3/response-body.adoc[]
 
-== 토큰 재발급 성공
-=== RefresToken으로 AccessToken과 RefreshToken을 재발급받는다
+=== 4. RefresToken으로 AccessToken과 RefreshToken을 재발급받는다
 HTTP Request
 include::{snippets}/TokenReissueApi/Success/http-request.adoc[]
 include::{snippets}/TokenReissueApi/Success/request-headers.adoc[]

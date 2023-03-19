@@ -3,7 +3,6 @@ package com.kgu.studywithme.member.controller;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.controller.dto.request.SignUpRequest;
-import com.kgu.studywithme.member.controller.utils.SignUpRequestUtils;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.kgu.studywithme.member.controller.utils.SignUpRequestUtils.createSignUpRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Member [Controller Layer] -> MemberApiController 테스트")
 class MemberApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("회원가입 API 테스트 [POST /api/member]")
+    @DisplayName("회원가입 API [POST /api/member]")
     class signUp {
         private static final String BASE_URL = "/api/member";
 
@@ -30,8 +30,8 @@ class MemberApiControllerTest extends ControllerTest {
         @DisplayName("중복되는 값(닉네임)에 의해서 회원가입에 실패한다")
         void throwExceptionByDuplicateNickname() throws Exception {
             // given
-            final SignUpRequest request = SignUpRequestUtils.createRequest();
-            given(memberSignupService.signUp(any(), any())).willThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME));
+            final SignUpRequest request = createSignUpRequest();
+            given(memberSignupService.signUp(any())).willThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME));
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -86,8 +86,8 @@ class MemberApiControllerTest extends ControllerTest {
         @DisplayName("회원가입에 성공한다")
         void success() throws Exception {
             // given
-            final SignUpRequest request = SignUpRequestUtils.createRequest();
-            given(memberSignupService.signUp(any(), any())).willReturn(1L);
+            final SignUpRequest request = createSignUpRequest();
+            given(memberSignupService.signUp(any())).willReturn(1L);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders

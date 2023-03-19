@@ -30,10 +30,10 @@ class TokenReissueServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("토큰 재발급을 진행할 때 ")
+    @DisplayName("토큰 재발급")
     class reissueTokens {
         @Test
-        @DisplayName("RefreshToken이 유효하지 않으면 예외가 발생한다")
+        @DisplayName("RefreshToken이 유효하지 않으면 토큰 재발급에 실패한다")
         void throwExceptionByInvalidRefreshToken() {
             // when - then
             assertThatThrownBy(() -> tokenReissueService.reissueTokens(memberId, refreshToken))

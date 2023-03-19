@@ -8,17 +8,22 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum MemberErrorCode implements ErrorCode {
-    INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_001", "이메일 형식에 맞지 않습니다."),
-    INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_002", "비밀번호는 영문, 숫자, 특수문자를 각각 하나 이상 포함해야 하고 8자 이상 25자 이하여야 합니다."),
-    PASSWORD_SAME_AS_BEFORE(HttpStatus.CONFLICT, "MEMBER_003", "이전과 동일한 비밀번호로 변경할 수 없습니다."),
-    INVALID_REGION(HttpStatus.BAD_REQUEST, "MEMBER_004", "거주지를 정확하게 입력해주세요."),
-    INVALID_NICKNAME_PATTERN(HttpStatus.BAD_REQUEST, "MEMBER_005", "닉네임 형식에 맞지 않습니다."),
-    NICKNAME_SAME_AS_BEFORE(HttpStatus.BAD_REQUEST, "MEMBER_006", "이전과 동일한 닉네임으로 변경할 수 없습니다."),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_007", "이미 사용중인 이메일입니다."),
-    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_008", "이미 사용중인 닉네임입니다."),
-    DUPLICATE_PHONE(HttpStatus.CONFLICT, "MEMBER_009", "이미 사용중인 전화번호입니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_010", "사용자 정보를 찾을 수 없습니다."),
-    WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "MEMBER_011", "비밀번호가 일치하지 않습니다."),
+    // Nickname
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_001", "닉네임 형식에 맞지 않습니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_002", "이미 사용중인 닉네임입니다."),
+
+    // Email
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER_003", "구글 이메일 형식에 맞지 않습니다."),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_004", "이미 사용중인 이메일입니다."),
+
+    // Region
+    REGION_IS_BLANK(HttpStatus.BAD_REQUEST, "MEMBER_005", "거주지를 정확하게 입력해주세요."),
+
+    // Phone
+    DUPLICATE_PHONE(HttpStatus.CONFLICT, "MEMBER_006", "이미 사용중인 전화번호입니다."),
+
+    // Member
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_007", "사용자 정보를 찾을 수 없습니다."),
     ;
 
     private final HttpStatus status;
