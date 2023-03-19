@@ -133,7 +133,7 @@ class OAuthApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("name").description("회원가입 진행 시 이름 기본값 [Read-Only]"),
                                             fieldWithPath("email").description("회원가입 진행 시 이메일 기본값 [Read-Only]"),
-                                            fieldWithPath("picture").description("회원가입 진행 시 사진 기본값")
+                                            fieldWithPath("picture").description("회원가입 진행 시 구글 프로필 이미지 기본값 [Read-Only]")
                                     )
                             )
                     );
@@ -157,12 +157,14 @@ class OAuthApiControllerTest extends ControllerTest {
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isOk(),
-                            jsonPath("$.userInfo.name").exists(),
-                            jsonPath("$.userInfo.name").value(JIWON.getName()),
-                            jsonPath("$.userInfo.email").exists(),
-                            jsonPath("$.userInfo.email").value(JIWON.getEmail()),
-                            jsonPath("$.userInfo.picture").exists(),
-                            jsonPath("$.userInfo.picture").value(JIWON.getProfileUrl()),
+                            jsonPath("$.member.id").exists(),
+                            jsonPath("$.member.id").value(1L),
+                            jsonPath("$.member.nickname").exists(),
+                            jsonPath("$.member.nickname").value(JIWON.getNickname()),
+                            jsonPath("$.member.email").exists(),
+                            jsonPath("$.member.email").value(JIWON.getEmail()),
+                            jsonPath("$.member.profileUrl").exists(),
+                            jsonPath("$.member.profileUrl").value(JIWON.getProfileUrl()),
                             jsonPath("$.accessToken").exists(),
                             jsonPath("$.accessToken").value(response.accessToken()),
                             jsonPath("$.refreshToken").exists(),
@@ -179,9 +181,10 @@ class OAuthApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("Authorization Code 요청 시 redirectUrl과 반드시 동일한 값"))
                                     ),
                                     responseFields(
-                                            fieldWithPath("userInfo.name").description("사용자 이름"),
-                                            fieldWithPath("userInfo.email").description("사용자 이메일"),
-                                            fieldWithPath("userInfo.picture").description("사용자 프로필 이미지 링크"),
+                                            fieldWithPath("member.id").description("사용자 ID(PK)"),
+                                            fieldWithPath("member.nickname").description("사용자 닉네임"),
+                                            fieldWithPath("member.email").description("사용자 이메일"),
+                                            fieldWithPath("member.profileUrl").description("사용자 프로필 이미지 링크"),
                                             fieldWithPath("accessToken").description("발급된 Access Token (Expire - 2시간)"),
                                             fieldWithPath("refreshToken").description("발급된 Refresh Token (Expire - 2주)")
                                     )
