@@ -21,4 +21,12 @@ public class ParticipationService {
 
         study.applyParticipation(member);
     }
+
+    @Transactional
+    public void approve(Long studyId, Long applierId, Long hostId) {
+        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Member applier = memberFindService.findById(applierId);
+
+        study.approveParticipation(applier);
+    }
 }

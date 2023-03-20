@@ -14,13 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudyFindService {
     private final StudyRepository studyRepository;
 
-    public Study findById(Long studyId) {
-        return studyRepository.findById(studyId)
+    public Study findByIdWithHost(Long studyId) {
+        return studyRepository.findByIdWithHost(studyId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
-    public Study findByIdWithHost(Long studyId) {
-        return studyRepository.findByIdWithHost(studyId)
+    public Study findByIdAndHostId(Long studyId, Long hostId) {
+        return studyRepository.findByIdAndHostId(studyId, hostId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 }

@@ -42,4 +42,17 @@ class StudyRepositoryTest extends RepositoryTest {
                 () -> assertThat(findStudy.getHost()).isEqualTo(host)
         );
     }
+
+    @Test
+    @DisplayName("스터디 ID + 팀장 ID로 스터디를 조회한다")
+    void findByIdAndHostId() {
+        // when
+        Study findStudy = studyRepository.findByIdAndHostId(study.getId(), host.getId()).orElseThrow();
+
+        // then
+        assertAll(
+                () -> assertThat(findStudy).isEqualTo(study),
+                () -> assertThat(findStudy.getHost()).isEqualTo(host)
+        );
+    }
 }
