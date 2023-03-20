@@ -3,6 +3,7 @@ package com.kgu.studywithme.common;
 import com.kgu.studywithme.auth.domain.TokenRepository;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.member.domain.MemberRepository;
+import com.kgu.studywithme.study.domain.StudyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,9 @@ public class ServiceTest {
 
     @Autowired
     protected TokenRepository tokenRepository;
+
+    @Autowired
+    protected StudyRepository studyRepository;
 
     @AfterEach
     void clearDatabase() {

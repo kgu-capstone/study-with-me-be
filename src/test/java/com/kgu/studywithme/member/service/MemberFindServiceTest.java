@@ -26,6 +26,20 @@ class MemberFindServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("ID(PK)로 사용자를 조회한다")
+    void findById() {
+        // when
+        assertThatThrownBy(() -> memberFindService.findById(member.getId() + 10000L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
+
+        Member findMember = memberFindService.findById(member.getId());
+
+        // then
+        assertThat(findMember).isEqualTo(member);
+    }
+
+    @Test
     @DisplayName("이메일로 사용자를 조회한다")
     void findByEmail() {
         // given
@@ -40,6 +54,6 @@ class MemberFindServiceTest extends ServiceTest {
         Member findMember = memberFindService.findByEmail(same);
 
         // then
-        assertThat(findMember.getId()).isEqualTo(member.getId());
+        assertThat(findMember).isEqualTo(member);
     }
 }

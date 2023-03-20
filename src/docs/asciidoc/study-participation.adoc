@@ -1,0 +1,213 @@
+= 스터디 참여와 관련된 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 스터디 참여 신청
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 신청에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/response-body.adoc[]
+
+=== 2. 모집이 마감된 스터디에는 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 팀장은 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/response-body.adoc[]
+
+=== 4. 이미 참여 신청을 했거나 참여중이라면 중복으로 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/response-body.adoc[]
+
+=== 5. 참여 신청에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Success/http-response.adoc[]
+
+== 스터디 참여 승인
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 승인에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 더이상 참여 승인을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case2/response-body.adoc[]
+
+=== 3. 참여 신청자가 아니면 참여 승인을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case3/response-body.adoc[]
+
+=== 4. 참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Approve/Failure/Case4/response-body.adoc[]
+
+=== 5. 참여 승인에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Approve/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Approve/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Approve/Success/http-response.adoc[]
+
+== 스터디 참여 거절
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 거절에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 더이상 참여 거절을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case2/response-body.adoc[]
+
+=== 3. 참여 신청자가 아니면 참여 거절을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/response-body.adoc[]
+
+=== 4. 참여 거절을 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Reject/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Reject/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Reject/Success/http-response.adoc[]
+
+== 스터디 참여 취소
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 취소에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 더이상 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 팀장은 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/response-body.adoc[]
+
+=== 4. 참여자가 아니면 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/response-body.adoc[]
+
+=== 5. 참여 취소에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Success/http-response.adoc[]
+
+== 스터디 팀장 권한 위임
+=== 1. Authorization Header에 AccessToken이 없으면 팀장 권한 위임에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 팀장 권함을 위임할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case2/response-body.adoc[]
+
+=== 3. 참여자가 아니면 팀장 권한을 위임할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/response-body.adoc[]
+
+=== 5. 팀장 권한 위임에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/http-response.adoc[]
