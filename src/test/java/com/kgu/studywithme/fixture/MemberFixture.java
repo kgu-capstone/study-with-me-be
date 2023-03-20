@@ -45,7 +45,7 @@ public enum MemberFixture {
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
                 .googleProflieUrl(googleProflieUrl)
-                .profileUrl(profileUrl)
+                .profileUrl(RealProfile.from(profileUrl))
                 .birth(birth)
                 .phone(generateRandomPhoneNumber())
                 .gender(gender)
