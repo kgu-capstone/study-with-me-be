@@ -13,7 +13,7 @@ public record MemberInfo(
     public MemberInfo {}
 
     private MemberInfo(Member member) {
-        this(member.getId(), member.getNicknameValue(), member.getEmailValue(), member.getProfileUrl());
+        this(member.getId(), member.getNicknameValue(), member.getEmailValue(), member.getSelectedProfileUrl());
     }
 
     public static MemberInfo from(Member member) {

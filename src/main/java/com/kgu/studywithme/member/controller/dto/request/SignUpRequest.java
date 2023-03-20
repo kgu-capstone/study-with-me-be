@@ -62,7 +62,7 @@ public record SignUpRequest(
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
                 .googleProflieUrl(googleProfileUrl)
-                .profileUrl(profileUrl)
+                .profileUrl(RealProfile.from(profileUrl))
                 .birth(birth)
                 .phone(phone)
                 .gender(convertStringToGender())

@@ -33,8 +33,8 @@ public class Member extends BaseEntity {
     @Column(name = "google_profile_url", nullable = false)
     private String googleProflieUrl;
 
-    @Column(name = "profile_url", nullable = false)
-    private String profileUrl;
+    @Embedded
+    private RealProfile profileUrl;
 
     @Column(name = "birth", nullable = false, updatable = false)
     private LocalDate birth;
@@ -59,7 +59,7 @@ public class Member extends BaseEntity {
     private Set<Category> interests = new HashSet<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
+    private Member(String name, Nickname nickname, Email email, String googleProflieUrl, RealProfile profileUrl, LocalDate birth,
                    String phone, Gender gender, Region region, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
@@ -73,7 +73,7 @@ public class Member extends BaseEntity {
         this.interests = interests;
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
+    public static Member createMember(String name, Nickname nickname, Email email, String googleProflieUrl, RealProfile profileUrl, LocalDate birth,
                                       String phone, Gender gender, Region region, Set<Category> interests) {
         return new Member(name, nickname, email, googleProflieUrl, profileUrl, birth, phone, gender, region, interests);
     }
@@ -82,8 +82,16 @@ public class Member extends BaseEntity {
         this.nickname = this.nickname.update(changeNickname);
     }
 
+    public void updateProfile(String profileUrl) {
+        this.profileUrl = this.profileUrl.updateProfileUrl(profileUrl);
+    }
+
     public void updateGoogleProfileUrl(String googleProflieUrl) {
         this.googleProflieUrl = googleProflieUrl;
+
+        if (!profileUrl.isAvatarProfile()) {
+            this.profileUrl = this.profileUrl.updateProfileUrl(googleProflieUrl);
+        }
     }
 
     public void updateInterests(Set<Category> interests) {
@@ -102,6 +110,10 @@ public class Member extends BaseEntity {
 
     public String getEmailValue() {
         return email.getValue();
+    }
+
+    public String getSelectedProfileUrl() {
+        return profileUrl.getValue();
     }
 
     public String getRegionProvince() {

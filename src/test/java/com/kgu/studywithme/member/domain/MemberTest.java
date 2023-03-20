@@ -24,7 +24,7 @@ class MemberTest {
                 () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
                 () -> assertThat(member.getGoogleProflieUrl()).isEqualTo(JIWON.getGoogleProflieUrl()),
-                () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
+                () -> assertThat(member.getSelectedProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
@@ -62,17 +62,38 @@ class MemberTest {
     }
 
     @Test
+    @DisplayName("사용자의 아바타 프로필 이미지를 수정한다")
+    void updateProfileUrl() {
+        // given
+        Member member = GHOST.toMember();
+
+        // when
+        final String update = "https://source.boringavatars.com/beam/120/helloworld.com";
+        member.updateProfile(update);
+
+        // then
+        assertThat(member.getSelectedProfileUrl()).isEqualTo(update);
+    }
+
+    @Test
     @DisplayName("Google OAuth 통신에 의해 응답받은 사용자 프로필 이미지로 업데이트한다")
     void updateGoogleProfileUrl() {
         // given
-        Member member = JIWON.toMember();
+        Member jiwon = JIWON.toMember(); // select avatar
+        Member ghost = GHOST.toMember(); // select google
 
         // when
-        final String googleProfileUrl = "new_google_profile_url";
-        member.updateGoogleProfileUrl(googleProfileUrl);
+        final String update = "new_google_profile_url";
+        jiwon.updateGoogleProfileUrl(update);
+        ghost.updateGoogleProfileUrl(update);
 
         // then
-        assertThat(member.getGoogleProflieUrl()).isEqualTo(googleProfileUrl);
+        assertAll(
+                () -> assertThat(jiwon.getGoogleProflieUrl()).isEqualTo(update),
+                () -> assertThat(jiwon.getSelectedProfileUrl()).isNotEqualTo(update),
+                () -> assertThat(ghost.getGoogleProflieUrl()).isEqualTo(update),
+                () -> assertThat(ghost.getSelectedProfileUrl()).isEqualTo(update)
+        );
     }
 
     @Test
