@@ -29,4 +29,12 @@ public class ParticipationService {
 
         study.approveParticipation(applier);
     }
+
+    @Transactional
+    public void reject(Long studyId, Long applierId, Long hostId) {
+        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Member applier = memberFindService.findById(applierId);
+
+        study.rejectParticipation(applier);
+    }
 }

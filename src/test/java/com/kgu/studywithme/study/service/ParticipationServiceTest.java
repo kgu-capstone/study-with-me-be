@@ -157,4 +157,58 @@ class ParticipationServiceTest extends ServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("스터디 참여 거절")
+    class reject {
+        private Member host;
+        private Member applier;
+        private Study study;
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            applier = memberRepository.save(GHOST.toMember());
+            study = studyRepository.save(SPRING.toStudy(host));
+        }
+
+        @Test
+        @DisplayName("스터디가 종료되었다면 더이상 참여 거절을 할 수 없다")
+        void failureByStudyClosed() {
+            // given
+            study.close();
+
+            // when - then
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
+        void failureByAnonymousMember() {
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여 거절에 성공한다")
+        void success() {
+            // given
+            study.applyParticipation(applier);
+
+            // when
+            participationService.reject(study.getId(), applier.getId(), host.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, applier),
+                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host)
+            );
+        }
+    }
 }
