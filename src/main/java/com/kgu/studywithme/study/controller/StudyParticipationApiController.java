@@ -35,4 +35,10 @@ public class StudyParticipationApiController {
         participationService.cancel(studyId, participantId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/participants/{participantId}/delegation")
+    public ResponseEntity<Void> delegateAuthority(@PathVariable Long studyId, @PathVariable Long participantId, @ExtractPayload Long hostId) {
+        participationService.delegateAuthority(studyId, participantId, hostId);
+        return ResponseEntity.noContent().build();
+    }
 }
