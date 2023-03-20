@@ -29,4 +29,10 @@ public class StudyParticipationApiController {
         participationService.reject(studyId, applierId, hostId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/participants/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long studyId, @ExtractPayload Long participantId) {
+        participationService.cancel(studyId, participantId);
+        return ResponseEntity.noContent().build();
+    }
 }

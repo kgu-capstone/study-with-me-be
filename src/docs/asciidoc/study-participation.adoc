@@ -122,7 +122,7 @@ include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/path-parameters.
 HTTP Response
 include::{snippets}/StudyApi/Participation/Reject/Failure/Case3/response-body.adoc[]
 
-=== 4. 참여 거절 성공한다
+=== 4. 참여 거절을 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Participation/Reject/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Participation/Reject/Success/request-headers.adoc[]
@@ -130,3 +130,48 @@ include::{snippets}/StudyApi/Participation/Reject/Success/path-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Participation/Reject/Success/http-response.adoc[]
+
+== 스터디 참여 취소
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 취소에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 더이상 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 팀장은 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case3/response-body.adoc[]
+
+=== 4. 참여자가 아니면 참여 취소를 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Failure/Case4/response-body.adoc[]
+
+=== 5. 참여 취소에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Cancel/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Cancel/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Cancel/Success/http-response.adoc[]
