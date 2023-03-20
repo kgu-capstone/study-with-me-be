@@ -23,4 +23,10 @@ public class StudyParticipationApiController {
         participationService.approve(studyId, applierId, hostId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/applicants/{applierId}/reject")
+    public ResponseEntity<Void> reject(@PathVariable Long studyId, @PathVariable Long applierId, @ExtractPayload Long hostId) {
+        participationService.reject(studyId, applierId, hostId);
+        return ResponseEntity.noContent().build();
+    }
 }

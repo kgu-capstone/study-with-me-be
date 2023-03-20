@@ -282,8 +282,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 승인을 진행할 스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 신청한 사용자 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -296,7 +296,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 승인을 할 수 없다")
-        void failureByRecruitmentCompleted() throws Exception {
+        void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
@@ -330,8 +330,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 승인을 진행할 스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 신청한 사용자 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -344,7 +344,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 승인을 할 수 없다")
-        void failureByHost() throws Exception {
+        void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
@@ -378,8 +378,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 승인을 진행할 스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 신청한 사용자 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -392,7 +392,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다")
-        void failureByAlreadyApply() throws Exception {
+        void failureByAlreadyCapacityFull() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
@@ -426,8 +426,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 승인을 진행할 스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 신청한 사용자 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -468,8 +468,186 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 승인을 진행할 스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 신청한 사용자 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 참여 거절 API [POST /api/studies/{studyId}/applicants/{applierId}/reject]")
+    class reject {
+        private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/reject";
+        private static final Long STUDY_ID = 1L;
+        private static final Long APPLIER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 거절에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, APPLIER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Reject/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디가 종료되었다면 더이상 참여 거절을 할 수 없다")
+        void failureByStudyClosed() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
+                    .when(participationService)
+                    .reject(anyLong(), anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.ALREADY_CLOSED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Reject/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
+        void failureByAnonymousMember() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
+                    .when(participationService)
+                    .reject(anyLong(), anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_APPLIER;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Reject/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("참여 거절 성공한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doNothing()
+                    .when(participationService)
+                    .reject(anyLong(), anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isNoContent(),
+                            jsonPath("$").doesNotExist()
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Reject/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
                                     )
                             )
                     );
