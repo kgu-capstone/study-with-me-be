@@ -211,4 +211,69 @@ class ParticipationServiceTest extends ServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("스터디 참여 취소")
+    class cancel {
+        private Member host;
+        private Member participant;
+        private Study study;
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            participant = memberRepository.save(GHOST.toMember());
+            study = studyRepository.save(SPRING.toStudy(host));
+        }
+
+        @Test
+        @DisplayName("스터디가 종료되었다면 더이상 참여 취소를 할 수 없다")
+        void failureByStudyClosed() {
+            // given
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+            study.close();
+
+            // when - then
+            assertThatThrownBy(() -> participationService.cancel(study.getId(), participant.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+        }
+
+        @Test
+        @DisplayName("스터디 팀장은 참여 취소를 할 수 없다")
+        void failureByHost() {
+            assertThatThrownBy(() -> participationService.cancel(study.getId(), host.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여자가 아니면 참여 취소를 할 수 없다")
+        void failureByAnonymousMember() {
+            assertThatThrownBy(() -> participationService.cancel(study.getId(), participant.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여 취소에 성공한다")
+        void success() {
+            // given
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+
+            // when
+            participationService.cancel(study.getId(), participant.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, participant),
+                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host)
+            );
+        }
+    }
 }

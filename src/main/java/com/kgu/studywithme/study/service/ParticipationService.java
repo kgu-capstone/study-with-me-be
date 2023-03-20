@@ -37,4 +37,12 @@ public class ParticipationService {
 
         study.rejectParticipation(applier);
     }
+
+    @Transactional
+    public void cancel(Long studyId, Long participantId) {
+        Study study = studyFindService.findByIdWithHost(studyId);
+        Member participant = memberFindService.findById(participantId);
+
+        study.cancelParticipation(participant);
+    }
 }
