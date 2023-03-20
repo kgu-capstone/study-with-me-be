@@ -1,0 +1,51 @@
+= 스터디 참여와 관련된 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 스터디 참여 신청
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 참여 신청에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case1/response-body.adoc[]
+
+=== 2. 모집이 마감된 스터디에는 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 팀장은 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case3/response-body.adoc[]
+
+=== 4. 이미 참여 신청을 했거나 참여중이라면 중복으로 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/response-body.adoc[]
+
+=== 5. 참여 신청에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Success/http-response.adoc[]
