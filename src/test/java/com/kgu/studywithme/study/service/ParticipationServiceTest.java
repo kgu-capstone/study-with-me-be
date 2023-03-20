@@ -276,4 +276,56 @@ class ParticipationServiceTest extends ServiceTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("스터디 팀장 권한 위임")
+    class delegateAuthority {
+        private Member host;
+        private Member participant;
+        private Study study;
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            participant = memberRepository.save(GHOST.toMember());
+            study = studyRepository.save(SPRING.toStudy(host));
+        }
+
+        @Test
+        @DisplayName("스터디가 종료되었다면 팀장 권함을 위임할 수 없다")
+        void failureByStudyClosed() {
+            // given
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+            study.close();
+
+            // when - then
+            assertThatThrownBy(() -> participationService.delegateAuthority(study.getId(), participant.getId(), host.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여자가 아니면 팀장 권한을 위임할 수 없다")
+        void failureByAnonymousMember() {
+            assertThatThrownBy(() -> participationService.delegateAuthority(study.getId(), participant.getId(), host.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+        }
+
+        @Test
+        @DisplayName("팀장 권한 위임에 성공한다")
+        void success() {
+            // given
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+
+            // when
+            participationService.delegateAuthority(study.getId(), participant.getId(), host.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertThat(findStudy.getHost()).isEqualTo(participant);
+        }
+    }
 }

@@ -232,21 +232,40 @@ class StudyTest {
         }
     }
 
-    @Test
-    @DisplayName("스터디 팀장 권한을 위임한다")
-    void delegateStudyHostAuthority() {
-        // given
-        Study study = SPRING.toStudy(HOST);
+    @Nested
+    @DisplayName("스터디 팀장 권한 위임")
+    class delegateStudyHostAuthority {
+        private Study study;
+        private Member participant;
 
-        final Member ghost = GHOST.toMember();
-        study.applyParticipation(ghost);
-        study.approveParticipation(ghost);
+        @BeforeEach
+        void setUp() {
+            study = SPRING.toStudy(HOST);
+            participant = GHOST.toMember();
 
-        // when
-        study.delegateStudyHostAuthority(ghost);
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+        }
 
-        // then
-        assertThat(study.getHost()).isEqualTo(ghost);
+        @Test
+        @DisplayName("종료된 스터디에서는 팀장 권한을 위임할 수 없다")
+        void failureByClosedStudy() {
+            study.close();
+
+            assertThatThrownBy(() -> study.delegateStudyHostAuthority(participant))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+        }
+
+        @Test
+        @DisplayName("팀장 권한 위임에 성공한다")
+        void success() {
+            // when
+            study.delegateStudyHostAuthority(participant);
+
+            // then
+            assertThat(study.getHost()).isEqualTo(participant);
+        }
     }
 
     @Test

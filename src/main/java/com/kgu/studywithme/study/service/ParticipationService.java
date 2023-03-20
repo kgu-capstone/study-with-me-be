@@ -45,4 +45,12 @@ public class ParticipationService {
 
         study.cancelParticipation(participant);
     }
+
+    @Transactional
+    public void delegateAuthority(Long studyId, Long participantId, Long hostId) {
+        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Member newHost = memberFindService.findById(participantId);
+
+        study.delegateStudyHostAuthority(newHost);
+    }
 }
