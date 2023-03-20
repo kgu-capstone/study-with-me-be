@@ -15,6 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberFindService {
     private final MemberRepository memberRepository;
 
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(Email.from(email))
                 .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.MEMBER_NOT_FOUND));

@@ -123,6 +123,7 @@ public class Study extends BaseEntity {
     }
 
     public void delegateStudyHostAuthority(Member newHost) {
+        validateStudyIsProceeding();
         participants.delegateStudyHostAuthority(newHost);
     }
 
