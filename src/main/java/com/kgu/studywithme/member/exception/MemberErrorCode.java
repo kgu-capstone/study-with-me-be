@@ -1,12 +1,12 @@
 package com.kgu.studywithme.member.exception;
 
 import com.kgu.studywithme.global.exception.ErrorCode;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum MemberErrorCode implements ErrorCode {
     // Nickname
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_001", "닉네임 형식에 맞지 않습니다."),
