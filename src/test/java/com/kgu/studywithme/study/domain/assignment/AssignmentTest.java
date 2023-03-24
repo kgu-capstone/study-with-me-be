@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class AssignmentTest {
     private static final Member HOST = JIWON.toMember();
     private static final Member PARTICIPANT = GHOST.toMember();
-    private static final Study STUDY = SPRING.toStudy(HOST);
+    private static final Study STUDY = SPRING.toOnlineStudy(HOST);
     private static final Period PERIOD = Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
 
     @Test

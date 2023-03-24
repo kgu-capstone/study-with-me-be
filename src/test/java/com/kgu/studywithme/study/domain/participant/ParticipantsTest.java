@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ParticipantsTest {
     private static final Member HOST = JIWON.toMember();
     private static final Member PARTICIPANT = GHOST.toMember();
-    private static final Study STUDY = SPRING.toStudy(HOST);
+    private static final Study STUDY = SPRING.toOnlineStudy(HOST);
     private static final Capacity CAPACITY = Capacity.from(5);
 
     @Test

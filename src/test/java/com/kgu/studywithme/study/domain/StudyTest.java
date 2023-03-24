@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.LATE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,18 +31,31 @@ class StudyTest {
     @Test
     @DisplayName("Study를 생성한다")
     void construct() {
-        Study study = SPRING.toStudy(HOST);
+        Study onlineStudy = SPRING.toOnlineStudy(HOST);
+        Study offlineStudy = TOSS_INTERVIEW.toOfflineStudy(HOST);
 
         assertAll(
-                () -> assertThat(study.getNameValue()).isEqualTo(SPRING.getName()),
-                () -> assertThat(study.getDescriptionValue()).isEqualTo(SPRING.getDescription()),
-                () -> assertThat(study.getCategory()).isEqualTo(SPRING.getCategory()),
-                () -> assertThat(study.getType()).isEqualTo(SPRING.getType()),
-                () -> assertThat(study.getCapacity().getValue()).isEqualTo(SPRING.getCapacity()),
-                () -> assertThat(study.getHashtags()).containsAll(SPRING.getHashtags()),
-                () -> assertThat(study.getHost()).isEqualTo(HOST),
-                () -> assertThat(study.getParticipants()).containsExactly(HOST),
-                () -> assertThat(study.getApproveParticipants()).containsExactly(HOST)
+                () -> assertThat(onlineStudy.getNameValue()).isEqualTo(SPRING.getName()),
+                () -> assertThat(onlineStudy.getDescriptionValue()).isEqualTo(SPRING.getDescription()),
+                () -> assertThat(onlineStudy.getCategory()).isEqualTo(SPRING.getCategory()),
+                () -> assertThat(onlineStudy.getType()).isEqualTo(SPRING.getType()),
+                () -> assertThat(onlineStudy.getArea()).isNull(),
+                () -> assertThat(onlineStudy.getCapacity().getValue()).isEqualTo(SPRING.getCapacity()),
+                () -> assertThat(onlineStudy.getHashtags()).containsAll(SPRING.getHashtags()),
+                () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
+                () -> assertThat(onlineStudy.getParticipants()).containsExactly(HOST),
+                () -> assertThat(onlineStudy.getApproveParticipants()).containsExactly(HOST),
+
+                () -> assertThat(offlineStudy.getNameValue()).isEqualTo(TOSS_INTERVIEW.getName()),
+                () -> assertThat(offlineStudy.getDescriptionValue()).isEqualTo(TOSS_INTERVIEW.getDescription()),
+                () -> assertThat(offlineStudy.getCategory()).isEqualTo(TOSS_INTERVIEW.getCategory()),
+                () -> assertThat(offlineStudy.getType()).isEqualTo(TOSS_INTERVIEW.getType()),
+                () -> assertThat(offlineStudy.getArea()).isEqualTo(TOSS_INTERVIEW.getArea()),
+                () -> assertThat(offlineStudy.getCapacity().getValue()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
+                () -> assertThat(offlineStudy.getHashtags()).containsAll(TOSS_INTERVIEW.getHashtags()),
+                () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
+                () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST),
+                () -> assertThat(offlineStudy.getApproveParticipants()).containsExactly(HOST)
         );
     }
 
@@ -49,7 +63,7 @@ class StudyTest {
     @DisplayName("스터디 모집 상태를 모집 완료로 변경한다")
     void completeRecruitment() {
         // given
-        Study study = SPRING.toStudy(HOST);
+        Study study = SPRING.toOnlineStudy(HOST);
 
         // when
         study.completeRecruitment();
@@ -62,7 +76,7 @@ class StudyTest {
     @DisplayName("스터디를 종료한다")
     void closeStudy() {
         // given
-        Study study = SPRING.toStudy(HOST);
+        Study study = SPRING.toOnlineStudy(HOST);
 
         // when
         study.close();
@@ -79,7 +93,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
         }
 
@@ -125,7 +139,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);
@@ -163,7 +177,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);
@@ -201,7 +215,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);
@@ -240,7 +254,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);
@@ -272,7 +286,7 @@ class StudyTest {
     @DisplayName("스터디에 대한 공지사항을 작성한다")
     void writeNotice() {
         // given
-        Study study = SPRING.toStudy(HOST);
+        Study study = SPRING.toOnlineStudy(HOST);
 
         // when
         study.addNotice("Notice 1", "공지사항1 입니다.");
@@ -299,7 +313,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);
@@ -343,7 +357,7 @@ class StudyTest {
     @DisplayName("해당 사용자가 스터디 참여자인지 확인한다")
     void isParticipant() {
         // given
-        final Study study = SPRING.toStudy(HOST);
+        final Study study = SPRING.toOnlineStudy(HOST);
         final Member ghost = GHOST.toMember();
         study.applyParticipation(ghost);
 
@@ -366,7 +380,7 @@ class StudyTest {
 
         @BeforeEach
         void setUp() {
-            study = SPRING.toStudy(HOST);
+            study = SPRING.toOnlineStudy(HOST);
             participant = GHOST.toMember();
 
             study.applyParticipation(participant);

@@ -27,7 +27,7 @@ class StudyRepositoryTest extends RepositoryTest {
     @BeforeEach
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
-        study = studyRepository.save(SPRING.toStudy(host));
+        study = studyRepository.save(SPRING.toOnlineStudy(host));
     }
 
     @Test
