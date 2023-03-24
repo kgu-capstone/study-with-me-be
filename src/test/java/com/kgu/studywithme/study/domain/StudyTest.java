@@ -462,4 +462,54 @@ class StudyTest {
             assertThat(study.getAssignments().getCount()).isEqualTo(2);
         }
     }
+
+    @Nested
+    @DisplayName("스터디 리뷰 작성")
+    class writeReview {
+        private Study study;
+        private Member participant;
+
+        @BeforeEach
+        void setUp() {
+            study = SPRING.toOnlineStudy(HOST);
+            participant = GHOST.toMember();
+
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+        }
+
+        @Test
+        @DisplayName("스터디 졸업생이 아니면 리뷰를 작성할 수 없다")
+        void failureByAnonymousMember() {
+            assertThatThrownBy(() -> study.writeReview(participant, "리뷰입니다."))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_GRADUATED.getMessage());
+        }
+
+        @Test
+        @DisplayName("이미 리뷰를 작성했다면 중복으로 작성할 수 없다")
+        void failureByAlreadyRegisterPerWeek() {
+            // given
+            study.graduateParticipant(participant);
+            study.writeReview(participant, "리뷰입니다.");
+
+            // when - then
+            assertThatThrownBy(() -> study.writeReview(participant, "리뷰입니다22."))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_REVIEW_WRITTEN.getMessage());
+        }
+
+        @Test
+        @DisplayName("리뷰 작성에 성공한다")
+        void success() {
+            // given
+            study.graduateParticipant(participant);
+
+            // when
+            study.writeReview(participant, "리뷰입니다.");
+
+            // then
+            assertThat(study.getReviews().getCount()).isEqualTo(1);
+        }
+    }
 }

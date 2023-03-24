@@ -130,6 +130,17 @@ public class Participants {
                 .anyMatch(participant -> participant.isSameMember(member));
     }
 
+    public void validateMemberIsStudyGraduate(Member member) {
+        if (!isGraduatedMember(member)) {
+            throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_GRADUATED);
+        }
+    }
+
+    private boolean isGraduatedMember(Member member) {
+        return getGraduatedParticipants().stream()
+                .anyMatch(graduated -> graduated.isSameMember(member));
+    }
+
     public List<Member> getParticipants() {
         List<Member> members = participants.stream()
                 .map(Participant::getMember)
