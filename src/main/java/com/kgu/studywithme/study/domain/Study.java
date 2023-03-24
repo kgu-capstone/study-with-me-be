@@ -156,6 +156,11 @@ public class Study extends BaseEntity {
         participants.cancel(participant);
     }
 
+    public void graduateParticipant(Member participant) {
+        validateStudyIsProceeding();
+        participants.graduate(participant);
+    }
+
     private void validateRecruitmentIsProceeding() {
         validateStudyIsProceeding();
         validateRecruitmentStatus();
@@ -196,6 +201,10 @@ public class Study extends BaseEntity {
 
     public List<Member> getApproveParticipants() {
         return participants.getApproveParticipants();
+    }
+
+    public List<Member> getGraduatedParticipants() {
+        return participants.getGraduatedParticipants();
     }
 
     public Capacity getCapacity() {

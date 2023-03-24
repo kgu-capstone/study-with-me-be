@@ -223,4 +223,47 @@ class ParticipantsTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("스터디 졸업")
+    class graduate {
+        @Test
+        @DisplayName("스터디 팀장은 팀장 권한을 위임하지 않는다면 졸업을 할 수 없다")
+        void failureByHost() {
+            Participants participants = Participants.of(HOST, CAPACITY);
+
+            assertThatThrownBy(() -> participants.graduate(HOST))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
+        }
+
+        @Test
+        @DisplayName("스터디 참여자가 아니면 졸업을 할 수 없다")
+        void failureByNotParticipant() {
+            Participants participants = Participants.of(HOST, CAPACITY);
+
+            assertThatThrownBy(() -> participants.graduate(PARTICIPANT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+        }
+
+        @Test
+        @DisplayName("졸업에 성공한다")
+        void success() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+            participants.apply(STUDY, PARTICIPANT);
+            participants.approve(PARTICIPANT);
+
+            // when
+            participants.graduate(PARTICIPANT);
+
+            // then
+            assertAll(
+                    () -> assertThat(participants.getParticipants()).containsExactly(HOST, PARTICIPANT),
+                    () -> assertThat(participants.getApproveParticipants()).containsExactly(HOST),
+                    () -> assertThat(participants.getGraduatedParticipants()).containsExactly(PARTICIPANT)
+            );
+        }
+    }
 }

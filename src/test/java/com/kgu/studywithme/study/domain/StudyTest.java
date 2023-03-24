@@ -247,6 +247,46 @@ class StudyTest {
     }
 
     @Nested
+    @DisplayName("스터디 졸업")
+    class graduateParticipant {
+        private Study study;
+        private Member participant;
+
+        @BeforeEach
+        void setUp() {
+            study = SPRING.toOnlineStudy(HOST);
+            participant = GHOST.toMember();
+
+            study.applyParticipation(participant);
+            study.approveParticipation(participant);
+        }
+
+        @Test
+        @DisplayName("종료된 스터디에서는 졸업을 할 수 없다")
+        void failureByClosedStudy() {
+            study.close();
+
+            assertThatThrownBy(() -> study.graduateParticipant(participant))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+        }
+
+        @Test
+        @DisplayName("졸업에 성공한다")
+        void success() {
+            // when
+            study.graduateParticipant(participant);
+
+            // then
+            assertAll(
+                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST),
+                    () -> assertThat(study.getGraduatedParticipants()).containsExactly(participant)
+            );
+        }
+    }
+
+    @Nested
     @DisplayName("스터디 팀장 권한 위임")
     class delegateStudyHostAuthority {
         private Study study;

@@ -67,6 +67,12 @@ public class Participants {
         updateMemberParticipationStatus(participant, CALCEL);
     }
 
+    public void graduate(Member participant) {
+        validateMemberIsNotHost(participant);
+        validateMemberIsParticipant(participant);
+        updateMemberParticipationStatus(participant, GRADUATED);
+    }
+
     private void updateMemberParticipationStatus(Member member, ParticipantStatus status) {
         participants.stream()
                 .filter(participant -> participant.isSameMember(member))
@@ -147,5 +153,12 @@ public class Participants {
 
     private int getNumberOfApproveParticipants() {
         return getApproveParticipants().size();
+    }
+
+    public List<Member> getGraduatedParticipants() {
+        return participants.stream()
+                .filter(participant -> participant.getStatus() == GRADUATED)
+                .map(Participant::getMember)
+                .toList();
     }
 }
