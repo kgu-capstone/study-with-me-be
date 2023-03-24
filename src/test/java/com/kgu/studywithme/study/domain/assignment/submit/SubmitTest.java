@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Study-Assignment-Submit 도메인 테스트")
 class SubmitTest {
     private static final Member HOST = JIWON.toMember();
-    private static final Study STUDY = SPRING.toStudy(HOST);
+    private static final Study STUDY = SPRING.toOnlineStudy(HOST);
     private static final Period PERIOD = Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
     private static final Assignment ASSIGNMENT = Assignment.createAssignment(1, PERIOD, STUDY, HOST, "과제 1", "과제입니다.");
 

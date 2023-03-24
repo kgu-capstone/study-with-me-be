@@ -50,6 +50,9 @@ public class Study extends BaseEntity {
     @Column(name = "study_type", nullable = false, updatable = false)
     private StudyType type;
 
+    @Embedded
+    private StudyArea area;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "recruitment_status", nullable = false)
     private RecruitmentStatus recruitmentStatus;
@@ -79,11 +82,12 @@ public class Study extends BaseEntity {
 
     @Builder
     private Study(Member host, StudyName name, Description description, Capacity capacity,
-                  Category category, StudyType type, Set<String> hashtags) {
+                  Category category, StudyType type, StudyArea area, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.type = type;
+        this.area = area;
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
         this.hashtags = hashtags;
@@ -91,9 +95,14 @@ public class Study extends BaseEntity {
         this.assignments = Assignments.createAssignmentsPage();
     }
 
-    public static Study createStudy(Member host, StudyName name, Description description, Capacity capacity,
+    public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity,
                                     Category category, StudyType type, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, hashtags);
+        return new Study(host, name, description, capacity, category, type, null, hashtags);
+    }
+
+    public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity,
+                                          Category category, StudyType type, StudyArea area, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, type, area, hashtags);
     }
 
     public void completeRecruitment() {

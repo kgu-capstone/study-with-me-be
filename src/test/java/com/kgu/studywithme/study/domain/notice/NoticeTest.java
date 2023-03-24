@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Study-Notice 도메인 테스트")
 class NoticeTest {
     private static final Member HOST = JIWON.toMember();
-    private static final Study STUDY = SPRING.toStudy(HOST);
+    private static final Study STUDY = SPRING.toOnlineStudy(HOST);
 
     @Test
     @DisplayName("Notice를 생성한다")

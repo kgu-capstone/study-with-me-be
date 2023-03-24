@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class AttendanceTest {
     private static final Member HOST = JIWON.toMember();
     private static final Member PARTICIPANT = GHOST.toMember();
-    private static final Study STUDY = SPRING.toStudy(HOST);
+    private static final Study STUDY = SPRING.toOnlineStudy(HOST);
 
     @Test
     @DisplayName("Attendance를 생성한다")
