@@ -20,18 +20,17 @@ import static com.kgu.studywithme.common.utils.TokenUtils.REFRESH_TOKEN;
 @Getter
 @RequiredArgsConstructor
 public enum MemberFixture {
-    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "google_profile_url", "https://source.boringavatars.com/beam/120/sjiwon4491@gmail.com",
+    JIWON("서지원", "서지원", "sjiwon4491@gmail.com", "https://source.boringavatars.com/beam/120/sjiwon4491@gmail.com",
             LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
-    GHOST("고스트", "고스트", "ghost@gmail.com", "google_profile_url", "google_profile_url",
+    GHOST("고스트", "고스트", "ghost@gmail.com", "https://source.boringavatars.com/beam/120/ghost@gmail.com",
             LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
-    ANONYMOUS("익명", "익명", "anonymous@gmail.com", "google_profile_url", "https://source.boringavatars.com/beam/120/anonymous@gmail.com",
+    ANONYMOUS("익명", "익명", "anonymous@gmail.com", "https://source.boringavatars.com/beam/120/anonymous@gmail.com",
             LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ;
 
     private final String name;
     private final String nickname;
     private final String email;
-    private final String googleProflieUrl;
     private final String profileUrl;
     private final LocalDate birth;
     private final Gender gender;
@@ -44,8 +43,7 @@ public enum MemberFixture {
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .googleProflieUrl(googleProflieUrl)
-                .profileUrl(RealProfile.from(profileUrl))
+                .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(generateRandomPhoneNumber())
                 .gender(gender)
@@ -76,7 +74,7 @@ public enum MemberFixture {
         return GoogleUserResponse.builder()
                 .name(name)
                 .email(email)
-                .picture(profileUrl)
+                .picture("google_profile_url")
                 .build();
     }
 }

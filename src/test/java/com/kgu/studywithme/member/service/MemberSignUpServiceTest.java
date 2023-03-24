@@ -2,7 +2,10 @@ package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.domain.*;
+import com.kgu.studywithme.member.domain.Email;
+import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.Nickname;
+import com.kgu.studywithme.member.domain.Region;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -96,8 +99,7 @@ class MemberSignUpServiceTest extends ServiceTest {
                 .name(JIWON.getName())
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .googleProflieUrl(JIWON.getGoogleProflieUrl())
-                .profileUrl(RealProfile.from(JIWON.getProfileUrl()))
+                .profileUrl(JIWON.getProfileUrl())
                 .birth(JIWON.getBirth())
                 .phone(phone)
                 .gender(JIWON.getGender())

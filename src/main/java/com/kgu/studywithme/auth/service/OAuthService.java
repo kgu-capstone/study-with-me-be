@@ -29,8 +29,6 @@ public class OAuthService {
         GoogleUserResponse userInfo = (GoogleUserResponse) oAuthConnector.getUserInfo(tokenResponse.accessToken());
 
         Member member = findMemberOrException(userInfo);
-        member.updateGoogleProfileUrl(userInfo.picture()); // update google profile url
-
         String accessToken = jwtTokenProvider.createAccessToken(member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
         tokenManager.synchronizeRefreshToken(member.getId(), refreshToken); // sync RefreshToken
