@@ -12,6 +12,8 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.domain.participant.Participants;
+import com.kgu.studywithme.study.domain.review.Review;
+import com.kgu.studywithme.study.domain.review.Reviews;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,6 +65,9 @@ public class Study extends BaseEntity {
     @Embedded
     private Assignments assignments;
 
+    @Embedded
+    private Reviews reviews;
+
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
@@ -93,6 +98,7 @@ public class Study extends BaseEntity {
         this.hashtags = hashtags;
         this.closed = false;
         this.assignments = Assignments.createAssignmentsPage();
+        this.reviews = Reviews.createReviewsPage();
     }
 
     public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity,
@@ -129,6 +135,15 @@ public class Study extends BaseEntity {
 
     public void validateMemberIsParticipant(Member participant) {
         participants.validateMemberIsParticipant(participant);
+    }
+
+    public void writeReview(Member writer, String content) {
+        validateMemberIsStudyGraduate(writer);
+        reviews.writeReview(Review.writeReview(this, writer, content));
+    }
+
+    private void validateMemberIsStudyGraduate(Member writer) {
+        participants.validateMemberIsStudyGraduate(writer);
     }
 
     public void delegateStudyHostAuthority(Member newHost) {
