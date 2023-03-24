@@ -35,7 +35,7 @@ class ParticipationServiceTest extends ServiceTest {
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
             applier = memberRepository.save(GHOST.toMember());
-            study = studyRepository.save(SPRING.toStudy(host));
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test
@@ -98,7 +98,7 @@ class ParticipationServiceTest extends ServiceTest {
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
             applier = memberRepository.save(GHOST.toMember());
-            study = studyRepository.save(SPRING.toStudy(host));
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test
@@ -169,7 +169,7 @@ class ParticipationServiceTest extends ServiceTest {
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
             applier = memberRepository.save(GHOST.toMember());
-            study = studyRepository.save(SPRING.toStudy(host));
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test
@@ -223,7 +223,7 @@ class ParticipationServiceTest extends ServiceTest {
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
             participant = memberRepository.save(GHOST.toMember());
-            study = studyRepository.save(SPRING.toStudy(host));
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test
@@ -288,7 +288,7 @@ class ParticipationServiceTest extends ServiceTest {
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
             participant = memberRepository.save(GHOST.toMember());
-            study = studyRepository.save(SPRING.toStudy(host));
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test

@@ -31,6 +31,7 @@ public enum StudyErrorCode implements ErrorCode {
     PERIOD_END_DATE_MUST_BE_SET_FROM_NOW_ON(HttpStatus.CONFLICT, "STUDY_012", "종료일은 과거일 수 없습니다."),
     ALREADY_ASSIGNMENT_EXISTS_PER_WEEK(HttpStatus.CONFLICT, "STUDY_013", "해당 주차에는 이미 과제가 등록되어 있습니다."),
     STUDY_NOT_FOUND(HttpStatus.CONFLICT, "STUDY_015", "스터디가 존재하지 않습니다."),
+    STUDY_AREA_IS_BLANK(HttpStatus.CONFLICT, "STUDY_016", "오프라인으로 진행되는 스터디는 진행 지역이 필수입니다."),
     ;
 
     private final HttpStatus status;

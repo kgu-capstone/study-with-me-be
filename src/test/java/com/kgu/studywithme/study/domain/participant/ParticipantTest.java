@@ -23,7 +23,7 @@ class ParticipantTest {
     @DisplayName("스터디에 참여 신청을 진행한 사용자를 생성한다")
     void constructSuccess() {
         // given
-        final Study study = SPRING.toStudy(JIWON.toMember());
+        final Study study = SPRING.toOnlineStudy(JIWON.toMember());
         final Member member = GHOST.toMember();
 
         // when
@@ -41,7 +41,7 @@ class ParticipantTest {
     @MethodSource("provideForIsSameParticipant")
     @DisplayName("동일한 참여자인지 확인한다")
     void isSameParticipant(Member member, Member target, boolean expected) {
-        Study study = SPRING.toStudy(JIWON.toMember());
+        Study study = SPRING.toOnlineStudy(JIWON.toMember());
         Participant participant = Participant.applyInStudy(study, member);
 
         assertThat(participant.isSameMember(target)).isEqualTo(expected);
@@ -57,7 +57,7 @@ class ParticipantTest {
     @Test
     @DisplayName("참여 상태를 업데이트한다")
     void updateParticipationStatus() {
-        final Study study = SPRING.toStudy(JIWON.toMember());
+        final Study study = SPRING.toOnlineStudy(JIWON.toMember());
         final Member member = GHOST.toMember();
         Participant participant = Participant.applyInStudy(study, member);
 
