@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.domain.review;
 
+import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import lombok.AccessLevel;
@@ -13,13 +14,12 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "study_review")
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "content", nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
