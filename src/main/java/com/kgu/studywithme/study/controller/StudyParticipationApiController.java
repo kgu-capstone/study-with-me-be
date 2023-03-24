@@ -18,6 +18,12 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/applicants")
+    public ResponseEntity<Void> applyCancel(@PathVariable Long studyId, @ExtractPayload Long applierId) {
+        participationService.applyCancel(studyId, applierId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/applicants/{applierId}/approve")
     public ResponseEntity<Void> approve(@PathVariable Long studyId, @PathVariable Long applierId, @ExtractPayload Long hostId) {
         participationService.approve(studyId, applierId, hostId);
@@ -39,6 +45,12 @@ public class StudyParticipationApiController {
     @PatchMapping("/participants/{participantId}/delegation")
     public ResponseEntity<Void> delegateAuthority(@PathVariable Long studyId, @PathVariable Long participantId, @ExtractPayload Long hostId) {
         participationService.delegateAuthority(studyId, participantId, hostId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/graduate")
+    public ResponseEntity<Void> graduate(@PathVariable Long studyId, @ExtractPayload Long participantId) {
+        participationService.graduate(studyId, participantId);
         return ResponseEntity.noContent().build();
     }
 }

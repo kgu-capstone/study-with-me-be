@@ -16,7 +16,8 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     void reissueRefreshTokenByRtrPolicy(@Param("memberId") Long memberId, @Param("refreshToken") String newRefreshToken);
 
     // Query Method
-    Optional<Token> findByMemberId(Long memberId);
+    @Modifying(clearAutomatically = true)
     void deleteByMemberId(Long memberId);
+    Optional<Token> findByMemberId(Long memberId);
     boolean existsByMemberIdAndRefreshToken(Long memberId, String refreshToken);
 }

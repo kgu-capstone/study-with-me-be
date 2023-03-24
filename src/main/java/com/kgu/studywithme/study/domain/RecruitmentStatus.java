@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RecruitmentStatus {
-    IN_PROGRESS("모집 중"),
+    IN_PROGRESS("모집중"),
     COMPLETE("모집 완료")
     ;
 
