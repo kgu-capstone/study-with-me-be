@@ -53,4 +53,12 @@ public class ParticipationService {
 
         study.delegateStudyHostAuthority(newHost);
     }
+
+    @Transactional
+    public void graduate(Long studyId, Long participantId) {
+        Study study = studyFindService.findByIdWithHost(studyId);
+        Member participant = memberFindService.findById(participantId);
+
+        study.graduateParticipant(participant);
+    }
 }

@@ -203,7 +203,7 @@ include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/path-
 HTTP Response
 include::{snippets}/StudyApi/Participation/DelegateAuthority/Failure/Case3/response-body.adoc[]
 
-=== 5. 팀장 권한 위임에 성공한다
+=== 4. 팀장 권한 위임에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/request-headers.adoc[]
@@ -211,3 +211,48 @@ include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/path-parame
 
 HTTP Response
 include::{snippets}/StudyApi/Participation/DelegateAuthority/Success/http-response.adoc[]
+
+== 스터디 졸업
+=== 1. Authorization Header에 AccessToken이 없으면 졸업에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디가 종료되었다면 졸업을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 팀장은 졸업을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case3/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case3/response-body.adoc[]
+
+=== 4. 참여자가 아니면 졸업을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case4/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Graduate/Failure/Case4/response-body.adoc[]
+
+=== 5. 졸업에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Graduate/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Graduate/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Graduate/Success/http-response.adoc[]

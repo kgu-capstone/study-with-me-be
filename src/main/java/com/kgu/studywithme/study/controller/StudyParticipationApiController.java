@@ -41,4 +41,10 @@ public class StudyParticipationApiController {
         participationService.delegateAuthority(studyId, participantId, hostId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/graduate")
+    public ResponseEntity<Void> graduate(@PathVariable Long studyId, @ExtractPayload Long participantId) {
+        participationService.graduate(studyId, participantId);
+        return ResponseEntity.noContent().build();
+    }
 }
