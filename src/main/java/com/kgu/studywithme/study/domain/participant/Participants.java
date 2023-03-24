@@ -97,7 +97,7 @@ public class Participants {
                 .anyMatch(participant -> participant.getStatus() == APPLY || participant.getStatus() == APPROVE);
     }
 
-    private void validateMemberIsApplier(Member member) {
+    public void validateMemberIsApplier(Member member) {
         if (!isApplier(member)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER);
         }
@@ -137,6 +137,13 @@ public class Participants {
 
         return Stream.of(List.of(host), members)
                 .flatMap(Collection::stream)
+                .toList();
+    }
+
+    public List<Member> getApplier() {
+        return participants.stream()
+                .filter(participant -> participant.getStatus() == APPLY)
+                .map(Participant::getMember)
                 .toList();
     }
 

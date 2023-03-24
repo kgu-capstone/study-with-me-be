@@ -126,6 +126,7 @@ class StudyTest {
             // then
             assertAll(
                     () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
+                    () -> assertThat(study.getApplier()).containsExactly(participant),
                     () -> assertThat(study.getApproveParticipants()).containsExactly(HOST)
             );
         }

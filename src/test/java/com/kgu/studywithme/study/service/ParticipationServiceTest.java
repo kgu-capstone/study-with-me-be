@@ -88,6 +88,46 @@ class ParticipationServiceTest extends ServiceTest {
     }
 
     @Nested
+    @DisplayName("스터디 참여 신청 취소")
+    class applyCancel {
+        private Member host;
+        private Member applier;
+        private Study study;
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            applier = memberRepository.save(GHOST.toMember());
+            study = studyRepository.save(SPRING.toOnlineStudy(host));
+        }
+
+        @Test
+        @DisplayName("참여 신청자가 아니면 참여 신청을 취소할 수 없다")
+        void failureByAnonymousMember() {
+            assertThatThrownBy(() -> participationService.applyCancel(study.getId(), applier.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
+        }
+
+        @Test
+        @DisplayName("참여 신청 취소에 성공한다")
+        void success() {
+            // given
+            study.applyParticipation(applier);
+
+            // when
+            participationService.applyCancel(study.getId(), applier.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1)
+            );
+        }
+    }
+
+    @Nested
     @DisplayName("스터디 참여 승인")
     class approve {
         private Member host;

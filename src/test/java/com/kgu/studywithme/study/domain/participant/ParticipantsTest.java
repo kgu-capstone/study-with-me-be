@@ -101,6 +101,7 @@ class ParticipantsTest {
             // then
             assertAll(
                     () -> assertThat(participants.getParticipants()).containsExactly(HOST, PARTICIPANT),
+                    () -> assertThat(participants.getApplier()).containsExactly(PARTICIPANT),
                     () -> assertThat(participants.getApproveParticipants()).containsExactly(HOST)
             );
         }

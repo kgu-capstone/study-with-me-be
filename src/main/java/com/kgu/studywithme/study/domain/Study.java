@@ -182,6 +182,10 @@ public class Study extends BaseEntity {
         return recruitmentStatus == COMPLETE;
     }
 
+    public void validateMemberIsApplier(Member member) {
+        participants.validateMemberIsApplier(member);
+    }
+
     // Add Getter
     public String getNameValue() {
         return name.getValue();
@@ -197,6 +201,10 @@ public class Study extends BaseEntity {
 
     public List<Member> getParticipants() {
         return participants.getParticipants();
+    }
+
+    public List<Member> getApplier() {
+        return participants.getApplier();
     }
 
     public List<Member> getApproveParticipants() {
