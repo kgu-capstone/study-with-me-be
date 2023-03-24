@@ -16,7 +16,6 @@ public class SignUpRequestUtils {
                 .name(JIWON.getName())
                 .nickname(JIWON.getNickname())
                 .email(JIWON.getEmail())
-                .googleProfileUrl(JIWON.getGoogleProflieUrl())
                 .profileUrl(JIWON.getProfileUrl())
                 .birth(JIWON.getBirth())
                 .phone(generateRandomPhoneNumber())

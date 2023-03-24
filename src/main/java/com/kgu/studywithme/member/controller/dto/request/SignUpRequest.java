@@ -28,9 +28,6 @@ public record SignUpRequest(
         @NotBlank(message = "이메일은 필수입니다.")
         String email,
 
-        @NotBlank(message = "구글 프로필 URL은 필수입니다.")
-        String googleProfileUrl,
-
         @NotBlank(message = "프로필 URL은 필수입니다.")
         String profileUrl,
 
@@ -61,8 +58,7 @@ public record SignUpRequest(
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .googleProflieUrl(googleProfileUrl)
-                .profileUrl(RealProfile.from(profileUrl))
+                .googleProflieUrl(profileUrl)
                 .birth(birth)
                 .phone(phone)
                 .gender(convertStringToGender())
