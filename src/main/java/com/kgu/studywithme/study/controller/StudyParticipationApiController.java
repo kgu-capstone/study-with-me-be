@@ -18,6 +18,12 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/applicants")
+    public ResponseEntity<Void> applyCancel(@PathVariable Long studyId, @ExtractPayload Long applierId) {
+        participationService.applyCancel(studyId, applierId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/applicants/{applierId}/approve")
     public ResponseEntity<Void> approve(@PathVariable Long studyId, @PathVariable Long applierId, @ExtractPayload Long hostId) {
         participationService.approve(studyId, applierId, hostId);

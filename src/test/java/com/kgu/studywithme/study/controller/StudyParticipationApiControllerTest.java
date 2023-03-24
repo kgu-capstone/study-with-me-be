@@ -251,6 +251,132 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
+    @DisplayName("스터디 참여 신청 취소 API [DELETE /api/studies/{studyId}/applicants]")
+    class applyCancel {
+        private static final String BASE_URL = "/api/studies/{studyId}/applicants";
+        private static final Long STUDY_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 신청 취소에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/ApplyCancel/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("참여 신청자가 아니면 참여 신청을 취소할 수 없다")
+        void failureByAnonymousMember() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
+                    .when(participationService)
+                    .applyCancel(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_APPLIER;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/ApplyCancel/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("참여 신청 취소에 성공한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doNothing()
+                    .when(participationService)
+                    .applyCancel(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isNoContent(),
+                            jsonPath("$").doesNotExist()
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/ApplyCancel/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
     @DisplayName("스터디 참여 승인 API [PATCH /api/studies/{studyId}/applicants/{applierId}/approve]")
     class approve {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/approve";
