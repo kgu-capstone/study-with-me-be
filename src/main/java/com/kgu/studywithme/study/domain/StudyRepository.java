@@ -18,4 +18,6 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
             " JOIN FETCH s.participants.host h" +
             " WHERE s.id = :studyId AND h.id = :hostId")
     Optional<Study> findByIdAndHostId(@Param("studyId") Long studyId, @Param("hostId") Long hostId);
+
+    boolean existsByName(StudyName name);
 }

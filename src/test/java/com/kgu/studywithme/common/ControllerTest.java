@@ -12,8 +12,11 @@ import com.kgu.studywithme.category.controller.CategoryApiController;
 import com.kgu.studywithme.category.service.CategoryService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
+import com.kgu.studywithme.study.controller.StudyApiController;
 import com.kgu.studywithme.study.controller.StudyParticipationApiController;
 import com.kgu.studywithme.study.service.ParticipationService;
+import com.kgu.studywithme.study.service.StudyRegisterService;
+import com.kgu.studywithme.study.service.StudyValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         MemberApiController.class,
         OAuthApiController.class,
         CategoryApiController.class,
-        StudyParticipationApiController.class
+        StudyParticipationApiController.class,
+        StudyApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -71,6 +75,12 @@ public abstract class ControllerTest {
 
     @MockBean
     protected ParticipationService participationService;
+
+    @MockBean
+    protected StudyRegisterService studyRegisterService;
+
+    @MockBean
+    protected StudyValidator studyValidator;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

@@ -15,6 +15,9 @@ public enum StudyErrorCode implements ErrorCode {
     NAME_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_002", "스터디 이름은 공백을 허용하지 않습니다."),
     NAME_LENGTH_OUT_OF_RANGE(HttpStatus.CONFLICT, "STUDY_003", "스터디 이름은 최대 20자까지 가능합니다."),
 
+    // 추가
+    DUPLICATE_NAME(HttpStatus.CONFLICT, "STUDY_017", "이미 사용중인 스터디 이름입니다."),
+
     // Description
     DESCRIPTION_LENGTH_OUT_OF_RANGE(HttpStatus.CONFLICT, "STUDY_004", "스터디 설명은 최대 1000자까지 가능합니다."),
     DESCRIPTION_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_014", "스터디 설명은 공백을 허용하지 않습니다."),
