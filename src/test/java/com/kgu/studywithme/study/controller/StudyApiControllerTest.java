@@ -115,8 +115,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("지역1"),
-                                            fieldWithPath("city").description("지역2"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
                                     responseFields(
@@ -170,8 +172,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("지역1"),
-                                            fieldWithPath("city").description("지역2"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
                                     responseFields(
@@ -225,8 +229,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("지역1"),
-                                            fieldWithPath("city").description("지역2"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     )
                             )
@@ -273,8 +279,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("지역1"),
-                                            fieldWithPath("city").description("지역2"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     )
                             )
