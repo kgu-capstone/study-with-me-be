@@ -67,6 +67,12 @@ public class Participants {
         updateMemberParticipationStatus(participant, CALCEL);
     }
 
+    public void graduate(Member participant) {
+        validateMemberIsNotHost(participant);
+        validateMemberIsParticipant(participant);
+        updateMemberParticipationStatus(participant, GRADUATED);
+    }
+
     private void updateMemberParticipationStatus(Member member, ParticipantStatus status) {
         participants.stream()
                 .filter(participant -> participant.isSameMember(member))
@@ -91,7 +97,7 @@ public class Participants {
                 .anyMatch(participant -> participant.getStatus() == APPLY || participant.getStatus() == APPROVE);
     }
 
-    private void validateMemberIsApplier(Member member) {
+    public void validateMemberIsApplier(Member member) {
         if (!isApplier(member)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER);
         }
@@ -124,6 +130,17 @@ public class Participants {
                 .anyMatch(participant -> participant.isSameMember(member));
     }
 
+    public void validateMemberIsStudyGraduate(Member member) {
+        if (!isGraduatedMember(member)) {
+            throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_GRADUATED);
+        }
+    }
+
+    private boolean isGraduatedMember(Member member) {
+        return getGraduatedParticipants().stream()
+                .anyMatch(graduated -> graduated.isSameMember(member));
+    }
+
     public List<Member> getParticipants() {
         List<Member> members = participants.stream()
                 .map(Participant::getMember)
@@ -131,6 +148,13 @@ public class Participants {
 
         return Stream.of(List.of(host), members)
                 .flatMap(Collection::stream)
+                .toList();
+    }
+
+    public List<Member> getApplier() {
+        return participants.stream()
+                .filter(participant -> participant.getStatus() == APPLY)
+                .map(Participant::getMember)
                 .toList();
     }
 
@@ -147,5 +171,12 @@ public class Participants {
 
     private int getNumberOfApproveParticipants() {
         return getApproveParticipants().size();
+    }
+
+    public List<Member> getGraduatedParticipants() {
+        return participants.stream()
+                .filter(participant -> participant.getStatus() == GRADUATED)
+                .map(Participant::getMember)
+                .toList();
     }
 }

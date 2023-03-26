@@ -12,6 +12,8 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.domain.participant.Participants;
+import com.kgu.studywithme.study.domain.review.Review;
+import com.kgu.studywithme.study.domain.review.Reviews;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,6 +65,9 @@ public class Study extends BaseEntity {
     @Embedded
     private Assignments assignments;
 
+    @Embedded
+    private Reviews reviews;
+
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
@@ -93,6 +98,7 @@ public class Study extends BaseEntity {
         this.hashtags = hashtags;
         this.closed = false;
         this.assignments = Assignments.createAssignmentsPage();
+        this.reviews = Reviews.createReviewsPage();
     }
 
     public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity,
@@ -131,6 +137,15 @@ public class Study extends BaseEntity {
         participants.validateMemberIsParticipant(participant);
     }
 
+    public void writeReview(Member writer, String content) {
+        validateMemberIsStudyGraduate(writer);
+        reviews.writeReview(Review.writeReview(this, writer, content));
+    }
+
+    private void validateMemberIsStudyGraduate(Member writer) {
+        participants.validateMemberIsStudyGraduate(writer);
+    }
+
     public void delegateStudyHostAuthority(Member newHost) {
         validateStudyIsProceeding();
         participants.delegateStudyHostAuthority(newHost);
@@ -156,6 +171,11 @@ public class Study extends BaseEntity {
         participants.cancel(participant);
     }
 
+    public void graduateParticipant(Member participant) {
+        validateStudyIsProceeding();
+        participants.graduate(participant);
+    }
+
     private void validateRecruitmentIsProceeding() {
         validateStudyIsProceeding();
         validateRecruitmentStatus();
@@ -177,6 +197,10 @@ public class Study extends BaseEntity {
         return recruitmentStatus == COMPLETE;
     }
 
+    public void validateMemberIsApplier(Member member) {
+        participants.validateMemberIsApplier(member);
+    }
+
     // Add Getter
     public String getNameValue() {
         return name.getValue();
@@ -194,8 +218,16 @@ public class Study extends BaseEntity {
         return participants.getParticipants();
     }
 
+    public List<Member> getApplier() {
+        return participants.getApplier();
+    }
+
     public List<Member> getApproveParticipants() {
         return participants.getApproveParticipants();
+    }
+
+    public List<Member> getGraduatedParticipants() {
+        return participants.getGraduatedParticipants();
     }
 
     public Capacity getCapacity() {
