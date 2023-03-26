@@ -14,3 +14,5 @@ include::member-signup.adoc[leveloffset=+1]
 include::category.adoc[leveloffset=+1]
 
 include::study-participation.adoc[leveloffset=+1]
+
+include::study-register.adoc[leveloffset=+1]
