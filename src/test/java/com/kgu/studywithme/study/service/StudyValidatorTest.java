@@ -40,6 +40,5 @@ class StudyValidatorTest extends ServiceTest {
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateName(diff));
-
     }
 }
