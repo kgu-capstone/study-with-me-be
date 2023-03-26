@@ -16,7 +16,6 @@ import com.kgu.studywithme.study.controller.StudyApiController;
 import com.kgu.studywithme.study.controller.StudyParticipationApiController;
 import com.kgu.studywithme.study.service.ParticipationService;
 import com.kgu.studywithme.study.service.StudyRegisterService;
-import com.kgu.studywithme.study.service.StudyValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,9 +77,6 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyRegisterService studyRegisterService;
-
-    @MockBean
-    protected StudyValidator studyValidator;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
