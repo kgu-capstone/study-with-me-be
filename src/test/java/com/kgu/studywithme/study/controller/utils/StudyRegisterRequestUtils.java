@@ -6,7 +6,6 @@ import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 
 public class StudyRegisterRequestUtils {
-
     public static StudyRegisterRequest createStudyRegisterRequestOnline() {
         return StudyRegisterRequest.builder()
                 .name(TOEIC.getName())
@@ -30,5 +29,4 @@ public class StudyRegisterRequestUtils {
                 .hashtags(TOEIC.getHashtags())
                 .build();
     }
-
 }
