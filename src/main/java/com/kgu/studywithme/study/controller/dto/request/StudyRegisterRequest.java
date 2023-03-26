@@ -14,10 +14,10 @@ public record StudyRegisterRequest(
         String description,
 
         @NotNull(message = "카테고리는 필수입니다.")
-        long category,
+        Long category,
 
         @NotNull(message = "참여인원은 필수입니다.")
-        int capacity,
+        Integer capacity,
 
         @NotBlank(message = "온/오프라인 유무는 필수입니다.")
         String type,

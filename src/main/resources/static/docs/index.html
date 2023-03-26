@@ -621,7 +621,7 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
-  "result" : "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&amp;client_id=client_id&amp;scope=profile email openid&amp;redirect_uri=http://localhost:3000"
+  "result" : "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&amp;client_id=client_id&amp;scope=openid email profile&amp;redirect_uri=http://localhost:3000"
 }</code></pre>
 </div>
 </div>
@@ -657,7 +657,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/oauth/login?authorizationCode=e0cd9de3093240e7a12067472aa722f7e0cd9de3093240e7a12067472aa722f7&amp;redirectUrl=http%3A%2F%2Flocalhost%3A3000 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/oauth/login?authorizationCode=be5b55b4a83a4faebfbfff66ed6515e8be5b55b4a83a4faebfbfff66ed6515e8&amp;redirectUrl=http%3A%2F%2Flocalhost%3A3000 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -738,7 +738,7 @@ Host: localhost:8080</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/oauth/login?authorizationCode=e0cd9de3093240e7a12067472aa722f7e0cd9de3093240e7a12067472aa722f7&amp;redirectUrl=http%3A%2F%2Flocalhost%3A3000 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/oauth/login?authorizationCode=be5b55b4a83a4faebfbfff66ed6515e8be5b55b4a83a4faebfbfff66ed6515e8&amp;redirectUrl=http%3A%2F%2Flocalhost%3A3000 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1115,7 +1115,7 @@ Host: localhost:8080
   "email" : "sjiwon4491@gmail.com",
   "profileUrl" : "https://source.boringavatars.com/beam/120/sjiwon4491@gmail.com",
   "birth" : "2000-01-18",
-  "phone" : "010-4178-4203",
+  "phone" : "010-6544-9899",
   "gender" : "M",
   "province" : "경기도",
   "city" : "안양시",
@@ -1245,7 +1245,7 @@ Host: localhost:8080
   "email" : "sjiwon4491@gmail.com",
   "profileUrl" : "https://source.boringavatars.com/beam/120/sjiwon4491@gmail.com",
   "birth" : "2000-01-18",
-  "phone" : "010-8004-9747",
+  "phone" : "010-8023-4976",
   "gender" : "M",
   "province" : "경기도",
   "city" : "안양시",
@@ -3435,15 +3435,15 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>province</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [경기도, 강원도, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>city</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [안양시, 수원시, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>hashtags</code></p></td>
@@ -3567,15 +3567,15 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>province</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [경기도, 강원도, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>city</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [안양시, 수원시, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>hashtags</code></p></td>
@@ -3699,15 +3699,15 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>province</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [경기도, 강원도, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>city</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [안양시, 수원시, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>hashtags</code></p></td>
@@ -3827,15 +3827,15 @@ Host: localhost:8080
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>province</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [경기도, 강원도, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>city</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">지역2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오프라인 스터디의 경우 필수</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">거주지 [안양시, 수원시, &#8230;&#8203;]</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>hashtags</code></p></td>
