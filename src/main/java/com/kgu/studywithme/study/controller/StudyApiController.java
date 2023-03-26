@@ -23,7 +23,7 @@ public class StudyApiController {
     public ResponseEntity<Void> register(@RequestBody @Valid StudyRegisterRequest request, @ExtractPayload Long hostId) {
         Long savedStudyId = studyRegisterService.register(request, hostId);
         return ResponseEntity
-                .created(UriComponentsBuilder.fromPath("/api/study/{id}").build(savedStudyId))
+                .created(UriComponentsBuilder.fromPath("/api/studies/{id}").build(savedStudyId))
                 .build();
     }
 }

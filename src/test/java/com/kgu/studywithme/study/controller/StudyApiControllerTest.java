@@ -9,7 +9,6 @@ import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -30,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Study [Controller Layer] -> StudyApiControllerTest 테스트")
 class StudyApiControllerTest extends ControllerTest {
-
     @Nested
     @DisplayName("회원가입 API [POST /api/study]")
     class register {
@@ -40,9 +38,8 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createStudyRegisterRequestOnline();
-
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
@@ -64,6 +61,20 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                    ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
                                             fieldWithPath("errorCode").description("커스텀 예외 코드"),
@@ -83,9 +94,8 @@ class StudyApiControllerTest extends ControllerTest {
                     .when(studyRegisterService)
                     .register(any(), any());
 
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createStudyRegisterRequestOnline();
-
             // when
+            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -109,15 +119,20 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
-                                            fieldWithPath("description").description("설명"),
-                                            fieldWithPath("category").description("카테고리"),
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
@@ -140,9 +155,8 @@ class StudyApiControllerTest extends ControllerTest {
                     .when(studyRegisterService)
                     .register(any(), any());
 
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createStudyRegisterRequestOffline();
-
             // when
+            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -166,15 +180,20 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
-                                            fieldWithPath("description").description("설명"),
-                                            fieldWithPath("category").description("카테고리"),
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
@@ -193,8 +212,6 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("스터디 생성에 성공한다 - 온라인")
         void successOnline() throws Exception {
             // given
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createStudyRegisterRequestOnline();
-
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             doAnswer(invocation -> 1L)
@@ -202,6 +219,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .register(any(), anyLong());
 
             // when
+            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -224,14 +242,16 @@ class StudyApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
-                                            fieldWithPath("description").description("설명"),
-                                            fieldWithPath("category").description("카테고리"),
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     )
@@ -243,8 +263,6 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("스터디 생성에 성공한다 - 오프라인")
         void successOffline() throws Exception {
             // given
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createStudyRegisterRequestOffline();
-
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             doAnswer(invocation -> 1L)
@@ -252,6 +270,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .register(any(), anyLong());
 
             // when
+            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -274,20 +293,21 @@ class StudyApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     requestFields(
-                                            fieldWithPath("name").description("이름"),
-                                            fieldWithPath("description").description("설명"),
-                                            fieldWithPath("category").description("카테고리"),
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                                    .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     )
                             )
                     );
         }
-
     }
 }

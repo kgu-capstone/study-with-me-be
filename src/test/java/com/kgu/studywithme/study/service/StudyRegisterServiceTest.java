@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
-import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createStudyRegisterRequestOnline;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class StudyRegisterServiceTest extends ServiceTest {
     @Autowired
     private StudyRegisterService studyRegisterService;
-    @Autowired
-    private StudyFindService studyFindService;
 
     private Member host;
 
@@ -39,13 +37,11 @@ class StudyRegisterServiceTest extends ServiceTest {
         @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다")
         void duplicateNameOnline() {
             // given
-            StudyRegisterRequest request = createStudyRegisterRequestOnline();
-            StudyRegisterRequest newRequest = createStudyRegisterRequestOnline();
-
+            StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             studyRegisterService.register(request, host.getId());
 
             // when - then
-            assertThatThrownBy(() -> studyRegisterService.register(newRequest, host.getId()))
+            assertThatThrownBy(() -> studyRegisterService.register(request, host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         }
@@ -54,15 +50,17 @@ class StudyRegisterServiceTest extends ServiceTest {
         @DisplayName("스터디 생성에 성공한다")
         void success() {
             // given
-            StudyRegisterRequest request = createStudyRegisterRequestOnline();
+            StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+
+            // when
             Long studyId = studyRegisterService.register(request, host.getId());
 
-            Study findStudy = studyFindService.findByIdWithHost(studyId);
-
-            // when - then
+            // then
+            Study findStudy = studyRepository.findByIdWithHost(studyId).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getId()).isEqualTo(studyId),
-                    () -> assertThat(findStudy.getHost()).isEqualTo(host)
+                    () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
+                    () -> assertThat(findStudy.getHost()).isEqualTo(host),
+                    () -> assertThat(findStudy.getParticipants()).containsExactly(host)
             );
         }
     }
