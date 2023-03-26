@@ -3,87 +3,67 @@ package com.kgu.studywithme.study.service;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.study.domain.Description;
+import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.domain.Study;
-import com.kgu.studywithme.study.domain.StudyName;
-import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
-import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
-import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createStudyRegisterRequestOnline;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> StudyRegisterService 테스트")
 class StudyRegisterServiceTest extends ServiceTest {
     @Autowired
     private StudyRegisterService studyRegisterService;
+    @Autowired
+    private StudyFindService studyFindService;
+
+    private Member host;
+
+    @BeforeEach
+    void setUp() {
+        host = memberRepository.save(JIWON.toMember());
+    }
 
     @Nested
     @DisplayName("스터디 생성")
     class register {
         @Test
-        @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다 - 온라인")
+        @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다")
         void duplicateNameOnline() {
             // given
-            Member member = memberRepository.save(JIWON.toMember());
+            StudyRegisterRequest request = createStudyRegisterRequestOnline();
+            StudyRegisterRequest newRequest = createStudyRegisterRequestOnline();
 
-            Study study = createDuplicateOnlineStudy();
-            Study newStudy = createDuplicateOnlineStudy();
-
-            studyRegisterService.register(study, member.getId());
+            studyRegisterService.register(request, host.getId());
 
             // when - then
-            assertThatThrownBy(() -> studyRegisterService.register(newStudy, member.getId()))
+            assertThatThrownBy(() -> studyRegisterService.register(newRequest, host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
-
         }
 
         @Test
-        @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다 - 오프라인")
-        void duplicateNameOffline() {
+        @DisplayName("스터디 생성에 성공한다")
+        void success() {
             // given
-            Member member = memberRepository.save(JIWON.toMember());
+            StudyRegisterRequest request = createStudyRegisterRequestOnline();
+            Long studyId = studyRegisterService.register(request, host.getId());
 
-            Study study = createDuplicateOfflineStudy();
-            Study newStudy = createDuplicateOfflineStudy();
-
-            studyRegisterService.register(study, member.getId());
+            Study findStudy = studyFindService.findByIdWithHost(studyId);
 
             // when - then
-            assertThatThrownBy(() -> studyRegisterService.register(newStudy, member.getId()))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
-
+            assertAll(
+                    () -> assertThat(findStudy.getId()).isEqualTo(studyId),
+                    () -> assertThat(findStudy.getHost()).isEqualTo(host)
+            );
         }
-
-        private Study createDuplicateOnlineStudy() {
-            return Study.builder()
-                    .name(StudyName.from(TOEIC.name()))
-                    .description(Description.from(TOEIC.getDescription()))
-                    .category(TOEIC.getCategory())
-                    .capacity(Capacity.from(TOEIC.getCapacity()))
-                    .type(TOEIC.getType())
-                    .hashtags(TOEIC.getHashtags())
-                    .build();
-        }
-
-        private Study createDuplicateOfflineStudy() {
-            return Study.builder()
-                    .name(StudyName.from(TOSS_INTERVIEW.name()))
-                    .description(Description.from(TOSS_INTERVIEW.getDescription()))
-                    .category(TOSS_INTERVIEW.getCategory())
-                    .area(TOSS_INTERVIEW.getArea())
-                    .capacity(Capacity.from(TOSS_INTERVIEW.getCapacity()))
-                    .type(TOSS_INTERVIEW.getType())
-                    .hashtags(TOSS_INTERVIEW.getHashtags())
-                    .build();
-        }
-
     }
 }
