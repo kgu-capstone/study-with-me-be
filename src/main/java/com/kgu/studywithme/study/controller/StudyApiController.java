@@ -20,11 +20,10 @@ public class StudyApiController {
     private final StudyRegisterService studyRegisterService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@RequestBody @Valid StudyRegisterRequest request, @ExtractPayload Long memberId) {
-        Long savedStudyId = studyRegisterService.register(request.toEntity(), memberId);
+    public ResponseEntity<Void> register(@RequestBody @Valid StudyRegisterRequest request, @ExtractPayload Long hostId) {
+        Long savedStudyId = studyRegisterService.register(request, hostId);
         return ResponseEntity
                 .created(UriComponentsBuilder.fromPath("/api/study/{id}").build(savedStudyId))
                 .build();
     }
-
 }
