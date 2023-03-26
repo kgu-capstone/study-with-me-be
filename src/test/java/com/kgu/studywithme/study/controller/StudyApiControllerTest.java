@@ -61,7 +61,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/StudyRegister/Register/Failure/Case1",
+                                    "StudyApi/Register/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     responseFields(
@@ -106,7 +106,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure",
+                                    "StudyApi/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestFields(
@@ -126,8 +126,6 @@ class StudyApiControllerTest extends ControllerTest {
                                     )
                             )
                     );
-
-
         }
 
         @Test
@@ -163,7 +161,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure",
+                                    "StudyApi/Register/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestFields(
@@ -215,7 +213,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Success",
+                                    "StudyApi/Register/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -263,7 +261,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Success",
+                                    "StudyApi/Register/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
