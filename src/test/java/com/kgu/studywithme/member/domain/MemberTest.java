@@ -28,7 +28,7 @@ class MemberTest {
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
                 () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
-                () -> assertThat(member.getInterests()).isEqualTo(JIWON.getInterests())
+                () -> assertThat(member.getInterests()).containsAll(JIWON.getInterests())
         );
     }
 
@@ -40,10 +40,10 @@ class MemberTest {
 
         // when
         final Set<Category> interests = Set.of(APTITUDE_NCS, CERTIFICATION, ETC);
-        member.updateInterests(interests);
+        member.applyInterests(interests);
 
         // then
-        assertThat(member.getInterests()).isEqualTo(interests);
+        assertThat(member.getInterests()).containsAll(interests);
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.kgu.studywithme.study.domain.assignment.Assignments;
 import com.kgu.studywithme.study.domain.assignment.Period;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
+import com.kgu.studywithme.study.domain.hashtag.Hashtag;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.domain.participant.Participants;
@@ -22,7 +23,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,13 +71,8 @@ public class Study extends BaseEntity {
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "hashtag",
-            joinColumns = @JoinColumn(name = "study_id", referencedColumnName = "id")
-    )
-    @Column(name = "hashtag")
-    private Set<String> hashtags = new HashSet<>();
+    @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
+    private List<Hashtag> hashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
     private List<Notice> notices = new ArrayList<>();
@@ -95,10 +90,10 @@ public class Study extends BaseEntity {
         this.area = area;
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
-        this.hashtags = hashtags;
         this.closed = false;
         this.assignments = Assignments.createAssignmentsPage();
         this.reviews = Reviews.createReviewsPage();
+        applyHashtags(hashtags);
     }
 
     public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity,
@@ -109,6 +104,15 @@ public class Study extends BaseEntity {
     public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity,
                                           Category category, StudyType type, StudyArea area, Set<String> hashtags) {
         return new Study(host, name, description, capacity, category, type, area, hashtags);
+    }
+
+    public void applyHashtags(Set<String> hashtags) {
+        this.hashtags.clear();
+        this.hashtags.addAll(
+                hashtags.stream()
+                        .map(value -> Hashtag.applyHashtag(this, value))
+                        .toList()
+        );
     }
 
     public void completeRecruitment() {
@@ -208,6 +212,12 @@ public class Study extends BaseEntity {
 
     public String getDescriptionValue() {
         return description.getValue();
+    }
+
+    public List<String> getHashtags() {
+        return hashtags.stream()
+                .map(Hashtag::getName)
+                .toList();
     }
 
     public Member getHost() {

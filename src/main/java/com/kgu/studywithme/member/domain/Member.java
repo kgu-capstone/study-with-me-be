@@ -2,6 +2,7 @@ package com.kgu.studywithme.member.domain;
 
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.BaseEntity;
+import com.kgu.studywithme.member.domain.interest.Interest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -46,17 +48,11 @@ public class Member extends BaseEntity {
     @Embedded
     private Region region;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "interest",
-            joinColumns = @JoinColumn(name = "member_id", referencedColumnName = "id")
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private Set<Category> interests = new HashSet<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    private List<Interest> interests = new ArrayList<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
+    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
                    String phone, Gender gender, Region region, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
@@ -66,12 +62,12 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.gender = gender;
         this.region = region;
-        this.interests = interests;
+        applyInterests(interests);
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, String googleProflieUrl, String profileUrl, LocalDate birth,
+    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
                                       String phone, Gender gender, Region region, Set<Category> interests) {
-        return new Member(name, nickname, email, googleProflieUrl, profileUrl, birth, phone, gender, region, interests);
+        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region, interests);
     }
 
     public void changeNickname(String changeNickname) {
@@ -82,9 +78,13 @@ public class Member extends BaseEntity {
         this.profileUrl = profileUrl;
     }
 
-    public void updateInterests(Set<Category> interests) {
+    public void applyInterests(Set<Category> interests) {
         this.interests.clear();
-        this.interests.addAll(interests);
+        this.interests.addAll(
+                interests.stream()
+                        .map(value -> Interest.applyInterest(this, value))
+                        .toList()
+        );
     }
 
     public boolean isSameMember(Member member) {
@@ -106,5 +106,11 @@ public class Member extends BaseEntity {
 
     public String getRegionCity() {
         return region.getCity();
+    }
+
+    public List<Category> getInterests() {
+        return interests.stream()
+                .map(Interest::getCategory)
+                .toList();
     }
 }

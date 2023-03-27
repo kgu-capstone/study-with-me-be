@@ -6,7 +6,7 @@ import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 
 public class StudyRegisterRequestUtils {
-    public static StudyRegisterRequest createStudyRegisterRequestOnline() {
+    public static StudyRegisterRequest createOnlineStudyRegisterRequest() {
         return StudyRegisterRequest.builder()
                 .name(TOEIC.getName())
                 .description(TOEIC.getDescription())
@@ -17,7 +17,7 @@ public class StudyRegisterRequestUtils {
                 .build();
     }
 
-    public static StudyRegisterRequest createStudyRegisterRequestOffline() {
+    public static StudyRegisterRequest createOfflineStudyRegisterRequest() {
         return StudyRegisterRequest.builder()
                 .name(TOSS_INTERVIEW.getName())
                 .description(TOSS_INTERVIEW.getDescription())
@@ -26,7 +26,7 @@ public class StudyRegisterRequestUtils {
                 .type(TOSS_INTERVIEW.getType().getDescription())
                 .province(TOSS_INTERVIEW.getArea().getProvince())
                 .city(TOSS_INTERVIEW.getArea().getCity())
-                .hashtags(TOEIC.getHashtags())
+                .hashtags(TOSS_INTERVIEW.getHashtags())
                 .build();
     }
 }

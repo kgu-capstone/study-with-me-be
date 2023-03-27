@@ -21,13 +21,13 @@ class StudyValidatorTest extends ServiceTest {
     @Autowired
     private StudyValidator studyValidator;
 
+    private Member host;
     private Study study;
-    private Member member;
 
     @BeforeEach
     void setUp() {
-        member = memberRepository.save(JIWON.toMember());
-        study = studyRepository.save(TOEIC.toOnlineStudy(member));
+        host = memberRepository.save(JIWON.toMember());
+        study = studyRepository.save(TOEIC.toOnlineStudy(host));
     }
 
     @Test
