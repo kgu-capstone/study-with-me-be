@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.kgu.studywithme.study.domain.StudyType.OFFLINE;
+import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,14 +34,29 @@ public class StudyRegisterService {
     private void validateUniqueFields(StudyRegisterRequest request) {
         studyValidator.validateName(StudyName.from(request.name()));
     }
-    
+
     private Study buildStudy(StudyRegisterRequest request, Member host) {
-        if (request.type().equals("온라인")) {
-            return Study.createOnlineStudy(host, StudyName.from(request.name()), Description.from(request.description()),
-                    Capacity.from(request.capacity()), Category.from(request.category()), StudyType.ONLINE, request.hashtags());
-        } else { // request.type().equals("오프라인")
-            return Study.createOfflineStudy(host, StudyName.from(request.name()), Description.from(request.description()),
-                    Capacity.from(request.capacity()), Category.from(request.category()), StudyType.OFFLINE, StudyArea.of(request.province(), request.city()), request.hashtags());
+        if (request.type().equals(ONLINE.getDescription())) {
+            return Study.createOnlineStudy(
+                    host,
+                    StudyName.from(request.name()),
+                    Description.from(request.description()),
+                    Capacity.from(request.capacity()),
+                    Category.from(request.category()),
+                    ONLINE,
+                    request.hashtags()
+            );
+        } else {
+            return Study.createOfflineStudy(
+                    host,
+                    StudyName.from(request.name()),
+                    Description.from(request.description()),
+                    Capacity.from(request.capacity()),
+                    Category.from(request.category()),
+                    OFFLINE,
+                    StudyArea.of(request.province(), request.city()),
+                    request.hashtags()
+            );
         }
     }
 }

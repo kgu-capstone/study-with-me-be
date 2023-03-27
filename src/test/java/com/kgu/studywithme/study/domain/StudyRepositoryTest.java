@@ -55,4 +55,18 @@ class StudyRepositoryTest extends RepositoryTest {
                 () -> assertThat(findStudy.getHost()).isEqualTo(host)
         );
     }
+
+    @Test
+    @DisplayName("스터디명이 중복되는지 확인한다")
+    void existsByName() {
+        // when
+        boolean actual1 = studyRepository.existsByName(study.getName());
+        boolean actual2 = studyRepository.existsByName(StudyName.from(study.getNameValue() + "diff"));
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isTrue(),
+                () -> assertThat(actual2).isFalse()
+        );
+    }
 }
