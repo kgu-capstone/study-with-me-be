@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum FavoriteErrorCode implements ErrorCode {
     ALREADY_EXIST(HttpStatus.CONFLICT, "FAVORITE_001", "이미 찜한 스터디입니다."),
+    STUDY_IS_NOT_FAVORITE(HttpStatus.CONFLICT, "FAVORITE_002", "찜 등록되어 있지 않은 스터디입니다."),
     ;
 
     private final HttpStatus status;

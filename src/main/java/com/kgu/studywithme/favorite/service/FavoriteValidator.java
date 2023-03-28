@@ -21,7 +21,7 @@ public class FavoriteValidator {
 
     public void validateExist(Long studyId, Long hostId) {
         if (!favoriteRepository.existsByStudyIdAndMemberId(studyId, hostId)) {
-            throw StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST);
+            throw StudyWithMeException.type(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE);
         }
     }
 }
