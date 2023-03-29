@@ -34,8 +34,8 @@ jobs:
           LOCAL_DATASOURCE: ${{ secrets.LOCAL_DATASOURCE }}
           PROD_DATASOURCE: ${{ secrets.PROD_DATASOURCE }}
         run: mkdir -p src/main/resources/security &&
-             echo $EXTERNAL_CONFIG | base64 --decode > src/main/resources/security/application-external.yml
-             echo $LOCAL_DATASOURCE | base64 --decode > src/main/resources/security/application-local-datasource.yml
+             echo $EXTERNAL_CONFIG | base64 --decode > src/main/resources/security/application-external.yml &&
+             echo $LOCAL_DATASOURCE | base64 --decode > src/main/resources/security/application-local-datasource.yml &&
              echo $PROD_DATASOURCE | base64 --decode > src/main/resources/security/application-prod-datasource.yml
 
       - name: Gradle 명령 실행을 위한 권한을 부여합니다
