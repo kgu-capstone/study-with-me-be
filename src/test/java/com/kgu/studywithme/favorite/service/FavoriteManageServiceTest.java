@@ -19,18 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Favorite [Service Layer] -> FavoriteEnrollService 테스트")
+@DisplayName("Favorite [Service Layer] -> FavoriteManageService 테스트")
 class FavoriteManageServiceTest extends ServiceTest {
     @Autowired
     private FavoriteManageService favoriteManageService;
 
-    private Member host;
     private Member member;
     private Study study;
 
     @BeforeEach
     void setUp() {
-        host = memberRepository.save(JIWON.toMember());
+        Member host = memberRepository.save(JIWON.toMember());
         member = memberRepository.save(GHOST.toMember());
         study = studyRepository.save(TOEIC.toOnlineStudy(host));
     }
@@ -53,11 +52,11 @@ class FavoriteManageServiceTest extends ServiceTest {
         @Test
         @DisplayName("찜 등록에 성공한다")
         void success() {
-            // given
-            favoriteManageService.like(study.getId(), member.getId());
+            // when
+            Long favoriteId = favoriteManageService.like(study.getId(), member.getId());
 
-            // when - then
-            Favorite favorite = favoriteRepository.findFavoriteByStudyIdAndMemberId(study.getId(), member.getId());
+            // then
+            Favorite favorite = favoriteRepository.findById(favoriteId).orElseThrow();
             assertAll(
                     () -> assertThat(favorite.getStudyId()).isEqualTo(study.getId()),
                     () -> assertThat(favorite.getMemberId()).isEqualTo(member.getId())
