@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Favorite [Service Layer] -> FavoriteEnrollService 테스트")
-class FavoriteEnrollServiceTest extends ServiceTest {
+class FavoriteManageServiceTest extends ServiceTest {
     @Autowired
-    private FavoriteEnrollService favoriteEnrollService;
+    private FavoriteManageService favoriteManageService;
 
     private Member host;
     private Member member;
@@ -42,10 +42,10 @@ class FavoriteEnrollServiceTest extends ServiceTest {
         @DisplayName("이미 찜 등록된 스터디를 찜할 수 없다")
         void alreadyExist() {
             // given
-            Long favoriteId = favoriteEnrollService.enroll(study.getId(), member.getId());
+            favoriteManageService.like(study.getId(), member.getId());
 
             // when - then
-            assertThatThrownBy(() -> favoriteEnrollService.enroll(favoriteId, member.getId()))
+            assertThatThrownBy(() -> favoriteManageService.like(study.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(FavoriteErrorCode.ALREADY_EXIST.getMessage());
         }
@@ -54,10 +54,10 @@ class FavoriteEnrollServiceTest extends ServiceTest {
         @DisplayName("찜 등록에 성공한다")
         void success() {
             // given
-            Long favoriteId = favoriteEnrollService.enroll(study.getId(), member.getId());
+            favoriteManageService.like(study.getId(), member.getId());
 
             // when - then
-            Favorite favorite = favoriteRepository.findById(favoriteId).orElseThrow();
+            Favorite favorite = favoriteRepository.findFavoriteByStudyIdAndMemberId(study.getId(), member.getId());
             assertAll(
                     () -> assertThat(favorite.getStudyId()).isEqualTo(study.getId()),
                     () -> assertThat(favorite.getMemberId()).isEqualTo(member.getId())
@@ -67,12 +67,11 @@ class FavoriteEnrollServiceTest extends ServiceTest {
 
     @Nested
     @DisplayName("찜 취소")
-    class unenroll {
+    class cancel {
         @Test
         @DisplayName("찜 등록이 되지 않은 스터디를 취소할 수 없다")
         void notFavorite() {
-            // given - when - then
-            assertThatThrownBy(() -> favoriteEnrollService.unenroll(study.getId(), member.getId()))
+            assertThatThrownBy(() -> favoriteManageService.cancel(study.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE.getMessage());
         }
@@ -81,13 +80,13 @@ class FavoriteEnrollServiceTest extends ServiceTest {
         @DisplayName("찜 취소에 성공한다")
         void success() {
             // given
-            Long favoriteId = favoriteEnrollService.enroll(study.getId(), member.getId());
+            Favorite favorite = favoriteRepository.save(Favorite.favoriteMarking(study.getId(), member.getId()));
 
             // when
-            favoriteEnrollService.unenroll(favoriteId, member.getId());
+            favoriteManageService.cancel(study.getId(), member.getId());
 
             // then
-            assertThat(favoriteRepository.existsById(favoriteId)).isFalse();
+            assertThat(favoriteRepository.existsById(favorite.getId())).isFalse();
         }
     }
 }

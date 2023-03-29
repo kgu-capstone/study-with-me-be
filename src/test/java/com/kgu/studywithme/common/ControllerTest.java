@@ -11,7 +11,7 @@ import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.category.controller.CategoryApiController;
 import com.kgu.studywithme.category.service.CategoryService;
 import com.kgu.studywithme.favorite.controller.FavoriteApiController;
-import com.kgu.studywithme.favorite.service.FavoriteEnrollService;
+import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.StudyApiController;
@@ -82,7 +82,7 @@ public abstract class ControllerTest {
     protected StudyRegisterService studyRegisterService;
 
     @MockBean
-    protected FavoriteEnrollService favoriteEnrollService;
+    protected FavoriteManageService favoriteManageService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
