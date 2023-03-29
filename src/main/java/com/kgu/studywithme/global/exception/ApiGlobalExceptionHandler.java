@@ -1,6 +1,10 @@
 package com.kgu.studywithme.global.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.OAuthUserResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -14,13 +18,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ApiGlobalExceptionHandler {
+    private final ObjectMapper objectMapper;
+
     @ExceptionHandler(StudyWithMeException.class)
     public ResponseEntity<ErrorResponse> studyWithMeException(StudyWithMeException exception) {
         ErrorCode code = exception.getCode();
+        logging(code);
+
         return ResponseEntity
                 .status(code.getStatus())
                 .body(ErrorResponse.from(code));
@@ -35,6 +47,19 @@ public class ApiGlobalExceptionHandler {
     }
 
     /**
+     * Exception
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAnonymousException(Exception e) {
+        ErrorCode code = GlobalErrorCode.INTERNAL_SERVER_ERROR;
+        logging(code, e.getMessage());
+
+        return ResponseEntity
+                .status(code.getStatus())
+                .body(ErrorResponse.from(code));
+    }
+
+    /**
      * 요청 파라미터 Validation 전용 ExceptionHandler
      */
     @ExceptionHandler(UnsatisfiedServletRequestParameterException.class)
@@ -46,7 +71,7 @@ public class ApiGlobalExceptionHandler {
      * 요청 데이터 Validation 전용 ExceptionHandler (@RequestBody)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) throws JsonProcessingException {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         return convert(GlobalErrorCode.VALIDATION_ERROR, extractErrorMessage(fieldErrors));
     }
@@ -55,21 +80,21 @@ public class ApiGlobalExceptionHandler {
      * 요청 데이터 Validation 전용 ExceptionHandler (@ModelAttribute)
      */
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<ErrorResponse> bindException(BindException e) {
+    public ResponseEntity<ErrorResponse> bindException(BindException e) throws JsonProcessingException {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         return convert(GlobalErrorCode.VALIDATION_ERROR, extractErrorMessage(fieldErrors));
     }
 
-    private String extractErrorMessage(List<FieldError> fieldErrors) {
+    private String extractErrorMessage(List<FieldError> fieldErrors) throws JsonProcessingException {
         if (fieldErrors.size() == 1) {
             return fieldErrors.get(0).getDefaultMessage();
         }
 
-        StringBuffer buffer = new StringBuffer();
+        Map<String, String> errors = new HashMap<>();
         for (FieldError error : fieldErrors) {
-            buffer.append(error.getDefaultMessage()).append("\n");
+            errors.put(error.getField(), error.getDefaultMessage());
         }
-        return buffer.toString();
+        return objectMapper.writeValueAsString(errors);
     }
 
     /**
@@ -105,14 +130,24 @@ public class ApiGlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> convert(ErrorCode code) {
+        logging(code);
         return ResponseEntity
                 .status(code.getStatus())
                 .body(ErrorResponse.from(code));
     }
 
     private ResponseEntity<ErrorResponse> convert(ErrorCode code, String message) {
+        logging(code, message);
         return ResponseEntity
                 .status(code.getStatus())
                 .body(ErrorResponse.of(code, message));
+    }
+
+    private void logging(ErrorCode code) {
+        log.warn("{} | {} | {}", code.getStatus(), code.getErrorCode(), code.getMessage());
+    }
+
+    private void logging(ErrorCode code, String message) {
+        log.warn("{} | {} | {}", code.getStatus(), code.getErrorCode(), message);
     }
 }
