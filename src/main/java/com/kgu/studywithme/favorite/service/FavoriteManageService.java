@@ -15,11 +15,11 @@ public class FavoriteManageService {
     private final FavoriteRepository favoriteRepository;
 
     @Transactional
-    public void like(Long studyId, Long memberId) {
+    public Long like(Long studyId, Long memberId) {
         validateLike(studyId, memberId);
 
         Favorite favoriteStudy = Favorite.favoriteMarking(studyId, memberId);
-        favoriteRepository.save(favoriteStudy);
+        return favoriteRepository.save(favoriteStudy).getId();
     }
 
     @Transactional
