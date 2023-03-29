@@ -10,6 +10,8 @@ import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.category.controller.CategoryApiController;
 import com.kgu.studywithme.category.service.CategoryService;
+import com.kgu.studywithme.favorite.controller.FavoriteApiController;
+import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.StudyApiController;
@@ -43,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         OAuthApiController.class,
         CategoryApiController.class,
         StudyParticipationApiController.class,
-        StudyApiController.class
+        StudyApiController.class,
+        FavoriteApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -77,6 +80,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyRegisterService studyRegisterService;
+
+    @MockBean
+    protected FavoriteManageService favoriteManageService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

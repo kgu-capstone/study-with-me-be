@@ -2,6 +2,7 @@ package com.kgu.studywithme.common;
 
 import com.kgu.studywithme.auth.domain.TokenRepository;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
+import com.kgu.studywithme.favorite.domain.FavoriteRepository;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +27,9 @@ public class ServiceTest {
 
     @Autowired
     protected StudyRepository studyRepository;
+
+    @Autowired
+    protected FavoriteRepository favoriteRepository;
 
     @AfterEach
     void clearDatabase() {

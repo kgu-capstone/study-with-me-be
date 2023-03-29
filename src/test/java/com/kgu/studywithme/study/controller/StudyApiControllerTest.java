@@ -27,7 +27,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Study [Controller Layer] -> StudyApiControllerTest 테스트")
+@DisplayName("Study [Controller Layer] -> StudyApiController 테스트")
 class StudyApiControllerTest extends ControllerTest {
     @Nested
     @DisplayName("회원가입 API [POST /api/study]")
