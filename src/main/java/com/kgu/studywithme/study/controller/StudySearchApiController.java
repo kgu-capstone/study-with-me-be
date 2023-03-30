@@ -1,7 +1,9 @@
 package com.kgu.studywithme.study.controller;
 
 import com.kgu.studywithme.category.domain.Category;
-import com.kgu.studywithme.study.controller.dto.request.StudySearchRequest;
+import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.study.controller.dto.request.StudyCategorySearchRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyRecommendSearchRequest;
 import com.kgu.studywithme.study.service.StudySearchService;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,16 @@ public class StudySearchApiController {
     private final StudySearchService studySearchService;
 
     @GetMapping
-    public ResponseEntity<DefaultStudyResponse> findStudyByCategory(@ModelAttribute StudySearchRequest request) {
+    public ResponseEntity<DefaultStudyResponse> findStudyByCategory(@ModelAttribute StudyCategorySearchRequest request) {
         DefaultStudyResponse result = studySearchService.findStudyByCategory(
                 Category.from(request.category()), request.sort(), getDefaultPageRequest(request.page()), request.isOnline());
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<DefaultStudyResponse> findStudyByRecommend(@ModelAttribute StudyRecommendSearchRequest request, @ExtractPayload Long memberId) {
+        DefaultStudyResponse result = studySearchService.findStudyByRecommend(
+                memberId, request.sort(), getDefaultPageRequest(request.page()), request.isOnline());
         return ResponseEntity.ok(result);
     }
 
