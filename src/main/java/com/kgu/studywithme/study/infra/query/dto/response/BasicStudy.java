@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class BasicStudy {
@@ -25,6 +26,7 @@ public class BasicStudy {
     private final LocalDateTime registerDate;
     private final long favoriteCount;
     private final long reviewCount;
+    private List<String> hashtags;
 
     @Builder
     @QueryProjection
@@ -41,5 +43,9 @@ public class BasicStudy {
         this.registerDate = registerDate;
         this.favoriteCount = favoriteCount;
         this.reviewCount = reviewCount;
+    }
+
+    public void setHashtags(List<String> hashtags) {
+        this.hashtags = hashtags;
     }
 }

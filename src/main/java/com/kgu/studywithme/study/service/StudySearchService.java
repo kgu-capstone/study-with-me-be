@@ -5,7 +5,6 @@ import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
-import com.kgu.studywithme.study.service.dto.response.StudyAssembler;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
 import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import lombok.RequiredArgsConstructor;
@@ -24,24 +23,22 @@ public class StudySearchService {
 
     public DefaultStudyResponse findStudyByCategory(Category category, String sort, Pageable pageable, boolean isOnline) {
         StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, isOnline);
-        Slice<BasicStudy> paging = studyRepository.findStudyByCategory(condition, pageable);
-        return assemblingResult(paging);
+        Slice<BasicStudy> result = studyRepository.findStudyByCategory(condition, pageable);
+        return assemblingResult(result);
     }
 
     public DefaultStudyResponse findStudyByRecommend(Long memberId, String sort, Pageable pageable, boolean isOnline) {
         StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, isOnline);
-        Slice<BasicStudy> paging = studyRepository.findStudyByRecommend(condition, pageable);
-        return assemblingResult(paging);
+        Slice<BasicStudy> result = studyRepository.findStudyByRecommend(condition, pageable);
+        return assemblingResult(result);
     }
 
-    private DefaultStudyResponse assemblingResult(Slice<BasicStudy> paging) {
+    private DefaultStudyResponse assemblingResult(Slice<BasicStudy> result) {
         List<BasicHashtag> basicHashtags = studyRepository.findHashtags();
-        List<StudyAssembler> result = paging.getContent()
-                .stream()
-                .map(study -> new StudyAssembler(study, collectHashtags(basicHashtags, study)))
-                .toList();
+        result.getContent()
+                .forEach(study -> study.setHashtags(collectHashtags(basicHashtags, study)));
 
-        return new DefaultStudyResponse(result, paging.hasNext());
+        return new DefaultStudyResponse(result.getContent(), result.hasNext());
     }
 
     private List<String> collectHashtags(List<BasicHashtag> basicHashtags, BasicStudy study) {

@@ -9,7 +9,6 @@ import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
-import com.kgu.studywithme.study.service.dto.response.StudyAssembler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -61,7 +60,7 @@ class StudySearchApiControllerTest extends ControllerTest {
             final Category category = PROGRAMMING;
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
-                    .result(generateCategoryResult(8))
+                    .studyList(generateCategoryResult(8))
                     .hasNext(true)
                     .build();
             given(studySearchService.findStudyByCategory(category, sort, page, true)).willReturn(response);
@@ -92,23 +91,22 @@ class StudySearchApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("online / offline"))
                                     ),
                                     responseFields(
-                                            fieldWithPath("result[].study.id").description("스터디 ID(PK)"),
-                                            fieldWithPath("result[].study.name").description("스터디명"),
-                                            fieldWithPath("result[].study.description").description("스터디 설명"),
-                                            fieldWithPath("result[].study.category").description("스터디 카테고리"),
-                                            fieldWithPath("result[].study.type").description("스터디 타입")
+                                            fieldWithPath("studyList[].id").description("스터디 ID(PK)"),
+                                            fieldWithPath("studyList[].name").description("스터디명"),
+                                            fieldWithPath("studyList[].description").description("스터디 설명"),
+                                            fieldWithPath("studyList[].category").description("스터디 카테고리"),
+                                            fieldWithPath("studyList[].type").description("스터디 타입")
                                                     .attributes(constraint("온라인 / 오프라인")),
-                                            fieldWithPath("result[].study.recruitmentStatus").description("스터디 모집 여부"),
-                                            fieldWithPath("result[].study.currentMembers").description("스터디 참여 인원"),
-                                            fieldWithPath("result[].study.maxMembers").description("스터디 최대 인원"),
-                                            fieldWithPath("result[].study.registerDate").description("스터디 생성 날짜"),
-                                            fieldWithPath("result[].study.favoriteCount").description("스터디 찜 횟수"),
-                                            fieldWithPath("result[].study.reviewCount").description("스터디 리뷰 횟수"),
-                                            fieldWithPath("result[].hashtags").description("스터디 해시태그"),
+                                            fieldWithPath("studyList[].recruitmentStatus").description("스터디 모집 여부"),
+                                            fieldWithPath("studyList[].currentMembers").description("스터디 참여 인원"),
+                                            fieldWithPath("studyList[].maxMembers").description("스터디 최대 인원"),
+                                            fieldWithPath("studyList[].registerDate").description("스터디 생성 날짜"),
+                                            fieldWithPath("studyList[].favoriteCount").description("스터디 찜 횟수"),
+                                            fieldWithPath("studyList[].reviewCount").description("스터디 리뷰 횟수"),
+                                            fieldWithPath("studyList[].hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("hasNext").description("다음 스크롤 존재 여부")
                                                     .attributes(constraint("false면 무한 스크롤 종료"))
                                     )
-
                             )
                     );
         }
@@ -172,7 +170,7 @@ class StudySearchApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
-                    .result(generateRecommendResult(8))
+                    .studyList(generateRecommendResult(8))
                     .hasNext(true)
                     .build();
             given(studySearchService.findStudyByRecommend(memberId, sort, page, true)).willReturn(response);
@@ -205,64 +203,55 @@ class StudySearchApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("online / offline"))
                                     ),
                                     responseFields(
-                                            fieldWithPath("result[].study.id").description("스터디 ID(PK)"),
-                                            fieldWithPath("result[].study.name").description("스터디명"),
-                                            fieldWithPath("result[].study.description").description("스터디 설명"),
-                                            fieldWithPath("result[].study.category").description("스터디 카테고리"),
-                                            fieldWithPath("result[].study.type").description("스터디 타입")
+                                            fieldWithPath("studyList[].id").description("스터디 ID(PK)"),
+                                            fieldWithPath("studyList[].name").description("스터디명"),
+                                            fieldWithPath("studyList[].description").description("스터디 설명"),
+                                            fieldWithPath("studyList[].category").description("스터디 카테고리"),
+                                            fieldWithPath("studyList[].type").description("스터디 타입")
                                                     .attributes(constraint("온라인 / 오프라인")),
-                                            fieldWithPath("result[].study.recruitmentStatus").description("스터디 모집 여부"),
-                                            fieldWithPath("result[].study.currentMembers").description("스터디 참여 인원"),
-                                            fieldWithPath("result[].study.maxMembers").description("스터디 최대 인원"),
-                                            fieldWithPath("result[].study.registerDate").description("스터디 생성 날짜"),
-                                            fieldWithPath("result[].study.favoriteCount").description("스터디 찜 횟수"),
-                                            fieldWithPath("result[].study.reviewCount").description("스터디 리뷰 횟수"),
-                                            fieldWithPath("result[].hashtags").description("스터디 해시태그"),
+                                            fieldWithPath("studyList[].recruitmentStatus").description("스터디 모집 여부"),
+                                            fieldWithPath("studyList[].currentMembers").description("스터디 참여 인원"),
+                                            fieldWithPath("studyList[].maxMembers").description("스터디 최대 인원"),
+                                            fieldWithPath("studyList[].registerDate").description("스터디 생성 날짜"),
+                                            fieldWithPath("studyList[].favoriteCount").description("스터디 찜 횟수"),
+                                            fieldWithPath("studyList[].reviewCount").description("스터디 리뷰 횟수"),
+                                            fieldWithPath("studyList[].hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("hasNext").description("다음 스크롤 존재 여부")
                                                     .attributes(constraint("false면 무한 스크롤 종료"))
                                     )
-
                             )
                     );
         }
     }
 
-    private List<StudyAssembler> generateCategoryResult(int count) {
-        List<StudyAssembler> result = new ArrayList<>();
+    private List<BasicStudy> generateCategoryResult(int count) {
+        List<BasicStudy> result = new ArrayList<>();
         List<StudyFixture> studyFixtures = Arrays.stream(StudyFixture.values())
                 .filter(study -> study.getCategory().equals(PROGRAMMING))
                 .toList();
 
         for (int index = 0; index < count; index++) {
-            StudyAssembler build = StudyAssembler.builder()
-                    .study(buildStudy(studyFixtures.get(index), index + 1))
-                    .hashtags(new ArrayList<>(studyFixtures.get(index).getHashtags()))
-                    .build();
-            result.add(build);
+            result.add(buildStudy(studyFixtures.get(index), index + 1));
         }
 
         return result;
     }
 
-    private List<StudyAssembler> generateRecommendResult(int count) {
-        List<StudyAssembler> result = new ArrayList<>();
+    private List<BasicStudy> generateRecommendResult(int count) {
+        List<BasicStudy> result = new ArrayList<>();
         List<StudyFixture> studyFixtures = Arrays.stream(StudyFixture.values())
                 .filter(study -> study.getCategory().equals(LANGUAGE) || study.getCategory().equals(INTERVIEW) || study.getCategory().equals(PROGRAMMING))
                 .toList();
 
         for (int index = 0; index < count; index++) {
-            StudyAssembler build = StudyAssembler.builder()
-                    .study(buildStudy(studyFixtures.get(index), index + 1))
-                    .hashtags(new ArrayList<>(studyFixtures.get(index).getHashtags()))
-                    .build();
-            result.add(build);
+            result.add(buildStudy(studyFixtures.get(index), index + 1));
         }
 
         return result;
     }
 
     private static BasicStudy buildStudy(StudyFixture study, long index) {
-        return BasicStudy.builder()
+        BasicStudy build = BasicStudy.builder()
                 .id(index)
                 .name(StudyName.from(study.getName()))
                 .description(Description.from(study.getDescription()))
@@ -275,6 +264,9 @@ class StudySearchApiControllerTest extends ControllerTest {
                 .favoriteCount(getRandomNumber())
                 .reviewCount(getRandomNumber())
                 .build();
+        build.setHashtags(new ArrayList<>(study.getHashtags()));
+
+        return build;
     }
 
     private static int getRandomNumber() {

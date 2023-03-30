@@ -158,11 +158,10 @@ class StudySearchServiceTest extends ServiceTest {
 
     private void assertThatStudiesMatch(DefaultStudyResponse response, List<Study> studies) {
         int expectSize = studies.size();
-        assertThat(response.result()).hasSize(expectSize);
+        assertThat(response.studyList()).hasSize(expectSize);
 
         for (int i = 0; i < expectSize; i++) {
-            BasicStudy actual = response.result().get(i).study();
-            List<String> hashtags = response.result().get(i).hashtags();
+            BasicStudy actual = response.studyList().get(i);
             Study expect = studies.get(i);
 
             assertAll(
@@ -174,7 +173,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getCapacity().getValue()),
                     () -> assertThat(actual.getFavoriteCount()).isEqualTo(1), // 스터디 팀장만 찜
                     () -> assertThat(actual.getReviewCount()).isEqualTo(0),
-                    () -> assertThat(hashtags).containsAll(expect.getHashtags())
+                    () -> assertThat(actual.getHashtags()).containsAll(expect.getHashtags())
             );
         }
     }
