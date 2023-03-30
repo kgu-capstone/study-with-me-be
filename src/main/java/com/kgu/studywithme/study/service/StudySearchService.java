@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
 import com.kgu.studywithme.study.service.dto.response.StudyAssembler;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
+import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,7 +24,13 @@ public class StudySearchService {
 
     public DefaultStudyResponse findStudyByCategory(Category category, String sort, Pageable pageable, boolean isOnline) {
         StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, isOnline);
-        Slice<BasicStudy> paging = studyRepository.findStudyWithCondition(condition, pageable);
+        Slice<BasicStudy> paging = studyRepository.findStudyByCategory(condition, pageable);
+        return assemblingResult(paging);
+    }
+
+    public DefaultStudyResponse findStudyByRecommend(Long memberId, String sort, Pageable pageable, boolean isOnline) {
+        StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, isOnline);
+        Slice<BasicStudy> paging = studyRepository.findStudyByRecommend(condition, pageable);
         return assemblingResult(paging);
     }
 

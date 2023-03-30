@@ -31,59 +31,66 @@ class StudySearchServiceTest extends ServiceTest {
     private StudySearchService studySearchService;
 
     private Member host;
-    private final Study[] study = new Study[12];
+    private final Study[] language = new Study[7];
+    private final Study[] interview = new Study[5];
+    private final Study[] programming = new Study[12];
     private static final Pageable PAGE_REQUEST_1 = PageRequest.of(0, SLICE_PER_PAGE);
     private static final Pageable PAGE_REQUEST_2 = PageRequest.of(1, SLICE_PER_PAGE);
+    private static final Pageable PAGE_REQUEST_3 = PageRequest.of(2, SLICE_PER_PAGE);
+    private static final LocalDateTime NOW = LocalDateTime.now();
 
     @BeforeEach
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
 
-        study[0] = SPRING.toOnlineStudy(host);
-        study[1] = JPA.toOnlineStudy(host);
-        study[2] = REAL_MYSQL.toOfflineStudy(host);
-        study[3] = KOTLIN.toOnlineStudy(host);
-        study[4] = NETWORK.toOnlineStudy(host);
-        study[5] = EFFECTIVE_JAVA.toOnlineStudy(host);
-        study[6] = AWS.toOfflineStudy(host);
-        study[7] = DOCKER.toOnlineStudy(host);
-        study[8] = KUBERNETES.toOnlineStudy(host);
-        study[9] = PYTHON.toOnlineStudy(host);
-        study[10] = RUST.toOnlineStudy(host);
-        study[11] = OS.toOnlineStudy(host);
+        language[0] = TOEIC.toOnlineStudy(host);
+        language[1] = TOEFL.toOnlineStudy(host);
+        language[2] = JAPANESE.toOnlineStudy(host);
+        language[3] = CHINESE.toOnlineStudy(host);
+        language[4] = FRENCH.toOnlineStudy(host);
+        language[5] = GERMAN.toOnlineStudy(host);
+        language[6] = ARABIC.toOnlineStudy(host);
+
+        interview[0] = TOSS_INTERVIEW.toOfflineStudy(host);
+        interview[1] = KAKAO_INTERVIEW.toOfflineStudy(host);
+        interview[2] = NAVER_INTERVIEW.toOfflineStudy(host);
+        interview[3] = LINE_INTERVIEW.toOfflineStudy(host);
+        interview[4] = GOOGLE_INTERVIEW.toOfflineStudy(host);
+
+        programming[0] = SPRING.toOnlineStudy(host);
+        programming[1] = JPA.toOnlineStudy(host);
+        programming[2] = REAL_MYSQL.toOfflineStudy(host);
+        programming[3] = KOTLIN.toOnlineStudy(host);
+        programming[4] = NETWORK.toOnlineStudy(host);
+        programming[5] = EFFECTIVE_JAVA.toOnlineStudy(host);
+        programming[6] = AWS.toOfflineStudy(host);
+        programming[7] = DOCKER.toOnlineStudy(host);
+        programming[8] = KUBERNETES.toOnlineStudy(host);
+        programming[9] = PYTHON.toOnlineStudy(host);
+        programming[10] = RUST.toOnlineStudy(host);
+        programming[11] = OS.toOnlineStudy(host);
     }
     
     @Test
     @DisplayName("특정 카테고리에 해당하는 스터디 리스트를 조회한다 [프로그래밍 카테고리 & 최신순 정렬]")
     void findStudyByCategory() {
         // given
-        registerStudy(study[0], LocalDateTime.now().minusDays(12));
-        registerStudy(study[1], LocalDateTime.now().minusDays(11));
-        registerStudy(study[2], LocalDateTime.now().minusDays(10)); // Offline
-        registerStudy(study[3], LocalDateTime.now().minusDays(9));
-        registerStudy(study[4], LocalDateTime.now().minusDays(8));
-        registerStudy(study[5], LocalDateTime.now().minusDays(7));
-        registerStudy(study[6], LocalDateTime.now().minusDays(6)); // Offline
-        registerStudy(study[7], LocalDateTime.now().minusDays(5));
-        registerStudy(study[8], LocalDateTime.now().minusDays(4));
-        registerStudy(study[9], LocalDateTime.now().minusDays(3));
-        registerStudy(study[10], LocalDateTime.now().minusDays(2));
-        registerStudy(study[11], LocalDateTime.now().minusDays(1));
+        initDataWithRegisterDate();
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByCategory(PROGRAMMING, SORT_DATE, PAGE_REQUEST_1, true);
-        List<Study> expect1 = List.of(study[11], study[10], study[9], study[8], study[7], study[5], study[4], study[3]);
+        List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
         assertThat(result1.hasNext()).isTrue();
         assertThatStudiesMatch(result1, expect1);
 
         DefaultStudyResponse result2 = studySearchService.findStudyByCategory(PROGRAMMING, SORT_DATE, PAGE_REQUEST_2, true);
-        List<Study> expect2 = List.of(study[1], study[0]);
+        List<Study> expect2 = List.of(programming[1], programming[0]);
         assertThat(result2.hasNext()).isFalse();
         assertThatStudiesMatch(result2, expect2);
 
         /* 오프라인 스터디 */
         DefaultStudyResponse result3 = studySearchService.findStudyByCategory(PROGRAMMING, SORT_DATE, PAGE_REQUEST_1, false);
-        List<Study> expect3 = List.of(study[6], study[2]);
+        List<Study> expect3 = List.of(programming[6], programming[2]);
         assertThat(result3.hasNext()).isFalse();
         assertThatStudiesMatch(result3, expect3);
 
@@ -91,6 +98,56 @@ class StudySearchServiceTest extends ServiceTest {
         List<Study> expect4 = List.of();
         assertThat(result4.hasNext()).isFalse();
         assertThatStudiesMatch(result4, expect4);
+    }
+
+    @Test
+    @DisplayName("사용자의 관심사에 해당하는 스터디 리스트를 조회한다 [언어 / 인터뷰 / 프로그래밍]")
+    void findStudyByRecommend() {
+        // given
+        initDataWithRegisterDate();
+
+        /* 온라인 스터디 */
+        DefaultStudyResponse result1 = studySearchService.findStudyByRecommend(host.getId(), SORT_DATE, PAGE_REQUEST_1, true);
+        List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
+        assertThat(result1.hasNext()).isTrue();
+        assertThatStudiesMatch(result1, expect1);
+
+        DefaultStudyResponse result2 = studySearchService.findStudyByRecommend(host.getId(), SORT_DATE, PAGE_REQUEST_2, true);
+        List<Study> expect2 = List.of(programming[1], programming[0], language[6], language[5], language[4], language[3], language[2], language[1]);
+        assertThat(result2.hasNext()).isTrue();
+        assertThatStudiesMatch(result2, expect2);
+
+        DefaultStudyResponse result3 = studySearchService.findStudyByRecommend(host.getId(), SORT_DATE, PAGE_REQUEST_3, true);
+        List<Study> expect3 = List.of(language[0]);
+        assertThat(result3.hasNext()).isFalse();
+        assertThatStudiesMatch(result3, expect3);
+
+        /* 오프라인 스터디 */
+        DefaultStudyResponse result4 = studySearchService.findStudyByRecommend(host.getId(), SORT_DATE, PAGE_REQUEST_1, false);
+        List<Study> expect4 = List.of(programming[6], programming[2], interview[4], interview[3], interview[2], interview[1], interview[0]);
+        assertThat(result4.hasNext()).isFalse();
+        assertThatStudiesMatch(result4, expect4);
+
+        DefaultStudyResponse result5 = studySearchService.findStudyByRecommend(host.getId(), SORT_DATE, PAGE_REQUEST_2, false);
+        List<Study> expect5 = List.of();
+        assertThat(result5.hasNext()).isFalse();
+        assertThatStudiesMatch(result5, expect5);
+    }
+
+    private void initDataWithRegisterDate() {
+        int day = language.length + interview.length + programming.length;
+
+        for (Study study : language) {
+            registerStudy(study, NOW.minusDays(day--));
+        }
+
+        for (Study study : interview) {
+            registerStudy(study, NOW.minusDays(day--));
+        }
+
+        for (Study study : programming) {
+            registerStudy(study, NOW.minusDays(day--));
+        }
     }
 
     private void registerStudy(Study study, LocalDateTime time) {
@@ -112,7 +169,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getId()).isEqualTo(expect.getId()),
                     () -> assertThat(actual.getName()).isEqualTo(expect.getNameValue()),
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
-                    () -> assertThat(actual.getCategory()).isEqualTo(PROGRAMMING.getName()),
+                    () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(1), // 스터디 팀장만 참여중
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getCapacity().getValue()),
                     () -> assertThat(actual.getFavoriteCount()).isEqualTo(1), // 스터디 팀장만 찜

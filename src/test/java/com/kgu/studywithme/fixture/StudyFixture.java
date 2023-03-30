@@ -22,6 +22,8 @@ public enum StudyFixture {
     JAPANESE("일본어 스터디", "일본어 스터디입니다", LANGUAGE, ONLINE, null, 10, new HashSet<>(Set.of("언어", "일본어"))),
     CHINESE("중국어 스터디", "중국어 스터디입니다", LANGUAGE, ONLINE, null, 10, new HashSet<>(Set.of("언어", "중국어"))),
     FRENCH("프랑스어 스터디", "프랑스어 스터디입니다", LANGUAGE, ONLINE, null, 10, new HashSet<>(Set.of("언어", "프랑스어"))),
+    GERMAN("독일어 스터디", "독일어 스터디입니다", LANGUAGE, ONLINE, null, 10, new HashSet<>(Set.of("언어", "독일어"))),
+    ARABIC("아랍어 스터디", "아랍어 스터디입니다", LANGUAGE, ONLINE, null, 10, new HashSet<>(Set.of("언어", "아랍어"))),
 
     TOSS_INTERVIEW("Toss 면접 스터디", "Toss 기술 면접을 대비하기 위한 스터디입니다", INTERVIEW, OFFLINE, StudyArea.of("서울특별시", "강남구"), 10, new HashSet<>(Set.of("면접", "토스", "기술 면접"))),
     KAKAO_INTERVIEW("Kakao 면접 스터디", "Kakao 기술 면접을 대비하기 위한 스터디입니다", INTERVIEW, OFFLINE, StudyArea.of("경기도", "성남시"), 10, new HashSet<>(Set.of("면접", "카카오", "기술 면접"))),

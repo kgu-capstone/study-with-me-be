@@ -4,6 +4,7 @@ import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.infra.query.dto.response.QBasicStudy;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
+import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -18,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.kgu.studywithme.favorite.domain.QFavorite.favorite;
+import static com.kgu.studywithme.member.domain.interest.QInterest.interest;
 import static com.kgu.studywithme.study.domain.QStudy.study;
 import static com.kgu.studywithme.study.domain.StudyType.OFFLINE;
 import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
@@ -34,7 +36,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
     private final JPAQueryFactory query;
 
     @Override
-    public Slice<BasicStudy> findStudyWithCondition(StudyCategoryCondition condition, Pageable pageable) {
+    public Slice<BasicStudy> findStudyByCategory(StudyCategoryCondition condition, Pageable pageable) {
         List<BasicStudy> result = query
                 .select(assembleStudyProjections())
                 .from(study)
@@ -51,6 +53,36 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .select(study.id)
                 .from(study)
                 .where(categoryEq(condition.category()), studyType(condition.isOnline()))
+                .fetch()
+                .size();
+
+        return new SliceImpl<>(result, pageable, validateHasNext(pageable,  result.size(), totalCount));
+    }
+
+    @Override
+    public Slice<BasicStudy> findStudyByRecommend(StudyRecommendCondition condition, Pageable pageable) {
+        List<Category> memberInterests = query
+                .select(interest.category)
+                .from(interest)
+                .where(interest.member.id.eq(condition.memberId()))
+                .fetch();
+
+        List<BasicStudy> result = query
+                .select(assembleStudyProjections())
+                .from(study)
+                .leftJoin(favorite).on(favorite.studyId.eq(study.id))
+                .leftJoin(review).on(review.study.id.eq(study.id))
+                .where(studyType(condition.isOnline()), studyCategoryIn(memberInterests))
+                .groupBy(study.id)
+                .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        int totalCount = query
+                .select(study.id)
+                .from(study)
+                .where(studyType(condition.isOnline()), studyCategoryIn(memberInterests))
                 .fetch()
                 .size();
 
@@ -93,5 +125,9 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
     private BooleanExpression studyType(boolean isOnline) {
         return isOnline ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
+    }
+
+    private BooleanExpression studyCategoryIn(List<Category> memberInterests) {
+        return (memberInterests != null) ? study.category.in(memberInterests) : null;
     }
 }
