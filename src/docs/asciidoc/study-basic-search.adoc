@@ -1,0 +1,15 @@
+= 스터디 메인페이지 조회 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 카테고리 별 스터디 리스트 조회
+HTTP Request
+include::{snippets}/StudyApi/Search/Category/http-request.adoc[]
+include::{snippets}/StudyApi/Search/Category/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Search/Category/response-body.adoc[]
+include::{snippets}/StudyApi/Search/Category/response-fields.adoc[]
