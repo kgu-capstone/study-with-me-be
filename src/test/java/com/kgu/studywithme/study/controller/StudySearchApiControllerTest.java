@@ -9,6 +9,8 @@ import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
+import com.kgu.studywithme.study.utils.StudyCategoryCondition;
+import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,12 +60,13 @@ class StudySearchApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             final Category category = PROGRAMMING;
+            StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, true);
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
                     .studyList(generateCategoryResult(8))
                     .hasNext(true)
                     .build();
-            given(studySearchService.findStudyByCategory(category, sort, page, true)).willReturn(response);
+            given(studySearchService.findStudyByCategory(condition, page)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -150,7 +153,13 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("online / offline"))
+                                                    .attributes(constraint("online / offline")),
+                                            parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화")),
+                                            parameterWithName("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화"))
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -168,12 +177,13 @@ class StudySearchApiControllerTest extends ControllerTest {
             final Long memberId = 1L;
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
+            StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, true, null, null);
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
                     .studyList(generateRecommendResult(8))
                     .hasNext(true)
                     .build();
-            given(studySearchService.findStudyByRecommend(memberId, sort, page, true)).willReturn(response);
+            given(studySearchService.findStudyByRecommend(condition, page)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -200,7 +210,13 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("online / offline"))
+                                                    .attributes(constraint("online / offline")),
+                                            parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화")),
+                                            parameterWithName("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화"))
                                     ),
                                     responseFields(
                                             fieldWithPath("studyList[].id").description("스터디 ID(PK)"),

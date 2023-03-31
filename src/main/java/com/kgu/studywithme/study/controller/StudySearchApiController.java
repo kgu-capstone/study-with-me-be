@@ -1,11 +1,12 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.StudyCategorySearchRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyRecommendSearchRequest;
 import com.kgu.studywithme.study.service.StudySearchService;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
+import com.kgu.studywithme.study.utils.StudyCategoryCondition;
+import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +26,15 @@ public class StudySearchApiController {
 
     @GetMapping
     public ResponseEntity<DefaultStudyResponse> findStudyByCategory(@ModelAttribute StudyCategorySearchRequest request) {
-        DefaultStudyResponse result = studySearchService.findStudyByCategory(
-                Category.from(request.category()), request.sort(), getDefaultPageRequest(request.page()), request.isOnline());
+        StudyCategoryCondition condition = new StudyCategoryCondition(request);
+        DefaultStudyResponse result = studySearchService.findStudyByCategory(condition, getDefaultPageRequest(request.page()));
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/recommend")
     public ResponseEntity<DefaultStudyResponse> findStudyByRecommend(@ModelAttribute StudyRecommendSearchRequest request, @ExtractPayload Long memberId) {
-        DefaultStudyResponse result = studySearchService.findStudyByRecommend(
-                memberId, request.sort(), getDefaultPageRequest(request.page()), request.isOnline());
+        StudyRecommendCondition condition = new StudyRecommendCondition(request, memberId);
+        DefaultStudyResponse result = studySearchService.findStudyByRecommend(condition, getDefaultPageRequest(request.page()));
         return ResponseEntity.ok(result);
     }
 

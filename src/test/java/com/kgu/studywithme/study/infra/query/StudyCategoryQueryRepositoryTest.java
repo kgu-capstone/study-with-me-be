@@ -200,8 +200,8 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void date() {
             // given
             initDataWithRegisterDate();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, true);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, false);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, true, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, false, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -232,12 +232,35 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         }
 
         @Test
+        @DisplayName("최신순 + 오프라인 지역으로 스터디 리스트를 조회한다")
+        void dateWithRegion() {
+            // given
+            initDataWithRegisterDate();
+            StudyRecommendCondition condition1 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, "서울특별시", "강남구");
+            StudyRecommendCondition condition2 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, null, "강남구");
+            StudyRecommendCondition condition3 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, "서울특별시", null);
+
+            // 서울 특별시 & 강남구
+            Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(condition1, PAGE_REQUEST_1);
+            Slice<BasicStudy> result2 = studyRepository.findStudyByRecommend(condition2, PAGE_REQUEST_1);
+            Slice<BasicStudy> result3 = studyRepository.findStudyByRecommend(condition3, PAGE_REQUEST_1);
+            assertThat(result1.hasNext()).isFalse();
+            assertThat(result2.hasNext()).isFalse();
+            assertThat(result3.hasNext()).isFalse();
+
+            List<Study> expect = List.of(programming[6], programming[2], interview[4], interview[0]);
+            assertThatStudiesMatch(result1.getContent(), expect);
+            assertThatStudiesMatch(result2.getContent(), expect);
+            assertThatStudiesMatch(result3.getContent(), expect);
+        }
+
+        @Test
         @DisplayName("찜이 많은 순으로 스터디 리스트를 조회한다")
         void favorite() {
             // given
             initDataWithFavorite();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, true);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, false);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, true, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, false, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -272,8 +295,8 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void review() {
             // given
             initDataWithReviews();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, true);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, false);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, true, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, false, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);

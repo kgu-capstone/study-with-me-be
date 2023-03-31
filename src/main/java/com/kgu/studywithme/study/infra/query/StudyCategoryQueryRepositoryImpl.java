@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +73,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .from(study)
                 .leftJoin(favorite).on(favorite.studyId.eq(study.id))
                 .leftJoin(review).on(review.study.id.eq(study.id))
-                .where(studyType(condition.isOnline()), studyCategoryIn(memberInterests))
+                .where(
+                        studyType(condition.isOnline()),
+                        studyCategoryIn(memberInterests),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
@@ -129,5 +134,21 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
     private BooleanExpression studyCategoryIn(List<Category> memberInterests) {
         return (memberInterests != null) ? study.category.in(memberInterests) : null;
+    }
+
+    private BooleanExpression studyAreaEq(String province, String city) {
+        if (isEmpty(province) && isEmpty(city)) {
+            return null;
+        } else if (isEmpty(province)) {
+            return study.area.city.eq(city);
+        } else if (isEmpty(city)) {
+            return study.area.province.eq(province);
+        } else {
+            return study.area.province.eq(province).and(study.area.city.eq(city));
+        }
+    }
+
+    private boolean isEmpty(String str) {
+        return !StringUtils.hasText(str);
     }
 }

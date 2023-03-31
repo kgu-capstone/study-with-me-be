@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.service;
 
-import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
@@ -21,14 +20,12 @@ import java.util.List;
 public class StudySearchService {
     private final StudyRepository studyRepository;
 
-    public DefaultStudyResponse findStudyByCategory(Category category, String sort, Pageable pageable, boolean isOnline) {
-        StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, isOnline);
+    public DefaultStudyResponse findStudyByCategory(StudyCategoryCondition condition, Pageable pageable) {
         Slice<BasicStudy> result = studyRepository.findStudyByCategory(condition, pageable);
         return assemblingResult(result);
     }
 
-    public DefaultStudyResponse findStudyByRecommend(Long memberId, String sort, Pageable pageable, boolean isOnline) {
-        StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, isOnline);
+    public DefaultStudyResponse findStudyByRecommend(StudyRecommendCondition condition, Pageable pageable) {
         Slice<BasicStudy> result = studyRepository.findStudyByRecommend(condition, pageable);
         return assemblingResult(result);
     }
