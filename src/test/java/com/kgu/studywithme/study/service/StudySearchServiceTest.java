@@ -82,9 +82,9 @@ class StudySearchServiceTest extends ServiceTest {
     void findStudyByCategory() {
         // given
         initDataWithRegisterDate();
-        StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE);
-        StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE);
-        StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL);
+        StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE, null, null);
+        StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE, null, null);
+        StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL, null, null);
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);

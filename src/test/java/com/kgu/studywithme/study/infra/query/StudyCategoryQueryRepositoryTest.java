@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
 import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
@@ -99,16 +100,16 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
     }
 
     @Nested
-    @DisplayName("각 카테고리 별 스터디 리스트 조회 [프로그래밍 카테고리]")
+    @DisplayName("각 카테고리 별 스터디 리스트 조회")
     class findStudyByCategory {
         @Test
-        @DisplayName("최신순으로 스터디 리스트를 조회한다")
+        @DisplayName("최신순으로 프로그래밍 스터디 리스트를 조회한다")
         void date() {
             // given
             initDataWithRegisterDate();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE);
-            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -145,13 +146,36 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         }
 
         @Test
-        @DisplayName("찜이 많은 순으로 스터디 리스트를 조회한다")
+        @DisplayName("최신순 + 오프라인 지역으로 면접 스터디 리스트를 조회한다")
+        void dateWithRegion() {
+            // given
+            initDataWithRegisterDate();
+            StudyCategoryCondition condition1 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, "경기도", "성남시");
+            StudyCategoryCondition condition2 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, null, "성남시");
+            StudyCategoryCondition condition3 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, "경기도", null);
+
+            // 서울 특별시 & 강남구
+            Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(condition1, PAGE_REQUEST_1);
+            Slice<BasicStudy> result2 = studyRepository.findStudyByCategory(condition2, PAGE_REQUEST_1);
+            Slice<BasicStudy> result3 = studyRepository.findStudyByCategory(condition3, PAGE_REQUEST_1);
+            assertThat(result1.hasNext()).isFalse();
+            assertThat(result2.hasNext()).isFalse();
+            assertThat(result3.hasNext()).isFalse();
+
+            List<Study> expect = List.of(interview[3], interview[2], interview[1]);
+            assertThatStudiesMatch(result1.getContent(), expect);
+            assertThatStudiesMatch(result2.getContent(), expect);
+            assertThatStudiesMatch(result3.getContent(), expect);
+        }
+
+        @Test
+        @DisplayName("찜이 많은 순으로 프로그래밍 스터디 리스트를 조회한다")
         void favorite() {
             // given
             initDataWithFavorite();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, ONLINE);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, OFFLINE);
-            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, TOTAL);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -188,13 +212,13 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         }
 
         @Test
-        @DisplayName("리뷰가 많은 순으로 스터디 리스트를 조회한다")
+        @DisplayName("리뷰가 많은 순으로 프로그래밍 스터디 리스트를 조회한다")
         void review() {
             // given
             initDataWithReviews();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, ONLINE);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, OFFLINE);
-            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, TOTAL);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);

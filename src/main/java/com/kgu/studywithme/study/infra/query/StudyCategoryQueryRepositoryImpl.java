@@ -43,7 +43,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .from(study)
                 .leftJoin(favorite).on(favorite.studyId.eq(study.id))
                 .leftJoin(review).on(review.study.id.eq(study.id))
-                .where(categoryEq(condition.category()), studyType(condition.type()))
+                .where(
+                        categoryEq(condition.category()),
+                        studyType(condition.type()),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
@@ -53,7 +57,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         int totalCount = query
                 .select(study.id)
                 .from(study)
-                .where(categoryEq(condition.category()), studyType(condition.type()))
+                .where(
+                        categoryEq(condition.category()),
+                        studyType(condition.type()),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .fetch()
                 .size();
 
