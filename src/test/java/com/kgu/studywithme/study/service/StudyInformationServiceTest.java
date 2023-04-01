@@ -99,8 +99,8 @@ class StudyInformationServiceTest extends ServiceTest {
                     assertThat(reviewers).containsAll(
                             Arrays.stream(members)
                                     .map(Member::getNicknameValue)
-                                    .toList())
-                    ;
+                                    .toList()
+                    );
                 }
         );
     }
