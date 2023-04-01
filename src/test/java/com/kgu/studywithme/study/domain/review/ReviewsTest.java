@@ -48,7 +48,7 @@ class ReviewsTest {
 
             // then
             assertAll(
-                    () -> assertThat(reviews.getCount()).isEqualTo(1),
+                    () -> assertThat(reviews.getReviews()).hasSize(1),
                     () -> assertThat(reviews.getReviews())
                             .map(Review::getContent)
                             .contains("리뷰 1")

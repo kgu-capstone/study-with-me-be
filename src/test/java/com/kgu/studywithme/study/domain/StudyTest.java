@@ -40,7 +40,7 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getCategory()).isEqualTo(SPRING.getCategory()),
                 () -> assertThat(onlineStudy.getType()).isEqualTo(SPRING.getType()),
                 () -> assertThat(onlineStudy.getArea()).isNull(),
-                () -> assertThat(onlineStudy.getCapacity().getValue()).isEqualTo(SPRING.getCapacity()),
+                () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(SPRING.getCapacity()),
                 () -> assertThat(onlineStudy.getHashtags()).containsAll(SPRING.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(onlineStudy.getParticipants()).containsExactly(HOST),
@@ -51,7 +51,7 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getCategory()).isEqualTo(TOSS_INTERVIEW.getCategory()),
                 () -> assertThat(offlineStudy.getType()).isEqualTo(TOSS_INTERVIEW.getType()),
                 () -> assertThat(offlineStudy.getArea()).isEqualTo(TOSS_INTERVIEW.getArea()),
-                () -> assertThat(offlineStudy.getCapacity().getValue()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
+                () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
                 () -> assertThat(offlineStudy.getHashtags()).containsAll(TOSS_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST),
@@ -509,7 +509,7 @@ class StudyTest {
             study.writeReview(participant, "리뷰입니다.");
 
             // then
-            assertThat(study.getReviews().getCount()).isEqualTo(1);
+            assertThat(study.getReviews()).hasSize(1);
         }
     }
 }

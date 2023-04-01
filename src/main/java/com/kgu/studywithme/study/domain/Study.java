@@ -243,4 +243,12 @@ public class Study extends BaseEntity {
     public Capacity getCapacity() {
         return participants.getCapacity();
     }
+
+    public int getMaxMembers() {
+        return participants.getCapacity().getValue();
+    }
+
+    public List<Review> getReviews() {
+        return reviews.getReviews();
+    }
 }
