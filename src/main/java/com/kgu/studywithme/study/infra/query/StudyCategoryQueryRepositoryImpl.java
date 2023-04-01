@@ -43,7 +43,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .from(study)
                 .leftJoin(favorite).on(favorite.studyId.eq(study.id))
                 .leftJoin(review).on(review.study.id.eq(study.id))
-                .where(categoryEq(condition.category()), studyType(condition.isOnline()))
+                .where(
+                        categoryEq(condition.category()),
+                        studyType(condition.type()),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
@@ -53,7 +57,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         int totalCount = query
                 .select(study.id)
                 .from(study)
-                .where(categoryEq(condition.category()), studyType(condition.isOnline()))
+                .where(
+                        categoryEq(condition.category()),
+                        studyType(condition.type()),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .fetch()
                 .size();
 
@@ -74,7 +82,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .leftJoin(favorite).on(favorite.studyId.eq(study.id))
                 .leftJoin(review).on(review.study.id.eq(study.id))
                 .where(
-                        studyType(condition.isOnline()),
+                        studyType(condition.type()),
                         studyCategoryIn(memberInterests),
                         studyAreaEq(condition.province(), condition.city())
                 )
@@ -87,7 +95,11 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         int totalCount = query
                 .select(study.id)
                 .from(study)
-                .where(studyType(condition.isOnline()), studyCategoryIn(memberInterests))
+                .where(
+                        studyType(condition.type()),
+                        studyCategoryIn(memberInterests),
+                        studyAreaEq(condition.province(), condition.city())
+                )
                 .fetch()
                 .size();
 
@@ -128,8 +140,12 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         return (category != null) ? study.category.eq(category) : null;
     }
 
-    private BooleanExpression studyType(boolean isOnline) {
-        return isOnline ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
+    private BooleanExpression studyType(String type) {
+        if (type == null) {
+            return null;
+        }
+
+        return "online".equalsIgnoreCase(type) ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
     }
 
     private BooleanExpression studyCategoryIn(List<Category> memberInterests) {

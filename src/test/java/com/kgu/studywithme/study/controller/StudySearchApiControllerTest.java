@@ -60,7 +60,7 @@ class StudySearchApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             final Category category = PROGRAMMING;
-            StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, true);
+            StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, type, null, null);
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
                     .studyList(generateCategoryResult(8))
@@ -91,7 +91,13 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("online / offline"))
+                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
+                                            parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화")),
+                                            parameterWithName("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("type이 오프라인일 경우 활성화"))
                                     ),
                                     responseFields(
                                             fieldWithPath("studyList[].id").description("스터디 ID(PK)"),
@@ -153,7 +159,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("online / offline")),
+                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),
@@ -177,7 +183,7 @@ class StudySearchApiControllerTest extends ControllerTest {
             final Long memberId = 1L;
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
-            StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, true, null, null);
+            StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, type, null, null);
 
             DefaultStudyResponse response = DefaultStudyResponse.builder()
                     .studyList(generateRecommendResult(8))
@@ -210,7 +216,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("online / offline")),
+                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),

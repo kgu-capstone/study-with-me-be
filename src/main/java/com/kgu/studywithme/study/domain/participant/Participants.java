@@ -39,8 +39,24 @@ public class Participants {
         return new Participants(host, capacity);
     }
 
-    public void delegateStudyHostAuthority(Member newHost) {
+    public void delegateStudyHostAuthority(Study study, Member newHost) {
         validateMemberIsParticipant(newHost);
+        transferHostToParticipant(study, newHost);
+    }
+
+    private void transferHostToParticipant(Study study, Member newHost) {
+        // 1. 새로운 팀장을 참여자에서 제외
+        participants.removeIf(participant -> participant.isSameMember(newHost));
+
+        // 2. 현재 팀장을 참여자에 포함
+        Participant hostToParticipant = Participant.builder()
+                .study(study)
+                .member(host)
+                .status(APPROVE)
+                .build();
+        participants.add(hostToParticipant);
+
+        // 3. 팀장 교체
         host = newHost;
     }
 
