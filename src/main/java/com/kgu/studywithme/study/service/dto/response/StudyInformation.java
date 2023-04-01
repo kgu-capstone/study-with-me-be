@@ -9,11 +9,11 @@ import lombok.Builder;
 import java.time.LocalDate;
 import java.util.List;
 
-    public record StudyInformation(
-            Long id, String name, String description, String category, String type, StudyArea area, String recruitmentStatus,
-            int currentMembers, int maxMembers, double averageAge, List<String> hashtags, StudyHost host
-    ) {
-        @Builder
+public record StudyInformation(
+        Long id, String name, String description, String category, String type, StudyArea area, String recruitmentStatus,
+        int currentMembers, int maxMembers, double averageAge, List<String> hashtags, StudyHost host
+) {
+    @Builder
     public StudyInformation {
     }
 
