@@ -319,7 +319,10 @@ class StudyTest {
             study.delegateStudyHostAuthority(participant);
 
             // then
-            assertThat(study.getHost()).isEqualTo(participant);
+            assertAll(
+                    () -> assertThat(study.getHost()).isEqualTo(participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactly(participant, HOST)
+            );
         }
     }
 
