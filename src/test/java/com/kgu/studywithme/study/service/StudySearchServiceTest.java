@@ -36,6 +36,10 @@ class StudySearchServiceTest extends ServiceTest {
     private final Study[] language = new Study[7];
     private final Study[] interview = new Study[5];
     private final Study[] programming = new Study[12];
+
+    private static final String TOTAL = null;
+    private static final String ONLINE = "online";
+    private static final String OFFLINE = "offline";
     private static final Pageable PAGE_REQUEST_1 = PageRequest.of(0, SLICE_PER_PAGE);
     private static final Pageable PAGE_REQUEST_2 = PageRequest.of(1, SLICE_PER_PAGE);
     private static final Pageable PAGE_REQUEST_3 = PageRequest.of(2, SLICE_PER_PAGE);
@@ -78,8 +82,9 @@ class StudySearchServiceTest extends ServiceTest {
     void findStudyByCategory() {
         // given
         initDataWithRegisterDate();
-        StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, true);
-        StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, false);
+        StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE);
+        StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE);
+        StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL);
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -102,6 +107,17 @@ class StudySearchServiceTest extends ServiceTest {
         List<Study> expect4 = List.of();
         assertThat(result4.hasNext()).isFalse();
         assertThatStudiesMatch(result4, expect4);
+
+        /* 온라인 + 오프라인 통합 */
+        DefaultStudyResponse result5 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
+        List<Study> expect5 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
+        assertThat(result5.hasNext()).isTrue();
+        assertThatStudiesMatch(result5, expect5);
+
+        DefaultStudyResponse result6 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
+        List<Study> expect6 = List.of(programming[3], programming[2], programming[1], programming[0]);
+        assertThat(result6.hasNext()).isFalse();
+        assertThatStudiesMatch(result6, expect6);
     }
 
     @Test
@@ -109,8 +125,9 @@ class StudySearchServiceTest extends ServiceTest {
     void findStudyByRecommend() {
         // given
         initDataWithRegisterDate();
-        StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, true, null, null);
-        StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, false, null, null);
+        StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, ONLINE, null, null);
+        StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, OFFLINE, null, null);
+        StudyRecommendCondition totalCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, TOTAL, null, null);
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -138,6 +155,22 @@ class StudySearchServiceTest extends ServiceTest {
         List<Study> expect5 = List.of();
         assertThat(result5.hasNext()).isFalse();
         assertThatStudiesMatch(result5, expect5);
+
+        /* 온라인 + 오프라인 통합 */
+        DefaultStudyResponse result6 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
+        List<Study> expect6 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
+        assertThat(result6.hasNext()).isTrue();
+        assertThatStudiesMatch(result6, expect6);
+
+        DefaultStudyResponse result7 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
+        List<Study> expect7 = List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1]);
+        assertThat(result7.hasNext()).isTrue();
+        assertThatStudiesMatch(result7, expect7);
+
+        DefaultStudyResponse result8 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
+        List<Study> expect8 = List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0]);
+        assertThat(result8.hasNext()).isFalse();
+        assertThatStudiesMatch(result8, expect8);
     }
 
     private void initDataWithRegisterDate() {

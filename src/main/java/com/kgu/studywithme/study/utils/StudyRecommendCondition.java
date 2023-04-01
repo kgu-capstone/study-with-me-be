@@ -6,7 +6,7 @@ import lombok.Builder;
 public record StudyRecommendCondition(
         Long memberId,
         String sort,
-        boolean isOnline,
+        String type,
         String province,
         String city
 ) {
@@ -14,6 +14,6 @@ public record StudyRecommendCondition(
     public StudyRecommendCondition {}
 
     public StudyRecommendCondition(StudyRecommendSearchRequest request, Long memberId) {
-        this(memberId, request.sort(), request.isOnline(), request.province(), request.city());
+        this(memberId, request.sort(), request.type(), request.province(), request.city());
     }
 }

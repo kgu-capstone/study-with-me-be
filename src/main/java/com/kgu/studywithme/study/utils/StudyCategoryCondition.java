@@ -7,12 +7,12 @@ import lombok.Builder;
 public record StudyCategoryCondition(
         Category category,
         String sort,
-        boolean isOnline
+        String type
 ) {
     @Builder
     public StudyCategoryCondition {}
 
     public StudyCategoryCondition(StudyCategorySearchRequest request) {
-        this(Category.from(request.category()), request.sort(), request.isOnline());
+        this(Category.from(request.category()), request.sort(), request.type());
     }
 }
