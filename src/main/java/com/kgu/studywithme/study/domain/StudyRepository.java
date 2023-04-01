@@ -18,6 +18,13 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
 
     @Query("SELECT s" +
             " FROM Study s" +
+            " JOIN FETCH s.participants.host" +
+            " LEFT OUTER JOIN FETCH s.participants.participants" +
+            " WHERE s.id = :studyId")
+    Optional<Study> findByIdWithHostAndParticipant(@Param("studyId") Long studyId);
+
+    @Query("SELECT s" +
+            " FROM Study s" +
             " JOIN FETCH s.participants.host h" +
             " WHERE s.id = :studyId AND h.id = :hostId")
     Optional<Study> findByIdAndHostId(@Param("studyId") Long studyId, @Param("hostId") Long hostId);
