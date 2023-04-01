@@ -4,7 +4,10 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.StudyReview;
+import com.kgu.studywithme.study.service.dto.response.StudyReviewer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
@@ -71,6 +75,35 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.host().profileUrl()).isEqualTo(host.getProfileUrl())
         );
     }
+    
+    @Test
+    @DisplayName("스터디 졸업자들의 리뷰를 조회한다")
+    void getReviews() {
+        // given
+        graduateAllParticipant();
+        
+        // when
+        ReviewAssembler result = studyInformationService.getReviews(study.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(result.graduateCount()).isEqualTo(members.length),
+                () -> assertThat(result.reviews()).hasSize(members.length),
+                () -> {
+                    List<String> reviewers = result.reviews()
+                            .stream()
+                            .map(StudyReview::reviewer)
+                            .map(StudyReviewer::nickname)
+                            .toList();
+
+                    assertThat(reviewers).containsAll(
+                            Arrays.stream(members)
+                                    .map(Member::getNicknameValue)
+                                    .toList())
+                    ;
+                }
+        );
+    }
 
     private List<LocalDate> getBirthList() {
         List<LocalDate> list = new ArrayList<>();
@@ -81,5 +114,12 @@ class StudyInformationServiceTest extends ServiceTest {
         }
 
         return list;
+    }
+
+    private void graduateAllParticipant() {
+        for (Member member : members) {
+            study.graduateParticipant(member);
+            study.writeReview(member, "좋은 스터디");
+        }
     }
 }
