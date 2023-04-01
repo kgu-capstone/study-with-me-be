@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
 import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
@@ -42,6 +43,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
     @Autowired
     private FavoriteRepository favoriteRepository;
 
+    private static final String TOTAL = null;
+    private static final String ONLINE = "online";
+    private static final String OFFLINE = "offline";
     private static final Pageable PAGE_REQUEST_1 = PageRequest.of(0, SLICE_PER_PAGE);
     private static final Pageable PAGE_REQUEST_2 = PageRequest.of(1, SLICE_PER_PAGE);
     private static final Pageable PAGE_REQUEST_3 = PageRequest.of(2, SLICE_PER_PAGE);
@@ -96,15 +100,16 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
     }
 
     @Nested
-    @DisplayName("각 카테고리 별 스터디 리스트 조회 [프로그래밍 카테고리]")
+    @DisplayName("각 카테고리 별 스터디 리스트 조회")
     class findStudyByCategory {
         @Test
-        @DisplayName("최신순으로 스터디 리스트를 조회한다")
+        @DisplayName("최신순으로 프로그래밍 스터디 리스트를 조회한다")
         void date() {
             // given
             initDataWithRegisterDate();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, true);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, false);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_DATE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -127,15 +132,50 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
             assertThatStudiesMatch(result4.getContent(), expect4);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect5 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
+            assertThat(result5.hasNext()).isTrue();
+            assertThatStudiesMatch(result5.getContent(), expect5);
+
+            Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect6 = List.of(programming[3], programming[2], programming[1], programming[0]);
+            assertThat(result6.hasNext()).isFalse();
+            assertThatStudiesMatch(result6.getContent(), expect6);
         }
 
         @Test
-        @DisplayName("찜이 많은 순으로 스터디 리스트를 조회한다")
+        @DisplayName("최신순 + 오프라인 지역으로 면접 스터디 리스트를 조회한다")
+        void dateWithRegion() {
+            // given
+            initDataWithRegisterDate();
+            StudyCategoryCondition condition1 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, "경기도", "성남시");
+            StudyCategoryCondition condition2 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, null, "성남시");
+            StudyCategoryCondition condition3 = new StudyCategoryCondition(INTERVIEW, SORT_DATE, OFFLINE, "경기도", null);
+
+            // 서울 특별시 & 강남구
+            Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(condition1, PAGE_REQUEST_1);
+            Slice<BasicStudy> result2 = studyRepository.findStudyByCategory(condition2, PAGE_REQUEST_1);
+            Slice<BasicStudy> result3 = studyRepository.findStudyByCategory(condition3, PAGE_REQUEST_1);
+            assertThat(result1.hasNext()).isFalse();
+            assertThat(result2.hasNext()).isFalse();
+            assertThat(result3.hasNext()).isFalse();
+
+            List<Study> expect = List.of(interview[3], interview[2], interview[1]);
+            assertThatStudiesMatch(result1.getContent(), expect);
+            assertThatStudiesMatch(result2.getContent(), expect);
+            assertThatStudiesMatch(result3.getContent(), expect);
+        }
+
+        @Test
+        @DisplayName("찜이 많은 순으로 프로그래밍 스터디 리스트를 조회한다")
         void favorite() {
             // given
             initDataWithFavorite();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, true);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, false);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_FAVORITE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -158,15 +198,27 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
             assertThatStudiesMatch(result4.getContent(), expect4);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect5 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]);
+            assertThat(result5.hasNext()).isTrue();
+            assertThatStudiesMatch(result5.getContent(), expect5);
+
+            Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect6 = List.of(programming[11], programming[10], programming[1], programming[4]);
+            assertThat(result6.hasNext()).isFalse();
+            assertThatStudiesMatch(result6.getContent(), expect6);
         }
 
         @Test
-        @DisplayName("리뷰가 많은 순으로 스터디 리스트를 조회한다")
+        @DisplayName("리뷰가 많은 순으로 프로그래밍 스터디 리스트를 조회한다")
         void review() {
             // given
             initDataWithReviews();
-            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, true);
-            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, false);
+            StudyCategoryCondition onlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, ONLINE, null, null);
+            StudyCategoryCondition offlineCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, OFFLINE, null, null);
+            StudyCategoryCondition totalCondition = new StudyCategoryCondition(PROGRAMMING, SORT_REVIEW, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
@@ -189,6 +241,17 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
             assertThatStudiesMatch(result4.getContent(), expect4);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect5 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]);
+            assertThat(result5.hasNext()).isTrue();
+            assertThatStudiesMatch(result5.getContent(), expect5);
+
+            Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect6 = List.of(programming[11], programming[10], programming[1], programming[4]);
+            assertThat(result6.hasNext()).isFalse();
+            assertThatStudiesMatch(result6.getContent(), expect6);
         }
     }
 
@@ -200,8 +263,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void date() {
             // given
             initDataWithRegisterDate();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, true, null, null);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, false, null, null);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, ONLINE, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, OFFLINE, null, null);
+            StudyRecommendCondition totalCondition = new StudyRecommendCondition(host.getId(), SORT_DATE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -229,6 +293,22 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
             assertThatStudiesMatch(result5.getContent(), expect5);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect6 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
+            assertThat(result6.hasNext()).isTrue();
+            assertThatStudiesMatch(result6.getContent(), expect6);
+
+            Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect7 = List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1]);
+            assertThat(result7.hasNext()).isTrue();
+            assertThatStudiesMatch(result7.getContent(), expect7);
+
+            Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
+            List<Study> expect8 = List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0]);
+            assertThat(result8.hasNext()).isFalse();
+            assertThatStudiesMatch(result8.getContent(), expect8);
         }
 
         @Test
@@ -236,9 +316,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void dateWithRegion() {
             // given
             initDataWithRegisterDate();
-            StudyRecommendCondition condition1 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, "서울특별시", "강남구");
-            StudyRecommendCondition condition2 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, null, "강남구");
-            StudyRecommendCondition condition3 = new StudyRecommendCondition(host.getId(), SORT_DATE, false, "서울특별시", null);
+            StudyRecommendCondition condition1 = new StudyRecommendCondition(host.getId(), SORT_DATE, OFFLINE, "서울특별시", "강남구");
+            StudyRecommendCondition condition2 = new StudyRecommendCondition(host.getId(), SORT_DATE, OFFLINE, null, "강남구");
+            StudyRecommendCondition condition3 = new StudyRecommendCondition(host.getId(), SORT_DATE, OFFLINE, "서울특별시", null);
 
             // 서울 특별시 & 강남구
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(condition1, PAGE_REQUEST_1);
@@ -259,8 +339,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void favorite() {
             // given
             initDataWithFavorite();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, true, null, null);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, false, null, null);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, ONLINE, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, OFFLINE, null, null);
+            StudyRecommendCondition totalCondition = new StudyRecommendCondition(host.getId(), SORT_FAVORITE, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -288,6 +369,22 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
             assertThatStudiesMatch(result5.getContent(), expect5);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect6 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]);
+            assertThat(result6.hasNext()).isTrue();
+            assertThatStudiesMatch(result6.getContent(), expect6);
+
+            Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect7 = List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]);
+            assertThat(result7.hasNext()).isTrue();
+            assertThatStudiesMatch(result7.getContent(), expect7);
+
+            Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
+            List<Study> expect8 = List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]);
+            assertThat(result8.hasNext()).isFalse();
+            assertThatStudiesMatch(result8.getContent(), expect8);
         }
 
         @Test
@@ -295,8 +392,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         void review() {
             // given
             initDataWithReviews();
-            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, true, null, null);
-            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, false, null, null);
+            StudyRecommendCondition onlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, ONLINE, null, null);
+            StudyRecommendCondition offlineCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, OFFLINE, null, null);
+            StudyRecommendCondition totalCondition = new StudyRecommendCondition(host.getId(), SORT_REVIEW, TOTAL, null, null);
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
@@ -325,6 +423,22 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
             assertThatStudiesMatch(result5.getContent(), expect5);
+
+            /* 온라인 + 오프라인 통합 */
+            Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
+            List<Study> expect6 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]);
+            assertThat(result6.hasNext()).isTrue();
+            assertThatStudiesMatch(result6.getContent(), expect6);
+
+            Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
+            List<Study> expect7 = List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]);
+            assertThat(result7.hasNext()).isTrue();
+            assertThatStudiesMatch(result7.getContent(), expect7);
+
+            Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
+            List<Study> expect8 = List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]);
+            assertThat(result8.hasNext()).isFalse();
+            assertThatStudiesMatch(result8.getContent(), expect8);
         }
     }
 

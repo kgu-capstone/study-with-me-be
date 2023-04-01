@@ -44,7 +44,7 @@ class ParticipantsTest {
 
             // when - then
             final Member anonymous = ANONYMOUS.toMember();
-            assertThatThrownBy(() -> participants.delegateStudyHostAuthority(anonymous))
+            assertThatThrownBy(() -> participants.delegateStudyHostAuthority(STUDY, anonymous))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
         }
@@ -57,11 +57,19 @@ class ParticipantsTest {
             participants.apply(STUDY, PARTICIPANT);
             participants.approve(PARTICIPANT);
 
+            assertAll(
+                    () -> assertThat(participants.getHost()).isEqualTo(HOST),
+                    () -> assertThat(participants.getApproveParticipants()).containsExactly(HOST, PARTICIPANT)
+            );
+
             // when
-            participants.delegateStudyHostAuthority(PARTICIPANT);
+            participants.delegateStudyHostAuthority(STUDY, PARTICIPANT);
 
             // then
-            assertThat(participants.getHost()).isEqualTo(PARTICIPANT);
+            assertAll(
+                    () -> assertThat(participants.getHost()).isEqualTo(PARTICIPANT),
+                    () -> assertThat(participants.getApproveParticipants()).containsExactly(PARTICIPANT, HOST)
+            );
         }
     }
 

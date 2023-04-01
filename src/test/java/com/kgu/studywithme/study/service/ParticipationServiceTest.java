@@ -427,12 +427,20 @@ class ParticipationServiceTest extends ServiceTest {
             study.applyParticipation(participant);
             study.approveParticipation(participant);
 
+            assertAll(
+                    () -> assertThat(study.getHost()).isEqualTo(host),
+                    () -> assertThat(study.getApproveParticipants()).containsExactly(host, participant)
+            );
+
             // when
             participationService.delegateAuthority(study.getId(), participant.getId(), host.getId());
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
-            assertThat(findStudy.getHost()).isEqualTo(participant);
+            assertAll(
+                    () -> assertThat(findStudy.getHost()).isEqualTo(participant),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(participant, host)
+            );
         }
     }
 }
