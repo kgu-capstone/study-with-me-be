@@ -26,6 +26,26 @@ public enum MemberFixture {
             LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ANONYMOUS("익명", "익명", "anonymous@gmail.com", "https://source.boringavatars.com/beam/120/anonymous@gmail.com",
             LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+
+
+    DUMMY1("더미1", "더미1", "dummy1@gmail.com", "https://source.boringavatars.com/beam/120/dummy1@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY2("더미2", "더미2", "dummy2@gmail.com", "https://source.boringavatars.com/beam/120/dummy2@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY3("더미3", "더미3", "dummy3@gmail.com", "https://source.boringavatars.com/beam/120/dummy3@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY4("더미4", "더미4", "dummy4@gmail.com", "https://source.boringavatars.com/beam/120/dummy4@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY5("더미5", "더미5", "dummy5@gmail.com", "https://source.boringavatars.com/beam/120/dummy5@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY6("더미6", "더미6", "dummy6@gmail.com", "https://source.boringavatars.com/beam/120/dummy6@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY7("더미7", "더미7", "dummy7@gmail.com", "https://source.boringavatars.com/beam/120/dummy7@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY8("더미8", "더미8", "dummy8@gmail.com", "https://source.boringavatars.com/beam/120/dummy8@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+    DUMMY9("더미9", "더미9", "dummy9@gmail.com", "https://source.boringavatars.com/beam/120/dummy9@gmail.com",
+            LocalDate.of(2000, 1, 18), Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     ;
 
     private final String name;

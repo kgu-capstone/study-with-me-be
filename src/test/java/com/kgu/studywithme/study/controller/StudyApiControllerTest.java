@@ -67,10 +67,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
@@ -128,10 +128,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
@@ -189,10 +189,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
@@ -247,10 +247,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
@@ -298,10 +298,10 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]")
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]")
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
