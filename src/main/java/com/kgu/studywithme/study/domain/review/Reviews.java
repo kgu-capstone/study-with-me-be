@@ -39,8 +39,4 @@ public class Reviews {
         return reviews.stream()
                 .anyMatch(review -> review.getWriter().isSameMember(writer));
     }
-
-    public int getCount() {
-        return reviews.size();
-    }
 }

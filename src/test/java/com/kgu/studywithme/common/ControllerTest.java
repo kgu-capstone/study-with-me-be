@@ -15,9 +15,11 @@ import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.StudyApiController;
+import com.kgu.studywithme.study.controller.StudyInformationApiController;
 import com.kgu.studywithme.study.controller.StudyParticipationApiController;
 import com.kgu.studywithme.study.controller.StudySearchApiController;
 import com.kgu.studywithme.study.service.ParticipationService;
+import com.kgu.studywithme.study.service.StudyInformationService;
 import com.kgu.studywithme.study.service.StudyRegisterService;
 import com.kgu.studywithme.study.service.StudySearchService;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +51,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyParticipationApiController.class,
         StudyApiController.class,
         FavoriteApiController.class,
-        StudySearchApiController.class
+        StudySearchApiController.class,
+        StudyInformationApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -89,6 +92,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudySearchService studySearchService;
+
+    @MockBean
+    protected StudyInformationService studyInformationService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

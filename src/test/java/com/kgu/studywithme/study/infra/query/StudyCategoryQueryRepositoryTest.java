@@ -342,9 +342,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(expect.getApproveParticipants().size()),
-                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getCapacity().getValue()),
+                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getFavoriteCount()).isEqualTo(expect.getApproveParticipants().size() - 1), // 팀장 제외 스터디 참여자들은 전부 찜
-                    () -> assertThat(actual.getReviewCount()).isEqualTo(expect.getReviews().getCount())
+                    () -> assertThat(actual.getReviewCount()).isEqualTo(expect.getReviews().size())
             );
         }
     }

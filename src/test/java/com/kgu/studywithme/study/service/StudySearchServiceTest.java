@@ -176,7 +176,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(1), // 스터디 팀장만 참여중
-                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getCapacity().getValue()),
+                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getFavoriteCount()).isEqualTo(1), // 스터디 팀장만 찜
                     () -> assertThat(actual.getReviewCount()).isEqualTo(0),
                     () -> assertThat(actual.getHashtags()).containsAll(expect.getHashtags())
