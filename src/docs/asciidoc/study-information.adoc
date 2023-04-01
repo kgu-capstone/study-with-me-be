@@ -5,7 +5,7 @@
 :toc: left
 :toclevels: 2
 
-== 스터디 상세 페이지 기본 정보를 조회한다
+== 스터디 상세 페이지 기본 정보
 HTTP Request
 include::{snippets}/StudyApi/Information/Basic/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Basic/path-parameters.adoc[]
@@ -13,3 +13,12 @@ include::{snippets}/StudyApi/Information/Basic/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Information/Basic/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Basic/response-fields.adoc[]
+
+== 스터디 상세 페이지 리뷰
+HTTP Request
+include::{snippets}/StudyApi/Information/Review/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Review/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Review/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Review/response-fields.adoc[]

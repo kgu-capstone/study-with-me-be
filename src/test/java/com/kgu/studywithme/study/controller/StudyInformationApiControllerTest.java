@@ -3,13 +3,20 @@ package com.kgu.studywithme.study.controller;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.StudyReview;
+import com.kgu.studywithme.study.service.dto.response.StudyReviewer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
@@ -76,6 +83,48 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("스터디 리뷰 조회 API [GET /api/studies/{studyId}/reviews]")
+    class getReviews {
+        private static final String BASE_URL = "/api/studies/{studyId}/reviews";
+        private static final Long STUDY_ID = 1L;
+
+        @Test
+        @DisplayName("스터디 리뷰 리스트를 조회한다")
+        void success() throws Exception {
+            // given
+            ReviewAssembler response = generateStudyReviewAssembler();
+            given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID);
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Review",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("graduateCount").description("졸업한 사람 수"),
+                                            fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
+                                            fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임"),
+                                            fieldWithPath("reviews[].reviewer.profileUrl").description("리뷰어 프로필 URL"),
+                                            fieldWithPath("reviews[].content").description("리뷰 내용"),
+                                            fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜")
+                                                    .attributes(constraint("날짜 내림차순 정렬로 응답"))
+                                    )
+                            )
+                    );
+        }
+    }
+
     private StudyInformation generateStudyInformationResponse() {
         Member host = generateHost();
         Study study = generateStudy(host);
@@ -92,5 +141,23 @@ class StudyInformationApiControllerTest extends ControllerTest {
         Study study = TOSS_INTERVIEW.toOfflineStudy(host);
         ReflectionTestUtils.setField(study, "id", 1L);
         return study;
+    }
+
+    private ReviewAssembler generateStudyReviewAssembler() {
+        int graduateCount = 10;
+        List<StudyReview> studyReviews = generateStudyReviews(6);
+
+        return new ReviewAssembler(graduateCount, studyReviews);
+    }
+
+    private List<StudyReview> generateStudyReviews(int count) {
+        List<StudyReview> list = new ArrayList<>();
+
+        for (int index = 1; index <= count; index++) {
+            StudyReviewer reviewer = new StudyReviewer((long) index, "Nickname" + index, "Profile" + index);
+            list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
+        }
+
+        return list;
     }
 }
