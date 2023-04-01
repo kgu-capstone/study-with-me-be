@@ -509,7 +509,7 @@ class StudyTest {
             study.writeReview(participant, "리뷰입니다.");
 
             // then
-            assertThat(study.getReviews().getCount()).isEqualTo(1);
+            assertThat(study.getReviews()).hasSize(1);
         }
     }
 }
