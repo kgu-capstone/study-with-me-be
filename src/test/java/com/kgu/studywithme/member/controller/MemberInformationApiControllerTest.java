@@ -16,7 +16,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.util.List;
 
-import static com.kgu.studywithme.category.domain.Category.*;
+import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
+import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
@@ -168,13 +169,13 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자와 관련된(참여 & 졸업 & 찜) 스터디 리스트 조회 API [GET /api/members/{memberId}/studies]")
-    class getRelatedStudy {
-        private static final String BASE_URL = "/api/members/{memberId}/studies";
+    @DisplayName("사용자가 참여중인 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/participate]")
+    class getParticipateStudy {
+        private static final String BASE_URL = "/api/members/{memberId}/studies/participate";
         private static final Long MEMBER_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 관련된 스터디 리스트 조회에 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 참여중인 스터디 리스트 조회에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -194,7 +195,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "MemberApi/Information/RelatedStudy/Failure/Case1",
+                                    "MemberApi/Information/RelatedStudy/Participate/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -210,7 +211,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 관련된 스터디 리스트 조회에 실패한다")
+        @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 참여중인 스터디 리스트 조회에 실패한다")
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -235,7 +236,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "MemberApi/Information/RelatedStudy/Failure/Case2",
+                                    "MemberApi/Information/RelatedStudy/Participate/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -254,14 +255,14 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("사용자와 관련된(참여 & 졸업 & 찜) 스터디 리스트를 조회한다")
+        @DisplayName("사용자가 참여중인 스터디 리스트를 조회한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
             RelatedStudy response = generateRelatedStudyResponse();
-            given(memberInformationService.getRelatedStudy(MEMBER_ID)).willReturn(response);
+            given(memberInformationService.getParticipateStudy(MEMBER_ID)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -273,7 +274,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                     .andExpect(status().isOk())
                     .andDo(
                             document(
-                                    "MemberApi/Information/RelatedStudy/Success",
+                                    "MemberApi/Information/RelatedStudy/Participate/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -283,15 +284,259 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("사용자 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("participateStudyList[].id").description("참여중인 스터디 ID(PK)"),
-                                            fieldWithPath("participateStudyList[].name").description("참여중인 스터디명"),
-                                            fieldWithPath("participateStudyList[].category").description("참여중인 스터디 카테고리"),
-                                            fieldWithPath("graduatedStudyList[].id").description("졸업한 스터디 ID(PK)"),
-                                            fieldWithPath("graduatedStudyList[].name").description("졸업한 스터디명"),
-                                            fieldWithPath("graduatedStudyList[].category").description("졸업한 스터디 카테고리"),
-                                            fieldWithPath("favoriteStudyList[].id").description("찜한 스터디 ID(PK)"),
-                                            fieldWithPath("favoriteStudyList[].name").description("찜한 스터디명"),
-                                            fieldWithPath("favoriteStudyList[].category").description("찜한 스터디 카테고리")
+                                            fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
+                                            fieldWithPath("result[].name").description("참여중인 스터디명"),
+                                            fieldWithPath("result[].category").description("참여중인 스터디 카테고리")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자가 졸업한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/graduated]")
+    class getGraduatedStudy {
+        private static final String BASE_URL = "/api/members/{memberId}/studies/graduated";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 졸업한 스터디 리스트 조회에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Graduated/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 졸업한 스터디 리스트 조회에 실패한다")
+        void failureByAnonymousMember() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Graduated/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("사용자가 졸업한 스터디 리스트를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+
+            RelatedStudy response = generateRelatedStudyResponse();
+            given(memberInformationService.getGraduatedStudy(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Graduated/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("result[].id").description("졸업한 스터디 ID(PK)"),
+                                            fieldWithPath("result[].name").description("졸업한 스터디명"),
+                                            fieldWithPath("result[].category").description("졸업한 스터디 카테고리")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자가 찜한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/favorite]")
+    class getFavoriteStudy {
+        private static final String BASE_URL = "/api/members/{memberId}/studies/favorite";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 찜한 스터디 리스트 조회에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Favorite/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 찜한 스터디 리스트 조회에 실패한다")
+        void failureByAnonymousMember() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Favorite/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("사용자가 찜한 스터디 리스트를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+
+            RelatedStudy response = generateRelatedStudyResponse();
+            given(memberInformationService.getFavoriteStudy(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Favorite/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("result[].id").description("찜한 스터디 ID(PK)"),
+                                            fieldWithPath("result[].name").description("찜한 스터디명"),
+                                            fieldWithPath("result[].category").description("찜한 스터디 카테고리")
                                     )
                             )
                     );
@@ -305,26 +550,12 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     private RelatedStudy generateRelatedStudyResponse() {
-        List<SimpleStudy> participateStudy = List.of(
+        List<SimpleStudy> result = List.of(
                 new SimpleStudy(1L, StudyName.from("Spring 스터디"), PROGRAMMING),
                 new SimpleStudy(2L, StudyName.from("JPA 스터디"), PROGRAMMING),
                 new SimpleStudy(3L, StudyName.from("Toss 면접 스터디"), INTERVIEW),
                 new SimpleStudy(4L, StudyName.from("AWS 스터디"), PROGRAMMING)
         );
-        List<SimpleStudy> graduatedStudy = List.of(
-                new SimpleStudy(5L, StudyName.from("Naver 면접 스터디"), INTERVIEW),
-                new SimpleStudy(6L, StudyName.from("일본어 스터디"), LANGUAGE)
-        );
-        List<SimpleStudy> favoriteStudy = List.of(
-                new SimpleStudy(7L, StudyName.from("아랍어 스터디"), LANGUAGE),
-                new SimpleStudy(8L, StudyName.from("코틀린 스터디"), PROGRAMMING),
-                new SimpleStudy(9L, StudyName.from("Real MySQL 스터디"), PROGRAMMING),
-                new SimpleStudy(10L, StudyName.from("파이썬 스터디"), PROGRAMMING),
-                new SimpleStudy(11L, StudyName.from("Kubernetes 스터디"), PROGRAMMING),
-                new SimpleStudy(12L, StudyName.from("운영체제 스터디"), PROGRAMMING),
-                new SimpleStudy(13L, StudyName.from("Kakao 면접 스터디"), INTERVIEW)
-        );
-
-        return new RelatedStudy(participateStudy, graduatedStudy, favoriteStudy);
+        return new RelatedStudy(result);
     }
 }

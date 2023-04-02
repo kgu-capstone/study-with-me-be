@@ -62,31 +62,49 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.interests()).containsAll(List.of(LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()))
         );
     }
-    
+
     @Test
-    @DisplayName("사용자와 관련된 스터디 리스트들을 조회한다 [참여 중 & 졸업 & 찜]")
-    void getRelatedStudy() {
+    @DisplayName("사용자가 참여중인 스터디 리스트를 조회한다")
+    void getParticipateStudy() {
         // given
         participateStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
         graduateStudy(member, programming[1], programming[3], programming[6]);
+
+        // when
+        RelatedStudy relatedStudy = memberInformationService.getParticipateStudy(member.getId());
+
+        // then
+        List<Study> expectParticipate = List.of(programming[5], programming[4], programming[2], programming[0]);
+        assertThatStudiesMatch(relatedStudy.result(), expectParticipate);
+    }
+
+    @Test
+    @DisplayName("사용자가 졸업한 스터디 리스트를 조회한다")
+    void getGraduatedStudy() {
+        // given
+        participateStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
+        graduateStudy(member, programming[1], programming[3], programming[6]);
+
+        // when
+        RelatedStudy relatedStudy = memberInformationService.getGraduatedStudy(member.getId());
+
+        // then
+        List<Study> expectGraduated = List.of(programming[6], programming[3], programming[1]);
+        assertThatStudiesMatch(relatedStudy.result(), expectGraduated);
+    }
+
+    @Test
+    @DisplayName("사용자가 찜한 스터디 리스트를 조회한다")
+    void getFavoriteStudy() {
+        // given
         favoriteStudy(member, programming[0], programming[1], programming[3], programming[4], programming[6]);
 
         // when
-        RelatedStudy relatedStudy = memberInformationService.getRelatedStudy(member.getId());
+        RelatedStudy relatedStudy = memberInformationService.getFavoriteStudy(member.getId());
 
         // then
-        List<SimpleStudy> participateStudyList = relatedStudy.participateStudyList();
-        List<Study> expectParticipate = List.of(programming[5], programming[4], programming[2], programming[0]);
-        assertThatStudiesMatch(participateStudyList, expectParticipate);
-
-        List<SimpleStudy> graduatedStudyList = relatedStudy.graduatedStudyList();
-        List<Study> expectGraduated = List.of(programming[6], programming[3], programming[1]);
-        assertThatStudiesMatch(graduatedStudyList, expectGraduated);
-
-        List<SimpleStudy> favoriteStudyList = relatedStudy.favoriteStudyList();
         List<Study> expectFavorite = List.of(programming[6], programming[4], programming[3], programming[1], programming[0]);
-        assertThatStudiesMatch(favoriteStudyList, expectFavorite);
-
+        assertThatStudiesMatch(relatedStudy.result(), expectFavorite);
     }
 
     private void participateStudy(Member member, Study... studies) {

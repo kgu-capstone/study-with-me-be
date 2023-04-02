@@ -26,9 +26,23 @@ public class MemberInformationApiController {
     }
 
     @ValidMember
-    @GetMapping("/studies")
-    public ResponseEntity<RelatedStudy> getRelatedStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
-        RelatedStudy response = memberInformationService.getRelatedStudy(memberId);
+    @GetMapping("/studies/participate")
+    public ResponseEntity<RelatedStudy> getParticipateStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+        RelatedStudy response = memberInformationService.getParticipateStudy(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @ValidMember
+    @GetMapping("/studies/graduated")
+    public ResponseEntity<RelatedStudy> getGraduatedStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+        RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @ValidMember
+    @GetMapping("/studies/favorite")
+    public ResponseEntity<RelatedStudy> getFavoriteStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+        RelatedStudy response = memberInformationService.getFavoriteStudy(memberId);
         return ResponseEntity.ok(response);
     }
 }

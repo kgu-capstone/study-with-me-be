@@ -23,11 +23,18 @@ public class MemberInformationService {
         return new MemberInformation(member);
     }
 
-    public RelatedStudy getRelatedStudy(Long memberId) {
+    public RelatedStudy getParticipateStudy(Long memberId) {
         List<SimpleStudy> participateStudy = studyRepository.findParticipateStudyByMemberId(memberId);
-        List<SimpleStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
-        List<SimpleStudy> favoriteStudy = studyRepository.findFavoriteStudyByMemberId(memberId);
+        return new RelatedStudy(participateStudy);
+    }
 
-        return new RelatedStudy(participateStudy, graduatedStudy, favoriteStudy);
+    public RelatedStudy getGraduatedStudy(Long memberId) {
+        List<SimpleStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
+        return new RelatedStudy(graduatedStudy);
+    }
+
+    public RelatedStudy getFavoriteStudy(Long memberId) {
+        List<SimpleStudy> favoriteStudy = studyRepository.findFavoriteStudyByMemberId(memberId);
+        return new RelatedStudy(favoriteStudy);
     }
 }
