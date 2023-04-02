@@ -71,8 +71,7 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.hashtags()).containsAll(study.getHashtags()),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
-                () -> assertThat(information.host().nickname()).isEqualTo(host.getNicknameValue()),
-                () -> assertThat(information.host().profileUrl()).isEqualTo(host.getProfileUrl())
+                () -> assertThat(information.host().nickname()).isEqualTo(host.getNicknameValue())
         );
     }
     

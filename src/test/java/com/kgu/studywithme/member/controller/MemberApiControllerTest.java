@@ -62,8 +62,6 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
                                                     .attributes(constraint("서버 제공 [Read-Only]")),
-                                            fieldWithPath("profileUrl").description("아바타 프로필 이미지 URL")
-                                                    .attributes(constraint("아바타 SVG URL")),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
@@ -112,8 +110,6 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("nickname").description("닉네임"),
                                             fieldWithPath("email").description("이메일")
                                                     .attributes(constraint("서버 제공 [Read-Only]")),
-                                            fieldWithPath("profileUrl").description("아바타 프로필 이미지 URL")
-                                                    .attributes(constraint("아바타 SVG URL")),
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
