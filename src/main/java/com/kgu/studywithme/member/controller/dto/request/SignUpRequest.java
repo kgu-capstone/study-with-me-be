@@ -28,9 +28,6 @@ public record SignUpRequest(
         @NotBlank(message = "이메일은 필수입니다.")
         String email,
 
-        @NotBlank(message = "프로필 URL은 필수입니다.")
-        String profileUrl,
-
         @NotNull(message = "생년월일은 필수입니다.")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate birth,
@@ -58,7 +55,6 @@ public record SignUpRequest(
                 .name(name)
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .profileUrl(profileUrl)
                 .birth(birth)
                 .phone(phone)
                 .gender(convertStringToGender())

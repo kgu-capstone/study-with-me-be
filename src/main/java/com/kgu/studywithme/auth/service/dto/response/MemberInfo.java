@@ -6,14 +6,13 @@ import lombok.Builder;
 public record MemberInfo(
         Long id,
         String nickname,
-        String email,
-        String profileUrl
+        String email
 ) {
     @Builder
     public MemberInfo {}
 
     private MemberInfo(Member member) {
-        this(member.getId(), member.getNicknameValue(), member.getEmailValue(), member.getProfileUrl());
+        this(member.getId(), member.getNicknameValue(), member.getEmailValue());
     }
 
     public static MemberInfo from(Member member) {
