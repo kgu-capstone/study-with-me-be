@@ -1,9 +1,11 @@
 package com.kgu.studywithme.study.service;
 
+import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
+import com.kgu.studywithme.study.exception.NoticeErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ public class NoticeService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public void register(Long studyId, NoticeRequest request, Long memberId) {
+    public Long register(Long studyId, NoticeRequest request, Long memberId) {
         validateHost(studyId, memberId);
         Study study = studyFindService.findByIdWithHost(studyId);
 
@@ -27,7 +29,7 @@ public class NoticeService {
                 .study(study)
                 .build();
 
-        noticeRepository.save(notice);
+        return noticeRepository.save(notice).getId();
     }
 
     @Transactional
@@ -36,6 +38,11 @@ public class NoticeService {
         validateNoticeWriter(noticeId, memberId);
 
         noticeRepository.deleteById(noticeId);
+    }
+
+    public Notice findById(Long noticeId) {
+        return noticeRepository.findById(noticeId)
+                .orElseThrow(() -> StudyWithMeException.type(NoticeErrorCode.NOTICE_NOT_FOUND));
     }
 
     private void validateHost(Long studyId, Long memberId) {
