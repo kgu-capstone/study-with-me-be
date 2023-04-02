@@ -159,8 +159,6 @@ class OAuthApiControllerTest extends ControllerTest {
                             jsonPath("$.member.nickname").value(JIWON.getNickname()),
                             jsonPath("$.member.email").exists(),
                             jsonPath("$.member.email").value(JIWON.getEmail()),
-                            jsonPath("$.member.profileUrl").exists(),
-                            jsonPath("$.member.profileUrl").value(JIWON.getProfileUrl()),
                             jsonPath("$.accessToken").exists(),
                             jsonPath("$.accessToken").value(response.accessToken()),
                             jsonPath("$.refreshToken").exists(),
@@ -180,7 +178,6 @@ class OAuthApiControllerTest extends ControllerTest {
                                             fieldWithPath("member.id").description("사용자 ID(PK)"),
                                             fieldWithPath("member.nickname").description("사용자 닉네임"),
                                             fieldWithPath("member.email").description("사용자 이메일"),
-                                            fieldWithPath("member.profileUrl").description("사용자 프로필 이미지 링크"),
                                             fieldWithPath("accessToken").description("발급된 Access Token (Expire - 2시간)"),
                                             fieldWithPath("refreshToken").description("발급된 Refresh Token (Expire - 2주)")
                                     )
