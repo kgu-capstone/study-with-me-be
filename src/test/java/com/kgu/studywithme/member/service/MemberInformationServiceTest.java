@@ -1,8 +1,12 @@
 package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.common.ServiceTest;
+import com.kgu.studywithme.favorite.domain.Favorite;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
+import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static com.kgu.studywithme.category.domain.Category.*;
+import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -21,10 +27,20 @@ class MemberInformationServiceTest extends ServiceTest {
     private MemberInformationService memberInformationService;
 
     private Member member;
+    private final Study[] programming = new Study[7];
 
     @BeforeEach
     void setUp() {
         member = memberRepository.save(JIWON.toMember());
+
+        Member host = memberRepository.save(GHOST.toMember());
+        programming[0] = studyRepository.save(SPRING.toOnlineStudy(host));
+        programming[1] = studyRepository.save(JPA.toOnlineStudy(host));
+        programming[2] = studyRepository.save(REAL_MYSQL.toOfflineStudy(host));
+        programming[3] = studyRepository.save(KOTLIN.toOnlineStudy(host));
+        programming[4] = studyRepository.save(NETWORK.toOnlineStudy(host));
+        programming[5] = studyRepository.save(EFFECTIVE_JAVA.toOnlineStudy(host));
+        programming[6] = studyRepository.save(AWS.toOfflineStudy(host));
     }
 
     @Test
@@ -45,5 +61,66 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.region()).isEqualTo(member.getRegion()),
                 () -> assertThat(information.interests()).containsAll(List.of(LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()))
         );
+    }
+    
+    @Test
+    @DisplayName("사용자와 관련된 스터디 리스트들을 조회한다 [참여 중 & 졸업 & 찜]")
+    void getRelatedStudy() {
+        // given
+        participateStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
+        graduateStudy(member, programming[1], programming[3], programming[6]);
+        favoriteStudy(member, programming[0], programming[1], programming[3], programming[4], programming[6]);
+
+        // when
+        RelatedStudy relatedStudy = memberInformationService.getRelatedStudy(member.getId());
+
+        // then
+        List<SimpleStudy> participateStudyList = relatedStudy.participateStudyList();
+        List<Study> expectParticipate = List.of(programming[5], programming[4], programming[2], programming[0]);
+        assertThatStudiesMatch(participateStudyList, expectParticipate);
+
+        List<SimpleStudy> graduatedStudyList = relatedStudy.graduatedStudyList();
+        List<Study> expectGraduated = List.of(programming[6], programming[3], programming[1]);
+        assertThatStudiesMatch(graduatedStudyList, expectGraduated);
+
+        List<SimpleStudy> favoriteStudyList = relatedStudy.favoriteStudyList();
+        List<Study> expectFavorite = List.of(programming[6], programming[4], programming[3], programming[1], programming[0]);
+        assertThatStudiesMatch(favoriteStudyList, expectFavorite);
+
+    }
+
+    private void participateStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.applyParticipation(member);
+            study.approveParticipation(member);
+        }
+    }
+
+    private void graduateStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.graduateParticipant(member);
+        }
+    }
+
+    private void favoriteStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            favoriteRepository.save(Favorite.favoriteMarking(study.getId(), member.getId()));
+        }
+    }
+
+    private void assertThatStudiesMatch(List<SimpleStudy> result, List<Study> expect) {
+        int expectSize = expect.size();
+        assertThat(result).hasSize(expectSize);
+
+        for (int i = 0; i < expectSize; i++) {
+            SimpleStudy actual = result.get(i);
+            Study expected = expect.get(i);
+
+            assertAll(
+                    () -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+                    () -> assertThat(actual.getName()).isEqualTo(expected.getNameValue()),
+                    () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName())
+            );
+        }
     }
 }
