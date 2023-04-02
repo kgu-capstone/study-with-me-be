@@ -21,7 +21,7 @@ public class NoticeController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/remove/{noticeId}")
+    @DeleteMapping("/{noticeId}/remove")
     public ResponseEntity<Void> remove(@PathVariable Long studyId, @PathVariable Long noticeId, @ExtractPayload Long memberId) {
         noticeService.remove(studyId, noticeId, memberId);
         return ResponseEntity.noContent().build();
