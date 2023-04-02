@@ -1,11 +1,9 @@
 package com.kgu.studywithme.study.service;
 
-import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
-import com.kgu.studywithme.study.exception.CommentErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +18,8 @@ public class NoticeService {
 
     @Transactional
     public void register(Long studyId, NoticeRequest request, Long memberId) {
+        validateHost(studyId, memberId);
         Study study = studyFindService.findByIdWithHost(studyId);
-        validateHost(study, memberId);
 
         Notice notice = Notice.builder()
                 .title(request.title())
@@ -34,22 +32,17 @@ public class NoticeService {
 
     @Transactional
     public void remove(Long studyId, Long noticeId, Long memberId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
-        Notice notice = findById(noticeId);
+        validateHost(studyId, memberId);
+        validateNoticeWriter(noticeId, memberId);
 
-        validateHost(study, memberId);
-        studyValidator.validateNoticeWriter(notice, memberId);
-
-        noticeRepository.delete(notice);
+        noticeRepository.deleteById(noticeId);
     }
 
-    public Notice findById(Long noticeId) {
-        return noticeRepository.findById(noticeId)
-                .orElseThrow(() -> StudyWithMeException.type(CommentErrorCode.COMMENT_NOT_FOUND));
-
+    private void validateHost(Long studyId, Long memberId) {
+        studyValidator.validateHost(studyId, memberId);
     }
 
-    private void validateHost(Study study, Long memberId) {
-        studyValidator.validateHost(study, memberId);
+    private void validateNoticeWriter(Long noticeId, Long memberId) {
+        studyValidator.validateNoticeWriter(noticeId, memberId);
     }
 }

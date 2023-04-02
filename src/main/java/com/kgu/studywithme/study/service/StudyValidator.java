@@ -6,6 +6,7 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.notice.Notice;
+import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StudyValidator {
     private final StudyRepository studyRepository;
+    private final NoticeRepository noticeRepository;
 
     public void validateName(StudyName name) {
         if (studyRepository.existsByName(name)) {
@@ -23,13 +25,15 @@ public class StudyValidator {
         }
     }
 
-    public void validateHost(Study study, Long memberId) {
+    public void validateHost(Long studyId, Long memberId) {
+        Study study = studyRepository.findByIdWithHost(studyId).orElseThrow();
         if (!study.getHost().getId().equals(memberId)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST);
         }
     }
 
-    public void validateNoticeWriter(Notice notice, Long memberId) {
+    public void validateNoticeWriter(Long noticeId, Long memberId) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow();
         if (!notice.getWriter().getId().equals(memberId)) {
             throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);
         }

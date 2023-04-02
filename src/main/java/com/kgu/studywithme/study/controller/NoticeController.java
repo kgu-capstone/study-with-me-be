@@ -18,14 +18,12 @@ public class NoticeController {
     @PostMapping("/register")
     public ResponseEntity<Void> register(@PathVariable Long studyId, @RequestBody @Valid NoticeRequest request, @ExtractPayload Long memberId) {
         noticeService.register(studyId, request, memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/remove/{noticeId}")
     public ResponseEntity<Void> remove(@PathVariable Long studyId, @PathVariable Long noticeId, @ExtractPayload Long memberId) {
         noticeService.remove(studyId, noticeId, memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
-
-//    @GetMapping("/list")
 }
