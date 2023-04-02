@@ -24,7 +24,7 @@ public enum MemberErrorCode implements ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_007", "사용자 정보를 찾을 수 없습니다."),
-    MEMBER_IS_NOT_WRITER(HttpStatus.NOT_FOUND, "MEMBER_008", "사용자는 글쓴이가 아닙니다."),
+    MEMBER_IS_NOT_WRITER(HttpStatus.CONFLICT, "MEMBER_008", "사용자는 작성자가 아닙니다."),
     ;
 
     private final HttpStatus status;
