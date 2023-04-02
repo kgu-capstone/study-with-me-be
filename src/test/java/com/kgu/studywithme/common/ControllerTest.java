@@ -10,9 +10,12 @@ import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.category.controller.CategoryApiController;
 import com.kgu.studywithme.category.service.CategoryService;
+import com.kgu.studywithme.common.config.TestAopConfiguration;
 import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
+import com.kgu.studywithme.member.controller.MemberInformationApiController;
+import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.StudyApiController;
 import com.kgu.studywithme.study.controller.StudyInformationApiController;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
@@ -52,9 +56,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyApiController.class,
         FavoriteApiController.class,
         StudySearchApiController.class,
-        StudyInformationApiController.class
+        StudyInformationApiController.class,
+        MemberInformationApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
+@Import(TestAopConfiguration.class)
 @AutoConfigureRestDocs
 public abstract class ControllerTest {
     @Autowired
@@ -95,6 +101,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyInformationService studyInformationService;
+
+    @MockBean
+    protected MemberInformationService memberInformationService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

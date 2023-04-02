@@ -39,7 +39,7 @@ class PeriodTest {
     
     @Test
     @DisplayName("종료일이 현재 날짜 이전이면 Period 생성에 실패한다")
-    void test() {
+    void failureByInvalidEndDate() {
         final LocalDateTime startDate = LocalDateTime.now().minusDays(7);
         final LocalDateTime endDate = LocalDateTime.now().minusDays(1);
 
