@@ -4,6 +4,7 @@ import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.global.annotation.ValidMember;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,13 @@ public class MemberInformationApiController {
     @GetMapping
     public ResponseEntity<MemberInformation> getInformation(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         MemberInformation response = memberInformationService.getInformation(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @ValidMember
+    @GetMapping("/studies")
+    public ResponseEntity<RelatedStudy> getRelatedStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+        RelatedStudy response = memberInformationService.getRelatedStudy(memberId);
         return ResponseEntity.ok(response);
     }
 }
