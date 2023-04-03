@@ -19,8 +19,8 @@ public class NoticeService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public Long register(Long studyId, NoticeRequest request, Long memberId) {
-        validateHost(studyId, memberId);
+    public Long register(Long studyId, NoticeRequest request, Long hostId) {
+        validateHost(studyId, hostId);
         Study study = studyFindService.findByIdWithHost(studyId);
 
         Notice notice = Notice.builder()
@@ -33,9 +33,9 @@ public class NoticeService {
     }
 
     @Transactional
-    public void remove(Long studyId, Long noticeId, Long memberId) {
-        validateHost(studyId, memberId);
-        validateNoticeWriter(noticeId, memberId);
+    public void remove(Long studyId, Long noticeId, Long hostId) {
+        validateHost(studyId, hostId);
+        validateNoticeWriter(noticeId, hostId);
 
         noticeRepository.deleteById(noticeId);
     }
