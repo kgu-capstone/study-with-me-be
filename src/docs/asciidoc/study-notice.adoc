@@ -23,7 +23,7 @@ include::{snippets}/NoticeApi/Register/Failure/Case2/path-parameters.adoc[]
 include::{snippets}/NoticeApi/Register/Failure/Case2/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/NoticeApi/Register/Failure/Case2/http-response.adoc[]
+include::{snippets}/NoticeApi/Register/Failure/Case2/response-body.adoc[]
 
 === 3. 공지사항 등록에 성공한다
 HTTP Request
@@ -51,7 +51,7 @@ include::{snippets}/NoticeApi/Remove/Failure/Case2/request-headers.adoc[]
 include::{snippets}/NoticeApi/Remove/Failure/Case2/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/NoticeApi/Remove/Failure/Case2/http-response.adoc[]
+include::{snippets}/NoticeApi/Remove/Failure/Case2/response-body.adoc[]
 
 === 3. 작성자가 아니라면 공지사항을 삭제할 수 없다
 HTTP Request
@@ -60,7 +60,7 @@ include::{snippets}/NoticeApi/Remove/Failure/Case3/request-headers.adoc[]
 include::{snippets}/NoticeApi/Remove/Failure/Case3/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/NoticeApi/Remove/Failure/Case3/http-response.adoc[]
+include::{snippets}/NoticeApi/Remove/Failure/Case3/response-body.adoc[]
 
 === 4. 공지사항 삭제에 성공한다
 HTTP Request
