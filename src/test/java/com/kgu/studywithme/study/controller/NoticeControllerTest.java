@@ -33,9 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> NoticeController 테스트")
 class NoticeControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("공지사항 등록 API [POST /api/study/{studyId}/notice/register")
+    @DisplayName("공지사항 등록 API [POST /api/studies/{studyId}/notice")
     class register {
-        private static final String BASE_URL = "/api/study/{studyId}/notice/register";
+        private static final String BASE_URL = "/api/studies/{studyId}/notice";
         private static final Long STUDY_ID = 1L;
 
         @Test
@@ -179,9 +179,9 @@ class NoticeControllerTest extends ControllerTest {
         }
 
         @Nested
-        @DisplayName("공지사항 삭제 API [POST /api/study/{studyId}/notice/{noticeId}/remove")
+        @DisplayName("공지사항 삭제 API [DELETE /api/studies/{studyId}/notice/{noticeId}")
         class remove {
-            private static final String BASE_URL = "/api/study/{studyId}/notice/{noticeId}/remove";
+            private static final String BASE_URL = "/api/studies/{studyId}/notice/{noticeId}";
             private static final Long STUDY_ID = 1L;
             private static final Long NOTICE_ID = 1L;
 
@@ -210,7 +210,7 @@ class NoticeControllerTest extends ControllerTest {
                                         getDocumentRequest(),
                                         getDocumentResponse(),
                                         pathParameters(
-                                                parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)"),
+                                                parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                                 parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
                                         ),
                                         responseFields(
@@ -258,7 +258,7 @@ class NoticeControllerTest extends ControllerTest {
                                                 headerWithName(AUTHORIZATION).description("Access Token")
                                         ),
                                         pathParameters(
-                                                parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)"),
+                                                parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                                 parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
                                         ),
                                         responseFields(
@@ -306,7 +306,7 @@ class NoticeControllerTest extends ControllerTest {
                                                 headerWithName(AUTHORIZATION).description("Access Token")
                                         ),
                                         pathParameters(
-                                                parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)"),
+                                                parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                                 parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
                                         ),
                                         responseFields(
@@ -348,7 +348,7 @@ class NoticeControllerTest extends ControllerTest {
                                                 headerWithName(AUTHORIZATION).description("Access Token")
                                         ),
                                         pathParameters(
-                                                parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)"),
+                                                parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                                 parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
                                         )
                                 )

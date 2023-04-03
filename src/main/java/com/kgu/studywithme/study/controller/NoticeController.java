@@ -11,19 +11,19 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/study/{studyId}/notice")
+@RequestMapping("/api/studies/{studyId}")
 public class NoticeController {
     private final NoticeService noticeService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@PathVariable Long studyId, @RequestBody @Valid NoticeRequest request, @ExtractPayload Long memberId) {
-        noticeService.register(studyId, request, memberId);
+    @PostMapping("/notice")
+    public ResponseEntity<Void> register(@PathVariable Long studyId, @RequestBody @Valid NoticeRequest request, @ExtractPayload Long hostId) {
+        noticeService.register(studyId, request, hostId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{noticeId}/remove")
-    public ResponseEntity<Void> remove(@PathVariable Long studyId, @PathVariable Long noticeId, @ExtractPayload Long memberId) {
-        noticeService.remove(studyId, noticeId, memberId);
+    @DeleteMapping("/notice/{noticeId}")
+    public ResponseEntity<Void> remove(@PathVariable Long studyId, @PathVariable Long noticeId, @ExtractPayload Long hostId) {
+        noticeService.remove(studyId, noticeId, hostId);
         return ResponseEntity.noContent().build();
     }
 }
