@@ -75,8 +75,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("averageAge").description("스터디 참여자 평균 나이"),
                                             fieldWithPath("hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("host.id").description("스터디 팀장 ID(PK)"),
-                                            fieldWithPath("host.nickname").description("스터디 팀장 닉네임"),
-                                            fieldWithPath("host.profileUrl").description("스터디 팀장 프로필 URL")
+                                            fieldWithPath("host.nickname").description("스터디 팀장 닉네임")
                                     )
                             )
                     );
@@ -115,7 +114,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("graduateCount").description("졸업한 사람 수"),
                                             fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
                                             fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임"),
-                                            fieldWithPath("reviews[].reviewer.profileUrl").description("리뷰어 프로필 URL"),
                                             fieldWithPath("reviews[].content").description("리뷰 내용"),
                                             fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜")
                                                     .attributes(constraint("날짜 내림차순 정렬로 응답"))
@@ -154,7 +152,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         List<StudyReview> list = new ArrayList<>();
 
         for (int index = 1; index <= count; index++) {
-            StudyReviewer reviewer = new StudyReviewer((long) index, "Nickname" + index, "Profile" + index);
+            StudyReviewer reviewer = new StudyReviewer((long) index, "Nickname" + index);
             list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
         }
 

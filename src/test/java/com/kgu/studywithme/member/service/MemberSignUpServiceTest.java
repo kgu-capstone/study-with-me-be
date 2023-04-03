@@ -99,7 +99,6 @@ class MemberSignUpServiceTest extends ServiceTest {
                 .name(JIWON.getName())
                 .nickname(Nickname.from(nickname))
                 .email(Email.from(email))
-                .profileUrl(JIWON.getProfileUrl())
                 .birth(JIWON.getBirth())
                 .phone(phone)
                 .gender(JIWON.getGender())

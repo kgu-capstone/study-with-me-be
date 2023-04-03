@@ -23,7 +23,6 @@ class MemberTest {
                 () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
                 () -> assertThat(member.getNicknameValue()).isEqualTo(JIWON.getNickname()),
                 () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
-                () -> assertThat(member.getProfileUrl()).isEqualTo(JIWON.getProfileUrl()),
                 () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
@@ -58,20 +57,6 @@ class MemberTest {
 
         // then
         assertThat(member.getNicknameValue()).isEqualTo(change);
-    }
-
-    @Test
-    @DisplayName("사용자의 아바타 프로필 이미지를 수정한다")
-    void updateProfileUrl() {
-        // given
-        Member member = GHOST.toMember();
-
-        // when
-        final String update = "https://source.boringavatars.com/beam/120/helloworld.com";
-        member.updateProfile(update);
-
-        // then
-        assertThat(member.getProfileUrl()).isEqualTo(update);
     }
 
     @Test

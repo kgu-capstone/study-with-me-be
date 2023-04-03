@@ -4,12 +4,12 @@ import com.kgu.studywithme.member.domain.Member;
 import lombok.Builder;
 
 public record StudyHost(
-        Long id, String nickname, String profileUrl
+        Long id, String nickname
 ) {
     @Builder
     public StudyHost {}
 
     public StudyHost(Member host) {
-        this(host.getId(), host.getNicknameValue(), host.getProfileUrl());
+        this(host.getId(), host.getNicknameValue());
     }
 }

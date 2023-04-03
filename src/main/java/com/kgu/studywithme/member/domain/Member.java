@@ -32,9 +32,6 @@ public class Member extends BaseEntity {
     @Embedded
     private Email email;
 
-    @Column(name = "profile_url", nullable = false)
-    private String profileUrl;
-
     @Column(name = "birth", nullable = false, updatable = false)
     private LocalDate birth;
 
@@ -52,12 +49,11 @@ public class Member extends BaseEntity {
     private List<Interest> interests = new ArrayList<>();
 
     @Builder
-    private Member(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
-                   String phone, Gender gender, Region region, Set<Category> interests) {
+    private Member(String name, Nickname nickname, Email email, LocalDate birth, String phone,
+                   Gender gender, Region region, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
-        this.profileUrl = profileUrl;
         this.birth = birth;
         this.phone = phone;
         this.gender = gender;
@@ -65,17 +61,13 @@ public class Member extends BaseEntity {
         applyInterests(interests);
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, String profileUrl, LocalDate birth,
-                                      String phone, Gender gender, Region region, Set<Category> interests) {
-        return new Member(name, nickname, email, profileUrl, birth, phone, gender, region, interests);
+    public static Member createMember(String name, Nickname nickname, Email email, LocalDate birth, String phone,
+                                      Gender gender, Region region, Set<Category> interests) {
+        return new Member(name, nickname, email, birth, phone, gender, region, interests);
     }
 
     public void changeNickname(String changeNickname) {
         this.nickname = this.nickname.update(changeNickname);
-    }
-
-    public void updateProfile(String profileUrl) {
-        this.profileUrl = profileUrl;
     }
 
     public void applyInterests(Set<Category> interests) {
