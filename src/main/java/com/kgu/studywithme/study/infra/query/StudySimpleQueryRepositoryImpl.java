@@ -73,7 +73,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     private BooleanExpression hostOrParticipant(Long memberId) {
-        return host.id.eq(memberId).or(participant.member.id.eq(memberId));
+        return (memberId != null) ? host.id.eq(memberId).or(participant.member.id.eq(memberId)) : null;
     }
 
     private BooleanExpression graduateStatus() {
