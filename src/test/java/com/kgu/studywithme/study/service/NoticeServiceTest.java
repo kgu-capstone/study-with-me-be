@@ -26,18 +26,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class NoticeServiceTest extends ServiceTest {
     @Autowired
     private NoticeService noticeService;
-    @Autowired
-    private ParticipationService participationService;
 
     private Member host;
     private Member member;
     private Study study;
+    private final NoticeRequest REQUEST = NoticeRequestUtils.createNoticeRequest();
 
     @BeforeEach
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
         member = memberRepository.save(GHOST.toMember());
+
         study = studyRepository.save(TOEIC.toOnlineStudy(host));
+        study.applyParticipation(member);
+        study.approveParticipation(member);
     }
 
     @Nested
@@ -46,14 +48,8 @@ class NoticeServiceTest extends ServiceTest {
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 등록할 수 없다")
         void memberIsNotHost() {
-            // given
-            participationService.apply(study.getId(), member.getId());
-            participationService.approve(study.getId(), member.getId(), host.getId());
-
-            NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
-
             // when - then
-            assertThatThrownBy(() -> noticeService.register(study.getId(), request, member.getId()))
+            assertThatThrownBy(() -> noticeService.register(study.getId(), REQUEST, member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -61,19 +57,16 @@ class NoticeServiceTest extends ServiceTest {
         @Test
         @DisplayName("공지사항 등록에 성공한다")
         void success() {
-            // given
-            NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
-
             // when
-            Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
+            Long savedNoticeId = noticeService.register(study.getId(), REQUEST, host.getId());
 
             // then
-            Notice notice = noticeService.findById(savedNoticeId);
+            Notice notice = noticeRepository.findById(savedNoticeId).orElseThrow();
             assertAll(
                     () -> assertThat(notice.getWriter()).isEqualTo(host),
                     () -> assertThat(notice.getStudy()).isEqualTo(study),
-                    () -> assertThat(notice.getTitle()).isEqualTo(request.title()),
-                    () -> assertThat(notice.getContent()).isEqualTo(request.content())
+                    () -> assertThat(notice.getTitle()).isEqualTo(REQUEST.title()),
+                    () -> assertThat(notice.getContent()).isEqualTo(REQUEST.content())
             );
         }
     }
@@ -85,9 +78,6 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("팀장이 아니라면 공지사항을 삭제할 수 없다")
         void memberIsNotHost() {
             // given
-            participationService.apply(study.getId(), member.getId());
-            participationService.approve(study.getId(), member.getId(), host.getId());
-
             NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
             Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
 
@@ -104,9 +94,7 @@ class NoticeServiceTest extends ServiceTest {
             NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
             Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
 
-            participationService.apply(study.getId(), member.getId());
-            participationService.approve(study.getId(), member.getId(), host.getId());
-            participationService.delegateAuthority(study.getId(), member.getId(), host.getId());
+            study.delegateStudyHostAuthority(member);
 
             // when - then
             assertThatThrownBy(() -> noticeService.remove(study.getId(), savedNoticeId, member.getId()))
