@@ -18,3 +18,9 @@ include::study-participation.adoc[leveloffset=+1]
 include::study-register.adoc[leveloffset=+1]
 
 include::favorite-like.adoc[leveloffset=+1]
+
+include::study-basic-search.adoc[leveloffset=+1]
+
+include::study-information.adoc[leveloffset=+1]
+
+include::member-information.adoc[leveloffset=+1]
