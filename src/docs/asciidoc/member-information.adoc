@@ -1,0 +1,118 @@
+= 사용자 정보 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 사용자 기본 정보
+=== 1. Authorization Header에 AccessToken이 없으면 본인 정보 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/Basic/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/Basic/Failure/Case1/response-body.adoc[]
+
+=== 2. Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 사용자 정보 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/Basic/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/Basic/Failure/Case2/response-body.adoc[]
+
+=== 3. 사용자 상세 페이지 기본 정보를 조회한다
+HTTP Request
+include::{snippets}/MemberApi/Information/Basic/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/Basic/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/Basic/Success/response-fields.adoc[]
+
+== 사용자가 참여중인 스터디 리스트
+=== 1. Authorization Header에 AccessToken이 없으면 참여중인 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case1/response-body.adoc[]
+
+=== 2. Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 참여중인 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/Case2/response-body.adoc[]
+
+=== 3. 사용자가 참여중인 스터디 리스트를 조회한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/response-fields.adoc[]
+
+== 사용자가 졸업한 스터디 리스트
+=== 1. Authorization Header에 AccessToken이 없으면 졸업한 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case1/response-body.adoc[]
+
+=== 2. Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 졸업한 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Failure/Case2/response-body.adoc[]
+
+=== 3. 사용자가 졸업한 스터디 리스트를 조회한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/Success/response-fields.adoc[]
+
+== 사용자가 찜한 스터디 리스트
+=== 1. Authorization Header에 AccessToken이 없으면 찜한 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case1/response-body.adoc[]
+
+=== 2. Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 찜한 스터디 리스트 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Failure/Case2/response-body.adoc[]
+
+=== 3. 사용자가 찜한 스터디 리스트를 조회한다
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-fields.adoc[]
