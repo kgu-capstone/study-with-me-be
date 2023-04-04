@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         FavoriteApiController.class,
         StudySearchApiController.class,
         StudyInformationApiController.class,
-        NoticeController.class
+        StudyNoticeApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs

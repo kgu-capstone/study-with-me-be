@@ -12,7 +12,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/studies/{studyId}")
-public class NoticeController {
+public class StudyNoticeApiController {
     private final NoticeService noticeService;
 
     @PostMapping("/notice")
@@ -21,7 +21,7 @@ public class NoticeController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/notice/{noticeId}")
+    @DeleteMapping("/notices/{noticeId}")
     public ResponseEntity<Void> remove(@PathVariable Long studyId, @PathVariable Long noticeId, @ExtractPayload Long hostId) {
         noticeService.remove(studyId, noticeId, hostId);
         return ResponseEntity.noContent().build();

@@ -2,10 +2,8 @@ package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.StudyRepository;
-import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +24,13 @@ public class StudyValidator {
     }
 
     public void validateHost(Long studyId, Long memberId) {
-        Study study = studyRepository.findByIdWithHost(studyId).orElseThrow();
-        if (!study.getHost().getId().equals(memberId)) {
+        if (!studyRepository.existsByIdAndParticipantsHostId(studyId, memberId)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST);
         }
     }
 
     public void validateNoticeWriter(Long noticeId, Long memberId) {
-        Notice notice = noticeRepository.findById(noticeId).orElseThrow();
-        if (!notice.getWriter().getId().equals(memberId)) {
+        if (!noticeRepository.existsByIdAndWriterId(noticeId, memberId)) {
             throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);
         }
     }

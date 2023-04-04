@@ -8,6 +8,7 @@ import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.controller.utils.NoticeRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
+import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -74,15 +75,17 @@ class NoticeServiceTest extends ServiceTest {
     @Nested
     @DisplayName("공지사항 삭제")
     class remove {
+        private Notice notice;
+
+        @BeforeEach
+        void setUp() {
+            notice = noticeRepository.save(Notice.writeNotice(study, "공지사항", "내용"));
+        }
+
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 삭제할 수 없다")
         void memberIsNotHost() {
-            // given
-            NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
-            Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
-
-            // when - then
-            assertThatThrownBy(() -> noticeService.remove(study.getId(), savedNoticeId, member.getId()))
+            assertThatThrownBy(() -> noticeService.remove(study.getId(), notice.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -91,13 +94,10 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("작성자가 아니라면 공지사항을 삭제할 수 없다")
         void memberIsNotWriter() {
             // given
-            NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
-            Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
-
-            study.delegateStudyHostAuthority(member);
+            study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
 
             // when - then
-            assertThatThrownBy(() -> noticeService.remove(study.getId(), savedNoticeId, member.getId()))
+            assertThatThrownBy(() -> noticeService.remove(study.getId(), notice.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         }
@@ -106,14 +106,16 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("공지사항 삭제에 성공한다")
         void success() {
             // given
-            NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
-            Long savedNoticeId = noticeService.register(study.getId(), request, host.getId());
+            Comment comment = commentRepository.save(Comment.writeComment(notice, member, "댓글1")); // 댓글 작성
 
             // when
-            noticeService.remove(study.getId(), savedNoticeId, host.getId());
+            noticeService.remove(study.getId(), notice.getId(), host.getId());
 
             // then
-            assertThat(noticeRepository.existsById(savedNoticeId)).isFalse();
+            assertAll(
+                    () -> assertThat(noticeRepository.existsById(notice.getId())).isFalse(),
+                    () -> assertThat(commentRepository.existsById(comment.getId())).isFalse()
+            );
         }
     }
 }

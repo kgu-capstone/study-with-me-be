@@ -28,7 +28,7 @@ public enum StudyErrorCode implements ErrorCode {
     ALREADY_REVIEW_WRITTEN(HttpStatus.CONFLICT, "STUDY_017", "이미 리뷰를 작성했습니다."),
     MEMBER_IS_NOT_GRADUATED(HttpStatus.CONFLICT, "STUDY_018", "스터디 졸업생이 아닙니다."),
     DUPLICATE_NAME(HttpStatus.CONFLICT, "STUDY_019", "이미 사용중인 스터디 이름입니다."),
-    MEMBER_IS_NOT_HOST(HttpStatus.CONFLICT, "STUDY_020", "해당 스터디의 팀장이 아닙니다.")
+    MEMBER_IS_NOT_HOST(HttpStatus.CONFLICT, "STUDY_020", "해당 스터디의 팀장이 아닙니다."),
     ;
 
     private final HttpStatus status;

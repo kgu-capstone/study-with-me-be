@@ -4,6 +4,7 @@ import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
+import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NoticeService {
     private final NoticeRepository noticeRepository;
+    private final CommentRepository commentRepository;
     private final StudyFindService studyFindService;
     private final StudyValidator studyValidator;
 
@@ -20,7 +22,6 @@ public class NoticeService {
     public Long register(Long studyId, NoticeRequest request, Long hostId) {
         validateHost(studyId, hostId);
         Study study = studyFindService.findByIdWithHost(studyId);
-
         Notice notice = Notice.builder()
                 .title(request.title())
                 .content(request.content())
@@ -35,6 +36,7 @@ public class NoticeService {
         validateHost(studyId, hostId);
         validateNoticeWriter(noticeId, hostId);
 
+        commentRepository.deleteByNoticeId(noticeId);
         noticeRepository.deleteById(noticeId);
     }
 
