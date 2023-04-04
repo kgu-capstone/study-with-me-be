@@ -20,6 +20,11 @@ public class MemberFindService {
                 .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
+    public Member findByIdWithInterests(Long memberId) {
+        return memberRepository.findByIdWithInterests(memberId)
+                .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(Email.from(email))
                 .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.MEMBER_NOT_FOUND));
