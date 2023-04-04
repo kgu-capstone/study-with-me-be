@@ -37,7 +37,7 @@ public class Notice extends BaseEntity {
     @JoinColumn(name = "writer_id", referencedColumnName = "id", nullable = false)
     private Member writer;
 
-    @OneToMany(mappedBy = "notice", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder

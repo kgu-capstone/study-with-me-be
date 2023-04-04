@@ -5,6 +5,8 @@ import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.favorite.domain.FavoriteRepository;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.notice.NoticeRepository;
+import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,12 @@ public class ServiceTest {
 
     @Autowired
     protected FavoriteRepository favoriteRepository;
+
+    @Autowired
+    protected NoticeRepository noticeRepository;
+
+    @Autowired
+    protected CommentRepository commentRepository;
 
     @AfterEach
     void clearDatabase() {
