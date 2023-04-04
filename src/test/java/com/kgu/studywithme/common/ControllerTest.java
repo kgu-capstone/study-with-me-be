@@ -52,7 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudySearchApiController.class,
         StudyInformationApiController.class,
         StudyNoticeApiController.class,
-        MemberInformationApiController.class
+        MemberInformationApiController.class,
+        StudyNoticeCommentController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
@@ -102,6 +103,9 @@ public abstract class ControllerTest {
     
     @MockBean
     protected MemberInformationService memberInformationService;
+
+    @MockBean
+    protected NoticeCommentService commentService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

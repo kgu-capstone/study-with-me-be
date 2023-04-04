@@ -36,8 +36,12 @@ public class NoticeService {
         validateHost(studyId, hostId);
         validateNoticeWriter(noticeId, hostId);
 
-        commentRepository.deleteByNoticeId(noticeId);
+        commentRepository.deleteAllByNoticeId(noticeId);
         noticeRepository.deleteById(noticeId);
+    }
+
+    public Notice findById(Long noticeId) {
+        return noticeRepository.findById(noticeId).orElseThrow();
     }
 
     private void validateHost(Long studyId, Long memberId) {

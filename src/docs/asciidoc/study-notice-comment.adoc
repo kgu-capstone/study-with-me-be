@@ -1,0 +1,78 @@
+= 공지사항 댓글 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 공지사항 댓글 생성
+=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 등록을 실패한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Register/Failure/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Register/Failure/response-body.adoc[]
+
+=== 2. 공지사항에 대한 댓글 등록에 성공한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Register/Success/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Success/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Register/Success/http-response.adoc[]
+
+== 공지사항 댓글 삭제
+=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 삭제을 실패한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case1/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case1/response-body.adoc[]
+
+=== 2. 작성자가 아니라면 댓글을 삭제할 수 없다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/response-body.adoc[]
+
+=== 3. 공지사항에 대한 댓글 삭제에 성공한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Remove/Success/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Remove/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Remove/Success/http-response.adoc[]
+
+== 공지사항 댓글 수정
+=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 수정을 실패한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/response-body.adoc[]
+
+=== 2. 작성자가 아니라면 댓글을 수정할 수 없다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Update/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Update/Failure/Case2/response-body.adoc[]
+
+=== 3. 공지사항에 대한 댓글 수정에 성공한다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case1/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Update/Success/http-response.adoc[]

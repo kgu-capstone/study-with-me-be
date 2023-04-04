@@ -30,23 +30,35 @@ class CommentRepositoryTest extends RepositoryTest {
     @Autowired
     private StudyRepository studyRepository;
 
+    private Member host;
     private Notice notice;
 
     @BeforeEach
     void setUp() {
-        Member host = memberRepository.save(JIWON.toMember());
+        host = memberRepository.save(JIWON.toMember());
         Study study = studyRepository.save(SPRING.toOnlineStudy(host));
         notice = noticeRepository.save(Notice.writeNotice(study, "공지사항", "내용"));
     }
 
     @Test
     @DisplayName("공지사항의 댓글들을 삭제한다")
-    void deleteByNoticeId() {
+    void deleteAllByNoticeId() {
         // when
-        commentRepository.deleteByNoticeId(notice.getId());
+        commentRepository.deleteAllByNoticeId(notice.getId());
 
         // then
         Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();
         assertThat(findNotice.getComments()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("댓글 ID + 작성자 ID로 댓글을 조회한다")
+    void existsByIdAndWriterId() {
+        // given
+        Comment comment = commentRepository.save(Comment.writeComment(notice, host, "확인했습니다."));
+
+        // when - then
+        assertThat(commentRepository.existsByIdAndWriterId(comment.getId(), host.getId())).isTrue();
+        assertThat(commentRepository.existsByIdAndWriterId(comment.getId(), host.getId() + 100L)).isFalse();
     }
 }
