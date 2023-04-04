@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface StudyRepository extends JpaRepository<Study, Long>,
         StudySimpleQueryRepository, StudyCategoryQueryRepository {
+    // @Query
     @Query("SELECT s" +
             " FROM Study s" +
             " JOIN FETCH s.participants.host" +
@@ -37,5 +38,7 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
             " WHERE s.id = :studyId AND h.id = :hostId")
     Optional<Study> findByIdAndHostId(@Param("studyId") Long studyId, @Param("hostId") Long hostId);
 
+    // Query Method
     boolean existsByName(StudyName name);
+    boolean existsByIdAndParticipantsHostId(Long studyId, Long hostId);
 }

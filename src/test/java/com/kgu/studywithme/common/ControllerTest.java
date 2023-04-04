@@ -17,14 +17,8 @@ import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
-import com.kgu.studywithme.study.controller.StudyApiController;
-import com.kgu.studywithme.study.controller.StudyInformationApiController;
-import com.kgu.studywithme.study.controller.StudyParticipationApiController;
-import com.kgu.studywithme.study.controller.StudySearchApiController;
-import com.kgu.studywithme.study.service.ParticipationService;
-import com.kgu.studywithme.study.service.StudyInformationService;
-import com.kgu.studywithme.study.service.StudyRegisterService;
-import com.kgu.studywithme.study.service.StudySearchService;
+import com.kgu.studywithme.study.controller.*;
+import com.kgu.studywithme.study.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         FavoriteApiController.class,
         StudySearchApiController.class,
         StudyInformationApiController.class,
+        StudyNoticeApiController.class,
         MemberInformationApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
@@ -102,6 +97,9 @@ public abstract class ControllerTest {
     @MockBean
     protected StudyInformationService studyInformationService;
 
+    @MockBean
+    protected NoticeService noticeService;
+    
     @MockBean
     protected MemberInformationService memberInformationService;
 

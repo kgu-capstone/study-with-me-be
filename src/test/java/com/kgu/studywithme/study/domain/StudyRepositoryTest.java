@@ -57,7 +57,7 @@ class StudyRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("스터디명이 중복되는지 확인한다")
+    @DisplayName("스터디명에 해당하는 스터디가 존재하는지 확인한다")
     void existsByName() {
         // when
         boolean actual1 = studyRepository.existsByName(study.getName());
@@ -67,6 +67,22 @@ class StudyRepositoryTest extends RepositoryTest {
         assertAll(
                 () -> assertThat(actual1).isTrue(),
                 () -> assertThat(actual2).isFalse()
+        );
+    }
+    
+    @Test
+    @DisplayName("스터디 ID & 팀장 ID에 해당하는 스터디가 존재하는지 확인한다")
+    void existsByIdAndHostId() {
+        // when
+        boolean actual1 = studyRepository.existsByIdAndParticipantsHostId(study.getId(), host.getId());
+        boolean actual2 = studyRepository.existsByIdAndParticipantsHostId(study.getId() + 100L, host.getId());
+        boolean actual3 = studyRepository.existsByIdAndParticipantsHostId(study.getId(), host.getId() + 100L);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isTrue(),
+                () -> assertThat(actual2).isFalse(),
+                () -> assertThat(actual3).isFalse()
         );
     }
 }
