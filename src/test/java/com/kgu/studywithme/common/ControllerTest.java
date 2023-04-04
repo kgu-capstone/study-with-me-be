@@ -14,14 +14,8 @@ import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.service.MemberSignUpService;
-import com.kgu.studywithme.study.controller.StudyApiController;
-import com.kgu.studywithme.study.controller.StudyInformationApiController;
-import com.kgu.studywithme.study.controller.StudyParticipationApiController;
-import com.kgu.studywithme.study.controller.StudySearchApiController;
-import com.kgu.studywithme.study.service.ParticipationService;
-import com.kgu.studywithme.study.service.StudyInformationService;
-import com.kgu.studywithme.study.service.StudyRegisterService;
-import com.kgu.studywithme.study.service.StudySearchService;
+import com.kgu.studywithme.study.controller.*;
+import com.kgu.studywithme.study.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyApiController.class,
         FavoriteApiController.class,
         StudySearchApiController.class,
-        StudyInformationApiController.class
+        StudyInformationApiController.class,
+        StudyNoticeApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
@@ -95,6 +90,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyInformationService studyInformationService;
+
+    @MockBean
+    protected NoticeService noticeService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
