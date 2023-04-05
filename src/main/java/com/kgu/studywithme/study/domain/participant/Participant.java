@@ -15,7 +15,7 @@ import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APP
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "participant")
+@Table(name = "study_participant")
 public class Participant extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
