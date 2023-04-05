@@ -11,11 +11,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/notice/{noticeId}/comment")
+@RequestMapping("/api/notice/{noticeId}")
 public class StudyNoticeCommentController {
     private final NoticeCommentService noticeCommentService;
 
-    @PostMapping
+    @PostMapping("/comment")
     public ResponseEntity<Void> register(@PathVariable Long noticeId,
                                          @RequestBody @Valid NoticeCommentRequest request,
                                          @ExtractPayload Long memberId) {
@@ -23,7 +23,7 @@ public class StudyNoticeCommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> remove(@PathVariable Long noticeId,
                                        @PathVariable Long commentId,
                                        @ExtractPayload Long memberId) {
@@ -31,7 +31,7 @@ public class StudyNoticeCommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{commentId}")
+    @PutMapping("/comments/{commentId}")
     public ResponseEntity<Void> update(@PathVariable Long noticeId,
                                        @PathVariable Long commentId,
                                        @RequestBody @Valid NoticeCommentRequest request,

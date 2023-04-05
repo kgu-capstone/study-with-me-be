@@ -5,7 +5,7 @@ import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.study.controller.dto.request.NoticeCommentRequest;
-import com.kgu.studywithme.study.controller.utils.NoticeCommentRequestUtils;
+import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final NoticeCommentRequest request = NoticeCommentRequestUtils.createNoticeCommentRequest();
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, NOTICE_ID)
                     .contentType(APPLICATION_JSON)
@@ -62,7 +62,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeCommentApi/Register/Failure",
+                                    "NoticeCommentApi/Register/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -81,6 +81,54 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
         }
 
         @Test
+        @DisplayName("참여자가 아니면 댓글을 등록할 수 없다")
+        void memberIsNotParticipant() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
+                    .when(commentService)
+                    .register(any(), any(), any());
+
+            // when
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .post(BASE_URL, NOTICE_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "NoticeCommentApi/Register/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("noticeId").description("등록할 댓글의 게시글 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("댓글 내용")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
         @DisplayName("공지사항에 대한 댓글 등록에 성공한다")
         void success() throws Exception {
             // given
@@ -91,7 +139,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                     .register(any(), any(), any());
 
             // when
-            final NoticeCommentRequest request = NoticeCommentRequestUtils.createNoticeCommentRequest();
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, NOTICE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -124,9 +172,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notice/{noticeId}/comment/{commentId}]")
+    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notice/{noticeId}/comments/{commentId}]")
     class remove {
-        private static final String BASE_URL = "/api/notice/{noticeId}/comment/{commentId}";
+        private static final String BASE_URL = "/api/notice/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
@@ -254,9 +302,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 수정 API [PUT /api/notice/{noticeId}/comment/{commentId}]")
+    @DisplayName("공지사항 댓글 수정 API [PUT /api/notice/{noticeId}/comments/{commentId}]")
     class update {
-        private static final String BASE_URL = "/api/notice/{noticeId}/comment/{commentId}";
+        private static final String BASE_URL = "/api/notice/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
@@ -264,7 +312,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final NoticeCommentRequest request = NoticeCommentRequestUtils.createNoticeCommentRequest();
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .put(BASE_URL, NOTICE_ID, COMMENT_ID)
                     .contentType(APPLICATION_JSON)
@@ -314,7 +362,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final NoticeCommentRequest request = NoticeCommentRequestUtils.createNoticeCommentRequest();
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .put(BASE_URL, NOTICE_ID, COMMENT_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -369,7 +417,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final NoticeCommentRequest request = NoticeCommentRequestUtils.createNoticeCommentRequest();
+            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .put(BASE_URL, NOTICE_ID, COMMENT_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -399,5 +447,11 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                             )
                     );
         }
+    }
+
+    private NoticeCommentRequest generateNoticeCommentRequest() {
+        return NoticeCommentRequest.builder()
+                .content("확인했습니다!")
+                .build();
     }
 }
