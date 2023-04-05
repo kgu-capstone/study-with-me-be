@@ -17,8 +17,8 @@ public class StudyNoticeCommentApiController {
 
     @PostMapping("/comment")
     public ResponseEntity<Void> register(@PathVariable Long noticeId,
-                                         @RequestBody @Valid NoticeCommentRequest request,
-                                         @ExtractPayload Long memberId) {
+                                         @ExtractPayload Long memberId,
+                                         @RequestBody @Valid NoticeCommentRequest request) {
         noticeCommentService.register(noticeId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
@@ -34,8 +34,8 @@ public class StudyNoticeCommentApiController {
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<Void> update(@PathVariable Long noticeId,
                                        @PathVariable Long commentId,
-                                       @RequestBody @Valid NoticeCommentRequest request,
-                                       @ExtractPayload Long memberId) {
+                                       @ExtractPayload Long memberId,
+                                       @RequestBody @Valid NoticeCommentRequest request) {
         noticeCommentService.update(commentId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
