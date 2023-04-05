@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study - Notice - Comment [Repository Layer] -> CommentRepository 테스트")
 class CommentRepositoryTest extends RepositoryTest {
@@ -42,7 +43,12 @@ class CommentRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("공지사항의 댓글들을 삭제한다")
-    void deleteAllByNoticeId() {
+    void deleteByNoticeId() {
+        // given
+        notice.addComment(host, "댓글1");
+        notice.addComment(host, "댓글2");
+        notice.addComment(host, "댓글3");
+
         // when
         commentRepository.deleteByNoticeId(notice.getId());
 
@@ -57,8 +63,16 @@ class CommentRepositoryTest extends RepositoryTest {
         // given
         Comment comment = commentRepository.save(Comment.writeComment(notice, host, "확인했습니다."));
 
-        // when - then
-        assertThat(commentRepository.existsByIdAndWriterId(comment.getId(), host.getId())).isTrue();
-        assertThat(commentRepository.existsByIdAndWriterId(comment.getId(), host.getId() + 100L)).isFalse();
+        // when
+        boolean actual1 = commentRepository.existsByIdAndWriterId(comment.getId(), host.getId());
+        boolean actual2 = commentRepository.existsByIdAndWriterId(comment.getId() + 100L, host.getId());
+        boolean actual3 = commentRepository.existsByIdAndWriterId(comment.getId(), host.getId() + 100L);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isTrue(),
+                () -> assertThat(actual2).isFalse(),
+                () -> assertThat(actual3).isFalse()
+        );
     }
 }

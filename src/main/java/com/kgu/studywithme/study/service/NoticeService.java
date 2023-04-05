@@ -47,6 +47,11 @@ public class NoticeService {
                 .orElseThrow(() -> StudyWithMeException.type(NoticeErrorCode.NOTICE_NOT_FOUND));
     }
 
+    public Notice findByIdWithStudy(Long noticeId) {
+        return noticeRepository.findByIdWithStudy(noticeId)
+                .orElseThrow(() -> StudyWithMeException.type(NoticeErrorCode.NOTICE_NOT_FOUND));
+    }
+
     private void validateHost(Long studyId, Long memberId) {
         studyValidator.validateHost(studyId, memberId);
     }

@@ -8,16 +8,27 @@
 == 공지사항 댓글 생성
 === 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 등록을 실패한다
 HTTP Request
-include::{snippets}/NoticeCommentApi/Register/Failure/http-request.adoc[]
-include::{snippets}/NoticeCommentApi/Register/Failure/path-parameters.adoc[]
-include::{snippets}/NoticeCommentApi/Register/Failure/request-fields.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case1/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case1/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/NoticeCommentApi/Register/Failure/response-body.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case1/response-body.adoc[]
 
-=== 2. 공지사항에 대한 댓글 등록에 성공한다
+=== 2. 참여자가 아니면 댓글을 등록할 수 없다
+HTTP Request
+include::{snippets}/NoticeCommentApi/Register/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case2/request-headers.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeCommentApi/Register/Failure/Case2/http-response.adoc[]
+
+=== 3. 공지사항에 대한 댓글 등록에 성공한다
 HTTP Request
 include::{snippets}/NoticeCommentApi/Register/Success/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Register/Success/request-headers.adoc[]
 include::{snippets}/NoticeCommentApi/Register/Success/path-parameters.adoc[]
 include::{snippets}/NoticeCommentApi/Register/Success/request-fields.adoc[]
 
@@ -33,9 +44,10 @@ include::{snippets}/NoticeCommentApi/Remove/Failure/Case1/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/NoticeCommentApi/Remove/Failure/Case1/response-body.adoc[]
 
-=== 2. 작성자가 아니라면 댓글을 삭제할 수 없다
+=== 2. 작성자가 아니면 댓글을 삭제할 수 없다
 HTTP Request
 include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/request-headers.adoc[]
 include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/path-parameters.adoc[]
 
 HTTP Response
@@ -44,6 +56,7 @@ include::{snippets}/NoticeCommentApi/Remove/Failure/Case2/response-body.adoc[]
 === 3. 공지사항에 대한 댓글 삭제에 성공한다
 HTTP Request
 include::{snippets}/NoticeCommentApi/Remove/Success/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Remove/Success/request-headers.adoc[]
 include::{snippets}/NoticeCommentApi/Remove/Success/path-parameters.adoc[]
 
 HTTP Response
@@ -59,9 +72,10 @@ include::{snippets}/NoticeCommentApi/Update/Failure/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/NoticeCommentApi/Update/Failure/Case1/response-body.adoc[]
 
-=== 2. 작성자가 아니라면 댓글을 수정할 수 없다
+=== 2. 작성자가 아니면 댓글을 수정할 수 없다
 HTTP Request
 include::{snippets}/NoticeCommentApi/Update/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Failure/Case2/request-headers.adoc[]
 include::{snippets}/NoticeCommentApi/Update/Failure/Case2/path-parameters.adoc[]
 include::{snippets}/NoticeCommentApi/Update/Failure/Case2/request-fields.adoc[]
 
@@ -70,9 +84,10 @@ include::{snippets}/NoticeCommentApi/Update/Failure/Case2/response-body.adoc[]
 
 === 3. 공지사항에 대한 댓글 수정에 성공한다
 HTTP Request
-include::{snippets}/NoticeCommentApi/Update/Failure/Case1/http-request.adoc[]
-include::{snippets}/NoticeCommentApi/Update/Failure/Case1/path-parameters.adoc[]
-include::{snippets}/NoticeCommentApi/Update/Failure/Case1/request-fields.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Success/http-request.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Success/request-headers.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Success/path-parameters.adoc[]
+include::{snippets}/NoticeCommentApi/Update/Success/request-fields.adoc[]
 
 HTTP Response
 include::{snippets}/NoticeCommentApi/Update/Success/http-response.adoc[]
