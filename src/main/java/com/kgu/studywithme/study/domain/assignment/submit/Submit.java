@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "submit")
+@Table(name = "study_assignment_submit")
 public class Submit extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

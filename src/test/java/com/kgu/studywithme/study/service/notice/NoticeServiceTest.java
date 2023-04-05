@@ -1,11 +1,9 @@
-package com.kgu.studywithme.study.service;
+package com.kgu.studywithme.study.service.notice;
 
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
-import com.kgu.studywithme.study.controller.utils.NoticeRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
@@ -31,7 +29,6 @@ class NoticeServiceTest extends ServiceTest {
     private Member host;
     private Member member;
     private Study study;
-    private final NoticeRequest REQUEST = NoticeRequestUtils.createNoticeRequest();
 
     @BeforeEach
     void setUp() {
@@ -50,7 +47,7 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("팀장이 아니라면 공지사항을 등록할 수 없다")
         void memberIsNotHost() {
             // when - then
-            assertThatThrownBy(() -> noticeService.register(study.getId(), REQUEST, member.getId()))
+            assertThatThrownBy(() -> noticeService.register(study.getId(), member.getId(), "제목", "내용"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -59,15 +56,15 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("공지사항 등록에 성공한다")
         void success() {
             // when
-            Long savedNoticeId = noticeService.register(study.getId(), REQUEST, host.getId());
+            Long savedNoticeId = noticeService.register(study.getId(), host.getId(), "제목", "내용");
 
             // then
             Notice notice = noticeRepository.findById(savedNoticeId).orElseThrow();
             assertAll(
                     () -> assertThat(notice.getWriter()).isEqualTo(host),
                     () -> assertThat(notice.getStudy()).isEqualTo(study),
-                    () -> assertThat(notice.getTitle()).isEqualTo(REQUEST.title()),
-                    () -> assertThat(notice.getContent()).isEqualTo(REQUEST.content())
+                    () -> assertThat(notice.getTitle()).isEqualTo("제목"),
+                    () -> assertThat(notice.getContent()).isEqualTo("내용")
             );
         }
     }
