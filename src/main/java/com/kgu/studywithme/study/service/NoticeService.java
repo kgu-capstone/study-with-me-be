@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.service;
 
-import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
@@ -19,12 +18,12 @@ public class NoticeService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public Long register(Long studyId, NoticeRegisterRequest request, Long hostId) {
+    public Long register(Long studyId, Long hostId, String title, String content) {
         validateHost(studyId, hostId);
         Study study = studyFindService.findByIdWithHost(studyId);
         Notice notice = Notice.builder()
-                .title(request.title())
-                .content(request.content())
+                .title(title)
+                .content(content)
                 .study(study)
                 .build();
 

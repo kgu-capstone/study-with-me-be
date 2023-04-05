@@ -5,7 +5,6 @@ import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
-import com.kgu.studywithme.study.controller.utils.NoticeRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,7 +41,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .contentType(APPLICATION_JSON)
@@ -89,10 +88,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(noticeService)
-                    .register(any(), any(), any());
+                    .register(any(), any(), any(), any());
 
             // when
-            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -143,10 +142,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             doAnswer(invocation -> 1L)
                     .when(noticeService)
-                    .register(any(), any(), any());
+                    .register(any(), any(), any(), any());
 
             // when
-            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -355,5 +354,12 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                             )
                     );
         }
+    }
+
+    private NoticeRegisterRequest createNoticeRequest() {
+        return NoticeRegisterRequest.builder()
+                .title("4/3 공지사항입니다.")
+                .content("4/7 사당역 스터디룸에서 5시까지 모여주세요.")
+                .build();
     }
 }
