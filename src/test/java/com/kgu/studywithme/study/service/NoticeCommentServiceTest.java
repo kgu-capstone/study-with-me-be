@@ -51,7 +51,7 @@ class NoticeCommentServiceTest extends ServiceTest {
         @DisplayName("공지사항에 대한 댓글 등록에 성공한다")
         void success() {
             // given
-            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST);
+            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST.content());
 
             // when - then
             Comment comment = commentRepository.findById(savedCommentId).orElseThrow();
@@ -70,7 +70,7 @@ class NoticeCommentServiceTest extends ServiceTest {
         @DisplayName("작성자가 아니라면 댓글을 삭제할 수 없다")
         void memberIsNotWriter() {
             // given
-            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST);
+            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST.content());
 
             // when - then
             assertThatThrownBy(() -> noticeCommentService.remove(savedCommentId, host.getId()))
@@ -82,7 +82,7 @@ class NoticeCommentServiceTest extends ServiceTest {
         @DisplayName("공지사항에 대한 댓글 삭제에 성공한다")
         void success() {
             // given
-            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST);
+            Long savedCommentId = noticeCommentService.register(notice.getId(), member.getId(), REQUEST.content());
 
             // when
             noticeCommentService.remove(savedCommentId, member.getId());
@@ -105,7 +105,7 @@ class NoticeCommentServiceTest extends ServiceTest {
             Long savedCommentId = commentRepository.save(Comment.writeComment(notice, host, "댓글입니다!")).getId();
 
             // when - then
-            assertThatThrownBy(() -> noticeCommentService.update(savedCommentId, host.getId() + 100L, UPDATE_REQUEST))
+            assertThatThrownBy(() -> noticeCommentService.update(savedCommentId, host.getId() + 100L, UPDATE_REQUEST.content()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         }
@@ -117,10 +117,10 @@ class NoticeCommentServiceTest extends ServiceTest {
             NoticeCommentRequest UPDATE_REQUEST = NoticeCommentRequest.builder()
                     .content("변경되었습니다!")
                     .build();
-            Long savedCommentId = noticeCommentService.register(notice.getId(), host.getId(), REQUEST);
+            Long savedCommentId = noticeCommentService.register(notice.getId(), host.getId(), REQUEST.content());
 
             // when - then
-            noticeCommentService.update(savedCommentId, host.getId(), UPDATE_REQUEST);
+            noticeCommentService.update(savedCommentId, host.getId(), UPDATE_REQUEST.content());
             Comment comment = noticeCommentService.findById(savedCommentId);
 
             assertThat(comment.getContent()).isEqualTo(UPDATE_REQUEST.content());

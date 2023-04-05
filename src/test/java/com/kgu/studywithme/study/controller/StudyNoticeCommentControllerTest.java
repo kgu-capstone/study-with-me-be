@@ -33,9 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyNoticeCommentController 테스트")
 class StudyNoticeCommentControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("공지사항 댓글 등록 API [POST /api/studies/notice/{noticeId}/comment]")
+    @DisplayName("공지사항 댓글 등록 API [POST /api/notice/{noticeId}/comment]")
     class register {
-        private static final String BASE_URL = "/api/studies/notice/{noticeId}/comment";
+        private static final String BASE_URL = "/api/notice/{noticeId}/comment";
         private static final Long NOTICE_ID = 1L;
 
         @Test
@@ -124,9 +124,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/studies/notice/{noticeId}/comment/{commentId}]")
+    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notice/{noticeId}/comment/{commentId}]")
     class remove {
-        private static final String BASE_URL = "/api/studies/notice/{noticeId}/comment/{commentId}";
+        private static final String BASE_URL = "/api/notice/{noticeId}/comment/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
@@ -199,6 +199,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     "NoticeCommentApi/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     pathParameters(
                                             parameterWithName("noticeId").description("삭제할 댓글의 게시글 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
@@ -238,6 +241,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     "NoticeCommentApi/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     pathParameters(
                                             parameterWithName("noticeId").description("삭제할 댓글의 게시글 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
@@ -248,9 +254,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 수정 API [PUT /api/studies/notice/{noticeId}/comment/{commentId}]")
+    @DisplayName("공지사항 댓글 수정 API [PUT /api/notice/{noticeId}/comment/{commentId}]")
     class update {
-        private static final String BASE_URL = "/api/studies/notice/{noticeId}/comment/{commentId}";
+        private static final String BASE_URL = "/api/notice/{noticeId}/comment/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
@@ -333,6 +339,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     "NoticeCommentApi/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     pathParameters(
                                             parameterWithName("noticeId").description("수정할 댓글의 게시글 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
@@ -377,6 +386,9 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     "NoticeCommentApi/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     pathParameters(
                                             parameterWithName("noticeId").description("수정할 댓글의 게시글 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")

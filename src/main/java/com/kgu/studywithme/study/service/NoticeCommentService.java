@@ -3,7 +3,6 @@ package com.kgu.studywithme.study.service;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
-import com.kgu.studywithme.study.controller.dto.request.NoticeCommentRequest;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
@@ -22,10 +21,10 @@ public class NoticeCommentService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public Long register(Long noticeId, Long memberId, NoticeCommentRequest request) {
+    public Long register(Long noticeId, Long memberId, String content) {
         Notice notice = noticeService.findById(noticeId);
         Member writer = memberFindService.findById(memberId);
-        Comment comment = Comment.writeComment(notice, writer, request.content());
+        Comment comment = Comment.writeComment(notice, writer, content);
 
         return commentRepository.save(comment).getId();
     }
@@ -37,10 +36,10 @@ public class NoticeCommentService {
     }
 
     @Transactional
-    public void update(Long commentId, Long memberId, NoticeCommentRequest request) {
+    public void update(Long commentId, Long memberId, String content) {
         validateCommentWriter(commentId, memberId);
         Comment comment = findById(commentId);
-        comment.updateComment(request.content());
+        comment.updateComment(content);
     }
 
     public Comment findById(Long commentId) {

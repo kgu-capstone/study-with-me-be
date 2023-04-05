@@ -11,25 +11,32 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/studies/notice/{noticeId}/comment")
+@RequestMapping("/api/notice/{noticeId}/comment")
 public class StudyNoticeCommentController {
     private final NoticeCommentService noticeCommentService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@PathVariable Long noticeId, @RequestBody @Valid NoticeCommentRequest request, @ExtractPayload Long memberId) {
-        noticeCommentService.register(noticeId, memberId, request);
+    public ResponseEntity<Void> register(@PathVariable Long noticeId,
+                                         @RequestBody @Valid NoticeCommentRequest request,
+                                         @ExtractPayload Long memberId) {
+        noticeCommentService.register(noticeId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> remove(@PathVariable Long noticeId, @PathVariable Long commentId, @ExtractPayload Long memberId) {
+    public ResponseEntity<Void> remove(@PathVariable Long noticeId,
+                                       @PathVariable Long commentId,
+                                       @ExtractPayload Long memberId) {
         noticeCommentService.remove(commentId, memberId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<Void> update(@PathVariable Long noticeId, @PathVariable Long commentId, @RequestBody @Valid NoticeCommentRequest request, @ExtractPayload Long memberId) {
-        noticeCommentService.update(commentId, memberId, request);
+    public ResponseEntity<Void> update(@PathVariable Long noticeId,
+                                       @PathVariable Long commentId,
+                                       @RequestBody @Valid NoticeCommentRequest request,
+                                       @ExtractPayload Long memberId) {
+        noticeCommentService.update(commentId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
 }
