@@ -3,6 +3,7 @@ package com.kgu.studywithme.study.service;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
+import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
@@ -21,12 +22,12 @@ public class NoticeCommentService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public Long register(Long noticeId, Long memberId, String content) {
-        Notice notice = noticeService.findById(noticeId);
+    public void register(Long noticeId, Long memberId, String content) {
+        Notice notice = noticeService.findByIdWithStudy(noticeId);
         Member writer = memberFindService.findById(memberId);
-        Comment comment = Comment.writeComment(notice, writer, content);
+        validateWriterIsParticipant(notice, writer);
 
-        return commentRepository.save(comment).getId();
+        notice.addComment(writer, content);
     }
 
     @Transactional
@@ -45,6 +46,11 @@ public class NoticeCommentService {
     public Comment findById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> StudyWithMeException.type(CommentErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    private void validateWriterIsParticipant(Notice notice, Member writer) {
+        Study study = notice.getStudy();
+        study.validateMemberIsParticipant(writer);
     }
 
     private void validateCommentWriter(Long commentId, Long memberId) {
