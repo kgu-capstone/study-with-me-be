@@ -38,7 +38,7 @@ public class NoticeService {
         validateHost(studyId, hostId);
         validateNoticeWriter(noticeId, hostId);
 
-        commentRepository.deleteAllByNoticeId(noticeId);
+        commentRepository.deleteByNoticeId(noticeId);
         noticeRepository.deleteById(noticeId);
     }
 

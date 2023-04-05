@@ -44,7 +44,7 @@ class CommentRepositoryTest extends RepositoryTest {
     @DisplayName("공지사항의 댓글들을 삭제한다")
     void deleteAllByNoticeId() {
         // when
-        commentRepository.deleteAllByNoticeId(notice.getId());
+        commentRepository.deleteByNoticeId(notice.getId());
 
         // then
         Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();
