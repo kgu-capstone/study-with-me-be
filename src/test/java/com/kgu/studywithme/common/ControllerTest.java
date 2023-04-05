@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyInformationApiController.class,
         StudyNoticeApiController.class,
         MemberInformationApiController.class,
-        StudyNoticeCommentController.class
+        StudyNoticeCommentApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)

@@ -4,7 +4,7 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
+import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
 import com.kgu.studywithme.study.controller.utils.NoticeRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .contentType(APPLICATION_JSON)
@@ -92,7 +92,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     .register(any(), any(), any());
 
             // when
-            final NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -146,7 +146,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     .register(any(), any(), any());
 
             // when
-            final NoticeRequest request = NoticeRequestUtils.createNoticeRequest();
+            final NoticeRegisterRequest request = NoticeRequestUtils.createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))

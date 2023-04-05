@@ -34,7 +34,6 @@ class NoticeRepositoryTest extends RepositoryTest {
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
         study = studyRepository.save(SPRING.toOnlineStudy(host));
-
         notice = noticeRepository.save(Notice.writeNotice(study, "공지사항", "내용"));
     }
 
@@ -46,6 +45,7 @@ class NoticeRepositoryTest extends RepositoryTest {
 
         // then
         assertAll(
+                () -> assertThat(findNotice.getId()).isEqualTo(notice.getId()),
                 () -> assertThat(findNotice.getStudy()).isEqualTo(study),
                 () -> assertThat(findNotice.getTitle()).isEqualTo("공지사항"),
                 () -> assertThat(findNotice.getContent()).isEqualTo("내용")

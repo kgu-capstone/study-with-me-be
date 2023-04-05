@@ -11,8 +11,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/notice/{noticeId}")
-public class StudyNoticeCommentController {
+@RequestMapping("/api/notices/{noticeId}")
+public class StudyNoticeCommentApiController {
     private final NoticeCommentService noticeCommentService;
 
     @PostMapping("/comment")

@@ -4,7 +4,7 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
+import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
 import com.kgu.studywithme.study.controller.utils.NoticeRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
@@ -31,7 +31,7 @@ class NoticeServiceTest extends ServiceTest {
     private Member host;
     private Member member;
     private Study study;
-    private final NoticeRequest REQUEST = NoticeRequestUtils.createNoticeRequest();
+    private final NoticeRegisterRequest REQUEST = NoticeRequestUtils.createNoticeRequest();
 
     @BeforeEach
     void setUp() {

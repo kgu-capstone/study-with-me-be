@@ -18,6 +18,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> NoticeCommentService 테스트")
 class NoticeCommentServiceTest extends ServiceTest {
@@ -44,7 +45,7 @@ class NoticeCommentServiceTest extends ServiceTest {
     @DisplayName("공지사항 댓글 등록")
     class register {
         @Test
-        @DisplayName("참여자가 아니면 댓글을 등록할 수 없다")
+        @DisplayName("스터디 참여자가 아니면 댓글을 등록할 수 없다")
         void memberIsNotParticipant() {
             Member anonymous = memberRepository.save(ANONYMOUS.toMember());
             assertThatThrownBy(() -> noticeCommentService.register(notice.getId(), anonymous.getId(), "weird test"))
@@ -59,7 +60,13 @@ class NoticeCommentServiceTest extends ServiceTest {
             noticeCommentService.register(notice.getId(), host.getId(), "normal test");
 
             // when - then
-            assertThat(notice.getComments().size()).isEqualTo(1);
+            Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findNotice.getComments()).hasSize(1),
+                    () -> assertThat(findNotice.getComments())
+                            .map(Comment::getContent)
+                            .containsExactly("normal test")
+            );
         }
     }
 

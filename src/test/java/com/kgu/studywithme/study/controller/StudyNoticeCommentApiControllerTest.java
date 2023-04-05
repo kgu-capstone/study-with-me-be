@@ -17,7 +17,7 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -30,16 +30,16 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Study [Controller Layer] -> StudyNoticeCommentController 테스트")
-class StudyNoticeCommentControllerTest extends ControllerTest {
+@DisplayName("Study [Controller Layer] -> StudyNoticeCommentApiController 테스트")
+class StudyNoticeCommentApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("공지사항 댓글 등록 API [POST /api/notice/{noticeId}/comment]")
+    @DisplayName("공지사항 댓글 등록 API [POST /api/notices/{noticeId}/comment]")
     class register {
-        private static final String BASE_URL = "/api/notice/{noticeId}/comment";
+        private static final String BASE_URL = "/api/notices/{noticeId}/comment";
         private static final Long NOTICE_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 등록에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             final NoticeCommentRequest request = generateNoticeCommentRequest();
@@ -66,7 +66,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("등록할 댓글의 게시글")
+                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("댓글 내용")
@@ -81,7 +81,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("참여자가 아니면 댓글을 등록할 수 없다")
+        @DisplayName("스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다")
         void memberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -119,10 +119,15 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("등록할 댓글의 게시글 ID(PK)")
+                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("댓글 내용")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
                                     )
                             )
                     );
@@ -134,7 +139,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
+            doNothing()
                     .when(commentService)
                     .register(any(), any(), any());
 
@@ -161,7 +166,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("등록할 댓글의 게시글 ID(PK)")
+                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("댓글 내용")
@@ -172,14 +177,14 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notice/{noticeId}/comments/{commentId}]")
+    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notices/{noticeId}/comments/{commentId}]")
     class remove {
-        private static final String BASE_URL = "/api/notice/{noticeId}/comments/{commentId}";
+        private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 삭제를 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 삭제에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -203,7 +208,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("삭제할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
                                     ),
                                     responseFields(
@@ -251,7 +256,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("삭제할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
                                     ),
                                     responseFields(
@@ -264,12 +269,12 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("공지사항에 대한 댓글 삭제에 성공한다")
+        @DisplayName("공지사항에 등록한 댓글 삭제에 성공한다")
         void success () throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
+            doNothing()
                     .when(commentService)
                     .remove(any(), any());
 
@@ -293,7 +298,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("삭제할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
                                     )
                             )
@@ -302,14 +307,14 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 댓글 수정 API [PUT /api/notice/{noticeId}/comments/{commentId}]")
+    @DisplayName("공지사항 댓글 수정 API [PUT /api/notices/{noticeId}/comments/{commentId}]")
     class update {
-        private static final String BASE_URL = "/api/notice/{noticeId}/comments/{commentId}";
+        private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 수정에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             final NoticeCommentRequest request = generateNoticeCommentRequest();
@@ -336,11 +341,11 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("수정할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            fieldWithPath("content").description("수정할 댓글 내용")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -391,11 +396,11 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("수정할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            fieldWithPath("content").description("수정할 댓글 내용")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -412,7 +417,7 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
+            doNothing()
                     .when(commentService)
                     .update(any(), any(), any());
 
@@ -438,11 +443,11 @@ class StudyNoticeCommentControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("수정할 댓글의 게시글 ID(PK)"),
+                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            fieldWithPath("content").description("수정할 댓글 내용")
                                     )
                             )
                     );

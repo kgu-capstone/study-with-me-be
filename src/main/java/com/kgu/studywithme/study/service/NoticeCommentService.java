@@ -16,18 +16,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoticeCommentService {
-    private final NoticeService noticeService;
-    private final MemberFindService memberFindService;
+    private final NoticeFindService noticeFindService;
     private final CommentRepository commentRepository;
+    private final MemberFindService memberFindService;
     private final StudyValidator studyValidator;
 
     @Transactional
     public void register(Long noticeId, Long memberId, String content) {
-        Notice notice = noticeService.findByIdWithStudy(noticeId);
+        Notice notice = noticeFindService.findByIdWithStudy(noticeId);
         Member writer = memberFindService.findById(memberId);
         validateWriterIsParticipant(notice, writer);
 
         notice.addComment(writer, content);
+    }
+
+    private void validateWriterIsParticipant(Notice notice, Member writer) {
+        Study study = notice.getStudy();
+        study.validateMemberIsParticipant(writer);
     }
 
     @Transactional
@@ -43,14 +48,9 @@ public class NoticeCommentService {
         comment.updateComment(content);
     }
 
-    public Comment findById(Long commentId) {
+    private Comment findById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> StudyWithMeException.type(CommentErrorCode.COMMENT_NOT_FOUND));
-    }
-
-    private void validateWriterIsParticipant(Notice notice, Member writer) {
-        Study study = notice.getStudy();
-        study.validateMemberIsParticipant(writer);
     }
 
     private void validateCommentWriter(Long commentId, Long memberId) {
