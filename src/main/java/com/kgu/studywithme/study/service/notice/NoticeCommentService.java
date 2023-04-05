@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.service;
+package com.kgu.studywithme.study.service.notice;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
@@ -8,6 +8,7 @@ import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import com.kgu.studywithme.study.exception.CommentErrorCode;
+import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

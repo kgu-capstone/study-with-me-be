@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.service;
+package com.kgu.studywithme.study.service.notice;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.domain.notice.Notice;

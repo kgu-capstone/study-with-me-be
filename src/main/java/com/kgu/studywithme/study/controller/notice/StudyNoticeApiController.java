@@ -1,8 +1,8 @@
-package com.kgu.studywithme.study.controller;
+package com.kgu.studywithme.study.controller.notice;
 
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
-import com.kgu.studywithme.study.service.NoticeService;
+import com.kgu.studywithme.study.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
