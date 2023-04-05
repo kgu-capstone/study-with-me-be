@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -22,8 +21,8 @@ import java.util.List;
 import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
-import static com.kgu.studywithme.study.utils.PagingConstants.SLICE_PER_PAGE;
 import static com.kgu.studywithme.study.utils.PagingConstants.SORT_DATE;
+import static com.kgu.studywithme.study.utils.PagingConstants.getDefaultPageRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -40,9 +39,9 @@ class StudySearchServiceTest extends ServiceTest {
     private static final String TOTAL = null;
     private static final String ONLINE = "online";
     private static final String OFFLINE = "offline";
-    private static final Pageable PAGE_REQUEST_1 = PageRequest.of(0, SLICE_PER_PAGE);
-    private static final Pageable PAGE_REQUEST_2 = PageRequest.of(1, SLICE_PER_PAGE);
-    private static final Pageable PAGE_REQUEST_3 = PageRequest.of(2, SLICE_PER_PAGE);
+    private static final Pageable PAGE_REQUEST_1 = getDefaultPageRequest(0);
+    private static final Pageable PAGE_REQUEST_2 = getDefaultPageRequest(1);
+    private static final Pageable PAGE_REQUEST_3 = getDefaultPageRequest(2);
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     @BeforeEach
