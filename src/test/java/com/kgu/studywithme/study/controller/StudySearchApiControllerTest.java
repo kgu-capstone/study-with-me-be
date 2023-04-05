@@ -14,7 +14,6 @@ import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -29,8 +28,8 @@ import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.IN_PROGRESS;
-import static com.kgu.studywithme.study.utils.PagingConstants.SLICE_PER_PAGE;
 import static com.kgu.studywithme.study.utils.PagingConstants.SORT_DATE;
+import static com.kgu.studywithme.study.utils.PagingConstants.getDefaultPageRequest;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -47,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudySearchApiController 테스트")
 class StudySearchApiControllerTest extends ControllerTest {
     private static final String sort = SORT_DATE;
-    private static final Pageable page = PageRequest.of(0, SLICE_PER_PAGE);
+    private static final Pageable page = getDefaultPageRequest(0);
     private static final String type = "online";
 
     @Nested

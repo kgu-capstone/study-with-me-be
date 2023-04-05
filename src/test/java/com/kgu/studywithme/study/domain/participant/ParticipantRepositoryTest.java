@@ -17,7 +17,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Study-Participant [Repository Layer] -> ParticipantRepository 테스트")
+@DisplayName("Study [Repository Layer] -> ParticipantRepository 테스트")
 class ParticipantRepositoryTest extends RepositoryTest {
     @Autowired
     private ParticipantRepository participantRepository;

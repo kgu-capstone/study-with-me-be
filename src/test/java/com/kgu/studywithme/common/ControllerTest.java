@@ -17,8 +17,18 @@ import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
-import com.kgu.studywithme.study.controller.*;
-import com.kgu.studywithme.study.service.*;
+import com.kgu.studywithme.study.controller.StudyApiController;
+import com.kgu.studywithme.study.controller.StudyInformationApiController;
+import com.kgu.studywithme.study.controller.StudyParticipationApiController;
+import com.kgu.studywithme.study.controller.StudySearchApiController;
+import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
+import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
+import com.kgu.studywithme.study.service.ParticipationService;
+import com.kgu.studywithme.study.service.StudyInformationService;
+import com.kgu.studywithme.study.service.StudyRegisterService;
+import com.kgu.studywithme.study.service.StudySearchService;
+import com.kgu.studywithme.study.service.notice.NoticeCommentService;
+import com.kgu.studywithme.study.service.notice.NoticeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +62,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudySearchApiController.class,
         StudyInformationApiController.class,
         StudyNoticeApiController.class,
-        MemberInformationApiController.class
+        MemberInformationApiController.class,
+        StudyNoticeCommentApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
@@ -102,6 +113,9 @@ public abstract class ControllerTest {
     
     @MockBean
     protected MemberInformationService memberInformationService;
+
+    @MockBean
+    protected NoticeCommentService commentService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

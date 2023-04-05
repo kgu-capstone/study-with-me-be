@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "token")
+@Table(name = "member_token")
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

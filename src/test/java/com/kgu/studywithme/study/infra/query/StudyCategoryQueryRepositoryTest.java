@@ -15,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,9 +45,9 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
     private static final String TOTAL = null;
     private static final String ONLINE = "online";
     private static final String OFFLINE = "offline";
-    private static final Pageable PAGE_REQUEST_1 = PageRequest.of(0, SLICE_PER_PAGE);
-    private static final Pageable PAGE_REQUEST_2 = PageRequest.of(1, SLICE_PER_PAGE);
-    private static final Pageable PAGE_REQUEST_3 = PageRequest.of(2, SLICE_PER_PAGE);
+    private static final Pageable PAGE_REQUEST_1 = getDefaultPageRequest(0);
+    private static final Pageable PAGE_REQUEST_2 = getDefaultPageRequest(1);
+    private static final Pageable PAGE_REQUEST_3 = getDefaultPageRequest(2);
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     private Member host;
