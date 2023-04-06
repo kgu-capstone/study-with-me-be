@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyApiController 테스트")
 class StudyApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("회원가입 API [POST /api/study]")
+    @DisplayName("스터디 생성 API [POST /api/study]")
     class register {
         private static final String BASE_URL = "/api/study";
 
@@ -85,7 +85,7 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("중복되는 값(스터디 이름)에 의해서 회원가입에 실패한다 - 온라인")
+        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 온라인")
         void throwExceptionByDuplicateNameOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -146,7 +146,7 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("중복되는 값(스터디 이름)에 의해서 회원가입에 실패한다 - 오프라인")
+        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성에 실패한다 - 오프라인")
         void throwExceptionByDuplicateNameOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
