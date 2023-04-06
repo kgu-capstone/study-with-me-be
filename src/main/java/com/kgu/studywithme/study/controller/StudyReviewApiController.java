@@ -12,13 +12,13 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/studies/{studyId}")
-public class StudyReviewController {
+public class StudyReviewApiController {
     private final StudyReviewService studyReviewService;
 
     @PostMapping("/review")
     public ResponseEntity<Void> write(@PathVariable Long studyId,
-                                         @ExtractPayload Long memberId,
-                                         @RequestBody @Valid ReviewRequest request) {
+                                      @ExtractPayload Long memberId,
+                                      @RequestBody @Valid ReviewRequest request) {
         studyReviewService.write(studyId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }

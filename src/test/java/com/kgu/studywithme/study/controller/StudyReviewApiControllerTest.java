@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Study [Controller Layer] -> StudyReviewController 테스트")
-class StudyReviewControllerTest extends ControllerTest {
+class StudyReviewApiControllerTest extends ControllerTest {
 
     @Nested
     @DisplayName("스터디 리뷰 작성 API [POST /api/studies/{studyId}/review]")
