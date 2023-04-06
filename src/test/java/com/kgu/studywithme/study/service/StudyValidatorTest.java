@@ -8,12 +8,14 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
+import com.kgu.studywithme.study.domain.review.Review;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -77,5 +79,23 @@ class StudyValidatorTest extends ServiceTest {
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateCommentWriter(notice.getId(), host.getId()));
+    }
+
+    @Test
+    @DisplayName("리뷰 작성자에 대한 검증을 진행한다")
+    void validateReviewWriter() {
+        // given
+        Member member = memberRepository.save(GHOST.toMember());
+        study.applyParticipation(member);
+        study.approveParticipation(member);
+        study.graduateParticipant(member);
+
+        Review review = reviewRepository.save(Review.writeReview(study, member, "It's review"));
+
+        // when
+        assertThatThrownBy(() -> studyValidator.validateReviewWriter(review.getId(), member.getId() + 100L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
+        assertDoesNotThrow(() -> studyValidator.validateReviewWriter(review.getId(), member.getId()));
     }
 }
