@@ -6,6 +6,7 @@ import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
+import com.kgu.studywithme.study.domain.review.ReviewRepository;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class StudyValidator {
     private final StudyRepository studyRepository;
     private final NoticeRepository noticeRepository;
     private final CommentRepository commentRepository;
+    private final ReviewRepository reviewRepository;
 
     public void validateName(StudyName name) {
         if (studyRepository.existsByName(name)) {
@@ -39,6 +41,12 @@ public class StudyValidator {
 
     public void validateCommentWriter(Long commentId, Long memberId) {
         if (!commentRepository.existsByIdAndWriterId(commentId, memberId)) {
+            throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);
+        }
+    }
+
+    public void validateReviewWriter(Long reviewId, Long memberId) {
+        if (!reviewRepository.existsByIdAndWriterId(reviewId, memberId)) {
             throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);
         }
     }

@@ -7,6 +7,7 @@ import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
+import com.kgu.studywithme.study.domain.review.ReviewRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +39,9 @@ public class ServiceTest {
 
     @Autowired
     protected CommentRepository commentRepository;
+
+    @Autowired
+    protected ReviewRepository reviewRepository;
 
     @AfterEach
     void clearDatabase() {
