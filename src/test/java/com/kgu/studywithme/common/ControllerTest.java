@@ -15,6 +15,7 @@ import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
+import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.StudyApiController;
@@ -23,10 +24,7 @@ import com.kgu.studywithme.study.controller.StudyParticipationApiController;
 import com.kgu.studywithme.study.controller.StudySearchApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
-import com.kgu.studywithme.study.service.ParticipationService;
-import com.kgu.studywithme.study.service.StudyInformationService;
-import com.kgu.studywithme.study.service.StudyRegisterService;
-import com.kgu.studywithme.study.service.StudySearchService;
+import com.kgu.studywithme.study.service.*;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import com.kgu.studywithme.study.service.notice.NoticeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,6 +102,12 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudySearchService studySearchService;
+
+    @MockBean
+    protected StudyFindService studyFindService;
+
+    @MockBean
+    protected MemberFindService memberFindService;
 
     @MockBean
     protected StudyInformationService studyInformationService;
