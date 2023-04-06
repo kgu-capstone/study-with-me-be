@@ -9,7 +9,7 @@ public record StudyMember(
     @Builder
     public StudyMember {}
 
-    public StudyMember(Member host) {
-        this(host.getId(), host.getNicknameValue());
+    public StudyMember(Member member) {
+        this(member.getId(), member.getNicknameValue());
     }
 }
