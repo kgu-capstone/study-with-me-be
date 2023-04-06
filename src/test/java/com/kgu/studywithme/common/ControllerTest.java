@@ -18,10 +18,7 @@ import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
-import com.kgu.studywithme.study.controller.StudyApiController;
-import com.kgu.studywithme.study.controller.StudyInformationApiController;
-import com.kgu.studywithme.study.controller.StudyParticipationApiController;
-import com.kgu.studywithme.study.controller.StudySearchApiController;
+import com.kgu.studywithme.study.controller.*;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
 import com.kgu.studywithme.study.service.*;
@@ -61,7 +58,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyInformationApiController.class,
         StudyNoticeApiController.class,
         MemberInformationApiController.class,
-        StudyNoticeCommentApiController.class
+        StudyNoticeCommentApiController.class,
+        StudyReviewApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
@@ -120,6 +118,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected NoticeCommentService commentService;
+
+    @MockBean
+    protected StudyReviewService studyReviewService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
