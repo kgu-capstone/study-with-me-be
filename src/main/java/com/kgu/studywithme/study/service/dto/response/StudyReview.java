@@ -6,12 +6,12 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 public record StudyReview(
-        StudyReviewer reviewer, String content, LocalDateTime reviewDate
+        StudyMember reviewer, String content, LocalDateTime reviewDate
 ) {
     @Builder
     public StudyReview {}
 
     public StudyReview(Review review) {
-        this(new StudyReviewer(review.getWriter()), review.getContent(), review.getModifiedAt());
+        this(new StudyMember(review.getWriter()), review.getContent(), review.getModifiedAt());
     }
 }

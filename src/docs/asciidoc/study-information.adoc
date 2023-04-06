@@ -1,11 +1,11 @@
-= 스터디 상세 페이지 API
+= 스터디 상세 페이지 정보 API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 2
 
-== 스터디 상세 페이지 기본 정보
+== 스터디 기본 정보
 HTTP Request
 include::{snippets}/StudyApi/Information/Basic/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Basic/path-parameters.adoc[]
@@ -14,7 +14,7 @@ HTTP Response
 include::{snippets}/StudyApi/Information/Basic/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Basic/response-fields.adoc[]
 
-== 스터디 상세 페이지 리뷰
+== 스터디 리뷰
 HTTP Request
 include::{snippets}/StudyApi/Information/Review/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Review/path-parameters.adoc[]
@@ -22,3 +22,31 @@ include::{snippets}/StudyApi/Information/Review/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Information/Review/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Review/response-fields.adoc[]
+
+== 스터디 공지사항
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 공지사항 조회에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Information/Notice/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Notice/Failure/Case1/response-body.adoc[]
+
+=== 2. 해당 스터디 참여자가 아니면 스터디 공지사항 조회에 실패한다
+HTTP Request
+include::{snippets}/StudyApi/Information/Notice/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Notice/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 공지사항 조회에 성공한다
+HTTP Request
+include::{snippets}/StudyApi/Information/Notice/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Notice/Success/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Notice/Success/response-fields.adoc[]

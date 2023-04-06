@@ -1,6 +1,7 @@
 package com.kgu.studywithme.study.domain;
 
 import com.kgu.studywithme.study.infra.query.StudyCategoryQueryRepository;
+import com.kgu.studywithme.study.infra.query.StudyInformationQueryRepository;
 import com.kgu.studywithme.study.infra.query.StudySimpleQueryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface StudyRepository extends JpaRepository<Study, Long>,
-        StudySimpleQueryRepository, StudyCategoryQueryRepository {
+        StudySimpleQueryRepository, StudyCategoryQueryRepository, StudyInformationQueryRepository {
     // @Query
     @Query("SELECT s" +
             " FROM Study s" +
@@ -27,7 +28,7 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
     @Query("SELECT s" +
             " FROM Study s" +
             " LEFT OUTER JOIN FETCH s.reviews.reviews r" +
-            " JOIN FETCH r.writer" +
+            " LEFT OUTER JOIN FETCH r.writer" +
             " WHERE s.id = :studyId" +
             " ORDER BY r.modifiedAt DESC")
     Optional<Study> findByIdWithReviews(@Param("studyId") Long studyId);
