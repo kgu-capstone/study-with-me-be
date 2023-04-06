@@ -14,7 +14,7 @@ include::{snippets}/StudyApi/Register/Failure/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Register/Failure/Case1/response-body.adoc[]
 
-=== 2. 중복되는 값(스터디 이름)에 의해서 회원가입에 실패한다 - 온라인
+=== 2. 중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 온라인
 HTTP Request
 include::{snippets}/StudyApi/Register/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Register/Failure/Case2/request-headers.adoc[]
@@ -23,7 +23,7 @@ include::{snippets}/StudyApi/Register/Failure/Case2/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Register/Failure/Case2/response-body.adoc[]
 
-=== 3. 중복되는 값(스터디 이름)에 의해서 회원가입에 실패한다 - 오프라인
+=== 3. 중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 오프라인
 HTTP Request
 include::{snippets}/StudyApi/Register/Failure/Case3/http-request.adoc[]
 include::{snippets}/StudyApi/Register/Failure/Case3/request-headers.adoc[]
