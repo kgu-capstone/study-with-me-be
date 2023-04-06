@@ -153,7 +153,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
             given(memberFindService.findById(3L)).willReturn(memberB);
 
             Study study = SPRING.toOnlineStudy(host);
-            setIdByReflection(memberA, 1L);
+            setIdByReflection(study, 1L);
             given(studyFindService.findByIdWithHost(1L)).willReturn(study);
 
             study.applyParticipation(memberA);
