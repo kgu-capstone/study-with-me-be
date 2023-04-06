@@ -28,7 +28,7 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
     @Query("SELECT s" +
             " FROM Study s" +
             " LEFT OUTER JOIN FETCH s.reviews.reviews r" +
-            " JOIN FETCH r.writer" +
+            " LEFT OUTER JOIN FETCH r.writer" +
             " WHERE s.id = :studyId" +
             " ORDER BY r.modifiedAt DESC")
     Optional<Study> findByIdWithReviews(@Param("studyId") Long studyId);
