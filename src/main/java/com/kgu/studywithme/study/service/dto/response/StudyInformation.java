@@ -11,7 +11,7 @@ import java.util.List;
 
 public record StudyInformation(
         Long id, String name, String description, String category, String type, StudyArea area, String recruitmentStatus,
-        int currentMembers, int maxMembers, double averageAge, List<String> hashtags, StudyHost host
+        int currentMembers, int maxMembers, double averageAge, List<String> hashtags, StudyMember host
 ) {
     @Builder
     public StudyInformation {
@@ -22,7 +22,7 @@ public record StudyInformation(
                 study.getId(), study.getNameValue(), study.getDescriptionValue(), study.getCategory().getName(),
                 study.getType().getDescription(), study.getArea(), study.getRecruitmentStatus().getDescription(),
                 calcCurrentMembers(study), study.getMaxMembers(), calcAverageAge(study),
-                study.getHashtags(), new StudyHost(study.getHost())
+                study.getHashtags(), new StudyMember(study.getHost())
         );
     }
 

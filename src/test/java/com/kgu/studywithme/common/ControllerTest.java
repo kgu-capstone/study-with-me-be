@@ -15,6 +15,7 @@ import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
+import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberSignUpService;
 import com.kgu.studywithme.study.controller.*;
@@ -99,6 +100,12 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudySearchService studySearchService;
+
+    @MockBean
+    protected StudyFindService studyFindService;
+
+    @MockBean
+    protected MemberFindService memberFindService;
 
     @MockBean
     protected StudyInformationService studyInformationService;

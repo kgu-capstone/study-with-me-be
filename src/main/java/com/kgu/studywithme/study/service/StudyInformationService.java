@@ -1,6 +1,9 @@
 package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
+import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
 import com.kgu.studywithme.study.service.dto.response.StudyReview;
@@ -15,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudyInformationService {
     private final StudyFindService studyFindService;
+    private final StudyRepository studyRepository;
 
     public StudyInformation getInformation(Long studyId) {
         Study study = studyFindService.findByIdWithHostAndParticipant(studyId);
@@ -30,5 +34,10 @@ public class StudyInformationService {
                 .toList();
 
         return new ReviewAssembler(graduateCount, reviews);
+    }
+
+    public NoticeAssembler getNotices(Long studyId) {
+        List<NoticeInformation> result = studyRepository.findNoticeWithCommentsByStudyId(studyId);
+        return new NoticeAssembler(result);
     }
 }

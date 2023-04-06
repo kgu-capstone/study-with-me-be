@@ -1,6 +1,9 @@
 package com.kgu.studywithme.study.controller;
 
+import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.global.annotation.ValidStudyParticipant;
 import com.kgu.studywithme.study.service.StudyInformationService;
+import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,13 @@ public class StudyInformationApiController {
     @GetMapping("/reviews")
     public ResponseEntity<ReviewAssembler> getReviews(@PathVariable Long studyId) {
         ReviewAssembler response = studyInformationService.getReviews(studyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @ValidStudyParticipant
+    @GetMapping("/notices")
+    public ResponseEntity<NoticeAssembler> getNotices(@PathVariable Long studyId, @ExtractPayload Long memberId) {
+        NoticeAssembler response = studyInformationService.getNotices(studyId);
         return ResponseEntity.ok(response);
     }
 }
