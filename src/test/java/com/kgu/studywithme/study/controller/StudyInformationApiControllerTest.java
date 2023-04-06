@@ -5,8 +5,8 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.StudyMember;
 import com.kgu.studywithme.study.service.dto.response.StudyReview;
-import com.kgu.studywithme.study.service.dto.response.StudyReviewer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -152,7 +152,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         List<StudyReview> list = new ArrayList<>();
 
         for (int index = 1; index <= count; index++) {
-            StudyReviewer reviewer = new StudyReviewer((long) index, "Nickname" + index);
+            StudyMember reviewer = new StudyMember((long) index, "Nickname" + index);
             list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
         }
 

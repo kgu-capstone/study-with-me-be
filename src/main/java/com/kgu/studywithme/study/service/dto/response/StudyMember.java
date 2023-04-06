@@ -3,13 +3,13 @@ package com.kgu.studywithme.study.service.dto.response;
 import com.kgu.studywithme.member.domain.Member;
 import lombok.Builder;
 
-public record StudyReviewer(
+public record StudyMember(
         Long id, String nickname
 ) {
     @Builder
-    public StudyReviewer {}
+    public StudyMember {}
 
-    public StudyReviewer(Member member) {
-        this(member.getId(), member.getNicknameValue());
+    public StudyMember(Member host) {
+        this(host.getId(), host.getNicknameValue());
     }
 }

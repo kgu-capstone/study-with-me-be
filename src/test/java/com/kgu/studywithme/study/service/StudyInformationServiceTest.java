@@ -6,8 +6,8 @@ import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.StudyMember;
 import com.kgu.studywithme.study.service.dto.response.StudyReview;
-import com.kgu.studywithme.study.service.dto.response.StudyReviewer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ class StudyInformationServiceTest extends ServiceTest {
                     List<String> reviewers = result.reviews()
                             .stream()
                             .map(StudyReview::reviewer)
-                            .map(StudyReviewer::nickname)
+                            .map(StudyMember::nickname)
                             .toList();
 
                     assertThat(reviewers).containsAll(
