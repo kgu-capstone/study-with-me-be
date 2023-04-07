@@ -7,7 +7,7 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
-import com.kgu.studywithme.study.exception.CommentErrorCode;
+import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class NoticeCommentService {
 
     private Comment findById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> StudyWithMeException.type(CommentErrorCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.COMMENT_NOT_FOUND));
     }
 
     private void validateCommentWriter(Long commentId, Long memberId) {

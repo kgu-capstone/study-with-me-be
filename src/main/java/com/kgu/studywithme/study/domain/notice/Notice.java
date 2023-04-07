@@ -52,11 +52,8 @@ public class Notice extends BaseEntity {
         return new Notice(study, title, content);
     }
 
-    public void updateTitle(String title) {
+    public void updateNoticeInformation(String title, String content) {
         this.title = title;
-    }
-
-    public void updateContent(String content) {
         this.content = content;
     }
 

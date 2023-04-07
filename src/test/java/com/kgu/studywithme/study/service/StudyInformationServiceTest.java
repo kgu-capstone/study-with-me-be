@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +70,7 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),
                 () -> assertThat(information.currentMembers()).isEqualTo(study.getApproveParticipants().size()),
                 () -> assertThat(information.maxMembers()).isEqualTo(study.getMaxMembers()),
-                () -> assertThat(information.averageAge()).isEqualTo(MemberAgeCalculator.getAverage(getBirthList())),
+                () -> assertThat(information.averageAge()).isEqualTo(MemberAgeCalculator.getAverage(getMemberAgeList())),
                 () -> assertThat(information.hashtags()).containsAll(study.getHashtags()),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
@@ -130,12 +131,12 @@ class StudyInformationServiceTest extends ServiceTest {
         assertThatNoticeInformationMatch(result.get(2), notices[0], commentWriters.get(0));
     }
 
-    private List<LocalDate> getBirthList() {
-        List<LocalDate> list = new ArrayList<>();
-        list.add(host.getBirth());
+    private List<Integer> getMemberAgeList() {
+        List<Integer> list = new ArrayList<>();
+        list.add(Period.between(host.getBirth(), LocalDate.now()).getYears());
 
         for (Member member : members) {
-            list.add(member.getBirth());
+            list.add(Period.between(member.getBirth(), LocalDate.now()).getYears());
         }
 
         return list;

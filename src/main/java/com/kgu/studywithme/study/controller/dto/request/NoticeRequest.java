@@ -4,7 +4,7 @@ import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
 
-public record NoticeRegisterRequest(
+public record NoticeRequest(
         @NotBlank(message = "제목은 필수입니다.")
         String title,
 
@@ -12,5 +12,5 @@ public record NoticeRegisterRequest(
         String content
 ) {
     @Builder
-    public NoticeRegisterRequest {}
+    public NoticeRequest {}
 }

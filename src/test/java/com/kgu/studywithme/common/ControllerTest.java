@@ -17,7 +17,7 @@ import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
-import com.kgu.studywithme.member.service.MemberSignUpService;
+import com.kgu.studywithme.member.service.MemberService;
 import com.kgu.studywithme.study.controller.*;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
@@ -47,18 +47,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest({
-        TokenReissueApiController.class,
-        MemberApiController.class,
-        OAuthApiController.class,
-        CategoryApiController.class,
-        StudyParticipationApiController.class,
-        StudyApiController.class,
-        FavoriteApiController.class,
-        StudySearchApiController.class,
-        StudyInformationApiController.class,
-        StudyNoticeApiController.class,
-        MemberInformationApiController.class,
-        StudyNoticeCommentApiController.class,
+        TokenReissueApiController.class, MemberApiController.class, OAuthApiController.class,
+        CategoryApiController.class, StudyParticipationApiController.class, StudyApiController.class,
+        FavoriteApiController.class, StudySearchApiController.class, StudyInformationApiController.class,
+        StudyNoticeApiController.class, MemberInformationApiController.class, StudyNoticeCommentApiController.class,
         StudyReviewApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
@@ -78,7 +70,7 @@ public abstract class ControllerTest {
     protected TokenReissueService tokenReissueService;
 
     @MockBean
-    protected MemberSignUpService memberSignupService;
+    protected MemberService memberSignupService;
 
     @MockBean
     protected OAuthUri oAuthUri;
