@@ -36,13 +36,11 @@ class StudyRepositoryTest extends RepositoryTest {
         // when
         Study findStudy1 = studyRepository.findByIdWithHashtags(study.getId()).orElseThrow();
         Study findStudy2 = studyRepository.findByIdWithHost(study.getId()).orElseThrow();
-        Study findStudy3 = studyRepository.findByIdWithReviews(study.getId()).orElseThrow();
 
         // then
         assertAll(
                 () -> assertThat(findStudy1).isEqualTo(study),
-                () -> assertThat(findStudy2).isEqualTo(study),
-                () -> assertThat(findStudy3).isEqualTo(study)
+                () -> assertThat(findStudy2).isEqualTo(study)
         );
     }
 

@@ -70,7 +70,7 @@ class StudyReviewServiceTest extends ServiceTest {
             studyReviewService.write(study.getId(), member1.getId(), "It's good");
 
             // when - then
-            Study findStudy = studyRepository.findByIdWithReviews(study.getId()).orElseThrow();
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getReviews().size()).isEqualTo(1),
                     () -> assertThat(findStudy.getReviews())

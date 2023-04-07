@@ -43,21 +43,16 @@ class StudyFindServiceTest extends ServiceTest {
         assertThatThrownBy(() -> studyFindService.findByIdWithHost(study.getId() + 100L))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
-        assertThatThrownBy(() -> studyFindService.findByIdWithReviews(study.getId() + 100L))
-                .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
 
         Study findStudy1 = studyFindService.findById(study.getId());
         Study findStudy2 = studyFindService.findByIdWithHashtags(study.getId());
         Study findStudy3 = studyFindService.findByIdWithHost(study.getId());
-        Study findStudy4 = studyFindService.findByIdWithReviews(study.getId());
 
         // then
         assertAll(
                 () -> assertThat(findStudy1).isEqualTo(study),
                 () -> assertThat(findStudy2).isEqualTo(study),
-                () -> assertThat(findStudy3).isEqualTo(study),
-                () -> assertThat(findStudy4).isEqualTo(study)
+                () -> assertThat(findStudy3).isEqualTo(study)
         );
     }
 
