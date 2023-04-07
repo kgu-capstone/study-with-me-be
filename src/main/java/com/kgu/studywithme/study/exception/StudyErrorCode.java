@@ -30,7 +30,8 @@ public enum StudyErrorCode implements ErrorCode {
     DUPLICATE_NAME(HttpStatus.CONFLICT, "STUDY_019", "이미 사용중인 스터디 이름입니다."),
     MEMBER_IS_NOT_HOST(HttpStatus.CONFLICT, "STUDY_020", "해당 스터디의 팀장이 아닙니다."),
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_021", "공지사항이 존재하지 않습니다."),
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_022", "댓글이 존재하지 않습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_022", "작성한 댓글이 존재하지 않습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_023", "작성한 리뷰가 존재하지 않습니다."),
     ;
 
     private final HttpStatus status;

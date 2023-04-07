@@ -30,4 +30,13 @@ public class StudyReviewApiController {
         studyReviewService.remove(reviewId, memberId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> update(@PathVariable Long studyId,
+                                       @PathVariable Long reviewId,
+                                       @ExtractPayload Long memberId,
+                                       @RequestBody @Valid ReviewRequest request) {
+        studyReviewService.update(reviewId, memberId, request.content());
+        return ResponseEntity.noContent().build();
+    }
 }

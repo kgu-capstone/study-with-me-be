@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Study [Controller Layer] -> StudyReviewController 테스트")
 class StudyReviewApiControllerTest extends ControllerTest {
-
     @Nested
     @DisplayName("스터디 리뷰 작성 API [POST /api/studies/{studyId}/review]")
     class write {
@@ -178,7 +177,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 리뷰 삭제 API [POST /api/studies/{studyId}/reviews/{reviewId}]")
+    @DisplayName("스터디 리뷰 삭제 API [DELETE /api/studies/{studyId}/reviews/{reviewId}]")
     class remove {
         private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
         private static final Long STUDY_ID = 1L;
@@ -303,6 +302,153 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 리뷰 수정 API [PATCH /api/studies/{studyId}/reviews/{reviewId}]")
+    class update {
+        private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
+        private static final Long STUDY_ID = 1L;
+        private static final Long REVIEW_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 수정에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            final ReviewRequest request = generateReviewRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, REVIEW_ID)
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyReviewApi/Update/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
+                                            parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("수정할 리뷰 내용")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("작성자가 아니면 리뷰를 수정할 수 없다")
+        void memberIdNotWriter() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
+                    .when(studyReviewService)
+                    .update(any(), any(), any());
+
+            // when
+            final ReviewRequest request = generateReviewRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, REVIEW_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final MemberErrorCode expectedError = MemberErrorCode.MEMBER_IS_NOT_WRITER;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyReviewApi/Update/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
+                                            parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("수정할 리뷰 내용")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("리뷰 수정에 성공한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doNothing()
+                    .when(studyReviewService)
+                    .update(any(), any(), any());
+
+            // when
+            final ReviewRequest request = generateReviewRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, REVIEW_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isNoContent(),
+                            jsonPath("$").doesNotExist()
+                    )
+                    .andDo(
+                            document(
+                                    "StudyReviewApi/Update/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
+                                            parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("수정할 리뷰 내용")
                                     )
                             )
                     );
