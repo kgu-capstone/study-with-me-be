@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -50,17 +51,21 @@ class StudyRegisterServiceTest extends ServiceTest {
         @DisplayName("스터디 생성에 성공한다")
         void success() {
             // given
-            StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+            StudyRegisterRequest onlineRequest = createOnlineStudyRegisterRequest();
+            StudyRegisterRequest offlineRequest = createOfflineStudyRegisterRequest();
 
             // when
-            Long studyId = studyRegisterService.register(request, host.getId());
+            Long onlineStudyId = studyRegisterService.register(onlineRequest, host.getId());
+            Long offlineStudyId = studyRegisterService.register(offlineRequest, host.getId());
 
             // then
-            Study findStudy = studyRepository.findByIdWithHost(studyId).orElseThrow();
+            Study onlineStudy = studyRepository.findByIdWithHost(onlineStudyId).orElseThrow();
+            Study offlineStudy = studyRepository.findByIdWithHost(offlineStudyId).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
-                    () -> assertThat(findStudy.getHost()).isEqualTo(host),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host)
+                    () -> assertThat(onlineStudy.getNameValue()).isEqualTo(onlineRequest.name()),
+                    () -> assertThat(onlineStudy.getArea()).isNull(),
+                    () -> assertThat(offlineStudy.getNameValue()).isEqualTo(offlineRequest.name()),
+                    () -> assertThat(offlineStudy.getArea()).isNotNull()
             );
         }
     }

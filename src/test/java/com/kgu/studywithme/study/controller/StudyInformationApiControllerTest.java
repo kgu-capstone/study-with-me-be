@@ -324,9 +324,12 @@ class StudyInformationApiControllerTest extends ControllerTest {
         List<ReviewInformation> list = new ArrayList<>();
 
         for (long index = 1; index <= count; index++) {
-            ReviewInformation information = new ReviewInformation(
-                    index, Nickname.from("Nickname" + index), "좋은 스터디입니다", LocalDateTime.now().minusDays(index)
-            );
+            ReviewInformation information = ReviewInformation.builder()
+                    .reviewerId(index)
+                    .reviewerNickname(Nickname.from("Nickname" + index))
+                    .content("좋은 스터디입니다")
+                    .reviewDate(LocalDateTime.now().minusDays(index))
+                    .build();
             list.add(information);
         }
 
@@ -345,16 +348,25 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private NoticeInformation buildNotice(long id) {
-        NoticeInformation noticeInformation = new NoticeInformation(
-                id, "제목", "내용",
-                LocalDateTime.now().minusDays(id), LocalDateTime.now().minusDays(id),
-                generateRandomId(), Nickname.from("닉네임")
-        );
+        NoticeInformation noticeInformation = NoticeInformation.builder()
+                .id(id)
+                .title("제목")
+                .content("내용")
+                .createdAt(LocalDateTime.now().minusDays(id))
+                .modifiedAt(LocalDateTime.now().minusDays(id))
+                .writerId(generateRandomId())
+                .writerNickname(Nickname.from("공지사항작성자"))
+                .build();
 
         List<CommentInformation> comments = new ArrayList<>();
         for (long index = 1; index <= 3; index++) {
-            CommentInformation information = new CommentInformation(
-                    index, id, "댓글 내용", generateRandomId(), Nickname.from("닉네임"));
+            CommentInformation information = CommentInformation.builder()
+                    .id(index)
+                    .noticeId(id)
+                    .content("댓글")
+                    .writerId(generateRandomId())
+                    .writerNickname(Nickname.from("댓글작성자"))
+                    .build();
             comments.add(information);
         }
         noticeInformation.setComments(comments);
