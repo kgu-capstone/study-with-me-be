@@ -47,18 +47,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest({
-        TokenReissueApiController.class,
-        MemberApiController.class,
-        OAuthApiController.class,
-        CategoryApiController.class,
-        StudyParticipationApiController.class,
-        StudyApiController.class,
-        FavoriteApiController.class,
-        StudySearchApiController.class,
-        StudyInformationApiController.class,
-        StudyNoticeApiController.class,
-        MemberInformationApiController.class,
-        StudyNoticeCommentApiController.class,
+        TokenReissueApiController.class, MemberApiController.class, OAuthApiController.class,
+        CategoryApiController.class, StudyParticipationApiController.class, StudyApiController.class,
+        FavoriteApiController.class, StudySearchApiController.class, StudyInformationApiController.class,
+        StudyNoticeApiController.class, MemberInformationApiController.class, StudyNoticeCommentApiController.class,
         StudyReviewApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
