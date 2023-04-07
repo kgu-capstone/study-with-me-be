@@ -19,6 +19,11 @@ public class StudyFindService {
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
+    public Study findByIdWithHashtags(Long studyId) {
+        return studyRepository.findByIdWithHashtags(studyId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
+    }
+
     public Study findByIdWithHost(Long studyId) {
         return studyRepository.findByIdWithHost(studyId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));

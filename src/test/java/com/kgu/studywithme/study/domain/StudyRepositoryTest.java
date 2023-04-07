@@ -31,15 +31,18 @@ class StudyRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("스터디를 조회한다 [With Host]")
+    @DisplayName("ID(PK)로 스터디를 조회한다")
     void findByIdWithHost() {
         // when
-        Study findStudy = studyRepository.findByIdWithHost(study.getId()).orElseThrow();
+        Study findStudy1 = studyRepository.findByIdWithHashtags(study.getId()).orElseThrow();
+        Study findStudy2 = studyRepository.findByIdWithHost(study.getId()).orElseThrow();
+        Study findStudy3 = studyRepository.findByIdWithReviews(study.getId()).orElseThrow();
 
         // then
         assertAll(
-                () -> assertThat(findStudy).isEqualTo(study),
-                () -> assertThat(findStudy.getHost()).isEqualTo(host)
+                () -> assertThat(findStudy1).isEqualTo(study),
+                () -> assertThat(findStudy2).isEqualTo(study),
+                () -> assertThat(findStudy3).isEqualTo(study)
         );
     }
 

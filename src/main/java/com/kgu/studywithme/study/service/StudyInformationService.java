@@ -21,7 +21,7 @@ public class StudyInformationService {
     private final StudyRepository studyRepository;
 
     public StudyInformation getInformation(Long studyId) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithHashtags(studyId);
         return new StudyInformation(study);
     }
 
