@@ -21,7 +21,7 @@ public class StudyInformationService {
     private final StudyRepository studyRepository;
 
     public StudyInformation getInformation(Long studyId) {
-        Study study = studyFindService.findByIdWithHostAndParticipant(studyId);
+        Study study = studyFindService.findById(studyId);
         return new StudyInformation(study);
     }
 

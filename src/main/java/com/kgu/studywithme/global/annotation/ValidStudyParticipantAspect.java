@@ -18,7 +18,7 @@ public class ValidStudyParticipantAspect {
 
     @Before("@annotation(com.kgu.studywithme.global.annotation.ValidStudyParticipant) && args(studyId, memberId)")
     public void checkParticipant(Long studyId, Long memberId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
+        Study study = studyFindService.findById(studyId);
         Member member = memberFindService.findById(memberId);
 
         study.validateMemberIsParticipant(member);
