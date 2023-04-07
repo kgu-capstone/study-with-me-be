@@ -59,12 +59,12 @@ class NoticeServiceTest extends ServiceTest {
             Long savedNoticeId = noticeService.register(study.getId(), host.getId(), "제목", "내용");
 
             // then
-            Notice notice = noticeRepository.findById(savedNoticeId).orElseThrow();
+            Notice findNotice = noticeRepository.findById(savedNoticeId).orElseThrow();
             assertAll(
-                    () -> assertThat(notice.getWriter()).isEqualTo(host),
-                    () -> assertThat(notice.getStudy()).isEqualTo(study),
-                    () -> assertThat(notice.getTitle()).isEqualTo("제목"),
-                    () -> assertThat(notice.getContent()).isEqualTo("내용")
+                    () -> assertThat(findNotice.getWriter()).isEqualTo(host),
+                    () -> assertThat(findNotice.getStudy()).isEqualTo(study),
+                    () -> assertThat(findNotice.getTitle()).isEqualTo("제목"),
+                    () -> assertThat(findNotice.getContent()).isEqualTo("내용")
             );
         }
     }
@@ -112,6 +112,53 @@ class NoticeServiceTest extends ServiceTest {
             assertAll(
                     () -> assertThat(noticeRepository.existsById(notice.getId())).isFalse(),
                     () -> assertThat(commentRepository.existsById(comment.getId())).isFalse()
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 수정")
+    class update {
+        private Notice notice;
+
+        @BeforeEach
+        void setUp() {
+            notice = noticeRepository.save(Notice.writeNotice(study, "공지사항", "내용"));
+        }
+
+        @Test
+        @DisplayName("팀장이 아니라면 공지사항을 수정할 수 없다")
+        void memberIsNotHost() {
+            assertThatThrownBy(() -> noticeService.update(study.getId(), notice.getId(), member.getId(), "공지사항22", "내용22"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
+        }
+
+        @Test
+        @DisplayName("작성자가 아니라면 공지사항을 수정할 수 없다")
+        void memberIsNotWriter() {
+            // given
+            study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
+
+            // when - then
+            assertThatThrownBy(() -> noticeService.update(study.getId(), notice.getId(), member.getId(), "공지사항22", "내용22"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
+        }
+
+        @Test
+        @DisplayName("공지사항 수정에 성공한다")
+        void success() {
+            // when
+            noticeService.update(study.getId(), notice.getId(), host.getId(), "공지사항22", "내용22");
+
+            // then
+            Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findNotice.getWriter()).isEqualTo(host),
+                    () -> assertThat(findNotice.getStudy()).isEqualTo(study),
+                    () -> assertThat(findNotice.getTitle()).isEqualTo("공지사항22"),
+                    () -> assertThat(findNotice.getContent()).isEqualTo("내용22")
             );
         }
     }

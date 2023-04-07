@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NoticeService {
     private final NoticeRepository noticeRepository;
+    private final NoticeFindService noticeFindService;
     private final CommentRepository commentRepository;
     private final StudyFindService studyFindService;
     private final StudyValidator studyValidator;
@@ -39,6 +40,15 @@ public class NoticeService {
 
         commentRepository.deleteByNoticeId(noticeId);
         noticeRepository.deleteById(noticeId);
+    }
+
+    @Transactional
+    public void update(Long studyId, Long noticeId, Long hostId, String title, String content) {
+        validateHost(studyId, hostId);
+        validateNoticeWriter(noticeId, hostId);
+
+        Notice notice = noticeFindService.findById(noticeId);
+        notice.updateNoticeInformation(title, content);
     }
 
     private void validateHost(Long studyId, Long memberId) {

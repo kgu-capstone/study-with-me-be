@@ -29,29 +29,19 @@ class NoticeTest {
     }
     
     @Test
-    @DisplayName("공지사항 제목을 수정한다")
+    @DisplayName("공지사항 제목 & 내용을 수정한다")
     void updateTitle() {
         // given
         Notice notice = Notice.writeNotice(STUDY, "Notice 1", "Hello World");
         
         // when
-        notice.updateTitle("Notice 2");
+        notice.updateNoticeInformation("Notice 2", "Hello World222");
         
         // then
-        assertThat(notice.getTitle()).isEqualTo("Notice 2");
-    }
-    
-    @Test
-    @DisplayName("공지사항 내용을 수정한다")
-    void updateContent() {
-        // given
-        Notice notice = Notice.writeNotice(STUDY, "Notice 1", "Hello World");
-
-        // when
-        notice.updateContent("Hello World 222");
-
-        // then
-        assertThat(notice.getContent()).isEqualTo("Hello World 222");
+        assertAll(
+                () -> assertThat(notice.getTitle()).isEqualTo("Notice 2"),
+                () -> assertThat(notice.getContent()).isEqualTo("Hello World222")
+        );
     }
 
     @Test

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Service Layer] -> MemberFindService 테스트")
 class MemberFindServiceTest extends ServiceTest {
@@ -40,8 +41,10 @@ class MemberFindServiceTest extends ServiceTest {
         Member findMember2 = memberFindService.findByIdWithInterests(member.getId());
 
         // then
-        assertThat(findMember1).isEqualTo(member);
-        assertThat(findMember2).isEqualTo(member);
+        assertAll(
+                () -> assertThat(findMember1).isEqualTo(member),
+                () -> assertThat(findMember2).isEqualTo(member)
+        );
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.kgu.studywithme.study.controller.notice;
 
 import com.kgu.studywithme.global.annotation.ExtractPayload;
-import com.kgu.studywithme.study.controller.dto.request.NoticeRegisterRequest;
+import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class StudyNoticeApiController {
     @PostMapping("/notice")
     public ResponseEntity<Void> register(@PathVariable Long studyId,
                                          @ExtractPayload Long hostId,
-                                         @RequestBody @Valid NoticeRegisterRequest request) {
+                                         @RequestBody @Valid NoticeRequest request) {
         noticeService.register(studyId, hostId, request.title(), request.content());
         return ResponseEntity.noContent().build();
     }
@@ -28,6 +28,15 @@ public class StudyNoticeApiController {
                                        @PathVariable Long noticeId,
                                        @ExtractPayload Long hostId) {
         noticeService.remove(studyId, noticeId, hostId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/notices/{noticeId}")
+    public ResponseEntity<Void> update(@PathVariable Long studyId,
+                                       @PathVariable Long noticeId,
+                                       @ExtractPayload Long hostId,
+                                       @RequestBody @Valid NoticeRequest request) {
+        noticeService.update(studyId, noticeId, hostId, request.title(), request.content());
         return ResponseEntity.noContent().build();
     }
 }

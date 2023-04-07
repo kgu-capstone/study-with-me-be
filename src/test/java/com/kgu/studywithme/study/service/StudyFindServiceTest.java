@@ -14,6 +14,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> StudyFindService 테스트")
 class StudyFindServiceTest extends ServiceTest {
@@ -52,10 +53,12 @@ class StudyFindServiceTest extends ServiceTest {
         Study findStudy4 = studyFindService.findByIdWithReviews(study.getId());
 
         // then
-        assertThat(findStudy1).isEqualTo(study);
-        assertThat(findStudy2).isEqualTo(study);
-        assertThat(findStudy3).isEqualTo(study);
-        assertThat(findStudy4).isEqualTo(study);
+        assertAll(
+                () -> assertThat(findStudy1).isEqualTo(study),
+                () -> assertThat(findStudy2).isEqualTo(study),
+                () -> assertThat(findStudy3).isEqualTo(study),
+                () -> assertThat(findStudy4).isEqualTo(study)
+        );
     }
 
     @Test

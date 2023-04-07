@@ -14,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeFindService {
     private final NoticeRepository noticeRepository;
 
+    public Notice findById(Long noticeId) {
+        return noticeRepository.findById(noticeId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.NOTICE_NOT_FOUND));
+    }
+
     public Notice findByIdWithStudy(Long noticeId) {
         return noticeRepository.findByIdWithStudy(noticeId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.NOTICE_NOT_FOUND));

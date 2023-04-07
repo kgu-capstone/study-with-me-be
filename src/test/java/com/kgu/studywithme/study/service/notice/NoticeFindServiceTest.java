@@ -15,6 +15,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> NoticeFindService 테스트")
 class NoticeFindServiceTest extends ServiceTest {
@@ -34,13 +35,20 @@ class NoticeFindServiceTest extends ServiceTest {
     @DisplayName("ID(PK)로 공지사항을 조회한다")
     void findByIdWithStudy() {
         // when
+        assertThatThrownBy(() -> noticeFindService.findById(notice.getId() + 100L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.NOTICE_NOT_FOUND.getMessage());
         assertThatThrownBy(() -> noticeFindService.findByIdWithStudy(notice.getId() + 100L))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.NOTICE_NOT_FOUND.getMessage());
 
-        Notice findNotice = noticeFindService.findByIdWithStudy(notice.getId());
+        Notice findNotice1 = noticeFindService.findById(notice.getId());
+        Notice findNotice2 = noticeFindService.findByIdWithStudy(notice.getId());
 
         // then
-        assertThat(findNotice).isEqualTo(notice);
+        assertAll(
+                () -> assertThat(findNotice1).isEqualTo(notice),
+                () -> assertThat(findNotice2).isEqualTo(notice)
+        );
     }
 }

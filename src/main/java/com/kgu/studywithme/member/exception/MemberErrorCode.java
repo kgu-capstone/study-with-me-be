@@ -15,7 +15,7 @@ public enum MemberErrorCode implements ErrorCode {
     REGION_IS_BLANK(HttpStatus.BAD_REQUEST, "MEMBER_005", "거주지를 정확하게 입력해주세요."),
     DUPLICATE_PHONE(HttpStatus.CONFLICT, "MEMBER_006", "이미 사용중인 전화번호입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_007", "사용자 정보를 찾을 수 없습니다."),
-    MEMBER_IS_NOT_WRITER(HttpStatus.CONFLICT, "MEMBER_008", "사용자는 작성자가 아닙니다."),
+    MEMBER_IS_NOT_WRITER(HttpStatus.CONFLICT, "MEMBER_008", "작성자가 아닙니다."),
     ;
 
     private final HttpStatus status;
