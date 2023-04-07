@@ -1,9 +1,7 @@
 package com.kgu.studywithme.study.infra.query;
 
-import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.QCommentInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.QNoticeInformation;
+import com.kgu.studywithme.study.infra.query.dto.response.*;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +11,35 @@ import java.util.List;
 import static com.kgu.studywithme.member.domain.QMember.member;
 import static com.kgu.studywithme.study.domain.notice.QNotice.notice;
 import static com.kgu.studywithme.study.domain.notice.comment.QComment.comment;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
+import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
+import static com.kgu.studywithme.study.domain.review.QReview.review;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StudyInformationQueryRepositoryImpl implements StudyInformationQueryRepository{
     private final JPAQueryFactory query;
+
+    @Override
+    public int getGraduatedParticipantCountByStudyId(Long studyId) {
+        return query
+                .select(participant.id)
+                .from(participant)
+                .where(studyIdEq(studyId), graduateStatus())
+                .fetch()
+                .size();
+    }
+
+    @Override
+    public List<ReviewInformation> findReviewByStudyId(Long studyId) {
+        return query
+                .select(new QReviewInformation(member.id, member.nickname, review.content, review.modifiedAt))
+                .from(review)
+                .innerJoin(review.writer, member)
+                .where(review.study.id.eq(studyId))
+                .orderBy(review.modifiedAt.desc())
+                .fetch();
+    }
 
     @Override
     public List<NoticeInformation> findNoticeWithCommentsByStudyId(Long studyId) {
@@ -48,5 +70,13 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                             .toList()
             );
         });
+    }
+
+    private BooleanExpression studyIdEq(Long studyId) {
+        return participant.study.id.eq(studyId);
+    }
+
+    private BooleanExpression graduateStatus() {
+        return participant.status.eq(GRADUATED);
     }
 }

@@ -17,6 +17,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> StudyReviewService 테스트")
 class StudyReviewServiceTest extends ServiceTest {
@@ -51,14 +52,34 @@ class StudyReviewServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("이미 스터디에 대한 리뷰를 작성했다면 2회 이상 작성할 수 없다")
+        void alreadyWritten() {
+            // given
+            studyReviewService.write(study.getId(), member1.getId(), "It's good");
+
+            // when - then
+            assertThatThrownBy(() -> studyReviewService.write(study.getId(), member1.getId(), "It's good2"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_REVIEW_WRITTEN.getMessage());
+        }
+
+        @Test
         @DisplayName("리뷰 작성에 성공한다")
         void success() {
             // given
             studyReviewService.write(study.getId(), member1.getId(), "It's good");
 
             // when - then
-            Study findStudy = studyRepository.findByIdWithReviews(study.getId()).orElseThrow();
-            assertThat(findStudy.getReviews().size()).isEqualTo(1);
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getReviews().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getReviews())
+                            .map(Review::getWriter)
+                            .containsExactly(member1),
+                    () -> assertThat(findStudy.getReviews())
+                            .map(Review::getContent)
+                            .containsExactly("It's good")
+            );
         }
     }
 
@@ -75,7 +96,6 @@ class StudyReviewServiceTest extends ServiceTest {
         @Test
         @DisplayName("작성자가 아니면 리뷰를 삭제할 수 없다")
         void memberIsNotWriter() {
-            // when - then
             assertThatThrownBy(() -> studyReviewService.remove(review.getId(), member2.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
@@ -89,6 +109,35 @@ class StudyReviewServiceTest extends ServiceTest {
 
             // then
             assertThat(study.getReviews().size()).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    @DisplayName("리뷰 수정")
+    class update {
+        private Review review;
+
+        @BeforeEach
+        void setUp() {
+            review = reviewRepository.save(Review.writeReview(study, member1, "It's good"));
+        }
+
+        @Test
+        @DisplayName("작성자가 아니면 리뷰를 수정할 수 없다")
+        void memberIsNotWriter() {
+            assertThatThrownBy(() -> studyReviewService.update(review.getId(), member2.getId(), "It's bad"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
+        }
+
+        @Test
+        @DisplayName("리뷰 수정에 성공한다")
+        void success() {
+            // when
+            studyReviewService.update(review.getId(), member1.getId(), "It's bad");
+
+            // then
+            assertThat(review.getContent()).isEqualTo("It's bad");
         }
     }
 }

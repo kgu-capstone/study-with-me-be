@@ -18,7 +18,7 @@ public class ParticipationService {
 
     @Transactional
     public void apply(Long studyId, Long memberId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
+        Study study = studyFindService.findById(studyId);
         Member member = memberFindService.findById(memberId);
 
         study.applyParticipation(member);
@@ -26,7 +26,7 @@ public class ParticipationService {
 
     @Transactional
     public void applyCancel(Long studyId, Long applierId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
+        Study study = studyFindService.findById(studyId);
         Member applier = memberFindService.findById(applierId);
         study.validateMemberIsApplier(applier);
 
@@ -51,7 +51,7 @@ public class ParticipationService {
 
     @Transactional
     public void cancel(Long studyId, Long participantId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
+        Study study = studyFindService.findById(studyId);
         Member participant = memberFindService.findById(participantId);
 
         study.cancelParticipation(participant);
@@ -67,7 +67,7 @@ public class ParticipationService {
 
     @Transactional
     public void graduate(Long studyId, Long participantId) {
-        Study study = studyFindService.findByIdWithHost(studyId);
+        Study study = studyFindService.findById(studyId);
         Member participant = memberFindService.findById(participantId);
 
         study.graduateParticipant(participant);

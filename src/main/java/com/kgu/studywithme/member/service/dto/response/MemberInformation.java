@@ -3,7 +3,6 @@ package com.kgu.studywithme.member.service.dto.response;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.Region;
-import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,9 +11,6 @@ public record MemberInformation(
         Long id, String name, String nickname, String email, LocalDate birth,
         String phone, String gender, Region region, List<String> interests
 ) {
-    @Builder
-    public MemberInformation {}
-
     public MemberInformation(Member member) {
         this(
                 member.getId(), member.getName(), member.getNicknameValue(), member.getEmailValue(), member.getBirth(),
