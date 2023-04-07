@@ -17,6 +17,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> StudyReviewService 테스트")
 class StudyReviewServiceTest extends ServiceTest {
@@ -51,6 +52,18 @@ class StudyReviewServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("이미 스터디에 대한 리뷰를 작성했다면 2회 이상 작성할 수 없다")
+        void alreadyWritten() {
+            // given
+            studyReviewService.write(study.getId(), member1.getId(), "It's good");
+
+            // when - then
+            assertThatThrownBy(() -> studyReviewService.write(study.getId(), member1.getId(), "It's good2"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.ALREADY_REVIEW_WRITTEN.getMessage());
+        }
+
+        @Test
         @DisplayName("리뷰 작성에 성공한다")
         void success() {
             // given
@@ -58,7 +71,15 @@ class StudyReviewServiceTest extends ServiceTest {
 
             // when - then
             Study findStudy = studyRepository.findByIdWithReviews(study.getId()).orElseThrow();
-            assertThat(findStudy.getReviews().size()).isEqualTo(1);
+            assertAll(
+                    () -> assertThat(findStudy.getReviews().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getReviews())
+                            .map(Review::getWriter)
+                            .containsExactly(member1),
+                    () -> assertThat(findStudy.getReviews())
+                            .map(Review::getContent)
+                            .containsExactly("It's good")
+            );
         }
     }
 
