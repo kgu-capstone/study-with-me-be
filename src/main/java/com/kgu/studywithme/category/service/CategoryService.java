@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,6 +16,6 @@ public class CategoryService {
     public List<CategoryResponse> findAll() {
         return Arrays.stream(Category.values())
                 .map(CategoryResponse::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

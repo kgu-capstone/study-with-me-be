@@ -1,15 +1,13 @@
 package com.kgu.studywithme.member.utils;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 
 public class MemberAgeCalculator {
-    public static double getAverage(List<LocalDate> birthList) {
-        int sum = birthList.stream()
-                .mapToInt(birth -> Period.between(birth, LocalDate.now()).getYears())
+    public static double getAverage(List<Integer> ages) {
+        int sum = ages.stream()
+                .mapToInt(age -> age)
                 .sum();
 
-        return (double) sum / birthList.size();
+        return (double) sum / ages.size();
     }
 }

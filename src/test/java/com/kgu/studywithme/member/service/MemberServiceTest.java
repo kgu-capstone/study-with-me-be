@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Member [Service Layer] -> MemberSignupService 테스트")
-class MemberSignUpServiceTest extends ServiceTest {
+@DisplayName("Member [Service Layer] -> MemberService 테스트")
+class MemberServiceTest extends ServiceTest {
     @Autowired
-    private MemberSignUpService memberSignupService;
+    private MemberService memberSignupService;
 
     @Nested
     @DisplayName("회원가입")

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class MemberSignUpService {
+public class MemberService {
     private final MemberValidator memberValidator;
     private final MemberRepository memberRepository;
 

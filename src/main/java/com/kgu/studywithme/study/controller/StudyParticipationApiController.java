@@ -25,13 +25,17 @@ public class StudyParticipationApiController {
     }
 
     @PatchMapping("/applicants/{applierId}/approve")
-    public ResponseEntity<Void> approve(@PathVariable Long studyId, @PathVariable Long applierId, @ExtractPayload Long hostId) {
+    public ResponseEntity<Void> approve(@PathVariable Long studyId,
+                                        @PathVariable Long applierId,
+                                        @ExtractPayload Long hostId) {
         participationService.approve(studyId, applierId, hostId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/applicants/{applierId}/reject")
-    public ResponseEntity<Void> reject(@PathVariable Long studyId, @PathVariable Long applierId, @ExtractPayload Long hostId) {
+    public ResponseEntity<Void> reject(@PathVariable Long studyId,
+                                       @PathVariable Long applierId,
+                                       @ExtractPayload Long hostId) {
         participationService.reject(studyId, applierId, hostId);
         return ResponseEntity.noContent().build();
     }
@@ -43,7 +47,9 @@ public class StudyParticipationApiController {
     }
 
     @PatchMapping("/participants/{participantId}/delegation")
-    public ResponseEntity<Void> delegateAuthority(@PathVariable Long studyId, @PathVariable Long participantId, @ExtractPayload Long hostId) {
+    public ResponseEntity<Void> delegateAuthority(@PathVariable Long studyId,
+                                                  @PathVariable Long participantId,
+                                                  @ExtractPayload Long hostId) {
         participationService.delegateAuthority(studyId, participantId, hostId);
         return ResponseEntity.noContent().build();
     }

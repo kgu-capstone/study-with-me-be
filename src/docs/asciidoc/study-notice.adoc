@@ -70,3 +70,43 @@ include::{snippets}/NoticeApi/Remove/Success/path-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/NoticeApi/Remove/Success/http-response.adoc[]
+
+== 공지사항 수정
+=== 1. Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다
+HTTP Request
+include::{snippets}/NoticeApi/Update/Failure/Case1/http-request.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case1/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeApi/Update/Failure/Case1/response-body.adoc[]
+
+=== 2. 팀장이 아니라면 공지사항을 수정할 수 없다
+HTTP Request
+include::{snippets}/NoticeApi/Update/Failure/Case2/http-request.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case2/request-headers.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeApi/Update/Failure/Case2/response-body.adoc[]
+
+=== 3. 작성자가 아니라면 공지사항을 수정할 수 없다
+HTTP Request
+include::{snippets}/NoticeApi/Update/Failure/Case3/http-request.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case3/request-headers.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/NoticeApi/Update/Failure/Case3/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeApi/Update/Failure/Case3/response-body.adoc[]
+
+=== 4. 공지사항 수정에 성공한다
+HTTP Request
+include::{snippets}/NoticeApi/Update/Success/http-request.adoc[]
+include::{snippets}/NoticeApi/Update/Success/request-headers.adoc[]
+include::{snippets}/NoticeApi/Update/Success/path-parameters.adoc[]
+include::{snippets}/NoticeApi/Update/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/NoticeApi/Update/Success/http-response.adoc[]

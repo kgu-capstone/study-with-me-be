@@ -25,7 +25,6 @@ public class FavoriteManageService {
     @Transactional
     public void cancel(Long studyId, Long memberId) {
         validateCancel(studyId, memberId);
-
         favoriteRepository.deleteByStudyIdAndMemberId(studyId, memberId);
     }
 

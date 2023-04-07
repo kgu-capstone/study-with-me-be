@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Service Layer] -> MemberFindService 테스트")
 class MemberFindServiceTest extends ServiceTest {
@@ -32,11 +33,18 @@ class MemberFindServiceTest extends ServiceTest {
         assertThatThrownBy(() -> memberFindService.findById(member.getId() + 10000L))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> memberFindService.findByIdWithInterests(member.getId() + 10000L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
 
-        Member findMember = memberFindService.findById(member.getId());
+        Member findMember1 = memberFindService.findById(member.getId());
+        Member findMember2 = memberFindService.findByIdWithInterests(member.getId());
 
         // then
-        assertThat(findMember).isEqualTo(member);
+        assertAll(
+                () -> assertThat(findMember1).isEqualTo(member),
+                () -> assertThat(findMember2).isEqualTo(member)
+        );
     }
 
     @Test
