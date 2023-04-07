@@ -8,7 +8,10 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
-import com.kgu.studywithme.study.service.dto.response.*;
+import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
+import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
+import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
+import com.kgu.studywithme.study.service.dto.response.StudyInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -154,7 +157,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
             Study study = SPRING.toOnlineStudy(host);
             setIdByReflection(study, 1L);
-            given(studyFindService.findByIdWithHost(1L)).willReturn(study);
+            given(studyFindService.findById(1L)).willReturn(study);
 
             study.applyParticipation(memberA);
             study.approveParticipation(memberA);
@@ -312,17 +315,22 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
     private ReviewAssembler generateStudyReviewAssembler() {
         int graduateCount = 10;
-        List<StudyReview> studyReviews = generateStudyReviews(6);
+        List<ReviewInformation> studyReviews = generateStudyReviews(6);
 
         return new ReviewAssembler(graduateCount, studyReviews);
     }
 
-    private List<StudyReview> generateStudyReviews(int count) {
-        List<StudyReview> list = new ArrayList<>();
+    private List<ReviewInformation> generateStudyReviews(int count) {
+        List<ReviewInformation> list = new ArrayList<>();
 
         for (long index = 1; index <= count; index++) {
-            StudyMember reviewer = new StudyMember(index, "Nickname" + index);
-            list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
+            ReviewInformation information = ReviewInformation.builder()
+                    .reviewerId(index)
+                    .reviewerNickname(Nickname.from("Nickname" + index))
+                    .content("좋은 스터디입니다")
+                    .reviewDate(LocalDateTime.now().minusDays(index))
+                    .build();
+            list.add(information);
         }
 
         return list;
@@ -340,16 +348,25 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private NoticeInformation buildNotice(long id) {
-        NoticeInformation noticeInformation = new NoticeInformation(
-                id, "제목", "내용",
-                LocalDateTime.now().minusDays(id), LocalDateTime.now().minusDays(id),
-                generateRandomId(), Nickname.from("닉네임")
-        );
+        NoticeInformation noticeInformation = NoticeInformation.builder()
+                .id(id)
+                .title("제목")
+                .content("내용")
+                .createdAt(LocalDateTime.now().minusDays(id))
+                .modifiedAt(LocalDateTime.now().minusDays(id))
+                .writerId(generateRandomId())
+                .writerNickname(Nickname.from("공지사항작성자"))
+                .build();
 
         List<CommentInformation> comments = new ArrayList<>();
         for (long index = 1; index <= 3; index++) {
-            CommentInformation information = new CommentInformation(
-                    index, id, "댓글 내용", generateRandomId(), Nickname.from("닉네임"));
+            CommentInformation information = CommentInformation.builder()
+                    .id(index)
+                    .noticeId(id)
+                    .content("댓글")
+                    .writerId(generateRandomId())
+                    .writerNickname(Nickname.from("댓글작성자"))
+                    .build();
             comments.add(information);
         }
         noticeInformation.setComments(comments);

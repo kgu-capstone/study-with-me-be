@@ -18,7 +18,7 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<SimpleResponseWrapper<List<CategoryResponse>>> findALl() {
+    public ResponseEntity<SimpleResponseWrapper<List<CategoryResponse>>> findAll() {
         return ResponseEntity.ok(new SimpleResponseWrapper<>(categoryService.findAll()));
     }
 }

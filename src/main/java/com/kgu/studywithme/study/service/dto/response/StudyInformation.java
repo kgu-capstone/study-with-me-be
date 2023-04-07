@@ -4,7 +4,6 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyArea;
-import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -14,10 +13,6 @@ public record StudyInformation(
         Long id, String name, String description, String category, String type, StudyArea area, String recruitmentStatus,
         int currentMembers, int maxMembers, double averageAge, List<String> hashtags, StudyMember host
 ) {
-    @Builder
-    public StudyInformation {
-    }
-
     public StudyInformation(Study study) {
         this(
                 study.getId(), study.getNameValue(), study.getDescriptionValue(), study.getCategory().getName(),

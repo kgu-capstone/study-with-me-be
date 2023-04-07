@@ -1,7 +1,5 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
-import lombok.Builder;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +11,4 @@ public record StudyCategorySearchRequest(
         String province,
         String city
 ) {
-    @Builder
-    public StudyCategorySearchRequest {}
 }
