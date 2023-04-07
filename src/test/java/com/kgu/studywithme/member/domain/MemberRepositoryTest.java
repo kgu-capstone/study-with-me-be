@@ -25,6 +25,16 @@ class MemberRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("ID(PK)로 사용자를 조회한다")
+    void findByIdWithInterests() {
+        // when
+        Member findMember = memberRepository.findByIdWithInterests(member.getId()).orElseThrow();
+
+        // then
+        assertThat(findMember).isEqualTo(member);
+    }
+
+    @Test
     @DisplayName("이메일에 해당하는 사용자가 존재하는지 확인한다")
     void existsByEmail() {
         // given

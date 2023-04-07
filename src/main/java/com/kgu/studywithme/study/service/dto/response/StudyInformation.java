@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.domain.StudyArea;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 public record StudyInformation(
@@ -31,9 +32,10 @@ public record StudyInformation(
     }
 
     private static double calcAverageAge(Study study) {
-        List<LocalDate> birthList = study.getApproveParticipants()
+        List<Integer> birthList = study.getApproveParticipants()
                 .stream()
                 .map(Member::getBirth)
+                .map(birth -> Period.between(birth, LocalDate.now()).getYears())
                 .toList();
 
         return MemberAgeCalculator.getAverage(birthList);
