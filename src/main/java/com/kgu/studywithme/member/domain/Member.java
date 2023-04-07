@@ -61,11 +61,6 @@ public class Member extends BaseEntity {
         applyInterests(interests);
     }
 
-    public static Member createMember(String name, Nickname nickname, Email email, LocalDate birth, String phone,
-                                      Gender gender, Region region, Set<Category> interests) {
-        return new Member(name, nickname, email, birth, phone, gender, region, interests);
-    }
-
     public void changeNickname(String changeNickname) {
         this.nickname = this.nickname.update(changeNickname);
     }
