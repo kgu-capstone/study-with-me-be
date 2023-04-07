@@ -61,7 +61,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Register/Failure/Case1",
+                                    "StudyApi/Notice/Register/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -112,7 +112,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Register/Failure/Case2",
+                                    "StudyApi/Notice/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -160,7 +160,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Register/Success",
+                                    "StudyApi/Notice/Register/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -206,7 +206,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Remove/Failure/Case1",
+                                    "StudyApi/Notice/Remove/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -251,7 +251,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Remove/Failure/Case2",
+                                    "StudyApi/Notice/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -299,7 +299,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Remove/Failure/Case3",
+                                    "StudyApi/Notice/Remove/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -341,7 +341,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Remove/Success",
+                                    "StudyApi/Notice/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -387,7 +387,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Update/Failure/Case1",
+                                    "StudyApi/Notice/Update/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -439,7 +439,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Update/Failure/Case2",
+                                    "StudyApi/Notice/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -494,7 +494,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Update/Failure/Case3",
+                                    "StudyApi/Notice/Update/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -543,7 +543,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "NoticeApi/Update/Success",
+                                    "StudyApi/Notice/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(

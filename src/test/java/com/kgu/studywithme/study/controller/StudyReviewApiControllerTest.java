@@ -62,7 +62,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Write/Failure/Case1",
+                                    "StudyApi/Review/Write/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -112,7 +112,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Write/Failure/Case2",
+                                    "StudyApi/Review/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -159,7 +159,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Write/Success",
+                                    "StudyApi/Review/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -206,7 +206,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Remove/Failure/Case1",
+                                    "StudyApi/Review/Remove/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -251,7 +251,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Remove/Failure/Case2",
+                                    "StudyApi/Review/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -293,7 +293,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Remove/Success",
+                                    "StudyApi/Review/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -338,7 +338,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Update/Failure/Case1",
+                                    "StudyApi/Review/Update/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -389,7 +389,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Update/Failure/Case2",
+                                    "StudyApi/Review/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -437,7 +437,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyReviewApi/Update/Success",
+                                    "StudyApi/Review/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
