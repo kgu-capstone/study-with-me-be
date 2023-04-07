@@ -56,7 +56,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Like/Failure/Case1",
+                                    "StudyApi/Favorite/Like/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -100,7 +100,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Like/Failure/Case2",
+                                    "StudyApi/Favorite/Like/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -141,7 +141,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Like/Success",
+                                    "StudyApi/Favorite/Like/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -182,7 +182,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Cancel/Failure/Case1",
+                                    "StudyApi/Favorite/Cancel/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
@@ -226,7 +226,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Cancel/Failure/Case2",
+                                    "StudyApi/Favorite/Cancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -267,7 +267,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "FavoriteApi/Cancel/Success",
+                                    "StudyApi/Favorite/Cancel/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(

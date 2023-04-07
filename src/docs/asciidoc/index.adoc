@@ -11,20 +11,22 @@ include::token-reissue.adoc[leveloffset=+1]
 
 include::member-signup.adoc[leveloffset=+1]
 
+include::member-information.adoc[leveloffset=+1]
+
 include::category.adoc[leveloffset=+1]
 
-include::study-participation.adoc[leveloffset=+1]
+include::study-favorite.adoc[leveloffset=+1]
 
 include::study-register.adoc[leveloffset=+1]
-
-include::favorite-like.adoc[leveloffset=+1]
-
-include::study-notice.adoc[leveloffset=+1]
 
 include::study-basic-search.adoc[leveloffset=+1]
 
 include::study-information.adoc[leveloffset=+1]
 
-include::member-information.adoc[leveloffset=+1]
+include::study-participation.adoc[leveloffset=+1]
+
+include::study-notice.adoc[leveloffset=+1]
+
+include::study-notice-comment.adoc[leveloffset=+1]
 
 include::study-review.adoc[leveloffset=+1]
