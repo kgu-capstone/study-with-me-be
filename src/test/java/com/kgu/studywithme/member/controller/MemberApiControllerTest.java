@@ -31,7 +31,7 @@ class MemberApiControllerTest extends ControllerTest {
         void throwExceptionByDuplicateNickname() throws Exception {
             // given
             final SignUpRequest request = createSignUpRequest();
-            given(memberSignupService.signUp(any())).willThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME));
+            given(memberService.signUp(any())).willThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME));
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -85,7 +85,7 @@ class MemberApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             final SignUpRequest request = createSignUpRequest();
-            given(memberSignupService.signUp(any())).willReturn(1L);
+            given(memberService.signUp(any())).willReturn(1L);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders

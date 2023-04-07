@@ -70,7 +70,7 @@ public abstract class ControllerTest {
     protected TokenReissueService tokenReissueService;
 
     @MockBean
-    protected MemberService memberSignupService;
+    protected MemberService memberService;
 
     @MockBean
     protected OAuthUri oAuthUri;

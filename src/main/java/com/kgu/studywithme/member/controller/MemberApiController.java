@@ -16,11 +16,11 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 public class MemberApiController {
-    private final MemberService memberSignupService;
+    private final MemberService memberService;
 
     @PostMapping
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        Long savedMemberId = memberSignupService.signUp(request.toEntity());
+        Long savedMemberId = memberService.signUp(request.toEntity());
         return ResponseEntity
                 .created(UriComponentsBuilder.fromPath("/api/members/{id}").build(savedMemberId))
                 .build();

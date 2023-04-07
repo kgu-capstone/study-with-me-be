@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Member [Service Layer] -> MemberService 테스트")
 class MemberServiceTest extends ServiceTest {
     @Autowired
-    private MemberService memberSignupService;
+    private MemberService memberService;
 
     @Nested
     @DisplayName("회원가입")
@@ -37,7 +37,7 @@ class MemberServiceTest extends ServiceTest {
                     "diff" + member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
+            assertThatThrownBy(() -> memberService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_EMAIL.getMessage());
         }
@@ -54,7 +54,7 @@ class MemberServiceTest extends ServiceTest {
                     member.getNicknameValue(),
                     member.getPhone().replaceAll("0", "9")
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
+            assertThatThrownBy(() -> memberService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_NICKNAME.getMessage());
         }
@@ -71,7 +71,7 @@ class MemberServiceTest extends ServiceTest {
                     "diff" + member.getNicknameValue(),
                     member.getPhone()
             );
-            assertThatThrownBy(() -> memberSignupService.signUp(newMember))
+            assertThatThrownBy(() -> memberService.signUp(newMember))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.DUPLICATE_PHONE.getMessage());
         }
@@ -83,7 +83,7 @@ class MemberServiceTest extends ServiceTest {
             final Member member = JIWON.toMember();
 
             // when
-            Long savedMemberId = memberSignupService.signUp(member);
+            Long savedMemberId = memberService.signUp(member);
 
             // then
             Member findMember = memberRepository.findById(member.getId()).orElseThrow();
