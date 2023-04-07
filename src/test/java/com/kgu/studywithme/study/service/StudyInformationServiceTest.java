@@ -8,7 +8,11 @@ import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
-import com.kgu.studywithme.study.service.dto.response.*;
+import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
+import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
+import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
+import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.StudyMember;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,7 +98,7 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> {
                     List<String> reviewers = result.reviews()
                             .stream()
-                            .map(StudyReview::reviewer)
+                            .map(ReviewInformation::getReviewer)
                             .map(StudyMember::nickname)
                             .toList();
 

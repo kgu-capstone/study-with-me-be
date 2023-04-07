@@ -8,7 +8,10 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
-import com.kgu.studywithme.study.service.dto.response.*;
+import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
+import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
+import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
+import com.kgu.studywithme.study.service.dto.response.StudyInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -312,17 +315,19 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
     private ReviewAssembler generateStudyReviewAssembler() {
         int graduateCount = 10;
-        List<StudyReview> studyReviews = generateStudyReviews(6);
+        List<ReviewInformation> studyReviews = generateStudyReviews(6);
 
         return new ReviewAssembler(graduateCount, studyReviews);
     }
 
-    private List<StudyReview> generateStudyReviews(int count) {
-        List<StudyReview> list = new ArrayList<>();
+    private List<ReviewInformation> generateStudyReviews(int count) {
+        List<ReviewInformation> list = new ArrayList<>();
 
         for (long index = 1; index <= count; index++) {
-            StudyMember reviewer = new StudyMember(index, "Nickname" + index);
-            list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
+            ReviewInformation information = new ReviewInformation(
+                    index, Nickname.from("Nickname" + index), "좋은 스터디입니다", LocalDateTime.now().minusDays(index)
+            );
+            list.add(information);
         }
 
         return list;
