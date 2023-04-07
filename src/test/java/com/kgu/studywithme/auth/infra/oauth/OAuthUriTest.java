@@ -12,13 +12,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
 
 @DisplayName("Auth [Infra Layer] -> OAuthUri 테스트")
 class OAuthUriTest extends InfraTest {
-    @Mock
     private OAuthUri oAuthUri;
 
     @Mock
@@ -30,16 +27,13 @@ class OAuthUriTest extends InfraTest {
         given(properties.getClientId()).willReturn("client_id");
         given(properties.getScope()).willReturn(Set.of("openid", "profile", "email"));
         given(properties.getRedirectUrl()).willReturn("http://localhost:8080/login/oauth2/code/google");
+
+        oAuthUri = new GoogleOAuthUri(properties);
     }
 
     @Test
     @DisplayName("Google Authorization Server로부터 Access Token을 받는 과정에서 선행적으로 Authorization Code를 받기 위한 URI를 생성한다")
     void generateAuthorizationCodeUri() {
-        // given
-        doReturn(generateAuthorizationCodeRequestUri())
-                .when(oAuthUri)
-                .generate(anyString());
-
         // when
         String uri = oAuthUri.generate(properties.getRedirectUrl());
 
@@ -55,13 +49,5 @@ class OAuthUriTest extends InfraTest {
                 () -> assertThat(queryParams.getFirst("scope")).isEqualTo(String.join(" ", properties.getScope())),
                 () -> assertThat(queryParams.getFirst("redirect_uri")).isEqualTo(properties.getRedirectUrl())
         );
-    }
-
-    private String generateAuthorizationCodeRequestUri() {
-        return properties.getAuthUrl() + "?"
-                + "response_type=code&"
-                + "client_id=" + properties.getClientId() + "&"
-                + "scope=" + String.join(" ", properties.getScope()) + "&"
-                + "redirect_uri=" + properties.getRedirectUrl();
     }
 }
