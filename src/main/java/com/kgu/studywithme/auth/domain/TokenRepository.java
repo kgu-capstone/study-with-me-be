@@ -15,11 +15,12 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
             " WHERE t.memberId = :memberId")
     void reissueRefreshTokenByRtrPolicy(@Param("memberId") Long memberId, @Param("refreshToken") String newRefreshToken);
 
-    // Query Method
     @Modifying(clearAutomatically = true)
-    @Query("DELETE FROM Token t WHERE t.memberId = :memberId")
+    @Query("DELETE FROM Token t" +
+            " WHERE t.memberId = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
 
+    // Query Method
     Optional<Token> findByMemberId(Long memberId);
     boolean existsByMemberIdAndRefreshToken(Long memberId, String refreshToken);
 }
