@@ -17,7 +17,7 @@ import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
-import com.kgu.studywithme.member.service.MemberSignUpService;
+import com.kgu.studywithme.member.service.MemberService;
 import com.kgu.studywithme.study.controller.*;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
@@ -78,7 +78,7 @@ public abstract class ControllerTest {
     protected TokenReissueService tokenReissueService;
 
     @MockBean
-    protected MemberSignUpService memberSignupService;
+    protected MemberService memberSignupService;
 
     @MockBean
     protected OAuthUri oAuthUri;

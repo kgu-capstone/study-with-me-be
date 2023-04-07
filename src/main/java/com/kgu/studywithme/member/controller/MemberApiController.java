@@ -1,7 +1,7 @@
 package com.kgu.studywithme.member.controller;
 
 import com.kgu.studywithme.member.controller.dto.request.SignUpRequest;
-import com.kgu.studywithme.member.service.MemberSignUpService;
+import com.kgu.studywithme.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 public class MemberApiController {
-    private final MemberSignUpService memberSignupService;
+    private final MemberService memberSignupService;
 
     @PostMapping
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
