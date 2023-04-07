@@ -32,11 +32,16 @@ class MemberFindServiceTest extends ServiceTest {
         assertThatThrownBy(() -> memberFindService.findById(member.getId() + 10000L))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> memberFindService.findByIdWithInterests(member.getId() + 10000L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(MemberErrorCode.MEMBER_NOT_FOUND.getMessage());
 
-        Member findMember = memberFindService.findById(member.getId());
+        Member findMember1 = memberFindService.findById(member.getId());
+        Member findMember2 = memberFindService.findByIdWithInterests(member.getId());
 
         // then
-        assertThat(findMember).isEqualTo(member);
+        assertThat(findMember1).isEqualTo(member);
+        assertThat(findMember2).isEqualTo(member);
     }
 
     @Test
