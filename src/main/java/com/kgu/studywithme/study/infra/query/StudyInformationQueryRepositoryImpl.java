@@ -37,7 +37,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .from(review)
                 .innerJoin(review.writer, member)
                 .where(review.study.id.eq(studyId))
-                .orderBy(review.modifiedAt.desc())
+                .orderBy(review.id.desc())
                 .fetch();
     }
 
