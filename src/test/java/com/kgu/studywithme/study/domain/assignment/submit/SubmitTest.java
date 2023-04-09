@@ -6,8 +6,6 @@ import com.kgu.studywithme.study.domain.assignment.Assignment;
 import com.kgu.studywithme.study.domain.assignment.Period;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -28,14 +26,14 @@ class SubmitTest {
     @Test
     @DisplayName("Submit[With Link]을 생성한다")
     void constructWithLink() {
-        final Upload upload = Upload.withLink("https://google.com");
+        final Upload upload = Upload.withLink("https://notion.com");
         Submit submit = Submit.submitAssignment(ASSIGNMENT, HOST, upload);
 
         assertAll(
                 () -> assertThat(submit.getAssignment()).isEqualTo(ASSIGNMENT),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
                 () -> assertThat(submit.getUpload()).isEqualTo(upload),
-                () -> assertThat(submit.getUpload().getLink()).isEqualTo("https://google.com"),
+                () -> assertThat(submit.getUpload().getLink()).isEqualTo("https://notion.com"),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK)
         );
     }
@@ -43,16 +41,14 @@ class SubmitTest {
     @Test
     @DisplayName("Submit[With File]을 생성한다")
     void constructWithFile() {
-        final MultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "abc".getBytes());
-        final UploadFile uploadFile = UploadFile.from(file);
-        final Upload upload = Upload.withFile(uploadFile);
+        final Upload upload = Upload.withFile("file_upload_link");
         Submit submit = Submit.submitAssignment(ASSIGNMENT, HOST, upload);
 
         assertAll(
                 () -> assertThat(submit.getAssignment()).isEqualTo(ASSIGNMENT),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
                 () -> assertThat(submit.getUpload()).isEqualTo(upload),
-                () -> assertThat(submit.getUpload().getFile()).isEqualTo(uploadFile),
+                () -> assertThat(submit.getUpload().getLink()).isEqualTo("file_upload_link"),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE)
         );
     }

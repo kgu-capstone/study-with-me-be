@@ -51,7 +51,7 @@ class ReviewsTest {
                     () -> assertThat(reviews.getReviews()).hasSize(1),
                     () -> assertThat(reviews.getReviews())
                             .map(Review::getContent)
-                            .contains("리뷰 1")
+                            .containsExactly("리뷰 1")
             );
         }
     }

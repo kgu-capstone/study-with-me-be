@@ -15,7 +15,7 @@ import javax.persistence.Embeddable;
 public class StudyName {
     private static final int MAXIMUM_LENGTH = 20;
 
-    @Column(name = "name", nullable = false, unique = true, length = 20)
+    @Column(name = "name", nullable = false, unique = true)
     private String value;
 
     private StudyName(String value) {
