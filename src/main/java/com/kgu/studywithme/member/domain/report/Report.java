@@ -1,5 +1,6 @@
 package com.kgu.studywithme.member.domain.report;
 
+import com.kgu.studywithme.global.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import static com.kgu.studywithme.member.domain.report.ReportStatus.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "member_report")
-public class Report {
+public class Report extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
