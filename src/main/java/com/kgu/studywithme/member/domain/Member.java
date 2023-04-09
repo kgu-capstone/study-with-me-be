@@ -3,6 +3,8 @@ package com.kgu.studywithme.member.domain;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.interest.Interest;
+import com.kgu.studywithme.member.domain.review.PeerReview;
+import com.kgu.studywithme.member.domain.review.PeerReviews;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +47,9 @@ public class Member extends BaseEntity {
     @Embedded
     private Region region;
 
+    @Embedded
+    private PeerReviews peerReviews;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Interest> interests = new ArrayList<>();
 
@@ -58,7 +63,13 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.gender = gender;
         this.region = region;
+        this.peerReviews = PeerReviews.createPeerReviewsPage();
         applyInterests(interests);
+    }
+
+    public static Member createMember(String name, Nickname nickname, Email email, LocalDate birth, String phone,
+                                      Gender gender, Region region, Set<Category> interests) {
+        return new Member(name, nickname, email, birth, phone, gender, region, interests);
     }
 
     public void changeNickname(String changeNickname) {
@@ -76,6 +87,10 @@ public class Member extends BaseEntity {
 
     public boolean isSameMember(Member member) {
         return this.email.isSameEmail(member.getEmail());
+    }
+
+    public void applyPeerReview(Member reviewer, String content) {
+        peerReviews.writeReview(PeerReview.doReview(this, reviewer, content));
     }
 
     // Add Getter
@@ -99,5 +114,9 @@ public class Member extends BaseEntity {
         return interests.stream()
                 .map(Interest::getCategory)
                 .toList();
+    }
+
+    public List<PeerReview> getPeerReviews() {
+        return peerReviews.getPeerReviews();
     }
 }
