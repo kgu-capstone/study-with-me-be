@@ -18,7 +18,7 @@ public class Email {
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
     private static final Pattern EMAIL_MATCHER = Pattern.compile(EMAIL_PATTERN);
 
-    @Column(name = "email", nullable = false, unique = true, updatable = false, length = 150)
+    @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String value;
 
     private Email(String value) {
