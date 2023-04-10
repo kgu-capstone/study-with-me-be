@@ -11,6 +11,7 @@ import java.util.List;
 import static com.kgu.studywithme.member.domain.QMember.member;
 import static com.kgu.studywithme.study.domain.notice.QNotice.notice;
 import static com.kgu.studywithme.study.domain.notice.comment.QComment.comment;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPLY;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 import static com.kgu.studywithme.study.domain.review.QReview.review;
@@ -72,11 +73,26 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
         });
     }
 
+    @Override
+    public List<StudyApplicantInformation> findApplicantByStudyId(Long studyId) {
+        return query
+                .select(new QStudyApplicantInformation(member.id, member.nickname, participant.createdAt))
+                .from(participant)
+                .innerJoin(participant.member, member)
+                .where(studyIdEq(studyId), applyStatus())
+                .orderBy(participant.id.desc())
+                .fetch();
+    }
+
     private BooleanExpression studyIdEq(Long studyId) {
         return participant.study.id.eq(studyId);
     }
 
     private BooleanExpression graduateStatus() {
         return participant.status.eq(GRADUATED);
+    }
+
+    private BooleanExpression applyStatus() {
+        return participant.status.eq(APPLY);
     }
 }
