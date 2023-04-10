@@ -9,8 +9,10 @@ import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
+import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
 import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
+import com.kgu.studywithme.study.service.dto.response.StudyApplicant;
 import com.kgu.studywithme.study.service.dto.response.StudyInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -106,7 +108,16 @@ class StudyInformationApiControllerTest extends ControllerTest {
         @DisplayName("스터디 리뷰 리스트를 조회한다")
         void success() throws Exception {
             // given
-            ReviewAssembler response = generateStudyReviewAssembler();
+            ReviewAssembler response = new ReviewAssembler(
+                    9,
+                    List.of(
+                            new ReviewInformation(1L, Nickname.from("닉네임1"), "리뷰~~", LocalDateTime.now().minusDays(1)),
+                            new ReviewInformation(2L, Nickname.from("닉네임2"), "리뷰~~", LocalDateTime.now().minusDays(2)),
+                            new ReviewInformation(3L, Nickname.from("닉네임3"), "리뷰~~", LocalDateTime.now().minusDays(3)),
+                            new ReviewInformation(4L, Nickname.from("닉네임4"), "리뷰~~", LocalDateTime.now().minusDays(4)),
+                            new ReviewInformation(5L, Nickname.from("닉네임5"), "리뷰~~", LocalDateTime.now().minusDays(5))
+                    )
+            );
             given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
 
             // when
@@ -295,6 +306,50 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("스터디 신청자 조회 API [GET /api/studies/{studyId}/applicants]")
+    class getApplicants {
+        private static final String BASE_URL = "/api/studies/{studyId}/applicants";
+        private static final Long STUDY_ID = 1L;
+
+        @Test
+        @DisplayName("스터디 신청자 정보를 조회한다")
+        void success() throws Exception {
+            // given
+            StudyApplicant response = new StudyApplicant(List.of(
+                    new StudyApplicantInformation(1L, Nickname.from("닉네임1"), LocalDateTime.now().minusDays(1)),
+                    new StudyApplicantInformation(2L, Nickname.from("닉네임2"), LocalDateTime.now().minusDays(2)),
+                    new StudyApplicantInformation(3L, Nickname.from("닉네임3"), LocalDateTime.now().minusDays(3)),
+                    new StudyApplicantInformation(4L, Nickname.from("닉네임4"), LocalDateTime.now().minusDays(4)),
+                    new StudyApplicantInformation(5L, Nickname.from("닉네임5"), LocalDateTime.now().minusDays(5))
+            ));
+            given(studyInformationService.getApplicants(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID);
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Applicants",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("applicants[].id").description("신청자 ID(PK)"),
+                                            fieldWithPath("applicants[].nickname").description("신청자 닉네임"),
+                                            fieldWithPath("applicants[].applyDate").description("신청 날짜")
+                                    )
+                            )
+                    );
+        }
+    }
+
     private StudyInformation generateStudyInformationResponse() {
         Member host = generateHost();
         Study study = generateStudy(host);
@@ -311,29 +366,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
         Study study = TOSS_INTERVIEW.toOfflineStudy(host);
         ReflectionTestUtils.setField(study, "id", 1L);
         return study;
-    }
-
-    private ReviewAssembler generateStudyReviewAssembler() {
-        int graduateCount = 10;
-        List<ReviewInformation> studyReviews = generateStudyReviews(6);
-
-        return new ReviewAssembler(graduateCount, studyReviews);
-    }
-
-    private List<ReviewInformation> generateStudyReviews(int count) {
-        List<ReviewInformation> list = new ArrayList<>();
-
-        for (long index = 1; index <= count; index++) {
-            ReviewInformation information = ReviewInformation.builder()
-                    .reviewerId(index)
-                    .reviewerNickname(Nickname.from("Nickname" + index))
-                    .content("좋은 스터디입니다")
-                    .reviewDate(LocalDateTime.now().minusDays(index))
-                    .build();
-            list.add(information);
-        }
-
-        return list;
     }
 
     private NoticeAssembler generateStudyNotices(int count) {
