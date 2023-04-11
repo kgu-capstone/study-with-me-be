@@ -29,6 +29,7 @@ public enum StudyErrorCode implements ErrorCode {
     MEMBER_IS_NOT_GRADUATED(HttpStatus.CONFLICT, "STUDY_018", "스터디 졸업생이 아닙니다."),
     DUPLICATE_NAME(HttpStatus.CONFLICT, "STUDY_019", "이미 사용중인 스터디 이름입니다."),
     MEMBER_IS_NOT_HOST(HttpStatus.CONFLICT, "STUDY_020", "해당 스터디의 팀장이 아닙니다."),
+    CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS(HttpStatus.CONFLICT, "STUDY_021", "현재 인원보다 적은 스터디 인원으로 변경할 수 없습니다."),
     ;
 
     private final HttpStatus status;

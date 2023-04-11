@@ -39,6 +39,10 @@ public class Participants {
         return new Participants(host, capacity);
     }
 
+    public void changeCapacity(Integer capacity) {
+        this.capacity = Capacity.from(capacity);
+    }
+
     public void delegateStudyHostAuthority(Study study, Member newHost) {
         validateMemberIsParticipant(newHost);
         transferHostToParticipant(study, newHost);

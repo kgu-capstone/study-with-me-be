@@ -2,6 +2,7 @@ package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
+import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
@@ -40,6 +41,14 @@ public class StudyValidator {
     public void validateCommentWriter(Long commentId, Long memberId) {
         if (!commentRepository.existsByIdAndWriterId(commentId, memberId)) {
             throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);
+        }
+    }
+
+    public void validateCapacity(Long studyId, Integer capacity) {
+        Study study = studyRepository.findByIdWithHostAndParticipant(studyId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
+        if (study.getParticipants().size() > capacity) {
+            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
         }
     }
 }
