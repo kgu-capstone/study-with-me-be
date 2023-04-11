@@ -26,3 +26,5 @@ include::study-basic-search.adoc[leveloffset=+1]
 include::study-information.adoc[leveloffset=+1]
 
 include::member-information.adoc[leveloffset=+1]
+
+include::study-update.adoc[leveloffset=+1]
