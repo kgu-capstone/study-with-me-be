@@ -98,19 +98,4 @@ class StudyValidatorTest extends ServiceTest {
                 .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateReviewWriter(review.getId(), member.getId()));
     }
-
-    @Test
-    @DisplayName("최대 수용인원이 현재 스터디 인원 수보다 적을 수 없다")
-    void validateCapacity() {
-        // given
-        Member member = memberRepository.save(GHOST.toMember());
-        study.applyParticipation(member);
-        study.approveParticipation(member);
-
-        // when - then
-        assertThatThrownBy(() -> studyValidator.validateCapacity(study.getId(), 1))
-                .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS.getMessage());
-        assertDoesNotThrow(() -> studyValidator.validateCapacity(study.getId(), 2));
-    }
 }

@@ -197,6 +197,12 @@ public class Study extends BaseEntity {
         }
     }
 
+    public void validateCapacity(Integer capacity) {
+        if (getApproveParticipants().size() > capacity) {
+            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
+        }
+    }
+
     public boolean isRecruitmentComplete() {
         return recruitmentStatus == COMPLETE;
     }

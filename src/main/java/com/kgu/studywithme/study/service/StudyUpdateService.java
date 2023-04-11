@@ -23,10 +23,11 @@ public class StudyUpdateService {
 
     @Transactional
     public void update(Long studyId, StudyUpdate studyUpdate, Long hostId) {
-        validateHost(studyId, hostId);
-        validateCapacity(studyId, studyUpdate.capacity());
-
         Study study = studyFindService.findById(studyId);
+
+        validateHost(studyId, hostId);
+        validateCapacity(study, studyUpdate.capacity());
+
         study.change(studyUpdate.name(), studyUpdate.description(), studyUpdate.capacity(), studyUpdate.category(),
                 studyUpdate.type(), studyUpdate.province(), studyUpdate.city(), studyUpdate.recruitmentStatus(), studyUpdate.hashtags());
     }
@@ -35,7 +36,7 @@ public class StudyUpdateService {
         studyValidator.validateHost(studyId, memberId);
     }
 
-    private void validateCapacity(Long studyId, Integer capacity) {
-        studyValidator.validateCapacity(studyId, capacity);
+    private void validateCapacity(Study study, Integer capacity) {
+        study.validateCapacity(capacity);
     }
 }
