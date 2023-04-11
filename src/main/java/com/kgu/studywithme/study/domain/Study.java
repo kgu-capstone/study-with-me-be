@@ -28,6 +28,7 @@ import java.util.Set;
 
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.COMPLETE;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.IN_PROGRESS;
+import static com.kgu.studywithme.study.domain.StudyType.OFFLINE;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -197,12 +198,6 @@ public class Study extends BaseEntity {
         }
     }
 
-    public void validateCapacity(Integer capacity) {
-        if (getApproveParticipants().size() > capacity) {
-            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
-        }
-    }
-
     public boolean isRecruitmentComplete() {
         return recruitmentStatus == COMPLETE;
     }
@@ -258,48 +253,15 @@ public class Study extends BaseEntity {
         return reviews.getReviews();
     }
 
-    private void setName(String name) {
-        this.name = StudyName.from(name);
-    }
-
-    private void setDescription(String description) {
-        this.description = Description.from(description);
-    }
-
-    private void setRecruitmentStatus(String recruitmentStatus) {
-        if (recruitmentStatus.equals(IN_PROGRESS.getDescription())) {
-            this.recruitmentStatus = IN_PROGRESS;
-        } else {
-            this.recruitmentStatus = COMPLETE;
-        }
-    }
-
-    private void setCapacity(Integer capacity) {
-        this.participants.changeCapacity(capacity);
-    }
-
-    private void setTypeAndArea(String type, String province, String city) {
-        if (type.equals(StudyType.ONLINE.getDescription())) {
-            this.type = StudyType.ONLINE;
-            this.area = null;
-        } else {
-            this.type = StudyType.OFFLINE;
-            this.area = StudyArea.of(province, city);
-        }
-    }
-
-    private void setCategory(Long category) {
-        this.category = Category.from(category);
-    }
-
-    public void change(String name, String description, Integer capacity, Long category, String type,
-                       String province, String city, String recruitmentStatus, Set<String> hashtags) {
-        setName(name);
-        setDescription(description);
-        setCategory(category);
-        setTypeAndArea(type, province, city);
-        setCapacity(capacity);
-        setRecruitmentStatus(recruitmentStatus);
+    public void update(StudyName name, Description description, int capacity, Category category, StudyType type,
+                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
+        this.name = name;
+        this.description = description;
+        this.participants.updateCapacity(capacity);
+        this.category = category;
+        this.type = type;
+        this.area = (type == OFFLINE) ? StudyArea.of(province, city) : null;
+        this.recruitmentStatus = recruitmentStatus;
         applyHashtags(hashtags);
     }
 }

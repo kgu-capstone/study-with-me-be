@@ -114,9 +114,6 @@ public abstract class ControllerTest {
     @MockBean
     protected StudyReviewService studyReviewService;
 
-    @MockBean
-    protected StudyUpdateService studyUpdateService;
-
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)

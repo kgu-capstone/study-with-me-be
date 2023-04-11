@@ -39,10 +39,6 @@ public class Participants {
         return new Participants(host, capacity);
     }
 
-    public void changeCapacity(Integer capacity) {
-        this.capacity = Capacity.from(capacity);
-    }
-
     public void delegateStudyHostAuthority(Study study, Member newHost) {
         validateMemberIsParticipant(newHost);
         transferHostToParticipant(study, newHost);
@@ -133,6 +129,13 @@ public class Participants {
         if (isFull()) {
             throw StudyWithMeException.type(StudyErrorCode.STUDY_CAPACITY_IS_FULL);
         }
+    }
+
+    public void updateCapacity(int capacity) {
+        if (getNumberOfApproveParticipants() > capacity) {
+            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
+        }
+        this.capacity = Capacity.from(capacity);
     }
 
     private boolean isFull() {
