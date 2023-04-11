@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
-import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
+import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.LATE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +55,46 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST),
                 () -> assertThat(offlineStudy.getApproveParticipants()).containsExactly(HOST)
+        );
+    }
+
+    @Test
+    @DisplayName("Study 정보를 수정한다")
+    void change() {
+        Study onlineStudy = JAPANESE.toOnlineStudy(HOST);
+        Study offlineStudy = TOSS_INTERVIEW.toOnlineStudy(HOST);
+
+        onlineStudy.change(CHINESE.name(), CHINESE.getDescription(), CHINESE.getCapacity(),
+                CHINESE.getCategory().getId(), CHINESE.getType().getDescription(), null,
+                null, RecruitmentStatus.COMPLETE.getDescription(), CHINESE.getHashtags());
+
+        offlineStudy.change(KAKAO_INTERVIEW.name(), KAKAO_INTERVIEW.getDescription(), KAKAO_INTERVIEW.getCapacity(),
+                KAKAO_INTERVIEW.getCategory().getId(), KAKAO_INTERVIEW.getType().getDescription(), KAKAO_INTERVIEW.getArea().getProvince(),
+                KAKAO_INTERVIEW.getArea().getCity(), RecruitmentStatus.COMPLETE.getDescription(), KAKAO_INTERVIEW.getHashtags());
+
+        assertAll(
+                () -> assertThat(onlineStudy.getNameValue()).isEqualTo(CHINESE.name()),
+                () -> assertThat(onlineStudy.getDescriptionValue()).isEqualTo(CHINESE.getDescription()),
+                () -> assertThat(onlineStudy.getCategory()).isEqualTo(CHINESE.getCategory()),
+                () -> assertThat(onlineStudy.getType()).isEqualTo(CHINESE.getType()),
+                () -> assertThat(onlineStudy.getArea()).isNull(),
+                () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(CHINESE.getCapacity()),
+                () -> assertThat(onlineStudy.getRecruitmentStatus().getDescription()).isEqualTo(RecruitmentStatus.COMPLETE.getDescription()),
+                () -> assertThat(onlineStudy.getHashtags()).containsAll(CHINESE.getHashtags()),
+                () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
+                () -> assertThat(onlineStudy.getParticipants()).containsExactly(HOST),
+
+                () -> assertThat(offlineStudy.getNameValue()).isEqualTo(KAKAO_INTERVIEW.name()),
+                () -> assertThat(offlineStudy.getDescriptionValue()).isEqualTo(KAKAO_INTERVIEW.getDescription()),
+                () -> assertThat(offlineStudy.getCategory()).isEqualTo(KAKAO_INTERVIEW.getCategory()),
+                () -> assertThat(offlineStudy.getType()).isEqualTo(KAKAO_INTERVIEW.getType()),
+                () -> assertThat(offlineStudy.getArea().getProvince()).isEqualTo(KAKAO_INTERVIEW.getArea().getProvince()),
+                () -> assertThat(offlineStudy.getArea().getCity()).isEqualTo(KAKAO_INTERVIEW.getArea().getCity()),
+                () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(KAKAO_INTERVIEW.getCapacity()),
+                () -> assertThat(offlineStudy.getRecruitmentStatus().getDescription()).isEqualTo(RecruitmentStatus.COMPLETE.getDescription()),
+                () -> assertThat(offlineStudy.getHashtags()).containsAll(KAKAO_INTERVIEW.getHashtags()),
+                () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
+                () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST)
         );
     }
 

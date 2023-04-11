@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +47,7 @@ class StudyValidatorTest extends ServiceTest {
                 .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateName(diff));
     }
-    
+
     @Test
     @DisplayName("스터디 팀장에 대한 검증을 진행한다")
     void validateHost() {
@@ -55,7 +56,7 @@ class StudyValidatorTest extends ServiceTest {
                 .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateHost(study.getId(), host.getId()));
     }
-    
+
     @Test
     @DisplayName("스터디 공지사항 작성자에 대한 검증을 진행한다")
     void validateNoticeWriter() {
@@ -77,5 +78,20 @@ class StudyValidatorTest extends ServiceTest {
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateCommentWriter(notice.getId(), host.getId()));
+    }
+
+    @Test
+    @DisplayName("최대 수용인원이 현재 스터디 인원 수보다 적을 수 없다")
+    void validateCapacity() {
+        // given
+        Member member = memberRepository.save(GHOST.toMember());
+        study.applyParticipation(member);
+        study.approveParticipation(member);
+
+        // when - then
+        assertThatThrownBy(() -> studyValidator.validateCapacity(study.getId(), 1))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS.getMessage());
+        assertDoesNotThrow(() -> studyValidator.validateCapacity(study.getId(), 2));
     }
 }

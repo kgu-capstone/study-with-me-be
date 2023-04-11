@@ -155,7 +155,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
             StudyReviewer reviewer = new StudyReviewer((long) index, "Nickname" + index);
             list.add(new StudyReview(reviewer, "좋은 스터디입니다", LocalDateTime.now().minusDays(index)));
         }
-
         return list;
     }
 }
