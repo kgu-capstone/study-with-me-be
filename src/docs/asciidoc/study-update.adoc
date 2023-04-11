@@ -25,21 +25,21 @@ include::{snippets}/StudyApi/Update/Get/Failure/Case2/response-body.adoc[]
 
 === 3. 정보 수정 폼 제공에 성공한다 - 온라인
 HTTP Request
-include::{snippets}/StudyApi/Update/Get/Success/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Update/Get/Success/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Update/Get/Success/Case2/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Update/Get/Success/Case2/response-body.adoc[]
-
-=== 4. 정보 수정 폼 제공에 성공한다 - 오프라인
-HTTP Request
 include::{snippets}/StudyApi/Update/Get/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Get/Success/Case1/request-headers.adoc[]
 include::{snippets}/StudyApi/Update/Get/Success/Case1/path-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Update/Get/Success/Case1/response-body.adoc[]
+
+=== 4. 정보 수정 폼 제공에 성공한다 - 오프라인
+HTTP Request
+include::{snippets}/StudyApi/Update/Get/Success/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Update/Get/Success/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Update/Get/Success/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Update/Get/Success/Case2/response-body.adoc[]
 
 == 스터디 정보수정
 === 1. Authorization Header에 AccessToken이 없으면 스터디 정보수정을 실패한다
@@ -73,16 +73,6 @@ include::{snippets}/StudyApi/Update/Put/Failure/Case3/response-body.adoc[]
 
 === 4. 정보 수정에 성공한다 - 온라인
 HTTP Request
-include::{snippets}/StudyApi/Update/Put/Success/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Update/Put/Success/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Update/Put/Success/Case2/path-parameters.adoc[]
-include::{snippets}/StudyApi/Update/Put/Success/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Update/Put/Success/Case2/http-response.adoc[]
-
-=== 5. 정보 수정에 성공한다 - 오프라인
-HTTP Request
 include::{snippets}/StudyApi/Update/Put/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Put/Success/Case1/request-headers.adoc[]
 include::{snippets}/StudyApi/Update/Put/Success/Case1/path-parameters.adoc[]
@@ -91,3 +81,12 @@ include::{snippets}/StudyApi/Update/Put/Success/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Put/Success/Case1/http-response.adoc[]
 
+=== 5. 정보 수정에 성공한다 - 오프라인
+HTTP Request
+include::{snippets}/StudyApi/Update/Put/Success/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Update/Put/Success/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Update/Put/Success/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Update/Put/Success/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Update/Put/Success/Case2/http-response.adoc[]

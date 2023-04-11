@@ -145,7 +145,7 @@ class StudyUpdateApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Get/Success/Case2",
+                                    "StudyApi/Update/Get/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -197,7 +197,7 @@ class StudyUpdateApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Get/Success/Case1",
+                                    "StudyApi/Update/Get/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -442,7 +442,7 @@ class StudyUpdateApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Put/Success/Case2",
+                                    "StudyApi/Update/Put/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
@@ -495,7 +495,7 @@ class StudyUpdateApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Put/Success/Case1",
+                                    "StudyApi/Update/Put/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
