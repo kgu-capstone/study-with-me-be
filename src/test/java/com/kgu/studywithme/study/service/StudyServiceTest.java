@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Study [Service Layer] -> StudyRegisterService 테스트")
-class StudyRegisterServiceTest extends ServiceTest {
+class StudyServiceTest extends ServiceTest {
     @Autowired
-    private StudyRegisterService studyRegisterService;
+    private StudyService studyService;
 
     private Member host;
 
@@ -39,10 +39,10 @@ class StudyRegisterServiceTest extends ServiceTest {
         void duplicateNameOnline() {
             // given
             StudyRegisterRequest request = createOnlineStudyRegisterRequest();
-            studyRegisterService.register(request, host.getId());
+            studyService.register(request, host.getId());
 
             // when - then
-            assertThatThrownBy(() -> studyRegisterService.register(request, host.getId()))
+            assertThatThrownBy(() -> studyService.register(request, host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         }
@@ -55,8 +55,8 @@ class StudyRegisterServiceTest extends ServiceTest {
             StudyRegisterRequest offlineRequest = createOfflineStudyRegisterRequest();
 
             // when
-            Long onlineStudyId = studyRegisterService.register(onlineRequest, host.getId());
-            Long offlineStudyId = studyRegisterService.register(offlineRequest, host.getId());
+            Long onlineStudyId = studyService.register(onlineRequest, host.getId());
+            Long offlineStudyId = studyService.register(offlineRequest, host.getId());
 
             // then
             Study onlineStudy = studyRepository.findByIdWithHost(onlineStudyId).orElseThrow();

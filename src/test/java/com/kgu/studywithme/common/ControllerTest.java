@@ -85,7 +85,7 @@ public abstract class ControllerTest {
     protected ParticipationService participationService;
 
     @MockBean
-    protected StudyRegisterService studyRegisterService;
+    protected StudyService studyService;
 
     @MockBean
     protected FavoriteManageService favoriteManageService;
@@ -113,6 +113,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyReviewService studyReviewService;
+
+    @MockBean
+    protected StudyUpdateService studyUpdateService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
