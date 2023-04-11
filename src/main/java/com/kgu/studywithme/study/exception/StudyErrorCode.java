@@ -32,6 +32,7 @@ public enum StudyErrorCode implements ErrorCode {
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_021", "공지사항이 존재하지 않습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_022", "작성한 댓글이 존재하지 않습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_023", "작성한 리뷰가 존재하지 않습니다."),
+    CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS(HttpStatus.CONFLICT, "STUDY_024", "현재 인원보다 적은 스터디 인원으로 변경할 수 없습니다."),
     ;
 
     private final HttpStatus status;

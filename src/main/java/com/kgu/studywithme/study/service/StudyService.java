@@ -16,7 +16,7 @@ import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class StudyRegisterService {
+public class StudyService {
     private final StudyValidator studyValidator;
     private final StudyRepository studyRepository;
     private final MemberFindService memberFindService;
