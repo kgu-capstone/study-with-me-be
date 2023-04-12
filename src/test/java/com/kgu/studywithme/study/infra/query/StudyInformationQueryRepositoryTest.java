@@ -12,7 +12,7 @@ import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
-import com.kgu.studywithme.study.service.dto.response.StudyMember;
+import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,11 +55,6 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         members[3] = memberRepository.save(DUMMY4.toMember());
         members[4] = memberRepository.save(DUMMY5.toMember());
 
-        for (Member member : members) {
-            study.applyParticipation(member);
-            study.approveParticipation(member);
-        }
-
         for (int i = 0; i < notices.length; i++) {
             notices[i] = Notice.writeNotice(study, "공지" + (i + 1), "내용" + (i + 1));
             noticeRepository.save(notices[i]);
@@ -69,6 +64,7 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     @Test
     @DisplayName("스터디 졸업자수를 조회한다")
     void getGraduatedParticipantCountByStudyId() {
+        applyAndApproveMembers();
         assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(0);
 
         graduate(members[0], members[1]);
@@ -81,23 +77,22 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     @Test
     @DisplayName("스터디 리뷰를 조회한다")
     void findReviewByStudyId() {
+        applyAndApproveMembers();
         graduate(members[0], members[1], members[2], members[3], members[4]);
-        List<List<Member>> reviewers = List.of(
-                List.of(members[0], members[1], members[2]),
-                List.of(members[0], members[1], members[2], members[3], members[4])
-        );
 
+        /* 3명 리뷰 작성 */
         writeReview(members[0], members[1], members[2]);
         List<ReviewInformation> result1 = studyRepository.findReviewByStudyId(study.getId());
-        assertThatReviewInformationMatch(result1, reviewers.get(0));
+        assertThatReviewInformationMatch(result1, List.of(members[2], members[1], members[0]));
 
+        /* 추가 2명 리뷰 작성 */
         writeReview(members[3], members[4]);
         List<ReviewInformation> result2 = studyRepository.findReviewByStudyId(study.getId());
-        assertThatReviewInformationMatch(result2, reviewers.get(1));
+        assertThatReviewInformationMatch(result2, List.of(members[4], members[3], members[2], members[1], members[0]));
     }
 
     @Test
-    @DisplayName("스터디 공지사항에 관련된 정보들을 조회한다")
+    @DisplayName("스터디 공지사항 & 댓글 정보들을 조회한다")
     void findNoticeWithCommentsByStudyId() {
         // given
         List<List<Member>> commentWriters = List.of(
@@ -117,6 +112,37 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         assertThatNoticeInformationMatch(result.get(2), notices[0], commentWriters.get(0));
     }
 
+    @Test
+    @DisplayName("스터디 신청자 정보를 조회한다")
+    void findApplicantByStudyId() {
+        List<StudyApplicantInformation> result1 = studyRepository.findApplicantByStudyId(study.getId());
+        assertThatApplicantsMatch(result1, List.of());
+
+        /* 신청자 3명 */
+        study.applyParticipation(members[0]);
+        study.applyParticipation(members[1]);
+        study.applyParticipation(members[2]);
+
+        List<StudyApplicantInformation> result2 = studyRepository.findApplicantByStudyId(study.getId());
+        assertThatApplicantsMatch(result2, List.of(members[2], members[1], members[0]));
+
+        /* 추가 2명 신청 & 2명 승인 */
+        study.applyParticipation(members[3]);
+        study.applyParticipation(members[4]);
+        study.approveParticipation(members[0]);
+        study.approveParticipation(members[2]);
+
+        List<StudyApplicantInformation> result3 = studyRepository.findApplicantByStudyId(study.getId());
+        assertThatApplicantsMatch(result3, List.of(members[4], members[3], members[1]));
+    }
+
+    private void applyAndApproveMembers() {
+        for (Member member : members) {
+            study.applyParticipation(member);
+            study.approveParticipation(member);
+        }
+    }
+
     private void graduate(Member... members) {
         for (Member member : members) {
             study.graduateParticipant(member);
@@ -129,31 +155,24 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         }
     }
 
-    private void assertThatReviewInformationMatch(List<ReviewInformation> result, List<Member> members) {
-        final int totalSize = members.size();
-        List<Long> ids = members.stream()
-                .map(Member::getId)
-                .toList();
-        List<String> nicknames = members.stream()
-                .map(Member::getNicknameValue)
-                .toList();
-
-        assertAll(
-                () -> assertThat(result).hasSize(totalSize),
-                () -> assertThat(result)
-                        .map(ReviewInformation::getReviewer)
-                        .map(StudyMember::id)
-                        .containsAll(ids),
-                () -> assertThat(result)
-                        .map(ReviewInformation::getReviewer)
-                        .map(StudyMember::nickname)
-                        .containsAll(nicknames)
-        );
-    }
-
     private void writeComment(Notice notice, List<Member> members) {
         for (Member member : members) {
             commentRepository.save(Comment.writeComment(notice, member, "댓글"));
+        }
+    }
+
+    private void assertThatReviewInformationMatch(List<ReviewInformation> result, List<Member> members) {
+        final int totalSize = members.size();
+        assertThat(result).hasSize(totalSize);
+
+        for (int i = 0; i < totalSize; i++) {
+            ReviewInformation review = result.get(i);
+            Member member = members.get(i);
+
+            assertAll(
+                    () -> assertThat(review.getReviewer().id()).isEqualTo(member.getId()),
+                    () -> assertThat(review.getReviewer().nickname()).isEqualTo(member.getNicknameValue())
+            );
         }
     }
 
@@ -166,25 +185,33 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                 () -> assertThat(information.getWriter().nickname()).isEqualTo(host.getNicknameValue())
         );
 
-        final int totalSize = members.size();
-        List<Long> ids = members.stream()
-                .map(Member::getId)
-                .toList();
-        List<String> nicknames = members.stream()
-                .map(Member::getNicknameValue)
-                .toList();
-
+        final int totalCommentsSize = members.size();
         List<CommentInformation> comments = information.getComments();
-        assertAll(
-                () -> assertThat(comments).hasSize(totalSize),
-                () -> assertThat(comments)
-                        .map(CommentInformation::getWriter)
-                        .map(StudyMember::id)
-                        .containsAll(ids),
-                () -> assertThat(comments)
-                        .map(CommentInformation::getWriter)
-                        .map(StudyMember::nickname)
-                        .containsAll(nicknames)
-        );
+        assertThat(comments).hasSize(totalCommentsSize);
+
+        for (int i = 0; i < totalCommentsSize; i++) {
+            CommentInformation comment = comments.get(i);
+            Member member = members.get(i);
+
+            assertAll(
+                    () -> assertThat(comment.getWriter().id()).isEqualTo(member.getId()),
+                    () -> assertThat(comment.getWriter().nickname()).isEqualTo(member.getNicknameValue())
+            );
+        }
+    }
+
+    private void assertThatApplicantsMatch(List<StudyApplicantInformation> result, List<Member> members) {
+        final int totalSize = members.size();
+        assertThat(result).hasSize(totalSize);
+
+        for (int i = 0; i < totalSize; i++) {
+            StudyApplicantInformation information = result.get(i);
+            Member member = members.get(i);
+
+            assertAll(
+                    () -> assertThat(information.getId()).isEqualTo(member.getId()),
+                    () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue())
+            );
+        }
     }
 }
