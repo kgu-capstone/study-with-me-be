@@ -131,6 +131,13 @@ public class Participants {
         }
     }
 
+    public void updateCapacity(int capacity) {
+        if (getNumberOfApproveParticipants() > capacity) {
+            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
+        }
+        this.capacity = Capacity.from(capacity);
+    }
+
     private boolean isFull() {
         return capacity.isEqualOrOver(getNumberOfApproveParticipants());
     }

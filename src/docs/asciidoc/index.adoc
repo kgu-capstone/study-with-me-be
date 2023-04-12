@@ -30,3 +30,5 @@ include::study-notice.adoc[leveloffset=+1]
 include::study-notice-comment.adoc[leveloffset=+1]
 
 include::study-review.adoc[leveloffset=+1]
+
+include::study-update.adoc[leveloffset=+1]

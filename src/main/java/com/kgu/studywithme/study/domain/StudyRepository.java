@@ -32,5 +32,6 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
 
     // Query Method
     boolean existsByName(StudyName name);
+    boolean existsByNameAndIdNot(StudyName name, Long studyId);
     boolean existsByIdAndParticipantsHostId(Long studyId, Long hostId);
 }
