@@ -21,8 +21,14 @@ public class StudyValidator {
     private final CommentRepository commentRepository;
     private final ReviewRepository reviewRepository;
 
-    public void validateName(StudyName name) {
+    public void validateUniqueNameForCreate(StudyName name) {
         if (studyRepository.existsByName(name)) {
+            throw StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME);
+        }
+    }
+
+    public void validateUniqueNameForUpdate(StudyName name, Long studyId) {
+        if (studyRepository.existsByNameAndIdNot(name, studyId)) {
             throw StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME);
         }
     }

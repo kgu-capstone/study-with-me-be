@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
-public record StudyRegisterRequest(
+public record StudyUpdateRequest (
         @NotBlank(message = "스터디명은 필수입니다.")
         String name,
 
@@ -26,8 +26,10 @@ public record StudyRegisterRequest(
 
         String city,
 
+        boolean recruitmentStatus,
+
         Set<String> hashtags
 ) {
     @Builder
-    public StudyRegisterRequest {}
+    public StudyUpdateRequest {}
 }
