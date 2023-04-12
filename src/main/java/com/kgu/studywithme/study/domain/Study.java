@@ -72,7 +72,7 @@ public class Study extends BaseEntity {
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
-    @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "study", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
@@ -105,6 +105,18 @@ public class Study extends BaseEntity {
     public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity,
                                           Category category, StudyType type, StudyArea area, Set<String> hashtags) {
         return new Study(host, name, description, capacity, category, type, area, hashtags);
+    }
+
+    public void update(StudyName name, Description description, int capacity, Category category, StudyType type,
+                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
+        this.name = name;
+        this.description = description;
+        this.participants.updateCapacity(capacity);
+        this.category = category;
+        this.type = type;
+        this.area = (type == OFFLINE) ? StudyArea.of(province, city) : null;
+        this.recruitmentStatus = recruitmentStatus;
+        applyHashtags(hashtags);
     }
 
     public void applyHashtags(Set<String> hashtags) {
@@ -251,17 +263,5 @@ public class Study extends BaseEntity {
 
     public List<Review> getReviews() {
         return reviews.getReviews();
-    }
-
-    public void update(StudyName name, Description description, int capacity, Category category, StudyType type,
-                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
-        this.name = name;
-        this.description = description;
-        this.participants.updateCapacity(capacity);
-        this.category = category;
-        this.type = type;
-        this.area = (type == OFFLINE) ? StudyArea.of(province, city) : null;
-        this.recruitmentStatus = recruitmentStatus;
-        applyHashtags(hashtags);
     }
 }
