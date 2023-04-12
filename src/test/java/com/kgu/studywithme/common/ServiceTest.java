@@ -4,6 +4,7 @@ import com.kgu.studywithme.auth.domain.TokenRepository;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
 import com.kgu.studywithme.favorite.domain.FavoriteRepository;
 import com.kgu.studywithme.member.domain.MemberRepository;
+import com.kgu.studywithme.member.domain.report.ReportRepository;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
@@ -42,6 +43,9 @@ public class ServiceTest {
 
     @Autowired
     protected ReviewRepository reviewRepository;
+
+    @Autowired
+    protected ReportRepository reportRepository;
 
     @AfterEach
     void clearDatabase() {
