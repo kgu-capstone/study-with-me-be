@@ -50,3 +50,12 @@ include::{snippets}/StudyApi/Information/Notice/Success/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Information/Notice/Success/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Notice/Success/response-fields.adoc[]
+
+== 스터디 신청자
+HTTP Request
+include::{snippets}/StudyApi/Information/Applicants/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Applicants/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/response-fields.adoc[]

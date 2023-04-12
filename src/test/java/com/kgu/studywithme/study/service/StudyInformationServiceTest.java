@@ -9,10 +9,8 @@ import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
-import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
-import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
-import com.kgu.studywithme.study.service.dto.response.StudyInformation;
-import com.kgu.studywithme.study.service.dto.response.StudyMember;
+import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
+import com.kgu.studywithme.study.service.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,11 +47,6 @@ class StudyInformationServiceTest extends ServiceTest {
         members[2] = memberRepository.save(DUMMY3.toMember());
         members[3] = memberRepository.save(DUMMY4.toMember());
         members[4] = memberRepository.save(DUMMY5.toMember());
-
-        for (Member member : members) {
-            study.applyParticipation(member);
-            study.approveParticipation(member);
-        }
     }
 
     @Test
@@ -86,6 +79,7 @@ class StudyInformationServiceTest extends ServiceTest {
     @DisplayName("스터디 졸업자들의 리뷰를 조회한다")
     void getReviews() {
         // given
+        applyAndApproveMembers();
         graduateAllParticipant();
         
         // when
@@ -112,7 +106,7 @@ class StudyInformationServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("스터디의 공지사항 관련 정보를 조회한다")
+    @DisplayName("스터디 공지사항 & 댓글 정보들을 조회한다")
     void getNotices() {
         // given
         initNotices();
@@ -135,6 +129,30 @@ class StudyInformationServiceTest extends ServiceTest {
         assertThatNoticeInformationMatch(result.get(2), notices[0], commentWriters.get(0));
     }
 
+    @Test
+    @DisplayName("스터디 신청자 정보를 조회한다")
+    void getApplicants() {
+        StudyApplicant result1 = studyInformationService.getApplicants(study.getId());
+        assertThatApplicantsMatch(result1.applicants(), List.of());
+
+        /* 신청자 3명 */
+        study.applyParticipation(members[0]);
+        study.applyParticipation(members[1]);
+        study.applyParticipation(members[2]);
+
+        StudyApplicant result2 = studyInformationService.getApplicants(study.getId());
+        assertThatApplicantsMatch(result2.applicants(), List.of(members[2], members[1], members[0]));
+
+        /* 추가 2명 신청 & 2명 승인 */
+        study.applyParticipation(members[3]);
+        study.applyParticipation(members[4]);
+        study.approveParticipation(members[0]);
+        study.approveParticipation(members[2]);
+
+        StudyApplicant result3 = studyInformationService.getApplicants(study.getId());
+        assertThatApplicantsMatch(result3.applicants(), List.of(members[4], members[3], members[1]));
+    }
+
     private List<Integer> getMemberAgeList() {
         List<Integer> list = new ArrayList<>();
         list.add(Period.between(host.getBirth(), LocalDate.now()).getYears());
@@ -144,6 +162,13 @@ class StudyInformationServiceTest extends ServiceTest {
         }
 
         return list;
+    }
+
+    private void applyAndApproveMembers() {
+        for (Member member : members) {
+            study.applyParticipation(member);
+            study.approveParticipation(member);
+        }
     }
 
     private void graduateAllParticipant() {
@@ -175,25 +200,33 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.getWriter().nickname()).isEqualTo(host.getNicknameValue())
         );
 
-        final int totalSize = members.size();
-        List<Long> ids = members.stream()
-                .map(Member::getId)
-                .toList();
-        List<String> nicknames = members.stream()
-                .map(Member::getNicknameValue)
-                .toList();
-
+        final int totalCommentsSize = members.size();
         List<CommentInformation> comments = information.getComments();
-        assertAll(
-                () -> assertThat(comments).hasSize(totalSize),
-                () -> assertThat(comments)
-                        .map(CommentInformation::getWriter)
-                        .map(StudyMember::id)
-                        .containsAll(ids),
-                () -> assertThat(comments)
-                        .map(CommentInformation::getWriter)
-                        .map(StudyMember::nickname)
-                        .containsAll(nicknames)
-        );
+        assertThat(comments).hasSize(totalCommentsSize);
+
+        for (int i = 0; i < totalCommentsSize; i++) {
+            CommentInformation comment = comments.get(i);
+            Member member = members.get(i);
+
+            assertAll(
+                    () -> assertThat(comment.getWriter().id()).isEqualTo(member.getId()),
+                    () -> assertThat(comment.getWriter().nickname()).isEqualTo(member.getNicknameValue())
+            );
+        }
+    }
+
+    private void assertThatApplicantsMatch(List<StudyApplicantInformation> result, List<Member> members) {
+        final int totalSize = members.size();
+        assertThat(result).hasSize(totalSize);
+
+        for (int i = 0; i < totalSize; i++) {
+            StudyApplicantInformation information = result.get(i);
+            Member member = members.get(i);
+
+            assertAll(
+                    () -> assertThat(information.getId()).isEqualTo(member.getId()),
+                    () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue())
+            );
+        }
     }
 }
