@@ -1,12 +1,12 @@
-= 스터디 정보수정 API
+= 스터디 정보 수정 API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 2
 
-== 스터디 정보수정
-=== 1. Authorization Header에 AccessToken이 없으면 스터디 정보수정을 실패한다
+== 스터디 정보 수정
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case1/path-parameters.adoc[]
@@ -15,7 +15,7 @@ include::{snippets}/StudyApi/Update/Failure/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case1/response-body.adoc[]
 
-=== 2. 스터디 팀장이 아니라면 정보를 수정할 수 없다
+=== 2. 다른 스터디가 사용하고 있는 스터디명이라면 정보를 수정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case2/request-headers.adoc[]
@@ -25,7 +25,7 @@ include::{snippets}/StudyApi/Update/Failure/Case2/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case2/response-body.adoc[]
 
-=== 3. 최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다
+=== 3. 스터디 팀장이 아니라면 정보를 수정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case3/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case3/request-headers.adoc[]
@@ -35,7 +35,17 @@ include::{snippets}/StudyApi/Update/Failure/Case3/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case3/response-body.adoc[]
 
-=== 4. 정보 수정에 성공한다 - 온라인
+=== 4. 최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Update/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case4/path-parameters.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case4/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Update/Failure/Case4/response-body.adoc[]
+
+=== 5. 정보 수정에 성공한다 - 온라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case1/request-headers.adoc[]
@@ -45,7 +55,7 @@ include::{snippets}/StudyApi/Update/Success/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Success/Case1/http-response.adoc[]
 
-=== 5. 정보 수정에 성공한다 - 오프라인
+=== 6. 정보 수정에 성공한다 - 오프라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case2/request-headers.adoc[]

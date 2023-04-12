@@ -27,9 +27,9 @@ public class StudyApiController {
 
     @PatchMapping("/studies/{studyId}")
     public ResponseEntity<Void> update(@PathVariable Long studyId,
-                                       @RequestBody @Valid StudyUpdateRequest request,
-                                       @ExtractPayload Long hostId) {
-        studyService.update(studyId, request, hostId);
+                                       @ExtractPayload Long hostId,
+                                       @RequestBody @Valid StudyUpdateRequest request) {
+        studyService.update(studyId, hostId, request);
         return ResponseEntity.noContent().build();
     }
 }

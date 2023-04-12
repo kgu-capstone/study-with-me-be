@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 public record StudyUpdateRequest (
-        @NotBlank(message = "이름은 필수입니다.")
+        @NotBlank(message = "스터디명은 필수입니다.")
         String name,
 
-        @NotBlank(message = "설명은 필수입니다.")
+        @NotBlank(message = "스터디 설명은 필수입니다.")
         String description,
 
         @NotNull(message = "참여인원은 필수입니다.")
@@ -26,7 +26,7 @@ public record StudyUpdateRequest (
 
         String city,
 
-        boolean status,
+        boolean recruitmentStatus,
 
         Set<String> hashtags
 ) {

@@ -275,4 +275,35 @@ class ParticipantsTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("스터디 최대인원 수정")
+    class updateCapacity {
+        @Test
+        @DisplayName("현재 참여인원보다 작은 값으로 Capacity를 수정할 수 없다")
+        void failure() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+            participants.apply(STUDY, PARTICIPANT);
+            participants.approve(PARTICIPANT);
+
+            // when - then
+            assertThatThrownBy(() -> participants.updateCapacity(1))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS.getMessage());
+        }
+
+        @Test
+        @DisplayName("Capacity 수정에 성공한다")
+        void success() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+
+            // when
+            participants.updateCapacity(2);
+
+            // then
+            assertThat(participants.getCapacity().getValue()).isEqualTo(2);
+        }
+    }
 }

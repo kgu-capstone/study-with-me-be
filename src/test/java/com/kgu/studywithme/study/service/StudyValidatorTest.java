@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -38,15 +39,31 @@ class StudyValidatorTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("스터디 이름 중복에 대한 검증을 진행한다")
-    void validateName() {
+    @DisplayName("스터디 이름 중복에 대한 검증을 진행한다 [스터디 생성 과정]")
+    void validateUniqueNameForCreate() {
         final StudyName same = study.getName();
         final StudyName diff = StudyName.from("diff" + same.getValue());
 
-        assertThatThrownBy(() -> studyValidator.validateName(same))
+        assertThatThrownBy(() -> studyValidator.validateUniqueNameForCreate(same))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
-        assertDoesNotThrow(() -> studyValidator.validateName(diff));
+        assertDoesNotThrow(() -> studyValidator.validateUniqueNameForCreate(diff));
+    }
+
+    @Test
+    @DisplayName("스터디 이름 중복에 대한 검증을 진행한다 [스터디 수정 과정]")
+    void validateName() {
+        // given
+        Study another = studyRepository.save(SPRING.toOnlineStudy(host));
+
+        // when - then
+        final StudyName otherName = another.getName();
+        final StudyName myName = study.getName();
+
+        assertThatThrownBy(() -> studyValidator.validateUniqueNameForUpdate(otherName, study.getId()))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
+        assertDoesNotThrow(() -> studyValidator.validateUniqueNameForUpdate(myName, study.getId()));
     }
     
     @Test

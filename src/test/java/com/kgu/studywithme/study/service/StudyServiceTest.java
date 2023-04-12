@@ -62,8 +62,8 @@ class StudyServiceTest extends ServiceTest {
             Long offlineStudyId = studyService.register(offlineRequest, host.getId());
 
             // then
-            Study onlineStudy = studyRepository.findByIdWithHost(onlineStudyId).orElseThrow();
-            Study offlineStudy = studyRepository.findByIdWithHost(offlineStudyId).orElseThrow();
+            Study onlineStudy = studyRepository.findById(onlineStudyId).orElseThrow();
+            Study offlineStudy = studyRepository.findById(offlineStudyId).orElseThrow();
             assertAll(
                     () -> assertThat(onlineStudy.getNameValue()).isEqualTo(onlineRequest.name()),
                     () -> assertThat(onlineStudy.getArea()).isNull(),
@@ -74,7 +74,7 @@ class StudyServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("정보 수정")
+    @DisplayName("스터디 정보 수정")
     class update {
         private Study onlineStudy;
         private Study offlineStudy;
@@ -94,11 +94,23 @@ class StudyServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("다른 스터디가 사용하고 있는 스터디명으로 수정할 수 없다")
+        void duplicateName() {
+            StudyUpdateRequest request = StudyUpdateRequest.builder()
+                    .name(offlineStudy.getNameValue())
+                    .build();
+
+            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), member.getId(), request))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
+        }
+
+        @Test
         @DisplayName("스터디 팀장이 아니면 스터디 정보를 수정할 수 없다")
         void memberIsNotHost() {
-            StudyUpdateRequest request = generateRequestOff(5);
+            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(5);
 
-            assertThatThrownBy(() -> studyService.update(offlineStudy.getId(), request, member.getId()))
+            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), member.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -106,74 +118,64 @@ class StudyServiceTest extends ServiceTest {
         @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
         void capacityLessThanMembers() {
-            StudyUpdateRequest request = generateRequestOff(1);
+            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(1);
 
-            assertThatThrownBy(() -> studyService.update(offlineStudy.getId(), request, host.getId()))
+            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS.getMessage());
         }
 
         @Test
         @DisplayName("스터디 정보 수정에 성공한다 - 온라인")
-        void successOn() {
+        void successOnlineStudyUpdate() {
             // given
-            StudyUpdateRequest request = generateRequestOn(5);
+            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(5);
 
             // when
-            studyService.update(onlineStudy.getId(), request, host.getId());
+            studyService.update(onlineStudy.getId(), host.getId(), request);
 
             // then
+            Study findStudy = studyRepository.findById(onlineStudy.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(onlineStudy.getNameValue()).isEqualTo(request.name()),
-                    () -> assertThat(onlineStudy.getDescriptionValue()).isEqualTo(request.description()),
-                    () -> assertThat(onlineStudy.getCategory().getId()).isEqualTo(request.category()),
-                    () -> assertThat(onlineStudy.getType().getDescription()).isEqualTo(request.type()),
-                    () -> assertThat(onlineStudy.getArea()).isNull(),
-                    () -> assertThat(onlineStudy.isRecruitmentComplete()).isEqualTo(request.status()),
-                    () -> assertThat(onlineStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
-                    () -> assertThat(onlineStudy.getHashtags().stream().toList()).containsAll(request.hashtags())
+                    () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
+                    () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
+                    () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
+                    () -> assertThat(findStudy.getType().getDescription()).isEqualTo(request.type()),
+                    () -> assertThat(findStudy.getArea()).isNull(),
+                    () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
+                    () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
+                    () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
+                    () -> assertThat(findStudy.getHashtags()).containsExactlyElementsOf(request.hashtags())
             );
         }
 
         @Test
         @DisplayName("스터디 정보 수정에 성공한다 - 오프라인")
-        void successOff() {
+        void successOfflineStudyUpdate() {
             // given
-            StudyUpdateRequest request = generateRequestOff(5);
+            StudyUpdateRequest request = generateOfflineStudyUpdateRequest(5);
 
             // when
-            studyService.update(offlineStudy.getId(), request, host.getId());
+            studyService.update(offlineStudy.getId(), host.getId(), request);
 
             // then
+            Study findStudy = studyRepository.findById(offlineStudy.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(offlineStudy.getNameValue()).isEqualTo(request.name()),
-                    () -> assertThat(offlineStudy.getDescriptionValue()).isEqualTo(request.description()),
-                    () -> assertThat(offlineStudy.getCategory().getId()).isEqualTo(request.category()),
-                    () -> assertThat(offlineStudy.getType().getDescription()).isEqualTo(request.type()),
-                    () -> assertThat(offlineStudy.getArea().getProvince()).isEqualTo(request.province()),
-                    () -> assertThat(offlineStudy.getArea().getCity()).isEqualTo(request.city()),
-                    () -> assertThat(offlineStudy.isRecruitmentComplete()).isEqualTo(request.status()),
-                    () -> assertThat(offlineStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
-                    () -> assertThat(offlineStudy.getHashtags().stream().toList()).containsAll(request.hashtags())
+                    () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
+                    () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
+                    () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
+                    () -> assertThat(findStudy.getType().getDescription()).isEqualTo(request.type()),
+                    () -> assertThat(findStudy.getArea().getProvince()).isEqualTo(request.province()),
+                    () -> assertThat(findStudy.getArea().getCity()).isEqualTo(request.city()),
+                    () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
+                    () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
+                    () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
+                    () -> assertThat(findStudy.getHashtags()).containsExactlyElementsOf(request.hashtags())
             );
         }
     }
 
-    public StudyUpdateRequest generateRequestOff(Integer capacity) {
-        return StudyUpdateRequest.builder()
-                .name(KAKAO_INTERVIEW.name())
-                .description(KAKAO_INTERVIEW.getDescription())
-                .category(KAKAO_INTERVIEW.getCategory().getId())
-                .capacity(capacity)
-                .type(KAKAO_INTERVIEW.getType().getDescription())
-                .province(KAKAO_INTERVIEW.getArea().getProvince())
-                .city(KAKAO_INTERVIEW.getArea().getCity())
-                .status(false)
-                .hashtags(KAKAO_INTERVIEW.getHashtags())
-                .build();
-    }
-
-    public StudyUpdateRequest generateRequestOn(Integer capacity) {
+    public StudyUpdateRequest generateOnlineStudyUpdateRequest(Integer capacity) {
         return StudyUpdateRequest.builder()
                 .name(JAPANESE.name())
                 .description(JAPANESE.getDescription())
@@ -182,8 +184,22 @@ class StudyServiceTest extends ServiceTest {
                 .type(JAPANESE.getType().getDescription())
                 .province(null)
                 .city(null)
-                .status(false)
+                .recruitmentStatus(true)
                 .hashtags(JAPANESE.getHashtags())
+                .build();
+    }
+
+    public StudyUpdateRequest generateOfflineStudyUpdateRequest(Integer capacity) {
+        return StudyUpdateRequest.builder()
+                .name(GOOGLE_INTERVIEW.name())
+                .description(GOOGLE_INTERVIEW.getDescription())
+                .category(GOOGLE_INTERVIEW.getCategory().getId())
+                .capacity(capacity)
+                .type(GOOGLE_INTERVIEW.getType().getDescription())
+                .province(GOOGLE_INTERVIEW.getArea().getProvince())
+                .city(GOOGLE_INTERVIEW.getArea().getCity())
+                .recruitmentStatus(true)
+                .hashtags(GOOGLE_INTERVIEW.getHashtags())
                 .build();
     }
 }
