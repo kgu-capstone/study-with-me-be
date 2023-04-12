@@ -85,7 +85,7 @@ public abstract class ControllerTest {
     protected ParticipationService participationService;
 
     @MockBean
-    protected StudyRegisterService studyRegisterService;
+    protected StudyService studyService;
 
     @MockBean
     protected FavoriteManageService favoriteManageService;

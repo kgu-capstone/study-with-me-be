@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.StudyFixture.JPA;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -63,6 +64,23 @@ class StudyRepositoryTest extends RepositoryTest {
         // when
         boolean actual1 = studyRepository.existsByName(study.getName());
         boolean actual2 = studyRepository.existsByName(StudyName.from(study.getNameValue() + "diff"));
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isTrue(),
+                () -> assertThat(actual2).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("해당 스터디명을 사용하는 다른 스터디가 존재하는지 확인한다")
+    void existsByNameAndIdNot() {
+        // given
+        Study another = studyRepository.save(JPA.toOnlineStudy(host));
+
+        // when
+        boolean actual1 = studyRepository.existsByNameAndIdNot(another.getName(), study.getId());
+        boolean actual2 = studyRepository.existsByNameAndIdNot(another.getName(), another.getId());
 
         // then
         assertAll(

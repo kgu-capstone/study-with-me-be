@@ -2,28 +2,34 @@ package com.kgu.studywithme.study.controller;
 
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
-import com.kgu.studywithme.study.service.StudyRegisterService;
+import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
+import com.kgu.studywithme.study.service.StudyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/study")
+@RequestMapping("/api")
 public class StudyApiController {
-    private final StudyRegisterService studyRegisterService;
+    private final StudyService studyService;
 
-    @PostMapping
+    @PostMapping("/study")
     public ResponseEntity<Void> register(@RequestBody @Valid StudyRegisterRequest request, @ExtractPayload Long hostId) {
-        Long savedStudyId = studyRegisterService.register(request, hostId);
+        Long savedStudyId = studyService.register(request, hostId);
         return ResponseEntity
                 .created(UriComponentsBuilder.fromPath("/api/studies/{id}").build(savedStudyId))
                 .build();
+    }
+
+    @PatchMapping("/studies/{studyId}")
+    public ResponseEntity<Void> update(@PathVariable Long studyId,
+                                       @ExtractPayload Long hostId,
+                                       @RequestBody @Valid StudyUpdateRequest request) {
+        studyService.update(studyId, hostId, request);
+        return ResponseEntity.noContent().build();
     }
 }
