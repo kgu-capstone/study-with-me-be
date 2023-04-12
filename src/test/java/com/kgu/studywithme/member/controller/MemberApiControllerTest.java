@@ -13,9 +13,12 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
+import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.member.controller.utils.SignUpRequestUtils.createSignUpRequest;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
@@ -269,6 +272,20 @@ class MemberApiControllerTest extends ControllerTest {
                             )
                     );
         }
+    }
+
+    private SignUpRequest createSignUpRequest() {
+        return SignUpRequest.builder()
+                .name(JIWON.getName())
+                .nickname(JIWON.getNickname())
+                .email(JIWON.getEmail())
+                .birth(JIWON.getBirth())
+                .phone("01012345678")
+                .gender("M")
+                .province(JIWON.getProvince())
+                .city(JIWON.getCity())
+                .categories(List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId()))
+                .build();
     }
 
     private MemberReportRequest createReportRequest() {
