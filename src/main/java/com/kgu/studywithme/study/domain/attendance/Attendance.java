@@ -44,4 +44,8 @@ public class Attendance {
     public static Attendance recordAttendance(int week, AttendanceStatus status, Study study, Member participant) {
         return new Attendance(week, status, study, participant);
     }
+
+    public void updateAttendanceStatus(String status) {
+        this.status = AttendanceStatus.fromDescription(status);
+    }
 }

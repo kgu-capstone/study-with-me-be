@@ -1,7 +1,7 @@
 package com.kgu.studywithme.member.controller;
 
 import com.kgu.studywithme.global.annotation.ExtractPayload;
-import com.kgu.studywithme.global.annotation.ValidMember;
+import com.kgu.studywithme.global.annotation.CheckMemberIdentity;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
@@ -18,28 +18,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberInformationApiController {
     private final MemberInformationService memberInformationService;
 
-    @ValidMember
+    @CheckMemberIdentity
     @GetMapping
     public ResponseEntity<MemberInformation> getInformation(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         MemberInformation response = memberInformationService.getInformation(memberId);
         return ResponseEntity.ok(response);
     }
 
-    @ValidMember
+    @CheckMemberIdentity
     @GetMapping("/studies/participate")
     public ResponseEntity<RelatedStudy> getParticipateStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         RelatedStudy response = memberInformationService.getParticipateStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
-    @ValidMember
+    @CheckMemberIdentity
     @GetMapping("/studies/graduated")
     public ResponseEntity<RelatedStudy> getGraduatedStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
-    @ValidMember
+    @CheckMemberIdentity
     @GetMapping("/studies/favorite")
     public ResponseEntity<RelatedStudy> getFavoriteStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         RelatedStudy response = memberInformationService.getFavoriteStudy(memberId);

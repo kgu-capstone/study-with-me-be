@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ABSENCE;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -36,5 +35,18 @@ class AttendanceTest {
                 () -> assertThat(attendanceParticipant.getStudy()).isEqualTo(STUDY),
                 () -> assertThat(attendanceParticipant.getParticipant()).isEqualTo(PARTICIPANT)
         );
+    }
+
+    @Test
+    @DisplayName("Attendance의 status를 변경한다")
+    void updateAttendanceStatus() {
+        // given
+        Attendance attendance = Attendance.recordAttendance(1, ATTENDANCE, STUDY, HOST);
+
+        // when
+        attendance.updateAttendanceStatus(LATE.getDescription());
+
+        // then
+        assertThat(attendance.getStatus()).isEqualTo(LATE);
     }
 }
