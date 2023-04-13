@@ -2,6 +2,7 @@ package com.kgu.studywithme.study.controller;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
+import com.kgu.studywithme.fixture.MemberFixture;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.Nickname;
 import com.kgu.studywithme.study.domain.Study;
@@ -156,26 +157,30 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Member host = JIWON.toMember();
-            Member memberA = DUMMY1.toMember();
-            Member memberB = DUMMY2.toMember();
-            setIdByReflection(host, 1L);
-            setIdByReflection(memberA, 2L);
-            setIdByReflection(memberB, 3L);
+            Member host = createMember(JIWON, 1L);
+            Member memberA = createMember(DUMMY1, 2L);
+            Member memberB = createMember(DUMMY2, 2L);
             given(memberFindService.findById(1L)).willReturn(host);
             given(memberFindService.findById(2L)).willReturn(memberA);
             given(memberFindService.findById(3L)).willReturn(memberB);
 
-            Study study = SPRING.toOnlineStudy(host);
-            setIdByReflection(study, 1L);
+            Study study = createSpringStudy(host, 1L);
             given(studyFindService.findById(1L)).willReturn(study);
 
             study.applyParticipation(memberA);
             study.approveParticipation(memberA);
         }
 
-        private void setIdByReflection(Object object, Long id) {
-            ReflectionTestUtils.setField(object, "id", id);
+        private Member createMember(MemberFixture fixture, Long id) {
+            Member member = fixture.toMember();
+            ReflectionTestUtils.setField(member, "id", id);
+            return member;
+        }
+
+        private Study createSpringStudy(Member host, Long id) {
+            Study study = SPRING.toOnlineStudy(host);
+            ReflectionTestUtils.setField(study, "id", id);
+            return study;
         }
 
         @Test

@@ -19,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class AttendanceRepositoryTest extends RepositoryTest {
     @Autowired
     private AttendanceRepository attendanceRepository;
+
     @Autowired
     private StudyRepository studyRepository;
+
     @Autowired
     private MemberRepository memberRepository;
 
