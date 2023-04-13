@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class ValidMemberAspect {
-    @Before("@annotation(com.kgu.studywithme.global.annotation.ValidMember) && args(memberId, payloadId)")
+public class CheckMemberIdentityAspect {
+    @Before("@annotation(com.kgu.studywithme.global.annotation.CheckMemberIdentity) && args(memberId, payloadId, ..)")
     public void checkPayloadId(Long memberId, Long payloadId) {
         if (isAnonymousMember(memberId, payloadId)) {
             throw StudyWithMeException.type(AuthErrorCode.INVALID_PERMISSION);
