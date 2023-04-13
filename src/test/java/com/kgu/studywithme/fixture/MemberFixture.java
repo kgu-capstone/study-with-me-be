@@ -74,7 +74,7 @@ public enum MemberFixture {
         String first = "010";
         String second = String.valueOf((int) (Math.random() * 9000 + 1000));
         String third = String.valueOf((int) (Math.random() * 9000 + 1000));
-        return String.join("-", first, second, third);
+        return String.join(first, second, third);
     }
 
     public LoginResponse toLoginResponse() {
