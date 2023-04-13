@@ -19,9 +19,11 @@ import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberService;
 import com.kgu.studywithme.study.controller.*;
+import com.kgu.studywithme.study.controller.attendance.AttendanceApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
 import com.kgu.studywithme.study.service.*;
+import com.kgu.studywithme.study.service.attendance.AttendanceService;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import com.kgu.studywithme.study.service.notice.NoticeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         CategoryApiController.class, StudyParticipationApiController.class, StudyApiController.class,
         FavoriteApiController.class, StudySearchApiController.class, StudyInformationApiController.class,
         StudyNoticeApiController.class, MemberInformationApiController.class, StudyNoticeCommentApiController.class,
-        StudyReviewApiController.class
+        StudyReviewApiController.class, AttendanceApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
@@ -113,6 +115,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected StudyReviewService studyReviewService;
+
+    @MockBean
+    protected AttendanceService attendanceService;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {

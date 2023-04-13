@@ -6,6 +6,7 @@ import com.kgu.studywithme.favorite.domain.FavoriteRepository;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.member.domain.report.ReportRepository;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import com.kgu.studywithme.study.domain.review.ReviewRepository;
@@ -46,6 +47,9 @@ public class ServiceTest {
 
     @Autowired
     protected ReportRepository reportRepository;
+
+    @Autowired
+    protected AttendanceRepository attendanceRepository;
 
     @AfterEach
     void clearDatabase() {

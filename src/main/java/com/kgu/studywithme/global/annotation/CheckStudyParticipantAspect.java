@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class ValidStudyParticipantAspect {
+public class CheckStudyParticipantAspect {
     private final StudyFindService studyFindService;
     private final MemberFindService memberFindService;
 
-    @Before("@annotation(com.kgu.studywithme.global.annotation.ValidStudyParticipant) && args(studyId, memberId)")
+    @Before("@annotation(com.kgu.studywithme.global.annotation.CheckStudyParticipant) && args(studyId, memberId, ..)")
     public void checkParticipant(Long studyId, Long memberId) {
         Study study = studyFindService.findById(studyId);
         Member member = memberFindService.findById(memberId);
