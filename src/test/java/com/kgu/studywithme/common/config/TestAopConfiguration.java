@@ -1,7 +1,7 @@
 package com.kgu.studywithme.common.config;
 
 import com.kgu.studywithme.global.annotation.CheckMemberIdentityAspect;
-import com.kgu.studywithme.global.annotation.ValidStudyParticipantAspect;
+import com.kgu.studywithme.global.annotation.CheckStudyParticipantAspect;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.service.StudyFindService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class TestAopConfiguration {
     }
 
     @Bean
-    public ValidStudyParticipantAspect validStudyParticipantAspect() {
-        return new ValidStudyParticipantAspect(studyFindService, memberFindService);
+    public CheckStudyParticipantAspect checkStudyParticipantAspect() {
+        return new CheckStudyParticipantAspect(studyFindService, memberFindService);
     }
 }
