@@ -3,8 +3,6 @@ package com.kgu.studywithme.study.service.attendance;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.study.controller.dto.request.AttendanceRequest;
-import com.kgu.studywithme.study.controller.utils.AttendanceRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
@@ -30,7 +28,9 @@ class AttendanceServiceTest extends ServiceTest {
     private Member host;
     private Member member;
     private Study study;
-    private AttendanceRequest request;
+
+    private static final String STATUS = AttendanceStatus.LATE.getDescription();
+    private static final Integer WEEK = 1;
 
     @BeforeEach
     void setUp() {
@@ -40,8 +40,6 @@ class AttendanceServiceTest extends ServiceTest {
         study = studyRepository.save(TOEIC.toOnlineStudy(host));
         study.applyParticipation(member);
         study.approveParticipation(member);
-
-        request = AttendanceRequestUtils.createAttendanceRequest();
 
         attendanceRepository.save(Attendance.recordAttendance(1, AttendanceStatus.NON_ATTENDANCE, study, host));
         attendanceRepository.save(Attendance.recordAttendance(1, AttendanceStatus.NON_ATTENDANCE, study, member));
@@ -53,7 +51,7 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
         void memberIsNotHost() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), member.getId(), request.status(), request.week()))
+            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), member.getId(), STATUS, WEEK))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -61,7 +59,7 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("해당 사용자의 출석 정보가 존재하지 않는다")
         void attendanceNotFound() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), request.status(), 2))
+            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), STATUS, WEEK+1))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ATTENDANCE_NOT_FOUND.getMessage());
         }
@@ -69,14 +67,14 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("수동 출석 체크에 성공한다")
         void success() {
-            attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), request.status(), request.week());
+            attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), STATUS, WEEK);
 
-            Attendance findAttendance = attendanceRepository.findByStudyAndParticipantAndWeek(study, member, request.week())
+            Attendance findAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), member.getId(), WEEK)
                     .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND));
 
             assertAll(
-                    () -> assertThat(findAttendance.getStatus().getDescription()).isEqualTo(request.status()),
-                    () -> assertThat(findAttendance.getWeek()).isEqualTo(request.week().intValue())
+                    () -> assertThat(findAttendance.getStatus().getDescription()).isEqualTo(STATUS),
+                    () -> assertThat(findAttendance.getWeek()).isEqualTo(WEEK)
             );
         }
     }

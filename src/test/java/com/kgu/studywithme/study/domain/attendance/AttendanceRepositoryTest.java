@@ -38,7 +38,7 @@ public class AttendanceRepositoryTest extends RepositoryTest {
     @Test
     @DisplayName("스터디, 참여자, 주차로 출석 정보를 조회한다")
     void findByStudyAndParticipantAndWeek() {
-        Attendance findAttendance = attendanceRepository.findByStudyAndParticipantAndWeek(study, host, 1).orElseThrow();
+        Attendance findAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1).orElseThrow();
 
         assertAll(
                 () -> assertThat(findAttendance.getStudy()).isEqualTo(study),

@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Arrays;
+
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ABSENCE;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,7 +48,14 @@ public class Attendance {
         return new Attendance(week, status, study, participant);
     }
 
-    public void updateAttendanceStatus(AttendanceStatus status) {
-        this.status = status;
+    public static AttendanceStatus fromDescription(String description) {
+        return Arrays.stream(AttendanceStatus.values())
+                .filter(status -> status.getDescription().equals(description))
+                .findFirst()
+                .orElse(ABSENCE);
+    }
+
+    public void updateAttendanceStatus(String status) {
+        this.status = fromDescription(status);
     }
 }
