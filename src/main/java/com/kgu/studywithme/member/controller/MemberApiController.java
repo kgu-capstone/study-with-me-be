@@ -25,11 +25,11 @@ public class MemberApiController {
                 .build();
     }
 
-    @PostMapping("/members/{memberId}/report")
-    public ResponseEntity<Void> report(@PathVariable Long memberId,
+    @PostMapping("/members/{reporteeId}/report")
+    public ResponseEntity<Void> report(@PathVariable Long reporteeId,
                                        @ExtractPayload Long reporterId,
                                        @RequestBody @Valid MemberReportRequest request) {
-        memberService.report(memberId, reporterId, request.reason());
+        memberService.report(reporteeId, reporterId, request.reason());
         return ResponseEntity.noContent().build();
     }
 }

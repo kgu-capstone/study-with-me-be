@@ -140,9 +140,9 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자 신고 API [POST /api/members/{memberId}/report]")
+    @DisplayName("사용자 신고 API [POST /api/members/{reporteeId}/report]")
     class report {
-        private static final String BASE_URL = "/api/members/{memberId}/report";
+        private static final String BASE_URL = "/api/members/{reporteeId}/report";
         private static final Long REPORTEE_ID = 1L;
 
         @Test
@@ -170,7 +170,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("신고 대상자 ID(PK)")
+                                            parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -220,7 +220,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("신고 대상자 ID(PK)")
+                                            parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("reason").description("신고 사유")
@@ -264,7 +264,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("신고 대상자 ID(PK)")
+                                            parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("reason").description("신고 사유")
