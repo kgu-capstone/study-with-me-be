@@ -587,7 +587,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("사용자에 대한 PeerReview 리스트 조회에 성공한다")
+        @DisplayName("사용자에 대한 PeerReview 조회에 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -609,6 +609,9 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/PeerReview/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
                                     pathParameters(
                                             parameterWithName("memberId").description("PeerReview를 조회할 사용자 ID(PK)")
                                     ),

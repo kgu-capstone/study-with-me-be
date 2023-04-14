@@ -21,7 +21,7 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
     private MemberRepository memberRepository;
 
     @Test
-    @DisplayName("사용자의 PeerReview 리스트를 조회한다")
+    @DisplayName("사용자의 PeerReview를 조회한다")
     void findContentByRevieweeId() {
         // given
         Member reviewee = memberRepository.save(JIWON.toMember());
