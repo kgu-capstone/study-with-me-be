@@ -1,6 +1,7 @@
 package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.domain.review.PeerReviewRepository;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,7 +44,11 @@ public class MemberInformationService {
     }
 
     public PeerReviewAssembler getPeerReviews(Long memberId) {
-        List<String> peerReviews = peerReviewRepository.findContentByRevieweeId(memberId);
-        return new PeerReviewAssembler(peerReviews);
+        List<PeerReview> peerReviews = peerReviewRepository.findPeerReviewByRevieweeId(memberId);
+        List<String> reviewContents = peerReviews.stream()
+                .map(PeerReview::getContent)
+                .collect(Collectors.toList());
+        
+        return new PeerReviewAssembler(reviewContents);
     }
 }
