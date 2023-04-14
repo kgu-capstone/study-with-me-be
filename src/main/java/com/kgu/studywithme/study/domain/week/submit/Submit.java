@@ -1,8 +1,8 @@
-package com.kgu.studywithme.study.domain.assignment.submit;
+package com.kgu.studywithme.study.domain.week.submit;
 
 import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.study.domain.assignment.Assignment;
+import com.kgu.studywithme.study.domain.week.Week;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,20 +24,20 @@ public class Submit extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "assignment_id", referencedColumnName = "id", nullable = false)
-    private Assignment assignment;
+    private Week week;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "participant_id", referencedColumnName = "id", nullable = false)
     private Member participant;
 
     @Builder
-    private Submit(Assignment assignment, Member participant, Upload upload) {
-        this.assignment = assignment;
+    private Submit(Week week, Member participant, Upload upload) {
+        this.week = week;
         this.participant = participant;
         this.upload = upload;
     }
 
-    public static Submit submitAssignment(Assignment assignment, Member participant, Upload upload) {
-        return new Submit(assignment, participant, upload);
+    public static Submit submitAssignment(Week week, Member participant, Upload upload) {
+        return new Submit(week, participant, upload);
     }
 }
