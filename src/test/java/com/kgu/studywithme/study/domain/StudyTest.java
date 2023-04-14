@@ -4,18 +4,17 @@ import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.notice.Notice;
-import com.kgu.studywithme.study.domain.week.Period;
+import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.IN_PROGRESS;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.LATE;
@@ -475,22 +474,24 @@ class StudyTest {
     @DisplayName("스터디 주차 등록 [과제 X]")
     class createWeek {
         private Study study;
-        private static final Period WEEK_1 = Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
-        private static final Period WEEK_2 = Period.of(LocalDateTime.now().plusDays(8), LocalDateTime.now().plusDays(14));
+        private Week week1;
+        private Week week2;
 
         @BeforeEach
         void setUp() {
             study = SPRING.toOnlineStudy(HOST);
+            week1 = STUDY_WEEKLY_5.toWeek(study);
+            week2 = STUDY_WEEKLY_6.toWeek(study);
         }
 
         @Test
         @DisplayName("이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다")
         void failureByAlreadyRegisterPerWeek() {
             // given
-            study.createWeek("Week 1", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_1);
+            study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments());
 
             // when - then
-            assertThatThrownBy(() -> study.createWeek("Week 2", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_2))
+            assertThatThrownBy(() -> study.createWeek(week2.getTitle(), week2.getContent(), week1.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_WEEK_CREATED.getMessage());
         }
@@ -499,10 +500,10 @@ class StudyTest {
         @DisplayName("주차 등록에 성공한다")
         void success() {
             // given
-            study.createWeek("Week 1", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_1);
+            study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments());
 
             // when
-            study.createWeek("Week 2", "지정된 시간까지 줌으로 접속해주세요", 2, WEEK_2);
+            study.createWeek(week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments());
 
             // then
             assertThat(study.getWeekly().getCount()).isEqualTo(2);
@@ -513,22 +514,31 @@ class StudyTest {
     @DisplayName("스터디 주차 등록 [과제 O]")
     class createWeekWithAssignment {
         private Study study;
-        private static final Period WEEK_1 = Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
-        private static final Period WEEK_2 = Period.of(LocalDateTime.now().plusDays(8), LocalDateTime.now().plusDays(14));
+        private Week week1;
+        private Week week2;
 
         @BeforeEach
         void setUp() {
             study = SPRING.toOnlineStudy(HOST);
+            week1 = STUDY_WEEKLY_1.toWeekWithAssignment(study);
+            week2 = STUDY_WEEKLY_2.toWeekWithAssignment(study);
         }
 
         @Test
         @DisplayName("이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다")
         void failureByAlreadyRegisterPerWeek() {
             // given
-            study.createWeekWithAssignment("Week 1", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_1, true, true);
+            study.createWeekWithAssignment(
+                    week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(),
+                    true, true, STUDY_WEEKLY_1.getAttachments()
+            );
+            ;
 
             // when - then
-            assertThatThrownBy(() -> study.createWeek("Week 2", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_2))
+            assertThatThrownBy(() -> study.createWeekWithAssignment(
+                    week2.getTitle(), week2.getContent(), week1.getWeek(), week2.getPeriod(),
+                    true, true, STUDY_WEEKLY_2.getAttachments()
+            ))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_WEEK_CREATED.getMessage());
         }
@@ -537,10 +547,16 @@ class StudyTest {
         @DisplayName("주차 등록에 성공한다")
         void success() {
             // given
-            study.createWeekWithAssignment("Week 1", "지정된 시간까지 줌으로 접속해주세요", 1, WEEK_1, true, true);
+            study.createWeekWithAssignment(
+                    week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(),
+                    true, true, STUDY_WEEKLY_1.getAttachments()
+            );
 
             // when
-            study.createWeekWithAssignment("Week 2", "지정된 시간까지 줌으로 접속해주세요", 2, WEEK_2, true, true);
+            study.createWeekWithAssignment(
+                    week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(),
+                    true, true, STUDY_WEEKLY_2.getAttachments()
+            );
 
             // then
             assertThat(study.getWeekly().getCount()).isEqualTo(2);

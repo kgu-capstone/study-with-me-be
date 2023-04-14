@@ -3,6 +3,7 @@ package com.kgu.studywithme.study.domain.week;
 import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import lombok.AccessLevel;
@@ -51,10 +52,14 @@ public class Week extends BaseEntity {
     private Member creator;
 
     @OneToMany(mappedBy = "week", cascade = CascadeType.PERSIST)
+    private List<Attachment> attachments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "week", cascade = CascadeType.PERSIST)
     private List<Submit> submits = new ArrayList<>();
 
     @Builder
-    private Week(Study study, String title, String content, int week, Period period, boolean assignmentExists, boolean autoAttendance) {
+    private Week(Study study, String title, String content, int week, Period period,
+                 boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
         this.study = study;
         this.creator = study.getHost();
         this.title = title;
@@ -63,15 +68,24 @@ public class Week extends BaseEntity {
         this.period = period;
         this.assignmentExists = assignmentExists;
         this.autoAttendance = autoAttendance;
+        addAttachments(attachments);
     }
 
-    public static Week createWeek(Study study, String title, String content, int week, Period period) {
-        return new Week(study, title, content, week, period, false, false);
+    public static Week createWeek(Study study, String title, String content, int week, Period period, List<String> attachments) {
+        return new Week(study, title, content, week, period, false, false, attachments);
     }
 
     public static Week createWeekWithAssignment(Study study, String title, String content, int week, Period period,
-                                                boolean assignmentExists, boolean autoAttendance) {
-        return new Week(study, title, content, week, period, assignmentExists, autoAttendance);
+                                                boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
+        return new Week(study, title, content, week, period, assignmentExists, autoAttendance, attachments);
+    }
+
+    private void addAttachments(List<String> attachments) {
+        this.attachments.addAll(
+                attachments.stream()
+                        .map(link -> Attachment.addAttachmentFile(this, link))
+                        .toList()
+        );
     }
 
     public void submitAssignment(Member participant, Upload upload) {

@@ -145,12 +145,13 @@ public class Study extends BaseEntity {
         attendances.add(Attendance.recordAttendance(week, status, this, participant));
     }
 
-    public void createWeek(String title, String content, int week, Period period) {
-        weekly.registerWeek(Week.createWeek(this, title, content, week, period));
+    public void createWeek(String title, String content, int week, Period period, List<String> attachments) {
+        weekly.registerWeek(Week.createWeek(this, title, content, week, period, attachments));
     }
 
-    public void createWeekWithAssignment(String title, String content, int week, Period period, boolean assignmentExists, boolean autoAttendance) {
-        weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, assignmentExists, autoAttendance));
+    public void createWeekWithAssignment(String title, String content, int week, Period period,
+                                         boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
+        weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, assignmentExists, autoAttendance, attachments));
     }
 
     public void validateMemberIsParticipant(Member participant) {
