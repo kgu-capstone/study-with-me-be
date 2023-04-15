@@ -11,10 +11,7 @@ import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
-import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
-import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
-import com.kgu.studywithme.study.service.dto.response.StudyApplicant;
-import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,13 +22,16 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -355,6 +355,45 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("스터디 주차별 출석 정보 조회 API [GET /api/studies/{studyId}/attendances]")
+    class getAttendances {
+        private static final String BASE_URL = "/api/studies/{studyId}/attendances";
+        private static final Long STUDY_ID = 1L;
+
+        @Test
+        @DisplayName("스터디 주차별 출석 정보를 조회한다")
+        void success() throws Exception {
+            // given
+            AttendanceAssmbler response = generateStudyAttendances();
+            given(studyInformationService.getAttendances(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID);
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Attendances",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("summaries").description("스터디 멤버별 출석 요약 정보"),
+                                            fieldWithPath("summaries.*").description("특정 스터디 멤버 정보"),
+                                            fieldWithPath("summaries.*[].week").description("스터디 주차 정보"),
+                                            fieldWithPath("summaries.*[].status").description("주차별 출석 현황")
+                                    )
+                            )
+                    );
+        }
+    }
+
     private StudyInformation generateStudyInformationResponse() {
         Member host = generateHost();
         Study study = generateStudy(host);
@@ -413,5 +452,55 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
     private Long generateRandomId() {
         return (long) (Math.random() * 10) + 1;
+    }
+
+    private AttendanceAssmbler generateStudyAttendances() {
+        Map<StudyMember, List<AttendanceSummary>> summaries = new HashMap<>();
+        summaries.put(
+                new StudyMember(1L, "닉네임1"),
+                List.of(
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                )
+        );
+        summaries.put(
+                new StudyMember(2L, "닉네임2"),
+                List.of(
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription())
+                )
+        );
+        summaries.put(
+                new StudyMember(3L, "닉네임3"),
+                List.of(
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                )
+        );
+        summaries.put(
+                new StudyMember(4L, "닉네임4"),
+                List.of(
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                )
+        );
+        summaries.put(
+                new StudyMember(5L, "닉네임5"),
+                List.of(
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                )
+        );
+
+        return new AttendanceAssmbler(summaries);
     }
 }
