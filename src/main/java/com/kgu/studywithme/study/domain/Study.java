@@ -140,9 +140,9 @@ public class Study extends BaseEntity {
         notices.add(Notice.writeNotice(this, title, content));
     }
 
-    public void recordAttendance(int week, AttendanceStatus status, Member participant) {
+    public void recordAttendance(Member participant, int week, AttendanceStatus status) {
         validateMemberIsParticipant(participant);
-        attendances.add(Attendance.recordAttendance(week, status, this, participant));
+        attendances.add(Attendance.recordAttendance(this, participant, week, status));
     }
 
     public void createWeek(String title, String content, int week, Period period, List<String> attachments) {

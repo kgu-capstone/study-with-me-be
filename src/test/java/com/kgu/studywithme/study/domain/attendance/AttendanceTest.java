@@ -21,19 +21,19 @@ class AttendanceTest {
     @Test
     @DisplayName("Attendance를 생성한다")
     void construct() {
-        Attendance attendanceHost = Attendance.recordAttendance(1, ATTENDANCE, STUDY, HOST);
-        Attendance attendanceParticipant = Attendance.recordAttendance(1, ABSENCE, STUDY, PARTICIPANT);
+        Attendance attendanceHost = Attendance.recordAttendance(STUDY, HOST, 1, ATTENDANCE);
+        Attendance attendanceParticipant = Attendance.recordAttendance(STUDY, PARTICIPANT, 1, ABSENCE);
 
         assertAll(
-                () -> assertThat(attendanceHost.getWeek()).isEqualTo(1),
-                () -> assertThat(attendanceHost.getStatus()).isEqualTo(ATTENDANCE),
                 () -> assertThat(attendanceHost.getStudy()).isEqualTo(STUDY),
                 () -> assertThat(attendanceHost.getParticipant()).isEqualTo(HOST),
+                () -> assertThat(attendanceHost.getWeek()).isEqualTo(1),
+                () -> assertThat(attendanceHost.getStatus()).isEqualTo(ATTENDANCE),
 
-                () -> assertThat(attendanceParticipant.getWeek()).isEqualTo(1),
-                () -> assertThat(attendanceParticipant.getStatus()).isEqualTo(ABSENCE),
                 () -> assertThat(attendanceParticipant.getStudy()).isEqualTo(STUDY),
-                () -> assertThat(attendanceParticipant.getParticipant()).isEqualTo(PARTICIPANT)
+                () -> assertThat(attendanceParticipant.getParticipant()).isEqualTo(PARTICIPANT),
+                () -> assertThat(attendanceParticipant.getWeek()).isEqualTo(1),
+                () -> assertThat(attendanceParticipant.getStatus()).isEqualTo(ABSENCE)
         );
     }
 
@@ -41,7 +41,7 @@ class AttendanceTest {
     @DisplayName("Attendance의 status를 변경한다")
     void updateAttendanceStatus() {
         // given
-        Attendance attendance = Attendance.recordAttendance(1, ATTENDANCE, STUDY, HOST);
+        Attendance attendance = Attendance.recordAttendance(STUDY, HOST, 1, ATTENDANCE);
 
         // when
         attendance.updateAttendanceStatus(LATE.getDescription());

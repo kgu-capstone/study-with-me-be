@@ -34,15 +34,15 @@ public class Attendance {
     private Member participant;
 
     @Builder
-    private Attendance(int week, AttendanceStatus status, Study study, Member participant) {
-        this.week = week;
-        this.status = status;
+    private Attendance(Study study, Member participant, int week, AttendanceStatus status) {
         this.study = study;
         this.participant = participant;
+        this.week = week;
+        this.status = status;
     }
 
-    public static Attendance recordAttendance(int week, AttendanceStatus status, Study study, Member participant) {
-        return new Attendance(week, status, study, participant);
+    public static Attendance recordAttendance(Study study, Member participant, int week, AttendanceStatus status) {
+        return new Attendance(study, participant, week, status);
     }
 
     public void updateAttendanceStatus(String status) {

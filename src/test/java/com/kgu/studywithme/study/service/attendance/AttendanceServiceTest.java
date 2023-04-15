@@ -41,8 +41,8 @@ class AttendanceServiceTest extends ServiceTest {
         study.applyParticipation(member);
         study.approveParticipation(member);
 
-        attendanceRepository.save(Attendance.recordAttendance(1, AttendanceStatus.NON_ATTENDANCE, study, host));
-        attendanceRepository.save(Attendance.recordAttendance(1, AttendanceStatus.NON_ATTENDANCE, study, member));
+        attendanceRepository.save(Attendance.recordAttendance(study, host, 1, AttendanceStatus.NON_ATTENDANCE));
+        attendanceRepository.save(Attendance.recordAttendance(study, member, 1, AttendanceStatus.NON_ATTENDANCE));
     }
 
     @Nested
