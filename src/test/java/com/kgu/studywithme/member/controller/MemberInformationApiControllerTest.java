@@ -4,6 +4,7 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
@@ -543,6 +544,85 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("사용자의 PeerReview 조회 API [GET /api/members/{memberId}/reviews]")
+    class getReviews {
+        private static final String BASE_URL = "/api/members/{memberId}/reviews";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 사용자의 PeerReivew 조회에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/PeerReview/Failure",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("PeerReview를 조회할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("사용자에 대한 PeerReview 조회에 성공한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+
+            PeerReviewAssembler response = generatePeerReviewAssembler();
+            given(memberInformationService.getPeerReviews(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/PeerReview/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("PeerReview를 조회할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("reviews[]").description("사용자에 대한 PeerReview 리스트")
+                                    )
+                            )
+                    );
+        }
+    }
+
     private MemberInformation generateMemberInformationResponse() {
         Member member = JIWON.toMember();
         ReflectionTestUtils.setField(member, "id", 1L);
@@ -557,5 +637,15 @@ class MemberInformationApiControllerTest extends ControllerTest {
                 new SimpleStudy(4L, StudyName.from("AWS 스터디"), PROGRAMMING)
         );
         return new RelatedStudy(result);
+    }
+
+    private PeerReviewAssembler generatePeerReviewAssembler() {
+        List<String> result = List.of(
+                "PeerReview1",
+                "PeerReview2",
+                "PeerReview3",
+                "PeerReview4"
+        );
+        return new PeerReviewAssembler(result);
     }
 }

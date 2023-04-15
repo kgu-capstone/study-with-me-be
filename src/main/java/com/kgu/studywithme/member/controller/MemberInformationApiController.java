@@ -4,6 +4,7 @@ import com.kgu.studywithme.global.annotation.CheckMemberIdentity;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class MemberInformationApiController {
     @GetMapping("/studies/favorite")
     public ResponseEntity<RelatedStudy> getFavoriteStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
         RelatedStudy response = memberInformationService.getFavoriteStudy(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<PeerReviewAssembler> getReviews(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+        PeerReviewAssembler response = memberInformationService.getPeerReviews(memberId);
         return ResponseEntity.ok(response);
     }
 }

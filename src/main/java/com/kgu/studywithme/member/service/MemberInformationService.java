@@ -1,7 +1,9 @@
 package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.review.PeerReviewRepository;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
@@ -17,6 +19,7 @@ import java.util.List;
 public class MemberInformationService {
     private final MemberFindService memberFindService;
     private final StudyRepository studyRepository;
+    private final PeerReviewRepository peerReviewRepository;
 
     public MemberInformation getInformation(Long memberId) {
         Member member = memberFindService.findByIdWithInterests(memberId);
@@ -36,5 +39,10 @@ public class MemberInformationService {
     public RelatedStudy getFavoriteStudy(Long memberId) {
         List<SimpleStudy> favoriteStudy = studyRepository.findFavoriteStudyByMemberId(memberId);
         return new RelatedStudy(favoriteStudy);
+    }
+
+    public PeerReviewAssembler getPeerReviews(Long memberId) {
+        List<String> peerReviews = peerReviewRepository.findPeerReviewByMemberId(memberId);
+        return new PeerReviewAssembler(peerReviews);
     }
 }
