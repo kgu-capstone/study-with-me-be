@@ -4,6 +4,7 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
@@ -21,9 +22,11 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -34,7 +37,7 @@ class StudyInformationServiceTest extends ServiceTest {
 
     private Member host;
     private Study study;
-    private final Member[] members = new Member[5];
+    private final Member[] members = new Member[4];
     private final Notice[] notices = new Notice[3];
 
     @BeforeEach
@@ -46,7 +49,6 @@ class StudyInformationServiceTest extends ServiceTest {
         members[1] = memberRepository.save(DUMMY2.toMember());
         members[2] = memberRepository.save(DUMMY3.toMember());
         members[3] = memberRepository.save(DUMMY4.toMember());
-        members[4] = memberRepository.save(DUMMY5.toMember());
     }
 
     @Test
@@ -79,7 +81,7 @@ class StudyInformationServiceTest extends ServiceTest {
     @DisplayName("스터디 졸업자들의 리뷰를 조회한다")
     void getReviews() {
         // given
-        applyAndApproveMembers();
+        applyAndApproveMembers(members[0], members[1], members[2], members[3]);
         graduateAllParticipant();
         
         // when
@@ -111,8 +113,8 @@ class StudyInformationServiceTest extends ServiceTest {
         // given
         initNotices();
         List<List<Member>> commentWriters = List.of(
-                List.of(members[0], members[1], members[3], members[4]),
-                List.of(members[1], members[2], members[3]),
+                List.of(members[0], members[1], members[3]),
+                List.of(members[1], members[2]),
                 List.of()
         );
         writeComment(notices[0], commentWriters.get(0));
@@ -143,14 +145,60 @@ class StudyInformationServiceTest extends ServiceTest {
         StudyApplicant result2 = studyInformationService.getApplicants(study.getId());
         assertThatApplicantsMatch(result2.applicants(), List.of(members[2], members[1], members[0]));
 
-        /* 추가 2명 신청 & 2명 승인 */
+        /* 추가 1명 신청 & 2명 승인 */
         study.applyParticipation(members[3]);
-        study.applyParticipation(members[4]);
         study.approveParticipation(members[0]);
         study.approveParticipation(members[2]);
 
         StudyApplicant result3 = studyInformationService.getApplicants(study.getId());
-        assertThatApplicantsMatch(result3.applicants(), List.of(members[4], members[3], members[1]));
+        assertThatApplicantsMatch(result3.applicants(), List.of(members[3], members[1]));
+    }
+
+    @Test
+    @DisplayName("스터디 주차별 출석 정보를 조회한다")
+    void getAttendances() {
+        applyAndApproveMembers(members[0], members[1], members[2]);
+
+        /* 1주차 출석 */
+        applyAttendance(
+                1,
+                Map.of(
+                        host, ATTENDANCE,
+                        members[0], ATTENDANCE,
+                        members[1], LATE,
+                        members[2], ABSENCE
+                )
+        );
+        AttendanceAssmbler result1 = studyInformationService.getAttendances(study.getId());
+        Map<Long, Map<Integer, AttendanceStatus>> expectSummary1 = Map.of(
+                host.getId(), Map.of(1, ATTENDANCE),
+                members[0].getId(), Map.of(1, ATTENDANCE),
+                members[1].getId(), Map.of(1, LATE),
+                members[2].getId(), Map.of(1, ABSENCE)
+        );
+        assertThatAttendancesMatch(result1.summaries(), expectSummary1);
+
+        /* 1주차 + 2주차 출석 */
+        applyAndApproveMembers(members[3]);
+        applyAttendance(
+                2,
+                Map.of(
+                        host, ATTENDANCE,
+                        members[0], LATE,
+                        members[1], ATTENDANCE,
+                        members[2], ATTENDANCE,
+                        members[3], ATTENDANCE
+                )
+        );
+        AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
+        Map<Long, Map<Integer, AttendanceStatus>> expectSummary2 = Map.of(
+                host.getId(), Map.of(1, ATTENDANCE, 2, ATTENDANCE),
+                members[0].getId(), Map.of(1, ATTENDANCE, 2, LATE),
+                members[1].getId(), Map.of(1, LATE, 2, ATTENDANCE),
+                members[2].getId(), Map.of(1, ABSENCE, 2, ATTENDANCE),
+                members[3].getId(), Map.of(2, ATTENDANCE)
+        );
+        assertThatAttendancesMatch(result2.summaries(), expectSummary2);
     }
 
     private List<Integer> getMemberAgeList() {
@@ -164,7 +212,7 @@ class StudyInformationServiceTest extends ServiceTest {
         return list;
     }
 
-    private void applyAndApproveMembers() {
+    private void applyAndApproveMembers(Member... members) {
         for (Member member : members) {
             study.applyParticipation(member);
             study.approveParticipation(member);
@@ -188,6 +236,12 @@ class StudyInformationServiceTest extends ServiceTest {
     private void writeComment(Notice notice, List<Member> members) {
         for (Member member : members) {
             commentRepository.save(Comment.writeComment(notice, member, "댓글"));
+        }
+    }
+
+    private void applyAttendance(int week, Map<Member, AttendanceStatus> data) {
+        for (Member member : data.keySet()) {
+            study.recordAttendance(member, week, data.get(member));
         }
     }
 
@@ -227,6 +281,26 @@ class StudyInformationServiceTest extends ServiceTest {
                     () -> assertThat(information.getId()).isEqualTo(member.getId()),
                     () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue())
             );
+        }
+    }
+
+    private void assertThatAttendancesMatch(Map<StudyMember, List<AttendanceSummary>> result,
+                                            Map<Long, Map<Integer, AttendanceStatus>> expectSummary) {
+        for (StudyMember studyMember : result.keySet()) {
+            assertThat(expectSummary.containsKey(studyMember.id())).isTrue();
+
+            List<AttendanceSummary> attendanceSummaries = result.get(studyMember);
+            Map<Integer, AttendanceStatus> expectAttendanceSummaries = expectSummary.get(studyMember.id());
+
+            for (AttendanceSummary summary : attendanceSummaries) {
+                int week = summary.week();
+                String status = summary.status();
+
+                assertAll(
+                        () -> assertThat(expectAttendanceSummaries.containsKey(week)).isTrue(),
+                        () -> assertThat(expectAttendanceSummaries.get(week).getDescription()).isEqualTo(status)
+                );
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.infra.query;
 
+import com.kgu.studywithme.study.infra.query.dto.response.AttendanceInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
@@ -11,4 +12,5 @@ public interface StudyInformationQueryRepository {
     List<ReviewInformation> findReviewByStudyId(Long studyId);
     List<NoticeInformation> findNoticeWithCommentsByStudyId(Long studyId);
     List<StudyApplicantInformation> findApplicantByStudyId(Long studyId);
+    List<AttendanceInformation> findAttendanceByStudyId(Long studyId);
 }
