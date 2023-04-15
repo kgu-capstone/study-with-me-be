@@ -92,7 +92,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .from(attendance)
                 .innerJoin(attendance.participant, member)
                 .where(attendance.study.id.eq(studyId))
-                .orderBy(attendance.week.asc(), member.id.asc())
+                .orderBy(attendance.week.desc(), member.id.asc())
                 .fetch();
     }
 

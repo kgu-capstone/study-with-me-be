@@ -192,10 +192,10 @@ class StudyInformationServiceTest extends ServiceTest {
         );
         AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
         Map<Long, Map<Integer, AttendanceStatus>> expectSummary2 = Map.of(
-                host.getId(), Map.of(1, ATTENDANCE, 2, ATTENDANCE),
-                members[0].getId(), Map.of(1, ATTENDANCE, 2, LATE),
-                members[1].getId(), Map.of(1, LATE, 2, ATTENDANCE),
-                members[2].getId(), Map.of(1, ABSENCE, 2, ATTENDANCE),
+                host.getId(), Map.of(2, ATTENDANCE, 1, ATTENDANCE),
+                members[0].getId(), Map.of(2, LATE, 1, ATTENDANCE),
+                members[1].getId(), Map.of(2, ATTENDANCE, 1, LATE),
+                members[2].getId(), Map.of(2, ATTENDANCE, 1, ABSENCE),
                 members[3].getId(), Map.of(2, ATTENDANCE)
         );
         assertThatAttendancesMatch(result2.summaries(), expectSummary2);

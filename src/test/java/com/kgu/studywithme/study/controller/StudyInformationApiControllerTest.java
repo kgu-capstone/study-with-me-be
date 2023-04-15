@@ -459,39 +459,39 @@ class StudyInformationApiControllerTest extends ControllerTest {
         summaries.put(
                 new StudyMember(1L, "닉네임1"),
                 List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription()),
                         new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(1, ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
                 new StudyMember(2L, "닉네임2"),
                 List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
                         new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription())
+                        new AttendanceSummary(2, LATE.getDescription()),
+                        new AttendanceSummary(1, ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
                 new StudyMember(3L, "닉네임3"),
                 List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, ATTENDANCE.getDescription()),
                         new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ABSENCE.getDescription()),
+                        new AttendanceSummary(1, ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
                 new StudyMember(4L, "닉네임4"),
                 List.of(
-                        new AttendanceSummary(2, LATE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription()),
                         new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, LATE.getDescription())
                 )
         );
         summaries.put(

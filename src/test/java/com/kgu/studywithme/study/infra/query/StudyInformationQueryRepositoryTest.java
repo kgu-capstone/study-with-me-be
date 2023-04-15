@@ -169,16 +169,16 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         );
         List<AttendanceInformation> result2 = studyRepository.findAttendanceByStudyId(study.getId());
         List<Integer> expectWeek2 = List.of(
-                1, 1, 1, 1,
-                2, 2, 2, 2, 2
+                2, 2, 2, 2, 2,
+                1, 1, 1, 1
         );
         List<Member> expectMember2 = List.of(
-                host, members[0], members[1], members[2],
-                host, members[0], members[1], members[2], members[3]
+                host, members[0], members[1], members[2], members[3],
+                host, members[0], members[1], members[2]
         );
         List<AttendanceStatus> expectStatus2 = List.of(
-                ATTENDANCE, ATTENDANCE, LATE, ABSENCE,
-                ATTENDANCE, LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE
+                ATTENDANCE, LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE,
+                ATTENDANCE, ATTENDANCE, LATE, ABSENCE
         );
         assertThatAttendancesMatch(result2, expectWeek2, expectMember2, expectStatus2);
     }
