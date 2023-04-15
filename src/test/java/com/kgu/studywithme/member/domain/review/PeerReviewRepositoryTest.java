@@ -12,7 +12,6 @@ import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Repository Layer] -> PeerReviewRepository 테스트")
 public class PeerReviewRepositoryTest extends RepositoryTest {
@@ -37,34 +36,33 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("사용자의 PeerReview를 조회한다")
-    void findPeerReviewByRevieweeId() {
+    void findContentByRevieweeId() {
         /* 3명 피어리뷰 */
-        doReviews(reviewers[0], reviewers[1], reviewers[2]);
+        doReview(reviewers[0], reviewers[1], reviewers[2]);
 
-        List<PeerReview> result1 = peerReviewRepository.findPeerReviewByRevieweeId(reviewee.getId());
+        List<String> result1 = peerReviewRepository.findPeerReviewByMemberId(reviewee.getId());
         assertThat(result1).hasSize(3);
-
-        assertAll(
-                () -> assertThat(result1.get(0).getContent()).isEqualTo("BEST! - " + reviewers[0].getId()),
-                () -> assertThat(result1.get(1).getContent()).isEqualTo("BEST! - " + reviewers[1].getId()),
-                () -> assertThat(result1.get(2).getContent()).isEqualTo("BEST! - " + reviewers[2].getId())
+        assertThat(result1).containsExactly(
+                "BEST! - " + reviewers[0].getId(),
+                "BEST! - " + reviewers[1].getId(),
+                "BEST! - " + reviewers[2].getId()
         );
 
         /* 추가 2명 피어리뷰 */
-        doReviews(reviewers[3], reviewers[4]);
+        doReview(reviewers[3], reviewers[4]);
 
-        List<PeerReview> result2 = peerReviewRepository.findPeerReviewByRevieweeId(reviewee.getId());
+        List<String> result2 = peerReviewRepository.findPeerReviewByMemberId(reviewee.getId());
         assertThat(result2).hasSize(5);
-        assertAll(
-                () -> assertThat(result2.get(0).getContent()).isEqualTo("BEST! - " + reviewers[0].getId()),
-                () -> assertThat(result2.get(1).getContent()).isEqualTo("BEST! - " + reviewers[1].getId()),
-                () -> assertThat(result2.get(2).getContent()).isEqualTo("BEST! - " + reviewers[2].getId()),
-                () -> assertThat(result2.get(3).getContent()).isEqualTo("BEST! - " + reviewers[3].getId()),
-                () -> assertThat(result2.get(4).getContent()).isEqualTo("BEST! - " + reviewers[4].getId())
+        assertThat(result2).containsExactly(
+                "BEST! - " + reviewers[0].getId(),
+                "BEST! - " + reviewers[1].getId(),
+                "BEST! - " + reviewers[2].getId(),
+                "BEST! - " + reviewers[3].getId(),
+                "BEST! - " + reviewers[4].getId()
         );
     }
 
-    private void doReviews(Member... reviewers) {
+    private void doReview(Member... reviewers) {
         for (Member reviewer : reviewers) {
             reviewee.applyPeerReview(reviewer, "BEST! - " + reviewer.getId());
         }

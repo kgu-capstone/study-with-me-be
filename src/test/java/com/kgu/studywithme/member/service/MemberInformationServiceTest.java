@@ -123,10 +123,8 @@ class MemberInformationServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(hostReview.reviews().size()).isEqualTo(1),
-                () -> assertThat(hostReview.reviews()).contains("host는 최고다."),
-                () -> assertThat(memberReview.reviews().size()).isEqualTo(1),
-                () -> assertThat(memberReview.reviews()).contains("member는 최고다.")
+                () -> assertThat(hostReview.reviews()).containsExactly("host는 최고다."),
+                () -> assertThat(memberReview.reviews()).containsExactly("member는 최고다.")
         );
     }
 
