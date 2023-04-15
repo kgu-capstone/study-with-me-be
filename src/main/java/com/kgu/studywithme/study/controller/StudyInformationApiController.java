@@ -1,7 +1,7 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
+import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.service.StudyInformationService;
 import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
 import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
