@@ -1,25 +1,31 @@
 package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.common.ServiceTest;
+import com.kgu.studywithme.fixture.WeekFixture;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Email;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.Nickname;
 import com.kgu.studywithme.member.domain.Region;
 import com.kgu.studywithme.member.domain.report.Report;
+import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
+import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.attendance.Attendance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
+import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.member.domain.report.ReportStatus.RECEIVE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Member [Service Layer] -> MemberService 테스트")
 class MemberServiceTest extends ServiceTest {
@@ -142,7 +148,142 @@ class MemberServiceTest extends ServiceTest {
         }
     }
 
-    private Member createDuplicateMember(String email, String nickname, String phone) {
+    @Nested
+    @DisplayName("PeerReview 등록")
+    class writeReview {
+        private final String CONTENT = "Very Good!";
+
+        private Member host;
+        private final Member[] members = new Member[2];
+        private Member outsider;
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            members[0] = memberRepository.save(DUMMY1.toMember());
+            members[1] = memberRepository.save(DUMMY2.toMember());
+            outsider = memberRepository.save(GHOST.toMember());
+
+            Study study = studyRepository.save(TOEIC.toOnlineStudy(host));
+
+            study.applyParticipation(members[0]);
+            study.approveParticipation(members[0]);
+            study.applyParticipation(members[1]);
+            study.approveParticipation(members[1]);
+
+            weekRepository.save(WeekFixture.STUDY_WEEKLY_1.toWeekWithAssignment(study));
+
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, host));
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, members[0]));
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, members[1]));
+        }
+
+        @Test
+        @DisplayName("해당 사용자에 대해 두 번이상 리뷰를 남길 수 없다")
+        void alreadyReview() {
+            // given
+            memberService.writeReview(members[1].getId(), members[0].getId(), CONTENT);
+
+            // when - then
+            assertThatThrownBy(() -> memberService.writeReview(members[1].getId(), members[0].getId(), CONTENT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.ALREADY_REVIEW.getMessage());
+        }
+
+        @Test
+        @DisplayName("본인에게 리뷰를 남길 수 없다")
+        void selfReviewNotAllowed() {
+            assertThatThrownBy(() -> memberService.writeReview(members[0].getId(), members[0].getId(), CONTENT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED.getMessage());
+        }
+
+        @Test
+        @DisplayName("함께 스터디를 진행한 기록이 없다면 리뷰를 남길 수 없다")
+        void commonStudyNotFound() {
+            assertThatThrownBy(() -> memberService.writeReview(host.getId(), outsider.getId(), "BAD REVIEW"))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.COMMON_STUDY_NOT_FOUND.getMessage());
+
+            assertDoesNotThrow(() -> memberService.writeReview(host.getId(), members[0].getId(), "GOOD REVIEW"));
+            assertDoesNotThrow(() -> memberService.writeReview(members[0].getId(), members[1].getId(), "GOOD REVIEW"));
+        }
+
+        @Test
+        @DisplayName("PeerReview 등록에 성공한다")
+        void success() {
+            // given
+            memberService.writeReview(host.getId(), members[0].getId(), CONTENT);
+
+            // when
+            PeerReview findPeerReview = peerReviewRepository.findByRevieweeIdAndReviewerId(host.getId(), members[0].getId()).orElseThrow();
+
+            // then
+            assertAll(
+                    () -> assertThat(findPeerReview.getReviewee()).isEqualTo(host),
+                    () -> assertThat(findPeerReview.getReviewer()).isEqualTo(members[0]),
+                    () -> assertThat(findPeerReview.getContent()).isEqualTo(CONTENT)
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("PeerReview 수정")
+    class updateReview {
+        private final String CONTENT = "Very Good!";
+        private final String NEW_CONTENT = "Bad..";
+
+        private Member host;
+        private final Member[] members = new Member[2];
+
+        @BeforeEach
+        void setUp() {
+            host = memberRepository.save(JIWON.toMember());
+            members[0] = memberRepository.save(DUMMY1.toMember());
+            members[1] = memberRepository.save(DUMMY2.toMember());
+
+            Study study = studyRepository.save(TOEIC.toOnlineStudy(host));
+
+            study.applyParticipation(members[0]);
+            study.approveParticipation(members[0]);
+            study.applyParticipation(members[1]);
+            study.approveParticipation(members[1]);
+
+            weekRepository.save(WeekFixture.STUDY_WEEKLY_1.toWeekWithAssignment(study));
+
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, host));
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, members[0]));
+            attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, members[1]));
+
+            host.applyPeerReview(members[0], CONTENT);
+        }
+
+        @Test
+        @DisplayName("PeerReview 기록이 없다면 수정할 수 없다")
+        void reviewNotFound() {
+            assertThatThrownBy(() -> memberService.updateReview(host.getId(), members[1].getId(), NEW_CONTENT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.REVIEW_NOT_FOUND.getMessage());
+
+            assertDoesNotThrow(() -> memberService.updateReview(host.getId(), members[0].getId(), NEW_CONTENT));
+
+        }
+
+        @Test
+        @DisplayName("PeerReview 수정에 성공한다")
+        void success() {
+            // given
+            memberService.updateReview(host.getId(), members[0].getId(), NEW_CONTENT);
+
+            // when
+            PeerReview findPeerReview = peerReviewRepository.findByRevieweeIdAndReviewerId(host.getId(), members[0].getId()).orElseThrow();
+
+            // then
+            assertThat(findPeerReview.getContent()).isEqualTo(NEW_CONTENT);
+        }
+    }
+
+        private Member createDuplicateMember(String email, String nickname, String phone) {
         return Member.builder()
                 .name(JIWON.getName())
                 .nickname(Nickname.from(nickname))
