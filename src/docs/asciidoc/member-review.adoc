@@ -1,0 +1,84 @@
+= 사용자 PeerReview API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 사용자 PeerReview 등록
+=== 1. Authorization Header에 AccessToken이 없으면 PeerReview 등록을 실패한다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/response-body.adoc[]
+
+=== 2. 해당 사용자에 대해 두 번이상 리뷰를 남길 수 없다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/response-body.adoc[]
+
+=== 3. 본인에게 리뷰를 남길 수 없다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/response-body.adoc[]
+
+=== 4. 함께 스터디를 진행한 기록이 없다면 리뷰를 남길 수 없다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/response-body.adoc[]
+
+=== 5. PeerReview 등록을 성공한다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Write/Success/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Success/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Write/Success/http-response.adoc[]
+
+== 사용자 PeerReview 수정
+=== 1. Authorization Header에 AccessToken이 없으면 PeerReview 수정을 실패한다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/response-body.adoc[]
+
+=== 2. Reviewee에 대한 Reviewer의 PeerReview를 찾을 수 없으면 수정에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/response-body.adoc[]
+
+=== 3. Reviewee에 대한 Reviewer의 PeerReview 수정에 성공한다
+HTTP Request
+include::{snippets}/MemberApi/PeerReview/Update/Success/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Success/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/PeerReview/Update/Success/http-response.adoc[]
