@@ -149,7 +149,7 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("PeerReview 등록")
+    @DisplayName("피어리뷰 등록")
     class writeReview {
         private final String CONTENT = "Very Good!";
 
@@ -175,7 +175,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("해당 사용자에 대해 두 번이상 리뷰를 남길 수 없다")
+        @DisplayName("해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다")
         void alreadyReview() {
             // given
             memberService.writeReview(members[0].getId(), members[1].getId(), CONTENT);
@@ -187,7 +187,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("본인에게 리뷰를 남길 수 없다")
+        @DisplayName("본인에게 피어리뷰를 남길 수 없다")
         void selfReviewNotAllowed() {
             assertThatThrownBy(() -> memberService.writeReview(members[0].getId(), members[0].getId(), CONTENT))
                     .isInstanceOf(StudyWithMeException.class)
@@ -195,7 +195,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("함께 스터디를 진행한 기록이 없다면 리뷰를 남길 수 없다")
+        @DisplayName("함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다")
         void commonStudyNotFound() {
             assertThatThrownBy(() -> memberService.writeReview(members[0].getId(), outsider.getId(), "BAD REVIEW"))
                     .isInstanceOf(StudyWithMeException.class)
@@ -206,7 +206,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("PeerReview 등록에 성공한다")
+        @DisplayName("피어리뷰 등록에 성공한다")
         void success() {
             // given
             memberService.writeReview(members[0].getId(), members[1].getId(), CONTENT);
@@ -224,7 +224,7 @@ class MemberServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("PeerReview 수정")
+    @DisplayName("피어리뷰 수정")
     class updateReview {
         private final String CONTENT = "Very Good!";
         private final String NEW_CONTENT = "Bad..";
@@ -251,7 +251,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("PeerReview 기록이 없다면 수정할 수 없다")
+        @DisplayName("피어리뷰 기록이 없다면 수정할 수 없다")
         void reviewNotFound() {
             assertThatThrownBy(() -> memberService.updateReview(members[0].getId(), members[2].getId(), NEW_CONTENT))
                     .isInstanceOf(StudyWithMeException.class)
@@ -262,7 +262,7 @@ class MemberServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("PeerReview 수정에 성공한다")
+        @DisplayName("피어리뷰 수정에 성공한다")
         void success() {
             // given
             memberService.updateReview(members[0].getId(), members[1].getId(), NEW_CONTENT);

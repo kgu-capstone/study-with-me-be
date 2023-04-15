@@ -275,13 +275,13 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자 PeerReview 등록 API [POST /api/members/{revieweeId}/review]")
+    @DisplayName("사용자 피어리뷰 등록 API [POST /api/members/{revieweeId}/review]")
     class writeReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 PeerReview 등록을 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 등록을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -305,7 +305,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 등록 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -317,7 +317,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("해당 사용자에 대해 두 번이상 리뷰를 남길 수 없다")
+        @DisplayName("해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다")
         void throwExceptionByAlreadyReview() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -355,7 +355,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 등록 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
@@ -370,7 +370,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("본인에게 리뷰를 남길 수 없다")
+        @DisplayName("본인에게 피어리뷰를 남길 수 없다")
         void throwExceptionBySelfReviewNotAllowed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -408,7 +408,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 등록 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
@@ -423,7 +423,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("함께 스터디를 진행한 기록이 없다면 리뷰를 남길 수 없다")
+        @DisplayName("함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다")
         void throwExceptionByCommonStudyNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -461,7 +461,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 등록 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
@@ -476,7 +476,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("PeerReview 등록을 성공한다")
+        @DisplayName("피어리뷰 등록을 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -507,7 +507,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 등록 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
@@ -517,13 +517,13 @@ class MemberApiControllerTest extends ControllerTest {
         }
     }
     @Nested
-    @DisplayName("사용자 PeerReview 수정 API [PATCH /api/members/{revieweeId}/review]")
+    @DisplayName("사용자 피어리뷰 수정 API [PATCH /api/members/{revieweeId}/review]")
     class updateReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 PeerReview 수정을 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 수정을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -547,7 +547,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 수정 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -560,7 +560,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Reviewee에 대한 Reviewer의 PeerReview를 찾을 수 없으면 수정에 실패한다")
+        @DisplayName("Reviewee에 대한 Reviewer의 피어리뷰를 찾을 수 없으면 수정에 실패한다")
         void reviewNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -598,7 +598,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 수정 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
@@ -613,7 +613,7 @@ class MemberApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Reviewee에 대한 Reviewer의 PeerReview 수정에 성공한다")
+        @DisplayName("Reviewee에 대한 Reviewer의 피어리뷰 수정에 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -644,7 +644,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("revieweeId").description("PeerReview 수정 대상자 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
