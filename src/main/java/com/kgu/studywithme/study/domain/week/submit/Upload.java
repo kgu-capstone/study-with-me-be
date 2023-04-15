@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.domain.assignment.submit;
+package com.kgu.studywithme.study.domain.week.submit;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,13 +9,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import static com.kgu.studywithme.study.domain.assignment.submit.UploadType.FILE;
-import static com.kgu.studywithme.study.domain.assignment.submit.UploadType.LINK;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Upload {
+    @Column(name = "link", nullable = false)
     private String link;
 
     @Enumerated(EnumType.STRING)

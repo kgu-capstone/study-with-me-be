@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.domain.assignment;
+package com.kgu.studywithme.study.domain.week;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Study-Assignment 도메인 {Period VO} 테스트")
+@DisplayName("Study-Week 도메인 {Period VO} 테스트")
 class PeriodTest {
     @Test
     @DisplayName("Period을 생성한다")

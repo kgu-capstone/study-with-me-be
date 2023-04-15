@@ -4,9 +4,6 @@ import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.study.domain.assignment.Assignment;
-import com.kgu.studywithme.study.domain.assignment.Assignments;
-import com.kgu.studywithme.study.domain.assignment.Period;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.hashtag.Hashtag;
@@ -15,6 +12,9 @@ import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.domain.participant.Participants;
 import com.kgu.studywithme.study.domain.review.Review;
 import com.kgu.studywithme.study.domain.review.Reviews;
+import com.kgu.studywithme.study.domain.week.Period;
+import com.kgu.studywithme.study.domain.week.Week;
+import com.kgu.studywithme.study.domain.week.Weekly;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -64,7 +64,7 @@ public class Study extends BaseEntity {
     private Participants participants;
 
     @Embedded
-    private Assignments assignments;
+    private Weekly weekly;
 
     @Embedded
     private Reviews reviews;
@@ -92,7 +92,7 @@ public class Study extends BaseEntity {
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
         this.closed = false;
-        this.assignments = Assignments.createAssignmentsPage();
+        this.weekly = Weekly.createWeeklyPage();
         this.reviews = Reviews.createReviewsPage();
         applyHashtags(hashtags);
     }
@@ -145,9 +145,13 @@ public class Study extends BaseEntity {
         attendances.add(Attendance.recordAttendance(week, status, this, participant));
     }
 
-    public void registerAssignment(int week, Period period, Member creator, String title, String content) {
-        validateMemberIsParticipant(creator);
-        assignments.registerAssignment(Assignment.createAssignment(week, period, this, creator, title, content));
+    public void createWeek(String title, String content, int week, Period period, List<String> attachments) {
+        weekly.registerWeek(Week.createWeek(this, title, content, week, period, attachments));
+    }
+
+    public void createWeekWithAssignment(String title, String content, int week, Period period,
+                                         boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
+        weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, assignmentExists, autoAttendance, attachments));
     }
 
     public void validateMemberIsParticipant(Member participant) {

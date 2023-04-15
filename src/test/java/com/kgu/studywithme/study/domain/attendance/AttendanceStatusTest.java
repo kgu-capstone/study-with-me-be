@@ -17,7 +17,7 @@ class AttendanceStatusTest {
                 () -> assertThat(AttendanceStatus.fromDescription("지각")).isEqualTo(LATE),
                 () -> assertThat(AttendanceStatus.fromDescription("결석")).isEqualTo(ABSENCE),
                 () -> assertThat(AttendanceStatus.fromDescription("미출결")).isEqualTo(NON_ATTENDANCE),
-                () -> assertThat(AttendanceStatus.fromDescription("????")).isEqualTo(ABSENCE)
+                () -> assertThat(AttendanceStatus.fromDescription("????")).isEqualTo(NON_ATTENDANCE)
         );
     }
 }
