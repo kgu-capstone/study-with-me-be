@@ -1,14 +1,14 @@
-package com.kgu.studywithme.study.domain.assignment.submit;
+package com.kgu.studywithme.study.domain.week.submit;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.kgu.studywithme.study.domain.assignment.submit.UploadType.FILE;
-import static com.kgu.studywithme.study.domain.assignment.submit.UploadType.LINK;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Study-Assignment-Submit 도메인 {Upload VO} 테스트")
+@DisplayName("Study-Week-Submit 도메인 {Upload VO} 테스트")
 class UploadTest {
     @Test
     @DisplayName("Notion, Blog 등 링크를 통해서 과제물을 제출한다")

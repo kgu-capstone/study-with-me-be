@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.domain.assignment.submit;
+package com.kgu.studywithme.study.domain.week.submit;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

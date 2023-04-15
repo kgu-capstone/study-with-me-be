@@ -20,6 +20,6 @@ public enum AttendanceStatus {
         return Arrays.stream(values())
                 .filter(status -> status.getDescription().equals(description))
                 .findFirst()
-                .orElse(ABSENCE);
+                .orElse(NON_ATTENDANCE);
     }
 }

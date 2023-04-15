@@ -1,4 +1,4 @@
-package com.kgu.studywithme.study.domain.assignment;
+package com.kgu.studywithme.study.domain.week;
 
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
@@ -27,7 +27,7 @@ public class Period {
 
     public static Period of(LocalDateTime startDate, LocalDateTime endDate) {
         validateStartIsBeforeEnd(startDate, endDate);
-        validateEndDataIsNotPast(endDate);
+        validateEndDateIsNotPast(endDate);
         return new Period(startDate, endDate);
     }
 
@@ -37,7 +37,7 @@ public class Period {
         }
     }
 
-    private static void validateEndDataIsNotPast(LocalDateTime endDate) {
+    private static void validateEndDateIsNotPast(LocalDateTime endDate) {
         if (endDate.isBefore(LocalDateTime.now())) {
             throw StudyWithMeException.type(StudyErrorCode.PERIOD_END_DATE_MUST_BE_SET_FROM_NOW_ON);
         }
