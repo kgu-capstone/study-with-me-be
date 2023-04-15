@@ -3,7 +3,9 @@ package com.kgu.studywithme.member.service;
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.favorite.domain.Favorite;
 import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
+import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
@@ -26,6 +28,7 @@ class MemberInformationServiceTest extends ServiceTest {
     @Autowired
     private MemberInformationService memberInformationService;
 
+    private Member host;
     private Member member;
     private final Study[] programming = new Study[7];
 
@@ -33,7 +36,7 @@ class MemberInformationServiceTest extends ServiceTest {
     void setUp() {
         member = memberRepository.save(JIWON.toMember());
 
-        Member host = memberRepository.save(GHOST.toMember());
+        host = memberRepository.save(GHOST.toMember());
         programming[0] = studyRepository.save(SPRING.toOnlineStudy(host));
         programming[1] = studyRepository.save(JPA.toOnlineStudy(host));
         programming[2] = studyRepository.save(REAL_MYSQL.toOfflineStudy(host));
@@ -105,6 +108,24 @@ class MemberInformationServiceTest extends ServiceTest {
         // then
         List<Study> expectFavorite = List.of(programming[6], programming[4], programming[3], programming[1], programming[0]);
         assertThatStudiesMatch(relatedStudy.result(), expectFavorite);
+    }
+
+    @Test
+    @DisplayName("사용자의 PeerReview를 조회한다")
+    void getPeerReviews() {
+        // given
+        peerReviewRepository.save(PeerReview.doReview(host, member, "host는 최고다."));
+        peerReviewRepository.save(PeerReview.doReview(member, host, "member는 최고다."));
+
+        // when
+        PeerReviewAssembler hostReview = memberInformationService.getPeerReviews(host.getId());
+        PeerReviewAssembler memberReview = memberInformationService.getPeerReviews(member.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(hostReview.reviews()).containsExactly("host는 최고다."),
+                () -> assertThat(memberReview.reviews()).containsExactly("member는 최고다.")
+        );
     }
 
     private void participateStudy(Member member, Study... studies) {

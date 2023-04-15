@@ -116,3 +116,22 @@ include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/path-par
 HTTP Response
 include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-body.adoc[]
 include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-fields.adoc[]
+
+== 사용자의 PeerReview 조회
+=== 1. Authorization Header에 AccessToken이 없으면 사용자의 PeerReivew 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/PeerReview/Failure/http-request.adoc[]
+include::{snippets}/MemberApi/Information/PeerReview/Failure/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/PeerReview/Failure/response-body.adoc[]
+
+=== 2. 사용자에 대한 PeerReview 조회에 성공한다
+HTTP Request
+include::{snippets}/MemberApi/Information/PeerReview/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/PeerReview/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/PeerReview/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/PeerReview/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/PeerReview/Success/response-fields.adoc[]
