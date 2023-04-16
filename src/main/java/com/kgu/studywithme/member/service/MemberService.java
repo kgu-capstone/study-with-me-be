@@ -9,11 +9,15 @@ import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.domain.review.PeerReviewRepository;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
+import com.kgu.studywithme.study.infra.query.dto.response.StudyWeeksDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,17 +81,42 @@ public class MemberService {
     }
 
     private void validateColleague(Long revieweeId, Long reviewerId) {
-        Set<Long> studyList1 = attendanceRepository.findStudyIdByParticipantId(revieweeId);
-        Set<Long> studyList2 = attendanceRepository.findStudyIdByParticipantId(reviewerId);
-        studyList1.retainAll(studyList2);
+        List<StudyWeeksDTO> revieweeList = attendanceRepository.findStudyIdAndWeekByParticipantId(revieweeId);
+        List<StudyWeeksDTO> reviewerList = attendanceRepository.findStudyIdAndWeekByParticipantId(reviewerId);
 
-        for (Long studyId : studyList1) {
-            Set<Integer> weekList1 = attendanceRepository.findWeekByStudyIdAndParticipantId(studyId, revieweeId);
-            Set<Integer> weekList2 = attendanceRepository.findWeekByStudyIdAndParticipantId(studyId, reviewerId);
-            weekList1.retainAll(weekList2);
+        Set<Long> commonStudyIds = getCommonStudyIds(revieweeList, reviewerList);
 
-            if (weekList1.size() >= 1) return;
+        revieweeList = remainCommonStudyIds(revieweeList, commonStudyIds);
+        reviewerList = remainCommonStudyIds(reviewerList, commonStudyIds);
+
+        for (Long studyId : commonStudyIds) {
+            List<Integer> revieweeWeeks = getWeeks(revieweeList, studyId);
+            List<Integer> reviewerWeeks = getWeeks(reviewerList, studyId);
+
+            revieweeWeeks.retainAll(reviewerWeeks);
+            if (revieweeWeeks.size() > 0) return;
         }
         throw StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_NOT_FOUND);
+    }
+
+    private Set<Long> getCommonStudyIds(List<StudyWeeksDTO> revieweeList, List<StudyWeeksDTO> reviewerList) {
+        return revieweeList.stream()
+                .map(StudyWeeksDTO::getStudyId)
+                .filter(reviewerList.stream().map(StudyWeeksDTO::getStudyId).collect(Collectors.toSet())::contains)
+                .collect(Collectors.toSet());
+    }
+
+    private static List<StudyWeeksDTO> remainCommonStudyIds(List<StudyWeeksDTO> list, Set<Long> commonStudyIds) {
+        return list.stream()
+                .filter(dto -> commonStudyIds.contains(dto.getStudyId()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Integer> getWeeks(List<StudyWeeksDTO> list, Long studyId) {
+        return list.stream()
+                .filter(dto ->  dto.getStudyId().equals(studyId))
+                .findFirst()
+                .map(StudyWeeksDTO::getWeeks)
+                .orElse(Collections.emptyList());
     }
 }

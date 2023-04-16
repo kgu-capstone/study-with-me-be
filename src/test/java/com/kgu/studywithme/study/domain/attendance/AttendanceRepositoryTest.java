@@ -10,8 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Set;
-
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,28 +47,6 @@ public class AttendanceRepositoryTest extends RepositoryTest {
                 () -> assertThat(findAttendance.getParticipant()).isEqualTo(host),
                 () -> assertThat(findAttendance.getStatus()).isEqualTo(AttendanceStatus.NON_ATTENDANCE),
                 () -> assertThat(findAttendance.getWeek()).isEqualTo(1)
-        );
-    }
-
-    @Test
-    @DisplayName("스터디 Id와 참여자 Id로 출석 주차를 조회한다")
-    void findWeekByStudyIdAndParticipantId() {
-        Set<Integer> weeks = attendanceRepository.findWeekByStudyIdAndParticipantId(study.getId(), host.getId());
-
-        assertAll(
-                () -> assertThat(weeks.size()).isEqualTo(1),
-                () -> assertThat(weeks).contains(1)
-        );
-    }
-
-    @Test
-    @DisplayName("참여자 Id로 참여자의 출석 정보가 존재하는 스터디 Id를 조회한다")
-    void findStudyIdByParticipantId() {
-        Set<Long> studyIds = attendanceRepository.findStudyIdByParticipantId(host.getId());
-
-        assertAll(
-                () -> assertThat(studyIds.size()).isEqualTo(1),
-                () -> assertThat(studyIds).contains(study.getId())
         );
     }
 }
