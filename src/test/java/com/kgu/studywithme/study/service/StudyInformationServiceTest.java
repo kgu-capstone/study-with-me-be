@@ -170,13 +170,16 @@ class StudyInformationServiceTest extends ServiceTest {
                 )
         );
         AttendanceAssmbler result1 = studyInformationService.getAttendances(study.getId());
-        Map<Long, Map<Integer, AttendanceStatus>> expectSummary1 = Map.of(
-                host.getId(), Map.of(1, ATTENDANCE),
-                members[0].getId(), Map.of(1, ATTENDANCE),
-                members[1].getId(), Map.of(1, LATE),
-                members[2].getId(), Map.of(1, ABSENCE)
+        List<Integer> expectWeek1 = List.of(1);
+        List<Map<Long, AttendanceStatus>> expectSummary1 = List.of(
+                Map.of(
+                        host.getId(), ATTENDANCE,
+                        members[0].getId(), ATTENDANCE,
+                        members[1].getId(), LATE,
+                        members[2].getId(), ABSENCE
+                )
         );
-        assertThatAttendancesMatch(result1.summaries(), expectSummary1);
+        assertThatAttendancesMatch(result1.summaries(), expectWeek1, expectSummary1);
 
         /* 1주차 + 2주차 출석 */
         applyAndApproveMembers(members[3]);
@@ -191,14 +194,23 @@ class StudyInformationServiceTest extends ServiceTest {
                 )
         );
         AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
-        Map<Long, Map<Integer, AttendanceStatus>> expectSummary2 = Map.of(
-                host.getId(), Map.of(2, ATTENDANCE, 1, ATTENDANCE),
-                members[0].getId(), Map.of(2, LATE, 1, ATTENDANCE),
-                members[1].getId(), Map.of(2, ATTENDANCE, 1, LATE),
-                members[2].getId(), Map.of(2, ATTENDANCE, 1, ABSENCE),
-                members[3].getId(), Map.of(2, ATTENDANCE)
+        List<Integer> expectWeek2 = List.of(2, 1);
+        List<Map<Long, AttendanceStatus>> expectSummary2 = List.of(
+                Map.of(
+                        host.getId(), ATTENDANCE,
+                        members[0].getId(), LATE,
+                        members[1].getId(), ATTENDANCE,
+                        members[2].getId(), ATTENDANCE,
+                        members[3].getId(), ATTENDANCE
+                ),
+                Map.of(
+                        host.getId(), ATTENDANCE,
+                        members[0].getId(), ATTENDANCE,
+                        members[1].getId(), LATE,
+                        members[2].getId(), ABSENCE
+                )
         );
-        assertThatAttendancesMatch(result2.summaries(), expectSummary2);
+        assertThatAttendancesMatch(result2.summaries(), expectWeek2, expectSummary2);
     }
 
     private List<Integer> getMemberAgeList() {
@@ -284,21 +296,24 @@ class StudyInformationServiceTest extends ServiceTest {
         }
     }
 
-    private void assertThatAttendancesMatch(Map<StudyMember, List<AttendanceSummary>> result,
-                                            Map<Long, Map<Integer, AttendanceStatus>> expectSummary) {
-        for (StudyMember studyMember : result.keySet()) {
-            assertThat(expectSummary.containsKey(studyMember.id())).isTrue();
+    private void assertThatAttendancesMatch(Map<Integer, List<AttendanceSummary>> result,
+                                            List<Integer> weeks,
+                                            List<Map<Long, AttendanceStatus>> expectSummary) {
+        int totalSize = weeks.size();
+        assertThat(result).hasSize(totalSize);
 
-            List<AttendanceSummary> attendanceSummaries = result.get(studyMember);
-            Map<Integer, AttendanceStatus> expectAttendanceSummaries = expectSummary.get(studyMember.id());
+        for (int i = 0; i < weeks.size(); i++) {
+            int week = weeks.get(i);
+            List<AttendanceSummary> attendanceSummaries = result.get(week);
+            Map<Long, AttendanceStatus> expectAttendanceSummaries = expectSummary.get(i);
 
             for (AttendanceSummary summary : attendanceSummaries) {
-                int week = summary.week();
+                StudyMember participant = summary.participant();
                 String status = summary.status();
 
                 assertAll(
-                        () -> assertThat(expectAttendanceSummaries.containsKey(week)).isTrue(),
-                        () -> assertThat(expectAttendanceSummaries.get(week).getDescription()).isEqualTo(status)
+                        () -> assertThat(expectAttendanceSummaries.containsKey(participant.id())).isTrue(),
+                        () -> assertThat(expectAttendanceSummaries.get(participant.id()).getDescription()).isEqualTo(status)
                 );
             }
         }

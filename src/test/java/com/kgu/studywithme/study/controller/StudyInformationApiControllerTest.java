@@ -384,10 +384,10 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("summaries").description("스터디 멤버별 출석 요약 정보"),
-                                            fieldWithPath("summaries.*").description("특정 스터디 멤버 정보"),
-                                            fieldWithPath("summaries.*[].week").description("스터디 주차 정보"),
-                                            fieldWithPath("summaries.*[].status").description("주차별 출석 현황")
+                                            fieldWithPath("summaries.*").description("스터디 각 주차"),
+                                            fieldWithPath("summaries.*[].participant.id").description("스터디 참여자 ID(PK)"),
+                                            fieldWithPath("summaries.*[].participant.nickname").description("스터디 참여자 닉네임"),
+                                            fieldWithPath("summaries.*[].status").description("각 주차별 참여자의 출석 상태")
                                     )
                             )
                     );
@@ -455,49 +455,49 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private AttendanceAssmbler generateStudyAttendances() {
-        Map<StudyMember, List<AttendanceSummary>> summaries = new HashMap<>();
+        Map<Integer, List<AttendanceSummary>> summaries = new HashMap<>();
         summaries.put(
-                new StudyMember(1L, "닉네임1"),
+                5,
                 List.of(
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription()),
-                        new AttendanceSummary(1, ATTENDANCE.getDescription())
+                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), NON_ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), NON_ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), NON_ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(5L, "닉네임5"), ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                new StudyMember(2L, "닉네임2"),
+                4,
                 List.of(
-                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription()),
-                        new AttendanceSummary(1, ATTENDANCE.getDescription())
+                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), LATE.getDescription()),
+                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                new StudyMember(3L, "닉네임3"),
+                3,
                 List.of(
-                        new AttendanceSummary(5, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ABSENCE.getDescription()),
-                        new AttendanceSummary(1, ATTENDANCE.getDescription())
+                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ABSENCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), LATE.getDescription()),
+                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                new StudyMember(4L, "닉네임4"),
+                2,
                 List.of(
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, LATE.getDescription())
+                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                new StudyMember(5L, "닉네임5"),
+                1,
                 List.of(
-                        new AttendanceSummary(5, NON_ATTENDANCE.getDescription())
+                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
+                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), ATTENDANCE.getDescription())
                 )
         );
 

@@ -47,10 +47,14 @@ public class StudyInformationService {
     public AttendanceAssmbler getAttendances(Long studyId) {
         List<AttendanceInformation> result = studyRepository.findAttendanceByStudyId(studyId);
 
-        Map<StudyMember, List<AttendanceSummary>> summaries = result.stream()
+        Map<Integer, List<AttendanceSummary>> summaries = result.stream()
                 .collect(Collectors.groupingBy(
-                        AttendanceInformation::getParticipant,
-                        Collectors.mapping(summary -> new AttendanceSummary(summary.getWeek(), summary.getStatus()), Collectors.toList())
+                        AttendanceInformation::getWeek, // 주차별
+                        Collectors.mapping(summary -> // 참여자 출석 정보
+                                new AttendanceSummary(
+                                        summary.getParticipant(), summary.getStatus()
+                                ), Collectors.toList()
+                        )
                 ));
 
         return new AttendanceAssmbler(summaries);
