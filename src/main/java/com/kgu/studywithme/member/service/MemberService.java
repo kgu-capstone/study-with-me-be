@@ -43,7 +43,6 @@ public class MemberService {
     @Transactional
     public void writeReview(Long revieweeId, Long reviewerId, String content) {
         validateSelfReviewNotAllowed(revieweeId, reviewerId);
-        validateAlreadyReview(reviewerId, reviewerId);
         validateColleague(revieweeId, reviewerId);
 
         Member reviewee = memberFindService.findById(revieweeId);
@@ -74,12 +73,6 @@ public class MemberService {
     private void validateSelfReviewNotAllowed(Long revieweeId, Long reviewerId) {
         if (revieweeId.equals(reviewerId)) {
             throw StudyWithMeException.type(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED);
-        }
-    }
-
-    private void validateAlreadyReview(Long revieweeId, Long reviewerId) {
-        if (peerReviewRepository.existsByRevieweeIdAndReviewerId(revieweeId, reviewerId)) {
-            throw StudyWithMeException.type(MemberErrorCode.ALREADY_REVIEW);
         }
     }
 

@@ -81,26 +81,29 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
     @DisplayName("리뷰 대상자 ID와 리뷰 작성자 ID로 리뷰를 조회한다")
     void findByRevieweeIdAndReviewerId() {
         doReview(reviewers[0], reviewers[1], reviewers[2], reviewers[3], reviewers[4]);
-
-        PeerReview[] findPeerReviews = new PeerReview[5];
-        findPeerReviews[0] = peerReviewRepository.findByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[0].getId()).orElseThrow();
-        findPeerReviews[1] = peerReviewRepository.findByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[1].getId()).orElseThrow();
-        findPeerReviews[2] = peerReviewRepository.findByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[2].getId()).orElseThrow();
-        findPeerReviews[3] = peerReviewRepository.findByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[3].getId()).orElseThrow();
-        findPeerReviews[4] = peerReviewRepository.findByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[4].getId()).orElseThrow();
-
-        assertAll(
-                () -> assertThat(findPeerReviews[0].getContent()).isEqualTo("BEST! - " + reviewers[0].getId()),
-                () -> assertThat(findPeerReviews[1].getContent()).isEqualTo("BEST! - " + reviewers[1].getId()),
-                () -> assertThat(findPeerReviews[2].getContent()).isEqualTo("BEST! - " + reviewers[2].getId()),
-                () -> assertThat(findPeerReviews[3].getContent()).isEqualTo("BEST! - " + reviewers[3].getId()),
-                () -> assertThat(findPeerReviews[4].getContent()).isEqualTo("BEST! - " + reviewers[4].getId())
-        );
+        assertThatPeerReviewMatch();
     }
 
     private void doReview(Member... reviewers) {
         for (Member reviewer : reviewers) {
             reviewee.applyPeerReview(reviewer, "BEST! - " + reviewer.getId());
         }
+    }
+
+    private void assertThatPeerReviewMatch() {
+        for (Member reviewer : reviewers) {
+            PeerReview peerReview = getPeerReview(reviewee.getId(), reviewer.getId());
+
+            assertAll(
+                    () -> assertThat(peerReview.getReviewee()).isEqualTo(reviewee),
+                    () -> assertThat(peerReview.getReviewer()).isEqualTo(reviewer),
+                    () -> assertThat(peerReview.getContent()).isEqualTo("BEST! - " + reviewer.getId())
+            );
+        }
+    }
+
+    private PeerReview getPeerReview(Long revieweeId, Long reviewerId) {
+        return peerReviewRepository.findByRevieweeIdAndReviewerId(revieweeId, reviewerId)
+                .orElseThrow();
     }
 }

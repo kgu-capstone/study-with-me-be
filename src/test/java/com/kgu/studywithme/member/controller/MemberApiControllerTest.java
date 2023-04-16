@@ -581,7 +581,7 @@ class MemberApiControllerTest extends ControllerTest {
             final MemberErrorCode expectedError = MemberErrorCode.REVIEW_NOT_FOUND;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
-                            status().isConflict(),
+                            status().isNotFound(),
                             jsonPath("$.status").exists(),
                             jsonPath("$.status").value(expectedError.getStatus().value()),
                             jsonPath("$.errorCode").exists(),
