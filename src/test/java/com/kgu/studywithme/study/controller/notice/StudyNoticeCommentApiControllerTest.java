@@ -455,8 +455,6 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
     }
 
     private NoticeCommentRequest generateNoticeCommentRequest() {
-        return NoticeCommentRequest.builder()
-                .content("확인했습니다!")
-                .build();
+        return new NoticeCommentRequest("확인했습니다!");
     }
 }
