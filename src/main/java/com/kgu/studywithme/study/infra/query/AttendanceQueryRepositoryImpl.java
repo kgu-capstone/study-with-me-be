@@ -27,10 +27,6 @@ public class AttendanceQueryRepositoryImpl implements AttendanceQueryRepository 
     }
 
     private static List<StudyWeeksDTO> convertTupleToDTO(QAttendance attendance, List<Tuple> tuples) {
-        if (tuples.isEmpty()) {
-            return null;
-        }
-
         return tuples.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(attendance.study.id),
