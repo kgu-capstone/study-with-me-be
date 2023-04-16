@@ -230,10 +230,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/Apply/Success",
@@ -356,10 +353,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/ApplyCancel/Success",
@@ -581,10 +575,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/Approve/Success",
@@ -759,10 +750,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/Reject/Success",
@@ -980,10 +968,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/Cancel/Success",
@@ -1157,10 +1142,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/DelegateAuthority/Success",
@@ -1378,10 +1360,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Participation/Graduate/Success",

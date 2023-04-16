@@ -300,9 +300,7 @@ class AttendanceApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(
-                            status().isNoContent()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Attendance/ManualCheck/Success",
