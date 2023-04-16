@@ -2,7 +2,6 @@ package com.kgu.studywithme.member.controller;
 
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.member.controller.dto.request.MemberReportRequest;
-import com.kgu.studywithme.member.controller.dto.request.MemberReviewRequest;
 import com.kgu.studywithme.member.controller.dto.request.SignUpRequest;
 import com.kgu.studywithme.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -31,22 +30,6 @@ public class MemberApiController {
                                        @ExtractPayload Long reporterId,
                                        @RequestBody @Valid MemberReportRequest request) {
         memberService.report(reporteeId, reporterId, request.reason());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/members/{revieweeId}/review")
-    public ResponseEntity<Void> writeReview(@PathVariable Long revieweeId,
-                                            @ExtractPayload Long reviewerId,
-                                            @RequestBody @Valid MemberReviewRequest request) {
-        memberService.writeReview(revieweeId, reviewerId, request.content());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/members/{revieweeId}/review")
-    public ResponseEntity<Void> updateReview(@PathVariable Long revieweeId,
-                                             @ExtractPayload Long reviewerId,
-                                             @RequestBody @Valid MemberReviewRequest request) {
-        memberService.updateReview(revieweeId, reviewerId, request.content());
         return ResponseEntity.noContent().build();
     }
 }

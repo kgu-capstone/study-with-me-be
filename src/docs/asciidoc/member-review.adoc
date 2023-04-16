@@ -63,7 +63,7 @@ include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/path-parameters.ad
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/response-body.adoc[]
 
-=== 2. Reviewee에 대한 Reviewer의 피어리뷰를 찾을 수 없으면 수정에 실패한다
+=== 2. 피어리뷰 기록이 존재하지 않는다면 수정에 실패한다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-headers.adoc[]
@@ -73,7 +73,7 @@ include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-fields.ado
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/response-body.adoc[]
 
-=== 3. Reviewee에 대한 Reviewer의 피어리뷰 수정에 성공한다
+=== 3. 피어리뷰 수정에 성공한다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Update/Success/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Update/Success/request-headers.adoc[]
