@@ -50,7 +50,7 @@ public class Member extends BaseEntity {
     @Embedded
     private PeerReviews peerReviews;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Interest> interests = new ArrayList<>();
 
     @Builder
