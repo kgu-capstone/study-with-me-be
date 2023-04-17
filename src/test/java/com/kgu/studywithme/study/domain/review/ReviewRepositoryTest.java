@@ -20,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ReviewRepositoryTest extends RepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
+
     @Autowired
     private StudyRepository studyRepository;
+
     @Autowired
     private MemberRepository memberRepository;
 

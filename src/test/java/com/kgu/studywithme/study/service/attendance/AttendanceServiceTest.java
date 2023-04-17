@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.LATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -27,15 +27,17 @@ class AttendanceServiceTest extends ServiceTest {
 
     private Member host;
     private Member member;
+    private Member anonymous;
     private Study study;
 
-    private static final String STATUS = AttendanceStatus.LATE.getDescription();
+    private static final String STATUS = LATE.getDescription();
     private static final Integer WEEK = 1;
 
     @BeforeEach
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
         member = memberRepository.save(GHOST.toMember());
+        anonymous = memberRepository.save(DUMMY1.toMember());
 
         study = studyRepository.save(TOEIC.toOnlineStudy(host));
         study.applyParticipation(member);
@@ -51,7 +53,7 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
         void memberIsNotHost() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), member.getId(), STATUS, WEEK))
+            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), member.getId(), WEEK, STATUS))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         }
@@ -59,7 +61,7 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("스터디 참여자가 아니면 출석 정보 Instance가 존재하지 않고 그에 따라서 출석 체크를 할 수 없다")
         void attendanceNotFound() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), STATUS, WEEK + 1))
+            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), anonymous.getId(), host.getId(), WEEK, STATUS))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ATTENDANCE_NOT_FOUND.getMessage());
         }
@@ -67,14 +69,14 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("수동 출석 체크에 성공한다")
         void success() {
-            attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), STATUS, WEEK);
+            attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), WEEK, STATUS);
 
             Attendance findAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), member.getId(), WEEK)
-                    .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND));
+                    .orElseThrow();
 
             assertAll(
-                    () -> assertThat(findAttendance.getStatus().getDescription()).isEqualTo(STATUS),
-                    () -> assertThat(findAttendance.getWeek()).isEqualTo(WEEK)
+                    () -> assertThat(findAttendance.getWeek()).isEqualTo(WEEK),
+                    () -> assertThat(findAttendance.getStatus().getDescription()).isEqualTo(STATUS)
             );
         }
     }

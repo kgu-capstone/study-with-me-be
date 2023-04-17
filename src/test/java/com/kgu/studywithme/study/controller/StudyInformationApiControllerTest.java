@@ -112,11 +112,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
             ReviewAssembler response = new ReviewAssembler(
                     9,
                     List.of(
-                            new ReviewInformation(1L, Nickname.from("닉네임1"), "리뷰~~", LocalDateTime.now().minusDays(1)),
-                            new ReviewInformation(2L, Nickname.from("닉네임2"), "리뷰~~", LocalDateTime.now().minusDays(2)),
-                            new ReviewInformation(3L, Nickname.from("닉네임3"), "리뷰~~", LocalDateTime.now().minusDays(3)),
-                            new ReviewInformation(4L, Nickname.from("닉네임4"), "리뷰~~", LocalDateTime.now().minusDays(4)),
-                            new ReviewInformation(5L, Nickname.from("닉네임5"), "리뷰~~", LocalDateTime.now().minusDays(5))
+                            new ReviewInformation(1L, Nickname.from("닉네임1"), "리뷰1", LocalDateTime.now().minusDays(1)),
+                            new ReviewInformation(2L, Nickname.from("닉네임2"), "리뷰2", LocalDateTime.now().minusDays(2)),
+                            new ReviewInformation(3L, Nickname.from("닉네임3"), "리뷰3", LocalDateTime.now().minusDays(3)),
+                            new ReviewInformation(4L, Nickname.from("닉네임4"), "리뷰4", LocalDateTime.now().minusDays(4)),
+                            new ReviewInformation(5L, Nickname.from("닉네임5"), "리뷰5", LocalDateTime.now().minusDays(5))
                     )
             );
             given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
@@ -385,7 +385,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private NoticeInformation buildNotice(long id) {
-        NoticeInformation noticeInformation = NoticeInformation.builder()
+        NoticeInformation notice = NoticeInformation.builder()
                 .id(id)
                 .title("제목")
                 .content("내용")
@@ -397,18 +397,18 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         List<CommentInformation> comments = new ArrayList<>();
         for (long index = 1; index <= 3; index++) {
-            CommentInformation information = CommentInformation.builder()
+            CommentInformation comment = CommentInformation.builder()
                     .id(index)
                     .noticeId(id)
                     .content("댓글")
                     .writerId(generateRandomId())
                     .writerNickname(Nickname.from("댓글작성자"))
                     .build();
-            comments.add(information);
+            comments.add(comment);
         }
-        noticeInformation.setComments(comments);
+        notice.setComments(comments);
 
-        return noticeInformation;
+        return notice;
     }
 
     private Long generateRandomId() {

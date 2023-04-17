@@ -4,9 +4,6 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.fixture.StudyFixture;
-import com.kgu.studywithme.study.domain.Description;
-import com.kgu.studywithme.study.domain.StudyName;
-import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
@@ -61,10 +58,7 @@ class StudySearchApiControllerTest extends ControllerTest {
             final Category category = PROGRAMMING;
             StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, type, null, null);
 
-            DefaultStudyResponse response = DefaultStudyResponse.builder()
-                    .studyList(generateCategoryResult(8))
-                    .hasNext(true)
-                    .build();
+            DefaultStudyResponse response = new DefaultStudyResponse(generateCategoryResult(8), true);
             given(studySearchService.findStudyByCategory(condition, page)).willReturn(response);
 
             // when
@@ -184,10 +178,7 @@ class StudySearchApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
             StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, type, null, null);
 
-            DefaultStudyResponse response = DefaultStudyResponse.builder()
-                    .studyList(generateRecommendResult(8))
-                    .hasNext(true)
-                    .build();
+            DefaultStudyResponse response = new DefaultStudyResponse(generateRecommendResult(8), true);
             given(studySearchService.findStudyByRecommend(condition, page)).willReturn(response);
 
             // when
@@ -272,22 +263,20 @@ class StudySearchApiControllerTest extends ControllerTest {
     }
 
     private static BasicStudy buildStudy(StudyFixture study, long index) {
-        BasicStudy build = BasicStudy.builder()
+        return BasicStudy.builder()
                 .id(index)
-                .name(StudyName.from(study.getName()))
-                .description(Description.from(study.getDescription()))
-                .category(study.getCategory())
-                .type(study.getType())
-                .recruitmentStatus(IN_PROGRESS)
+                .name(study.getName())
+                .description(study.getDescription())
+                .category(study.getCategory().getName())
+                .type(study.getType().getDescription())
+                .recruitmentStatus(IN_PROGRESS.getDescription())
                 .currentMembers(getRandomNumber())
-                .capacity(Capacity.from(study.getCapacity()))
+                .maxMembers(study.getCapacity())
                 .registerDate(LocalDateTime.now().minusDays(index))
                 .favoriteCount(getRandomNumber())
                 .reviewCount(getRandomNumber())
+                .hashtags(new ArrayList<>(study.getHashtags()))
                 .build();
-        build.setHashtags(new ArrayList<>(study.getHashtags()));
-
-        return build;
     }
 
     private static int getRandomNumber() {
