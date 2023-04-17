@@ -34,3 +34,12 @@ oauth2:
     auth-url: https://accounts.google.com/o/oauth2/v2/auth
     token-url: https://www.googleapis.com/oauth2/v4/token
     user-info-url: https://www.googleapis.com/oauth2/v3/userinfo
+
+cloud:
+  ncp:
+    region: kr-standard
+    end-point: kr.object.ncloudstorage.com
+    access-key: access-key
+    secret-key: secret-key
+    storage:
+      bucket: bucket-name
