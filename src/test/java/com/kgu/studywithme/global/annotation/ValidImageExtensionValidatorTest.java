@@ -46,7 +46,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하지 않는 파일 확장자면 validator를 통과하지 못한다")
     void notAllowedExtension() throws IOException {
         // given
-        MultipartFile file = createMockMultipartFile(0, "hello5.webp", "image/webp");
+        MultipartFile file = createMockMultipartFile("hello5.webp", "image/webp");
 
         given(context.buildConstraintViolationWithTemplate(anyString())).willReturn(builder);
         given(builder.addConstraintViolation()).willReturn(context);
@@ -65,7 +65,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하는 확장자면 validator를 통과한다")
     void allowedExtension() throws IOException {
         // given
-        MultipartFile file = createMockMultipartFile(0, "hello4.png", "image/png");
+        MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
 
         // when
         boolean actual = validator.isValid(file, context);

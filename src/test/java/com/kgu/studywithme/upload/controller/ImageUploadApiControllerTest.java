@@ -43,7 +43,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final MultipartFile file = createMockMultipartFile(0, "hello4.png", "image/png");
+            final MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .multipart(BASE_URL, STUDY_ID, WEEK)
                     .file((MockMultipartFile) file);
@@ -89,7 +89,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
             // when
-            final MultipartFile file = createMockMultipartFile(0, "hello5.webp", "image/webp");
+            final MultipartFile file = createMockMultipartFile("hello5.webp", "image/webp");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .multipart(BASE_URL, STUDY_ID, WEEK)
                     .file((MockMultipartFile) file)
@@ -196,7 +196,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
             given(uploader.uploadWeeklyImage(any(), any(), any(), any())).willReturn(uploadLink);
 
             // when
-            final MultipartFile file = createMockMultipartFile(0, "hello4.png", "image/png");
+            final MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .multipart(BASE_URL, STUDY_ID, WEEK)
                     .file((MockMultipartFile) file)
