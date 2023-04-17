@@ -238,10 +238,7 @@ class OAuthApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "OAuthApi/Logout/Success",

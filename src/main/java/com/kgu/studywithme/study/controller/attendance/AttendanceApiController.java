@@ -22,7 +22,7 @@ public class AttendanceApiController {
                                                       @PathVariable Long memberId,
                                                       @ExtractPayload Long hostId,
                                                       @RequestBody @Valid AttendanceRequest request) {
-        attendanceService.manualCheckAttendance(studyId, memberId, hostId, request.status(), request.week());
+        attendanceService.manualCheckAttendance(studyId, memberId, hostId, request.week(), request.status());
         return ResponseEntity.noContent().build();
     }
 }

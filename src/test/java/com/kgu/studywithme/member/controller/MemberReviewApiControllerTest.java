@@ -1,11 +1,10 @@
-package com.kgu.studywithme.study.controller.notice;
+package com.kgu.studywithme.member.controller;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
+import com.kgu.studywithme.member.controller.dto.request.MemberReviewRequest;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
-import com.kgu.studywithme.study.controller.dto.request.NoticeCommentRequest;
-import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,23 +29,20 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Study [Controller Layer] -> StudyNoticeCommentApiController 테스트")
-class StudyNoticeCommentApiControllerTest extends ControllerTest {
+@DisplayName("Member [Controller Layer] -> MemberReviewApiController 테스트")
+class MemberReviewApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("공지사항 댓글 등록 API [POST /api/notices/{noticeId}/comment]")
-    class register {
-        private static final String BASE_URL = "/api/notices/{noticeId}/comment";
-        private static final Long NOTICE_ID = 1L;
+    @DisplayName("사용자 피어리뷰 등록 API [POST /api/members/{revieweeId}/review]")
+    class writeReview {
+        private static final String BASE_URL = "/api/members/{revieweeId}/review";
+        private static final Long REVIEWEE_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 등록에 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 등록을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, NOTICE_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
+                    .post(BASE_URL, REVIEWEE_ID);
 
             // then
             final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
@@ -62,14 +58,11 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Register/Failure/Case1",
+                                    "MemberApi/PeerReview/Write/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -81,25 +74,25 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다")
-        void memberIsNotParticipant() throws Exception {
+        @DisplayName("해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다")
+        void throwExceptionByAlreadyReview() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
-                    .when(commentService)
-                    .register(any(), any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            doThrow(StudyWithMeException.type(MemberErrorCode.ALREADY_REVIEW))
+                    .when(memberReviewService)
+                    .writeReview(any(), any(), any());
 
             // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
+            final MemberReviewRequest request = createReviewRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, NOTICE_ID)
+                    .post(BASE_URL, REVIEWEE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT;
+            final MemberErrorCode expectedError = MemberErrorCode.ALREADY_REVIEW;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -112,17 +105,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Register/Failure/Case2",
+                                    "MemberApi/PeerReview/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            fieldWithPath("content").description("리뷰 내용")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -134,19 +127,125 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("공지사항에 대한 댓글 등록에 성공한다")
+        @DisplayName("본인에게 피어리뷰를 남길 수 없다")
+        void throwExceptionBySelfReviewNotAllowed() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            doThrow(StudyWithMeException.type(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED))
+                    .when(memberReviewService)
+                    .writeReview(any(), any(), any());
+
+            // when
+            final MemberReviewRequest request = createReviewRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .post(BASE_URL, REVIEWEE_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final MemberErrorCode expectedError = MemberErrorCode.SELF_REVIEW_NOT_ALLOWED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/PeerReview/Write/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("리뷰 내용")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다")
+        void throwExceptionByCommonStudyNotFound() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            doThrow(StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_NOT_FOUND))
+                    .when(memberReviewService)
+                    .writeReview(any(), any(), any());
+
+            // when
+            final MemberReviewRequest request = createReviewRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .post(BASE_URL, REVIEWEE_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final MemberErrorCode expectedError = MemberErrorCode.COMMON_STUDY_NOT_FOUND;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/PeerReview/Write/Failure/Case4",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    requestHeaders(
+                                            headerWithName(AUTHORIZATION).description("Access Token")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("리뷰 내용")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("status").description("HTTP 상태 코드"),
+                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                                            fieldWithPath("message").description("예외 메시지")
+                                    )
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("피어리뷰 등록을 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
             doNothing()
-                    .when(commentService)
-                    .register(any(), any(), any());
+                    .when(memberReviewService)
+                    .writeReview(any(), any(), any());
 
             // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
+            final MemberReviewRequest request = createReviewRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, NOTICE_ID)
+                    .post(BASE_URL, REVIEWEE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
@@ -156,36 +255,34 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                     .andExpect(status().isNoContent())
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Register/Success",
+                                    "MemberApi/PeerReview/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("content").description("댓글 내용")
+                                            fieldWithPath("content").description("리뷰 내용")
                                     )
                             )
                     );
         }
     }
-
     @Nested
-    @DisplayName("공지사항 댓글 삭제 API [DELETE /api/notices/{noticeId}/comments/{commentId}]")
-    class remove {
-        private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
-        private static final Long NOTICE_ID = 1L;
-        private static final Long COMMENT_ID = 1L;
+    @DisplayName("사용자 피어리뷰 수정 API [PATCH /api/members/{revieweeId}/review]")
+    class updateReview {
+        private static final String BASE_URL = "/api/members/{revieweeId}/review";
+        private static final Long REVIEWEE_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 삭제에 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 수정을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, NOTICE_ID, COMMENT_ID);
+                    .patch(BASE_URL, REVIEWEE_ID);
 
             // then
             final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
@@ -201,12 +298,11 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Remove/Failure/Case1",
+                                    "MemberApi/PeerReview/Update/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -215,28 +311,32 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     )
                             )
                     );
+
         }
 
         @Test
-        @DisplayName("작성자가 아니라면 댓글을 삭제할 수 없다")
-        void memberIsNotWriter() throws Exception {
+        @DisplayName("상호간에 피어리뷰한 기록이 존재하지 않는다면 수정에 실패한다")
+        void reviewNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
-                    .when(commentService)
-                    .remove(any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            doThrow(StudyWithMeException.type(MemberErrorCode.REVIEW_NOT_FOUND))
+                    .when(memberReviewService)
+                    .updateReview(any(), any(), any());
 
             // when
+            final MemberReviewRequest request = createReviewRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, NOTICE_ID, COMMENT_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+                    .patch(BASE_URL, REVIEWEE_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
 
             // then
-            final MemberErrorCode expectedError = MemberErrorCode.MEMBER_IS_NOT_WRITER;
+            final MemberErrorCode expectedError = MemberErrorCode.REVIEW_NOT_FOUND;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
-                            status().isConflict(),
+                            status().isNotFound(),
                             jsonPath("$.status").exists(),
                             jsonPath("$.status").value(expectedError.getStatus().value()),
                             jsonPath("$.errorCode").exists(),
@@ -246,15 +346,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Remove/Failure/Case2",
+                                    "MemberApi/PeerReview/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("리뷰 내용")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -266,186 +368,46 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("공지사항에 등록한 댓글 삭제에 성공한다")
-        void success () throws Exception {
+        @DisplayName("피어리뷰 수정에 성공한다")
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
             doNothing()
-                    .when(commentService)
-                    .remove(any(), any());
+                    .when(memberReviewService)
+                    .updateReview(any(), any(), any());
 
             // when
+            final MemberReviewRequest request = createReviewRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, NOTICE_ID, COMMENT_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+                    .post(BASE_URL, REVIEWEE_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
 
             // then
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isNoContent())
                     .andDo(
                             document(
-                                    "StudyApi/NoticeComment/Remove/Success",
+                                    "MemberApi/PeerReview/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
+                                            parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("content").description("리뷰 내용")
                                     )
                             )
                     );
         }
     }
 
-    @Nested
-    @DisplayName("공지사항 댓글 수정 API [PUT /api/notices/{noticeId}/comments/{commentId}]")
-    class update {
-        private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
-        private static final Long NOTICE_ID = 1L;
-        private static final Long COMMENT_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 수정에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .put(BASE_URL, NOTICE_ID, COMMENT_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/NoticeComment/Update/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("수정할 댓글 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("content").description("수정할 댓글 내용")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("작성자가 아니라면 댓글을 수정할 수 없다")
-        void memberIsNotWriter() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
-                    .when(commentService)
-                    .update(any(), any(), any());
-
-            // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .put(BASE_URL, NOTICE_ID, COMMENT_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-
-            // then
-            final MemberErrorCode expectedError = MemberErrorCode.MEMBER_IS_NOT_WRITER;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isConflict(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/NoticeComment/Update/Failure/Case2",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
-                                    pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("수정할 댓글 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("content").description("수정할 댓글 내용")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("공지사항에 대한 댓글 수정에 성공한다")
-        void success () throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doNothing()
-                    .when(commentService)
-                    .update(any(), any(), any());
-
-            // when
-            final NoticeCommentRequest request = generateNoticeCommentRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .put(BASE_URL, NOTICE_ID, COMMENT_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-            // then
-            mockMvc.perform(requestBuilder)
-                    .andExpect(status().isNoContent())
-                    .andDo(
-                            document(
-                                    "StudyApi/NoticeComment/Update/Success",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
-                                    pathParameters(
-                                            parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
-                                            parameterWithName("commentId").description("수정할 댓글 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("content").description("수정할 댓글 내용")
-                                    )
-                            )
-                    );
-        }
-    }
-
-    private NoticeCommentRequest generateNoticeCommentRequest() {
-        return new NoticeCommentRequest("확인했습니다!");
+    private MemberReviewRequest createReviewRequest() {
+        return new MemberReviewRequest("BEST TEAM MEMBER!");
     }
 }

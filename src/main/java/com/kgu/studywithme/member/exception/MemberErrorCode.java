@@ -18,6 +18,9 @@ public enum MemberErrorCode implements ErrorCode {
     MEMBER_IS_NOT_WRITER(HttpStatus.CONFLICT, "MEMBER_008", "작성자가 아닙니다."),
     ALREADY_REVIEW(HttpStatus.CONFLICT, "MEMBER_009", "이미 리뷰한 사용자입니다."),
     REPORT_IS_STILL_RECEIVED(HttpStatus.CONFLICT, "MEMBER_010", "해당 사용자에 대해서 이전에 신고하신 내역이 처리중입니다."),
+    SELF_REVIEW_NOT_ALLOWED(HttpStatus.CONFLICT, "MEMBER_011", "본인에게 피어리뷰를 남길 수 없습니다."),
+    COMMON_STUDY_NOT_FOUND(HttpStatus.CONFLICT, "MEMBER_012", "함께 스터디를 진행한 기록이 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_013", "피어리뷰를 찾을 수 없습니다."),
     ;
 
     private final HttpStatus status;

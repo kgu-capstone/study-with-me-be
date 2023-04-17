@@ -12,6 +12,7 @@ import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Member [Repository Layer] -> PeerReviewRepository 테스트")
 public class PeerReviewRepositoryTest extends RepositoryTest {
@@ -36,7 +37,7 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("사용자의 PeerReview를 조회한다")
-    void findContentByRevieweeId() {
+    void findPeerReviewByMemberId() {
         /* 3명 피어리뷰 */
         doReview(reviewers[0], reviewers[1], reviewers[2]);
 
@@ -62,9 +63,33 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
         );
     }
 
+    @Test
+    @DisplayName("리뷰 대상자 ID와 리뷰 작성자 ID로 리뷰를 조회한다")
+    void findByRevieweeIdAndReviewerId() {
+        doReview(reviewers[0], reviewers[1], reviewers[2], reviewers[3], reviewers[4]);
+        assertThatPeerReviewMatch();
+    }
+
     private void doReview(Member... reviewers) {
         for (Member reviewer : reviewers) {
             reviewee.applyPeerReview(reviewer, "BEST! - " + reviewer.getId());
         }
+    }
+
+    private void assertThatPeerReviewMatch() {
+        for (Member reviewer : reviewers) {
+            PeerReview peerReview = getPeerReview(reviewee.getId(), reviewer.getId());
+
+            assertAll(
+                    () -> assertThat(peerReview.getReviewee()).isEqualTo(reviewee),
+                    () -> assertThat(peerReview.getReviewer()).isEqualTo(reviewer),
+                    () -> assertThat(peerReview.getContent()).isEqualTo("BEST! - " + reviewer.getId())
+            );
+        }
+    }
+
+    private PeerReview getPeerReview(Long revieweeId, Long reviewerId) {
+        return peerReviewRepository.findByRevieweeIdAndReviewerId(revieweeId, reviewerId)
+                .orElseThrow();
     }
 }

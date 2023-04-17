@@ -17,7 +17,7 @@ public class AttendanceService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public void manualCheckAttendance(Long studyId, Long memberId, Long hostId, String status, Integer week) {
+    public void manualCheckAttendance(Long studyId, Long memberId, Long hostId, Integer week, String status) {
         validateHost(studyId, hostId);
 
         Attendance attendance = getParticipantAttendance(studyId, memberId, week);

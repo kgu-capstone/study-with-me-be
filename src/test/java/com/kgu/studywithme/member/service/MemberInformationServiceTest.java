@@ -111,7 +111,7 @@ class MemberInformationServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("사용자의 PeerReview를 조회한다")
+    @DisplayName("사용자의 피어리뷰를 조회한다")
     void getPeerReviews() {
         // given
         peerReviewRepository.save(PeerReview.doReview(host, member, "host는 최고다."));

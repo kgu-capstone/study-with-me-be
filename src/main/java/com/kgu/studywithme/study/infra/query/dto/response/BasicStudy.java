@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.domain.StudyName;
 import com.kgu.studywithme.study.domain.StudyType;
 import com.kgu.studywithme.study.domain.participant.Capacity;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class BasicStudy {
     private final Long id;
     private final String name;
@@ -28,10 +31,11 @@ public class BasicStudy {
     private final long reviewCount;
     private List<String> hashtags;
 
-    @Builder
     @QueryProjection
-    public BasicStudy(Long id, StudyName name, Description description, Category category, StudyType type, RecruitmentStatus recruitmentStatus,
-                      long currentMembers, Capacity capacity, LocalDateTime registerDate, long favoriteCount, long reviewCount) {
+    public BasicStudy(Long id, StudyName name, Description description,
+                      Category category, StudyType type, RecruitmentStatus recruitmentStatus,
+                      long currentMembers, Capacity capacity, LocalDateTime registerDate,
+                      long favoriteCount, long reviewCount) {
         this.id = id;
         this.name = name.getValue();
         this.description = description.getValue();

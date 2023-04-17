@@ -15,8 +15,10 @@ import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
+import com.kgu.studywithme.member.controller.MemberReviewApiController;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
+import com.kgu.studywithme.member.service.MemberReviewService;
 import com.kgu.studywithme.member.service.MemberService;
 import com.kgu.studywithme.study.controller.*;
 import com.kgu.studywithme.study.controller.attendance.AttendanceApiController;
@@ -49,16 +51,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest({
-        TokenReissueApiController.class, MemberApiController.class, OAuthApiController.class,
-        CategoryApiController.class, StudyParticipationApiController.class, StudyApiController.class,
-        FavoriteApiController.class, StudySearchApiController.class, StudyInformationApiController.class,
-        StudyNoticeApiController.class, MemberInformationApiController.class, StudyNoticeCommentApiController.class,
-        StudyReviewApiController.class, AttendanceApiController.class
+        // auth
+        OAuthApiController.class, TokenReissueApiController.class,
+
+        // category & favorite
+        CategoryApiController.class, FavoriteApiController.class,
+
+        // member
+        MemberApiController.class, MemberInformationApiController.class, MemberReviewApiController.class,
+
+        // study
+        StudyApiController.class, StudyInformationApiController.class, StudyParticipationApiController.class,
+        StudyReviewApiController.class, StudySearchApiController.class,
+        StudyNoticeApiController.class, StudyNoticeCommentApiController.class,
+        AttendanceApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
 @AutoConfigureRestDocs
 public abstract class ControllerTest {
+    // common
     @Autowired
     protected MockMvc mockMvc;
 
@@ -68,12 +80,7 @@ public abstract class ControllerTest {
     @MockBean
     protected JwtTokenProvider jwtTokenProvider;
 
-    @MockBean
-    protected TokenReissueService tokenReissueService;
-
-    @MockBean
-    protected MemberService memberService;
-
+    // auth
     @MockBean
     protected OAuthUri oAuthUri;
 
@@ -81,40 +88,52 @@ public abstract class ControllerTest {
     protected OAuthService oAuthService;
 
     @MockBean
+    protected TokenReissueService tokenReissueService;
+
+    // category & favorite
+    @MockBean
     protected CategoryService categoryService;
-
-    @MockBean
-    protected ParticipationService participationService;
-
-    @MockBean
-    protected StudyService studyService;
 
     @MockBean
     protected FavoriteManageService favoriteManageService;
 
+    // member
     @MockBean
-    protected StudySearchService studySearchService;
-
-    @MockBean
-    protected StudyFindService studyFindService;
+    protected MemberService memberService;
 
     @MockBean
     protected MemberFindService memberFindService;
 
     @MockBean
-    protected StudyInformationService studyInformationService;
-
-    @MockBean
-    protected NoticeService noticeService;
-    
-    @MockBean
     protected MemberInformationService memberInformationService;
 
     @MockBean
-    protected NoticeCommentService commentService;
+    protected MemberReviewService memberReviewService;
+
+    // study
+    @MockBean
+    protected StudyService studyService;
+
+    @MockBean
+    protected StudyFindService studyFindService;
+
+    @MockBean
+    protected StudyInformationService studyInformationService;
+
+    @MockBean
+    protected ParticipationService participationService;
 
     @MockBean
     protected StudyReviewService studyReviewService;
+
+    @MockBean
+    protected StudySearchService studySearchService;
+
+    @MockBean
+    protected NoticeService noticeService;
+
+    @MockBean
+    protected NoticeCommentService commentService;
 
     @MockBean
     protected AttendanceService attendanceService;

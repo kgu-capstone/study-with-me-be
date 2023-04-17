@@ -17,7 +17,7 @@ class OAuthPropertiesTest {
     private OAuthProperties properties;
 
     @Test
-    @DisplayName("Google OAuth Properties가 제대로 Binding되는지 확인한다")
+    @DisplayName("Google OAuth Properties가 yml에 있는 값을 제대로 읽어내는지 확인한다")
     void check() {
         assertAll(
                 () -> assertThat(properties.getGrantType()).isEqualTo("authorization_code"),
