@@ -211,7 +211,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "ImageUploadApi/Failure/Case3",
+                                    "ImageUploadApi/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestHeaders(

@@ -1,0 +1,47 @@
+= 이미지 업로드 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 이미지 업로드
+=== 1. Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다
+HTTP Request
+include::{snippets}/ImageUploadApi/Failure/Case1/http-request.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case1/request-parts.adoc[]
+
+HTTP Response
+include::{snippets}/ImageUploadApi/Failure/Case1/response-body.adoc[]
+
+=== 2. 허용하는 이미지 확장자[jpg, jpeg, png, gif]가 아니면 클라우드에 업로드가 불가능하다
+HTTP Request
+include::{snippets}/ImageUploadApi/Failure/Case2/http-request.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case2/request-headers.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case2/request-parts.adoc[]
+
+HTTP Response
+include::{snippets}/ImageUploadApi/Failure/Case2/response-body.adoc[]
+
+=== 3. 이미지를 업로드하지 않으면 클라우드에 업로드를 실패한다
+HTTP Request
+include::{snippets}/ImageUploadApi/Failure/Case3/http-request.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case3/request-headers.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/ImageUploadApi/Failure/Case3/request-parts.adoc[]
+
+HTTP Response
+include::{snippets}/ImageUploadApi/Failure/Case3/response-body.adoc[]
+
+=== 4. 클라우드에 이미지 업로드를 성공한다
+HTTP Request
+include::{snippets}/ImageUploadApi/Success/http-request.adoc[]
+include::{snippets}/ImageUploadApi/Success/request-headers.adoc[]
+include::{snippets}/ImageUploadApi/Success/path-parameters.adoc[]
+include::{snippets}/ImageUploadApi/Success/request-parts.adoc[]
+
+HTTP Response
+include::{snippets}/ImageUploadApi/Success/response-body.adoc[]
+include::{snippets}/ImageUploadApi/Success/response-fields.adoc[]
