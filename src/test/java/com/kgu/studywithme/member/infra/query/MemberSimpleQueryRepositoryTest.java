@@ -99,7 +99,7 @@ class MemberSimpleQueryRepositoryTest extends RepositoryTest {
 
     private void applyAttandance(Study study, Member member, List<Integer> weeks) {
         for (int week : weeks) {
-            study.recordAttendance(week, ATTENDANCE, member);
+            study.recordAttendance(member, week, ATTENDANCE);
         }
     }
 

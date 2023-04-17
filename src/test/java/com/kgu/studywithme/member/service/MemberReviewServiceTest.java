@@ -41,10 +41,10 @@ class MemberReviewServiceTest extends ServiceTest {
         beParticipation(study, participants[0], participants[1], participants[2]);
 
         weekRepository.save(STUDY_WEEKLY_1.toWeekWithAssignment(study));
-        attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, host));
-        attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, participants[0]));
-        attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, participants[1]));
-        attendanceRepository.save(Attendance.recordAttendance(1, NON_ATTENDANCE, study, participants[2]));
+        attendanceRepository.save(Attendance.recordAttendance(study, host, 1, NON_ATTENDANCE));
+        attendanceRepository.save(Attendance.recordAttendance(study, participants[0], 1, NON_ATTENDANCE));
+        attendanceRepository.save(Attendance.recordAttendance(study, participants[1], 1, NON_ATTENDANCE));
+        attendanceRepository.save(Attendance.recordAttendance(study, participants[2], 1, NON_ATTENDANCE));
     }
 
     @Nested
