@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createMockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +34,9 @@ class FileUploaderTest extends InfraTest {
     @Mock
     private AmazonS3 amazonS3;
     private static final String BUCKET = "bucket";
-    private static final Long STUDY_ID = 1L;
-    private static final Integer WEEK_1 = 1;
-    private static final Long MEMBER_ID = 1L;
+    private static final String IMAGE = "images";
+    private static final String ATTACHMENT = "attachments";
+    private static final String SUBMIT = "submits";
 
     @BeforeEach
     void setUp() {
@@ -53,10 +54,10 @@ class FileUploaderTest extends InfraTest {
             MultipartFile emptyFile = new MockMultipartFile("file", "empty.txt", "text/plain", new byte[]{});
 
             // when - then
-            assertThatThrownBy(() -> uploader.uploadWeeklyImage(STUDY_ID, WEEK_1, MEMBER_ID, nullFile))
+            assertThatThrownBy(() -> uploader.uploadWeeklyImage(nullFile))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
-            assertThatThrownBy(() -> uploader.uploadWeeklyImage(STUDY_ID, WEEK_1, MEMBER_ID, emptyFile))
+            assertThatThrownBy(() -> uploader.uploadWeeklyImage(emptyFile))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
         }
@@ -70,11 +71,11 @@ class FileUploaderTest extends InfraTest {
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
-            URL mockUrl = new URL(String.format("https://kr.object.ncloudstorage.com/%s/images/1-1-1-work.txt", BUCKET));
+            URL mockUrl = new URL(createUploadLink(IMAGE, "work.txt"));
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
-            String uploadUrl = uploader.uploadWeeklyImage(STUDY_ID, WEEK_1, MEMBER_ID, file);
+            String uploadUrl = uploader.uploadWeeklyImage(file);
 
             // then
             verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
@@ -94,8 +95,8 @@ class FileUploaderTest extends InfraTest {
             List<MultipartFile> emptyFiles = List.of();
 
             // when
-            List<String> nullFilesUrls = uploader.uploadWeeklyAttachments(STUDY_ID, WEEK_1, MEMBER_ID, nullFiles);
-            List<String> emptyFilesUrls = uploader.uploadWeeklyAttachments(STUDY_ID, WEEK_1, MEMBER_ID, emptyFiles);
+            List<String> nullFilesUrls = uploader.uploadWeeklyAttachments(nullFiles);
+            List<String> emptyFilesUrls = uploader.uploadWeeklyAttachments(emptyFiles);
 
             // then
             assertAll(
@@ -118,14 +119,14 @@ class FileUploaderTest extends InfraTest {
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
-            URL mockUrl1 = new URL(String.format("https://kr.object.ncloudstorage.com/%s/attachments/1-1-1-hello1.txt", BUCKET));
-            URL mockUrl2 = new URL(String.format("https://kr.object.ncloudstorage.com/%s/attachments/1-1-1-hello2.hwpx", BUCKET));
-            URL mockUrl3 = new URL(String.format("https://kr.object.ncloudstorage.com/%s/attachments/1-1-1-hello3.pdf", BUCKET));
-            URL mockUrl4 = new URL(String.format("https://kr.object.ncloudstorage.com/%s/attachments/1-1-1-hello4.png", BUCKET));
+            URL mockUrl1 = new URL(createUploadLink(ATTACHMENT, "hello1.txt"));
+            URL mockUrl2 = new URL(createUploadLink(ATTACHMENT, "hello2.hwpx"));
+            URL mockUrl3 = new URL(createUploadLink(ATTACHMENT, "hello3.pdf"));
+            URL mockUrl4 = new URL(createUploadLink(ATTACHMENT, "hello4.png"));
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl1, mockUrl2, mockUrl3, mockUrl4);
 
             // when
-            List<String> uploadUrls = uploader.uploadWeeklyAttachments(STUDY_ID, WEEK_1, MEMBER_ID, files);
+            List<String> uploadUrls = uploader.uploadWeeklyAttachments(files);
 
             // then
             verify(amazonS3, times(files.size())).putObject(any(PutObjectRequest.class));
@@ -147,10 +148,10 @@ class FileUploaderTest extends InfraTest {
             MultipartFile emptyFile = new MockMultipartFile("file", "empty.txt", "text/plain", new byte[]{});
 
             // when - then
-            assertThatThrownBy(() -> uploader.uploadWeeklySubmit(STUDY_ID, WEEK_1, MEMBER_ID, nullFile))
+            assertThatThrownBy(() -> uploader.uploadWeeklySubmit(nullFile))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
-            assertThatThrownBy(() -> uploader.uploadWeeklySubmit(STUDY_ID, WEEK_1, MEMBER_ID, emptyFile))
+            assertThatThrownBy(() -> uploader.uploadWeeklySubmit(emptyFile))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
         }
@@ -164,16 +165,26 @@ class FileUploaderTest extends InfraTest {
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
-            URL mockUrl = new URL(String.format("https://kr.object.ncloudstorage.com/%s/submits/1-1-1-hello3.pdf", BUCKET));
+            URL mockUrl = new URL(createUploadLink(SUBMIT, "hello3.pdf"));
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
-            String uploadUrl = uploader.uploadWeeklySubmit(STUDY_ID, WEEK_1, MEMBER_ID, file);
+            String uploadUrl = uploader.uploadWeeklySubmit(file);
 
             // then
             verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
             verify(amazonS3, times(1)).getUrl(eq(BUCKET), anyString());
             assertThat(uploadUrl).isEqualTo(mockUrl.toString());
         }
+    }
+
+    private String createUploadLink(String type, String originalFileName) {
+        return String.format(
+                "https://kr.object.ncloudstorage.com/%s/%s/%s-%s",
+                BUCKET,
+                type,
+                UUID.randomUUID(),
+                originalFileName
+        );
     }
 }

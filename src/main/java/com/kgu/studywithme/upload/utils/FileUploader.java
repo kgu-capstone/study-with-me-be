@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 import static com.kgu.studywithme.upload.utils.BucketMetadata.*;
 
@@ -35,26 +36,26 @@ public class FileUploader {
     }
 
     // Weekly 글 내부 이미지 업로드
-    public String uploadWeeklyImage(Long studyId, Integer week, Long memberId, MultipartFile file) {
+    public String uploadWeeklyImage(MultipartFile file) {
         validateFileExists(file);
-        return uploadFile(IMAGE, studyId, week, memberId, file);
+        return uploadFile(IMAGE, file);
     }
 
     // Weekly 글 첨부파일 업로드
-    public List<String> uploadWeeklyAttachments(Long studyId, Integer week, Long memberId, List<MultipartFile> files) {
+    public List<String> uploadWeeklyAttachments(List<MultipartFile> files) {
         if (CollectionUtils.isEmpty(files)) {
             return List.of();
         }
 
         return files.stream()
-                .map(file -> uploadFile(ATTACHMENT, studyId, week, memberId, file))
+                .map(file -> uploadFile(ATTACHMENT, file))
                 .toList();
     }
 
     // Weekly 과제 제출
-    public String uploadWeeklySubmit(Long studyId, Integer week, Long memberId, MultipartFile file) {
+    public String uploadWeeklySubmit(MultipartFile file) {
         validateFileExists(file);
-        return uploadFile(SUBMIT, studyId, week, memberId, file);
+        return uploadFile(SUBMIT, file);
     }
 
     private void validateFileExists(MultipartFile file) {
@@ -63,8 +64,8 @@ public class FileUploader {
         }
     }
 
-    private String uploadFile(String type, Long studyId, Integer week, Long memberId, MultipartFile file) {
-        String fileName = createFileNameByType(type, studyId, week, memberId, file.getOriginalFilename());
+    private String uploadFile(String type, MultipartFile file) {
+        String fileName = createFileNameByType(type, file.getOriginalFilename());
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
@@ -83,11 +84,13 @@ public class FileUploader {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    private String createFileNameByType(String type, Long studyId, Integer week, Long memberId, String originalFilename) {
+    private String createFileNameByType(String type, String originalFileName) {
+        String fileName = UUID.randomUUID() + "-" + originalFileName;
+
         return switch (type) {
-            case IMAGE -> String.format(WEEKLY_IMAGES, studyId, week, memberId, originalFilename);
-            case ATTACHMENT -> String.format(WEEKLY_ATTACHMENTS, studyId, week, memberId, originalFilename);
-            default -> String.format(WEEKLY_SUBMITS, studyId, week, memberId, originalFilename);
+            case IMAGE -> String.format(WEEKLY_IMAGES, fileName);
+            case ATTACHMENT -> String.format(WEEKLY_ATTACHMENTS, fileName);
+            default -> String.format(WEEKLY_SUBMITS, fileName);
         };
     }
 }

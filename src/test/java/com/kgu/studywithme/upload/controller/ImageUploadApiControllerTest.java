@@ -13,6 +13,8 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createMockMultipartFile;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
@@ -26,18 +28,17 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Upload [Controller Layer] -> ImageUploadApiController 테스트")
 class ImageUploadApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("스터디 주차 생성시 이미지 업로드 API [POST /api/studies/{studyId}/weeks/{week}/image]")
+    @DisplayName("이미지 업로드 API [POST /api/image]")
     class findAllCategory {
-        private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/image";
-        private static final Long STUDY_ID = 1L;
-        private static final int WEEK = 1;
+        private static final String BASE_URL = "/api/image";
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다")
@@ -45,7 +46,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
             // when
             final MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .multipart(BASE_URL)
                     .file((MockMultipartFile) file);
 
             // then
@@ -65,10 +66,6 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("작성중인 글의 주차")
-                                    ),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
@@ -91,7 +88,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
             // when
             final MultipartFile file = createMockMultipartFile("hello5.webp", "image/webp");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .multipart(BASE_URL)
                     .file((MockMultipartFile) file)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
@@ -116,10 +113,6 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("작성중인 글의 주차")
-                                    ),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
@@ -140,12 +133,12 @@ class ImageUploadApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
             doThrow(StudyWithMeException.type(UploadErrorCode.FILE_IS_EMPTY))
                     .when(uploader)
-                    .uploadWeeklyImage(any(), any(), any(), any());
+                    .uploadWeeklyImage(any());
 
             // when
             final MultipartFile file = new MockMultipartFile("file", new byte[0]);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .multipart(BASE_URL)
                     .file((MockMultipartFile) file)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
@@ -169,10 +162,6 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("작성중인 글의 주차")
-                                    ),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
@@ -192,13 +181,16 @@ class ImageUploadApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(1L);
 
-            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/images/1-1-1-hello4.png";
-            given(uploader.uploadWeeklyImage(any(), any(), any(), any())).willReturn(uploadLink);
+            final String uploadLink = String.format(
+                    "https://kr.object.ncloudstorage.com/bucket/images/%s-hello4.png",
+                    UUID.randomUUID()
+            );
+            given(uploader.uploadWeeklyImage(any())).willReturn(uploadLink);
 
             // when
             final MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .multipart(BASE_URL)
                     .file((MockMultipartFile) file)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
@@ -217,15 +209,11 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestHeaders(
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("작성중인 글의 주차")
-                                    ),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
                                     responseFields(
-                                            fieldWithPath("result").description("이미지 업로드 링크")
+                                            fieldWithPath("result").description("업로드된 이미지 링크")
                                     )
                             )
                     );
