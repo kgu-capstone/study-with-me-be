@@ -18,7 +18,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
-import static com.kgu.studywithme.common.utils.FileMockingUtils.createMockMultipartFile;
+import static com.kgu.studywithme.common.utils.FileMockingUtils.createMultipleMockMultipartFile;
+import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -51,7 +52,7 @@ class FileUploaderTest extends InfraTest {
         void fileIsNullOrEmpty() {
             // given
             MultipartFile nullFile = null;
-            MultipartFile emptyFile = new MockMultipartFile("file", "empty.txt", "text/plain", new byte[]{});
+            MultipartFile emptyFile = new MockMultipartFile("file", "hello.png", "image/png", new byte[]{});
 
             // when - then
             assertThatThrownBy(() -> uploader.uploadWeeklyImage(nullFile))
@@ -66,12 +67,12 @@ class FileUploaderTest extends InfraTest {
         @DisplayName("이미지 업로드를 성공한다")
         void success() throws Exception {
             // given
-            MultipartFile file = new MockMultipartFile("file", "work.txt", "text/plain", "hello world".getBytes());
+            MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
 
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
-            URL mockUrl = new URL(createUploadLink(IMAGE, "work.txt"));
+            URL mockUrl = new URL(createUploadLink(IMAGE, "hello4.png"));
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
@@ -110,10 +111,10 @@ class FileUploaderTest extends InfraTest {
         void success() throws Exception {
             // given
             List<MultipartFile> files = List.of(
-                    createMockMultipartFile("hello1.txt", "text/plain"),
-                    createMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
-                    createMockMultipartFile("hello3.pdf", "application/pdf"),
-                    createMockMultipartFile("hello4.png", "image/png")
+                    createMultipleMockMultipartFile("hello1.txt", "text/plain"),
+                    createMultipleMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
+                    createMultipleMockMultipartFile("hello3.pdf", "application/pdf"),
+                    createMultipleMockMultipartFile("hello4.png", "image/png")
             );
 
             PutObjectResult putObjectResult = new PutObjectResult();
@@ -160,7 +161,7 @@ class FileUploaderTest extends InfraTest {
         @DisplayName("과제물 업로드를 성공한다")
         void success() throws Exception {
             // given
-            MultipartFile file = createMockMultipartFile("hello3.pdf", "application/pdf");
+            MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
 
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);

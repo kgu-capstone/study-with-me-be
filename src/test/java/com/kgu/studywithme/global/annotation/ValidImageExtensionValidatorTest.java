@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.ConstraintValidatorContext;
 import java.io.IOException;
 
-import static com.kgu.studywithme.common.utils.FileMockingUtils.createMockMultipartFile;
+import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -46,7 +46,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하지 않는 파일 확장자면 validator를 통과하지 못한다")
     void notAllowedExtension() throws IOException {
         // given
-        MultipartFile file = createMockMultipartFile("hello5.webp", "image/webp");
+        MultipartFile file = createSingleMockMultipartFile("hello5.webp", "image/webp");
 
         given(context.buildConstraintViolationWithTemplate(anyString())).willReturn(builder);
         given(builder.addConstraintViolation()).willReturn(context);
@@ -65,7 +65,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하는 확장자면 validator를 통과한다")
     void allowedExtension() throws IOException {
         // given
-        MultipartFile file = createMockMultipartFile("hello4.png", "image/png");
+        MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
 
         // when
         boolean actual = validator.isValid(file, context);
