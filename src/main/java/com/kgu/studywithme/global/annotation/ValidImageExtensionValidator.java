@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class ValidImageExtensionValidator implements ConstraintValidator<ValidImageExtension, MultipartFile> {
-    private final List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "gif");
+    private static final List<String> ALLOWED_EXTENSIONS = List.of("jpg", "jpeg", "png", "gif");
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
@@ -26,7 +26,7 @@ public class ValidImageExtensionValidator implements ConstraintValidator<ValidIm
 
     private boolean isNotAllowedExtension(MultipartFile file) {
         String extension = getExtention(file);
-        return !allowedExtensions.contains(extension);
+        return !ALLOWED_EXTENSIONS.contains(extension);
     }
 
     private String getExtention(MultipartFile file) {
