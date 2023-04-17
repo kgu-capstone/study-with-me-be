@@ -34,7 +34,7 @@ public class AttendanceRepositoryTest extends RepositoryTest {
         host = memberRepository.save(JIWON.toMember());
         study = studyRepository.save(SPRING.toOnlineStudy(host));
 
-        attendanceRepository.save(Attendance.recordAttendance(1, AttendanceStatus.NON_ATTENDANCE, study, host));
+        attendanceRepository.save(Attendance.recordAttendance(study, host, 1, AttendanceStatus.NON_ATTENDANCE));
     }
 
     @Test

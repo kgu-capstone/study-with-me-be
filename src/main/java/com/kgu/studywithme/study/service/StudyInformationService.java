@@ -2,18 +2,18 @@ package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.infra.query.dto.response.AttendanceInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
-import com.kgu.studywithme.study.service.dto.response.NoticeAssembler;
-import com.kgu.studywithme.study.service.dto.response.ReviewAssembler;
-import com.kgu.studywithme.study.service.dto.response.StudyApplicant;
-import com.kgu.studywithme.study.service.dto.response.StudyInformation;
+import com.kgu.studywithme.study.service.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,5 +42,21 @@ public class StudyInformationService {
     public StudyApplicant getApplicants(Long studyId) {
         List<StudyApplicantInformation> result = studyRepository.findApplicantByStudyId(studyId);
         return new StudyApplicant(result);
+    }
+
+    public AttendanceAssmbler getAttendances(Long studyId) {
+        List<AttendanceInformation> result = studyRepository.findAttendanceByStudyId(studyId);
+
+        Map<Integer, List<AttendanceSummary>> summaries = result.stream()
+                .collect(Collectors.groupingBy(
+                        AttendanceInformation::getWeek, // 주차별
+                        Collectors.mapping(summary -> // 참여자 출석 정보
+                                new AttendanceSummary(
+                                        summary.getParticipant(), summary.getStatus()
+                                ), Collectors.toList()
+                        )
+                ));
+
+        return new AttendanceAssmbler(summaries);
     }
 }

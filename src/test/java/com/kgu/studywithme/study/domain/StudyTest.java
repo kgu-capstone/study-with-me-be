@@ -421,7 +421,7 @@ class StudyTest {
         @Test
         @DisplayName("스터디에 참여하고 있지 않은 사용자에 대한 출석 체크는 불가능하다")
         void failureByAnonymousMember() {
-            assertThatThrownBy(() -> study.recordAttendance(1, ATTENDANCE, participant))
+            assertThatThrownBy(() -> study.recordAttendance(participant, 1, ATTENDANCE))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
         }
@@ -433,8 +433,8 @@ class StudyTest {
             study.approveParticipation(participant);
 
             // when
-            study.recordAttendance(1, ATTENDANCE, HOST);
-            study.recordAttendance(1, LATE, participant);
+            study.recordAttendance(HOST, 1, ATTENDANCE);
+            study.recordAttendance(participant, 1, LATE);
 
             // then
             assertAll(

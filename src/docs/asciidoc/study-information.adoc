@@ -59,3 +59,12 @@ include::{snippets}/StudyApi/Information/Applicants/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Information/Applicants/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Applicants/response-fields.adoc[]
+
+== 스터디 주차별 출석 정보
+HTTP Request
+include::{snippets}/StudyApi/Information/Attendances/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Attendances/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/response-fields.adoc[]

@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class Week extends BaseEntity {
     @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false)
     private Member creator;
 
-    @OneToMany(mappedBy = "week", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "week", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments = new ArrayList<>();
 
     @OneToMany(mappedBy = "week", cascade = CascadeType.PERSIST)
@@ -68,7 +69,7 @@ public class Week extends BaseEntity {
         this.period = period;
         this.assignmentExists = assignmentExists;
         this.autoAttendance = autoAttendance;
-        addAttachments(attachments);
+        applyAttachments(attachments);
     }
 
     public static Week createWeek(Study study, String title, String content, int week, Period period, List<String> attachments) {
@@ -80,12 +81,15 @@ public class Week extends BaseEntity {
         return new Week(study, title, content, week, period, assignmentExists, autoAttendance, attachments);
     }
 
-    private void addAttachments(List<String> attachments) {
-        this.attachments.addAll(
-                attachments.stream()
-                        .map(link -> Attachment.addAttachmentFile(this, link))
-                        .toList()
-        );
+    private void applyAttachments(List<String> attachments) {
+        if (!CollectionUtils.isEmpty(attachments)) {
+            this.attachments.clear();
+            this.attachments.addAll(
+                    attachments.stream()
+                            .map(link -> Attachment.addAttachmentFile(this, link))
+                            .toList()
+            );
+        }
     }
 
     public void submitAssignment(Member participant, Upload upload) {
