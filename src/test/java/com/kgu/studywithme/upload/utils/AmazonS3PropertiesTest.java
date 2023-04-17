@@ -21,8 +21,7 @@ class AmazonS3PropertiesTest {
                 () -> assertThat(properties.getRegion()).isEqualTo("kr-standard"),
                 () -> assertThat(properties.getEndPoint()).isEqualTo("kr.object.ncloudstorage.com"),
                 () -> assertThat(properties.getAccessKey()).isEqualTo("access-key"),
-                () -> assertThat(properties.getSecretKey()).isEqualTo("secret-key"),
-                () -> assertThat(properties.getBucket()).isEqualTo("bucket-name")
+                () -> assertThat(properties.getSecretKey()).isEqualTo("secret-key")
         );
     }
 }

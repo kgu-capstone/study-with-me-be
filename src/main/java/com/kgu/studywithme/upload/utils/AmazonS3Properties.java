@@ -11,17 +11,14 @@ public class AmazonS3Properties {
     private final String endPoint;
     private final String accessKey;
     private final String secretKey;
-    private final String bucket;
 
     public AmazonS3Properties(@Value("${cloud.ncp.region}") String region,
                               @Value("${cloud.ncp.end-point}") String endPoint,
                               @Value("${cloud.ncp.access-key}") String accessKey,
-                              @Value("${cloud.ncp.secret-key}") String secretKey,
-                              @Value("${cloud.ncp.storage.bucket}") String bucket) {
+                              @Value("${cloud.ncp.secret-key}") String secretKey) {
         this.region = region;
         this.endPoint = endPoint;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
-        this.bucket = bucket;
     }
 }
