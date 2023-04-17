@@ -39,7 +39,8 @@ cloud:
   ncp:
     region: kr-standard
     end-point: kr.object.ncloudstorage.com
-    access-key: access-key
-    secret-key: secret-key
+    credentials:
+      access-key: access-key
+      secret-key: secret-key
     storage:
       bucket: bucket-name

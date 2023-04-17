@@ -14,8 +14,8 @@ public class AmazonS3Properties {
 
     public AmazonS3Properties(@Value("${cloud.ncp.region}") String region,
                               @Value("${cloud.ncp.end-point}") String endPoint,
-                              @Value("${cloud.ncp.access-key}") String accessKey,
-                              @Value("${cloud.ncp.secret-key}") String secretKey) {
+                              @Value("${cloud.ncp.credentials.access-key}") String accessKey,
+                              @Value("${cloud.ncp.credentials.secret-key}") String secretKey) {
         this.region = region;
         this.endPoint = endPoint;
         this.accessKey = accessKey;
