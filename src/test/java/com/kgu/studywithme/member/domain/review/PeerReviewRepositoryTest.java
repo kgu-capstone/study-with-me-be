@@ -64,20 +64,6 @@ public class PeerReviewRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("리뷰 대상자 ID와 리뷰 작성자 ID로 리뷰가 존재하는지 확인한다")
-    void existsByRevieweeIdAndReviewerId() {
-        doReview(reviewers[0], reviewers[1], reviewers[2]);
-
-        assertAll(
-                () -> assertThat(peerReviewRepository.existsByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[0].getId())).isTrue(),
-                () -> assertThat(peerReviewRepository.existsByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[1].getId())).isTrue(),
-                () -> assertThat(peerReviewRepository.existsByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[2].getId())).isTrue(),
-                () -> assertThat(peerReviewRepository.existsByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[3].getId())).isFalse(),
-                () -> assertThat(peerReviewRepository.existsByRevieweeIdAndReviewerId(reviewee.getId(), reviewers[4].getId())).isFalse()
-        );
-    }
-
-    @Test
     @DisplayName("리뷰 대상자 ID와 리뷰 작성자 ID로 리뷰를 조회한다")
     void findByRevieweeIdAndReviewerId() {
         doReview(reviewers[0], reviewers[1], reviewers[2], reviewers[3], reviewers[4]);
