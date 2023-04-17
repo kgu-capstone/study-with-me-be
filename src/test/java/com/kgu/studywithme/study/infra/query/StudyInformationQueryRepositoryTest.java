@@ -5,23 +5,23 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
-import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
-import com.kgu.studywithme.study.infra.query.dto.response.StudyApplicantInformation;
+import com.kgu.studywithme.study.infra.query.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -41,7 +41,7 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
 
     private Member host;
     private Study study;
-    private final Member[] members = new Member[5];
+    private final Member[] members = new Member[4];
     private final Notice[] notices = new Notice[3];
 
     @BeforeEach
@@ -53,7 +53,6 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         members[1] = memberRepository.save(DUMMY2.toMember());
         members[2] = memberRepository.save(DUMMY3.toMember());
         members[3] = memberRepository.save(DUMMY4.toMember());
-        members[4] = memberRepository.save(DUMMY5.toMember());
 
         for (int i = 0; i < notices.length; i++) {
             notices[i] = Notice.writeNotice(study, "공지" + (i + 1), "내용" + (i + 1));
@@ -64,31 +63,31 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     @Test
     @DisplayName("스터디 졸업자수를 조회한다")
     void getGraduatedParticipantCountByStudyId() {
-        applyAndApproveMembers();
+        applyAndApproveMembers(members[0], members[1], members[2], members[3]);
         assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(0);
 
-        graduate(members[0], members[1]);
-        assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(2);
+        graduate(members[0], members[1], members[2]);
+        assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(3);
 
-        graduate(members[2], members[3], members[4]);
-        assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(5);
+        graduate(members[3]);
+        assertThat(studyRepository.getGraduatedParticipantCountByStudyId(study.getId())).isEqualTo(4);
     }
 
     @Test
     @DisplayName("스터디 리뷰를 조회한다")
     void findReviewByStudyId() {
-        applyAndApproveMembers();
-        graduate(members[0], members[1], members[2], members[3], members[4]);
+        applyAndApproveMembers(members[0], members[1], members[2], members[3]);
+        graduate(members[0], members[1], members[2], members[3]);
 
         /* 3명 리뷰 작성 */
         writeReview(members[0], members[1], members[2]);
         List<ReviewInformation> result1 = studyRepository.findReviewByStudyId(study.getId());
         assertThatReviewInformationMatch(result1, List.of(members[2], members[1], members[0]));
 
-        /* 추가 2명 리뷰 작성 */
-        writeReview(members[3], members[4]);
+        /* 추가 1명 리뷰 작성 */
+        writeReview(members[3]);
         List<ReviewInformation> result2 = studyRepository.findReviewByStudyId(study.getId());
-        assertThatReviewInformationMatch(result2, List.of(members[4], members[3], members[2], members[1], members[0]));
+        assertThatReviewInformationMatch(result2, List.of(members[3], members[2], members[1], members[0]));
     }
 
     @Test
@@ -96,8 +95,8 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     void findNoticeWithCommentsByStudyId() {
         // given
         List<List<Member>> commentWriters = List.of(
-                List.of(members[0], members[1], members[3], members[4]),
-                List.of(members[1], members[2], members[3]),
+                List.of(members[0], members[1], members[3]),
+                List.of(members[1], members[2]),
                 List.of()
         );
         writeComment(notices[0], commentWriters.get(0));
@@ -126,17 +125,65 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         List<StudyApplicantInformation> result2 = studyRepository.findApplicantByStudyId(study.getId());
         assertThatApplicantsMatch(result2, List.of(members[2], members[1], members[0]));
 
-        /* 추가 2명 신청 & 2명 승인 */
+        /* 추가 1명 신청 & 2명 승인 */
         study.applyParticipation(members[3]);
-        study.applyParticipation(members[4]);
         study.approveParticipation(members[0]);
         study.approveParticipation(members[2]);
 
         List<StudyApplicantInformation> result3 = studyRepository.findApplicantByStudyId(study.getId());
-        assertThatApplicantsMatch(result3, List.of(members[4], members[3], members[1]));
+        assertThatApplicantsMatch(result3, List.of(members[3], members[1]));
     }
 
-    private void applyAndApproveMembers() {
+    @Test
+    @DisplayName("스터디 주차별 출석 정보를 조회한다")
+    void findAttendanceByStudyId() {
+        applyAndApproveMembers(members[0], members[1], members[2]);
+
+        /* 1주차 출석 */
+        applyAttendance(
+                1,
+                Map.of(
+                        host, ATTENDANCE,
+                        members[0], ATTENDANCE,
+                        members[1], LATE,
+                        members[2], ABSENCE
+                )
+        );
+        List<AttendanceInformation> result1 = studyRepository.findAttendanceByStudyId(study.getId());
+        List<Integer> expectWeek1 = List.of(1, 1, 1, 1);
+        List<Member> expectMember1 = List.of(host, members[0], members[1], members[2]);
+        List<AttendanceStatus> expectStatus1 = List.of(ATTENDANCE, ATTENDANCE, LATE, ABSENCE);
+        assertThatAttendancesMatch(result1, expectWeek1, expectMember1, expectStatus1);
+
+        /* 1주차 + 2주차 출석 */
+        applyAndApproveMembers(members[3]);
+        applyAttendance(
+                2,
+                Map.of(
+                        host, ATTENDANCE,
+                        members[0], LATE,
+                        members[1], ATTENDANCE,
+                        members[2], ATTENDANCE,
+                        members[3], ATTENDANCE
+                )
+        );
+        List<AttendanceInformation> result2 = studyRepository.findAttendanceByStudyId(study.getId());
+        List<Integer> expectWeek2 = List.of(
+                2, 2, 2, 2, 2,
+                1, 1, 1, 1
+        );
+        List<Member> expectMember2 = List.of(
+                host, members[0], members[1], members[2], members[3],
+                host, members[0], members[1], members[2]
+        );
+        List<AttendanceStatus> expectStatus2 = List.of(
+                ATTENDANCE, LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE,
+                ATTENDANCE, ATTENDANCE, LATE, ABSENCE
+        );
+        assertThatAttendancesMatch(result2, expectWeek2, expectMember2, expectStatus2);
+    }
+
+    private void applyAndApproveMembers(Member... members) {
         for (Member member : members) {
             study.applyParticipation(member);
             study.approveParticipation(member);
@@ -158,6 +205,12 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     private void writeComment(Notice notice, List<Member> members) {
         for (Member member : members) {
             commentRepository.save(Comment.writeComment(notice, member, "댓글"));
+        }
+    }
+
+    private void applyAttendance(int week, Map<Member, AttendanceStatus> data) {
+        for (Member member : data.keySet()) {
+            study.recordAttendance(member, week, data.get(member));
         }
     }
 
@@ -211,6 +264,28 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
             assertAll(
                     () -> assertThat(information.getId()).isEqualTo(member.getId()),
                     () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue())
+            );
+        }
+    }
+
+    private void assertThatAttendancesMatch(List<AttendanceInformation> result,
+                                            List<Integer> weeks,
+                                            List<Member> members,
+                                            List<AttendanceStatus> status) {
+        int totalSize = status.size();
+        assertThat(result).hasSize(totalSize);
+
+        for (int i = 0; i < totalSize; i++) {
+            AttendanceInformation information = result.get(i);
+            int week = weeks.get(i);
+            Member member = members.get(i);
+            AttendanceStatus attendanceStatus = status.get(i);
+
+            assertAll(
+                    () -> assertThat(information.getParticipant().id()).isEqualTo(member.getId()),
+                    () -> assertThat(information.getParticipant().nickname()).isEqualTo(member.getNicknameValue()),
+                    () -> assertThat(information.getWeek()).isEqualTo(week),
+                    () -> assertThat(information.getStatus()).isEqualTo(attendanceStatus.getDescription())
             );
         }
     }

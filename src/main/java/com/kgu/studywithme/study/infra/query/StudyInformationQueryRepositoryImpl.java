@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.kgu.studywithme.member.domain.QMember.member;
+import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
 import static com.kgu.studywithme.study.domain.notice.QNotice.notice;
 import static com.kgu.studywithme.study.domain.notice.comment.QComment.comment;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPLY;
@@ -81,6 +82,17 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .innerJoin(participant.member, member)
                 .where(studyIdEq(studyId), applyStatus())
                 .orderBy(participant.id.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<AttendanceInformation> findAttendanceByStudyId(Long studyId) {
+        return query
+                .select(new QAttendanceInformation(member.id, member.nickname, attendance.week, attendance.status))
+                .from(attendance)
+                .innerJoin(attendance.participant, member)
+                .where(attendance.study.id.eq(studyId))
+                .orderBy(attendance.week.desc(), member.id.asc())
                 .fetch();
     }
 
