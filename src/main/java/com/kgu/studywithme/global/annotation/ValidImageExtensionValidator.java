@@ -15,7 +15,7 @@ public class ValidImageExtensionValidator implements ConstraintValidator<ValidIm
             return true;
         }
 
-        if (isNotAllowedExtendsion(file)) {
+        if (isNotAllowedExtension(file)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("이미지는 jpg, jpeg, png, gif만 허용합니다.")
                     .addConstraintViolation();
@@ -24,7 +24,7 @@ public class ValidImageExtensionValidator implements ConstraintValidator<ValidIm
         return true;
     }
 
-    private boolean isNotAllowedExtendsion(MultipartFile file) {
+    private boolean isNotAllowedExtension(MultipartFile file) {
         String extension = getExtention(file);
         return !allowedExtensions.contains(extension);
     }
