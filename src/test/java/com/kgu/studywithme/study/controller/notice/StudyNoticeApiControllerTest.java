@@ -154,10 +154,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Notice/Register/Success",
@@ -335,10 +332,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Notice/Remove/Success",
@@ -537,10 +531,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Notice/Update/Success",

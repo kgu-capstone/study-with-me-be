@@ -22,16 +22,16 @@ public class FavoriteManageService {
         return favoriteRepository.save(favoriteStudy).getId();
     }
 
-    @Transactional
-    public void cancel(Long studyId, Long memberId) {
-        validateCancel(studyId, memberId);
-        favoriteRepository.deleteByStudyIdAndMemberId(studyId, memberId);
-    }
-
     private void validateLike(Long studyId, Long memberId) {
         if (favoriteRepository.existsByStudyIdAndMemberId(studyId, memberId)) {
             throw StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST);
         }
+    }
+
+    @Transactional
+    public void cancel(Long studyId, Long memberId) {
+        validateCancel(studyId, memberId);
+        favoriteRepository.deleteByStudyIdAndMemberId(studyId, memberId);
     }
 
     private void validateCancel(Long studyId, Long memberId) {

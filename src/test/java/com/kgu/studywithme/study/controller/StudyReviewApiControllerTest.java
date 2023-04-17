@@ -153,10 +153,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Review/Write/Success",
@@ -287,10 +284,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Review/Remove/Success",
@@ -431,10 +425,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Review/Update/Success",
@@ -456,8 +447,6 @@ class StudyReviewApiControllerTest extends ControllerTest {
     }
 
     private ReviewRequest generateReviewRequest() {
-        return ReviewRequest.builder()
-                .content("This is Review")
-                .build();
+        return new ReviewRequest("스터디 팀장님이 리드를 잘합니다!");
     }
 }

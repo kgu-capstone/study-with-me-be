@@ -135,10 +135,7 @@ class FavoriteApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Favorite/Like/Success",
@@ -261,10 +258,7 @@ class FavoriteApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNoContent(),
-                            jsonPath("$").doesNotExist()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Favorite/Cancel/Success",

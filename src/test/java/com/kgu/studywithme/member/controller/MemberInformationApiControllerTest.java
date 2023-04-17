@@ -545,13 +545,13 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자의 PeerReview 조회 API [GET /api/members/{memberId}/reviews]")
+    @DisplayName("사용자의 피어리뷰 조회 API [GET /api/members/{memberId}/reviews]")
     class getReviews {
         private static final String BASE_URL = "/api/members/{memberId}/reviews";
         private static final Long MEMBER_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 사용자의 PeerReivew 조회에 실패한다")
+        @DisplayName("Authorization Header에 AccessToken이 없으면 사용자의 피어리뷰 조회에 실패한다")
         void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -575,7 +575,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("PeerReview를 조회할 사용자 ID(PK)")
+                                            parameterWithName("memberId").description("피어리뷰를 조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -587,7 +587,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("사용자에 대한 PeerReview 조회에 성공한다")
+        @DisplayName("사용자에 대한 피어리뷰 조회에 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -613,10 +613,10 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("PeerReview를 조회할 사용자 ID(PK)")
+                                            parameterWithName("memberId").description("피어리뷰를 조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("reviews[]").description("사용자에 대한 PeerReview 리스트")
+                                            fieldWithPath("reviews[]").description("사용자에 대한 피어리뷰 리스트")
                                     )
                             )
                     );

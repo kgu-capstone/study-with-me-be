@@ -7,7 +7,6 @@ import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.controller.dto.request.AttendanceRequest;
 import com.kgu.studywithme.study.domain.Study;
-import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +20,7 @@ import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -107,8 +107,8 @@ class AttendanceApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("status").description("출석 정보"),
-                                            fieldWithPath("week").description("수동 출석할 주차")
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -159,8 +159,8 @@ class AttendanceApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("status").description("출석 정보"),
-                                            fieldWithPath("week").description("수동 출석할 주차")
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -214,8 +214,8 @@ class AttendanceApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("status").description("출석 정보"),
-                                            fieldWithPath("week").description("수동 출석할 주차")
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -268,8 +268,8 @@ class AttendanceApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("status").description("출석 정보"),
-                                            fieldWithPath("week").description("수동 출석할 주차")
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -300,9 +300,7 @@ class AttendanceApiControllerTest extends ControllerTest {
 
             // then
             mockMvc.perform(requestBuilder)
-                    .andExpect(
-                            status().isNoContent()
-                    )
+                    .andExpect(status().isNoContent())
                     .andDo(
                             document(
                                     "StudyApi/Attendance/ManualCheck/Success",
@@ -316,8 +314,8 @@ class AttendanceApiControllerTest extends ControllerTest {
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
-                                            fieldWithPath("status").description("출석 정보"),
-                                            fieldWithPath("week").description("수동 출석할 주차")
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
                                     )
                             )
                     );
@@ -325,9 +323,6 @@ class AttendanceApiControllerTest extends ControllerTest {
     }
 
     private AttendanceRequest createAttendanceRequest() {
-        return AttendanceRequest.builder()
-                .status(AttendanceStatus.ATTENDANCE.getDescription())
-                .week(1)
-                .build();
+        return new AttendanceRequest(1, ATTENDANCE.getDescription());
     }
 }
