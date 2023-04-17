@@ -231,7 +231,6 @@ class StudyApiControllerTest extends ControllerTest {
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
 
-
             // then
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
@@ -281,7 +280,6 @@ class StudyApiControllerTest extends ControllerTest {
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
-
 
             // then
             mockMvc.perform(requestBuilder)
