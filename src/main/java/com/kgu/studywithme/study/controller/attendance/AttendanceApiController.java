@@ -18,9 +18,9 @@ public class AttendanceApiController {
 
     @CheckStudyParticipant
     @PatchMapping
-    public ResponseEntity<Void> manualCheckAttendance(@PathVariable Long studyId,
+    public ResponseEntity<Void> manualCheckAttendance(@ExtractPayload Long hostId,
+                                                      @PathVariable Long studyId,
                                                       @PathVariable Long memberId,
-                                                      @ExtractPayload Long hostId,
                                                       @RequestBody @Valid AttendanceRequest request) {
         attendanceService.manualCheckAttendance(studyId, memberId, hostId, request.week(), request.status());
         return ResponseEntity.noContent().build();

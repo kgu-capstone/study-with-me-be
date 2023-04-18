@@ -34,6 +34,7 @@ class FavoriteApiControllerTest extends ControllerTest {
     class like {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 찜 등록을 실패한다")
@@ -76,7 +77,7 @@ class FavoriteApiControllerTest extends ControllerTest {
         void throwExceptionByAlreadyExist() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doThrow(StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST))
                     .when(favoriteManageService)
                     .like(any(), any());
@@ -123,7 +124,7 @@ class FavoriteApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doAnswer(invocation -> 1L)
                     .when(favoriteManageService)
                     .like(any(), any());
@@ -157,6 +158,7 @@ class FavoriteApiControllerTest extends ControllerTest {
     class cancel {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 찜 취소를 실패한다")
@@ -199,7 +201,7 @@ class FavoriteApiControllerTest extends ControllerTest {
         void throwExceptionByNotFavorite() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doThrow(StudyWithMeException.type(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE))
                     .when(favoriteManageService)
                     .cancel(any(), any());
@@ -246,7 +248,7 @@ class FavoriteApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doNothing()
                     .when(favoriteManageService)
                     .cancel(any(), any());

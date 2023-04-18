@@ -31,7 +31,7 @@ public class StudyInformationApiController {
 
     @CheckStudyParticipant
     @GetMapping("/notices")
-    public ResponseEntity<NoticeAssembler> getNotices(@PathVariable Long studyId, @ExtractPayload Long memberId) {
+    public ResponseEntity<NoticeAssembler> getNotices(@ExtractPayload Long memberId, @PathVariable Long studyId) {
         NoticeAssembler response = studyInformationService.getNotices(studyId);
         return ResponseEntity.ok(response);
     }

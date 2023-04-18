@@ -42,10 +42,10 @@ class StudyServiceTest extends ServiceTest {
         void duplicateNameOnline() {
             // given
             StudyRegisterRequest request = createOnlineStudyRegisterRequest();
-            studyService.register(request, host.getId());
+            studyService.register(host.getId(), request);
 
             // when - then
-            assertThatThrownBy(() -> studyService.register(request, host.getId()))
+            assertThatThrownBy(() -> studyService.register(host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         }
@@ -58,8 +58,8 @@ class StudyServiceTest extends ServiceTest {
             StudyRegisterRequest offlineRequest = createOfflineStudyRegisterRequest();
 
             // when
-            Long onlineStudyId = studyService.register(onlineRequest, host.getId());
-            Long offlineStudyId = studyService.register(offlineRequest, host.getId());
+            Long onlineStudyId = studyService.register(host.getId(), onlineRequest);
+            Long offlineStudyId = studyService.register(host.getId(), offlineRequest);
 
             // then
             Study onlineStudy = studyRepository.findById(onlineStudyId).orElseThrow();

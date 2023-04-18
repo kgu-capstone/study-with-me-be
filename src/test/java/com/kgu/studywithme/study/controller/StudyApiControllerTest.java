@@ -18,7 +18,8 @@ import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEFL;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -38,6 +39,7 @@ class StudyApiControllerTest extends ControllerTest {
     @DisplayName("스터디 생성 API [POST /api/study]")
     class register {
         private static final String BASE_URL = "/api/study";
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
@@ -94,7 +96,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByDuplicateNameOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .register(any(), any());
@@ -155,7 +157,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByDuplicateNameOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .register(any(), any());
@@ -218,10 +220,10 @@ class StudyApiControllerTest extends ControllerTest {
         void successOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doAnswer(invocation -> 1L)
                     .when(studyService)
-                    .register(any(), anyLong());
+                    .register(any(), any());
 
             // when
             final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
@@ -268,10 +270,10 @@ class StudyApiControllerTest extends ControllerTest {
         void successOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doAnswer(invocation -> 1L)
                     .when(studyService)
-                    .register(any(), anyLong());
+                    .register(any(), any());
 
             // when
             final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
@@ -318,7 +320,8 @@ class StudyApiControllerTest extends ControllerTest {
     @DisplayName("스터디 정보 수정 API [PATCH /api/studies/{studyId}]")
     class update {
         private static final String BASE_URL = "/api/studies/{studyId}";
-        private static final String STUDY_ID = "1";
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
@@ -380,7 +383,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .update(any(), any(), any());
@@ -446,7 +449,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(studyService)
                     .update(any(), any(), any());
@@ -512,7 +515,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByCapacityLessThanMembers() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS))
                     .when(studyService)
                     .update(any(), any(), any());
@@ -578,7 +581,7 @@ class StudyApiControllerTest extends ControllerTest {
         void successOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(studyService)
                     .update(any(), any(), any());
@@ -630,7 +633,7 @@ class StudyApiControllerTest extends ControllerTest {
         void successOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(studyService)
                     .update(any(), any(), any());

@@ -118,6 +118,7 @@ class StudySearchApiControllerTest extends ControllerTest {
     @DisplayName("사용자의 관심사에 따른 스터디 조회 API [GET /api/studies/recommend]")
     class findStudyByRecommend {
         private static final String BASE_URL = "/api/studies/recommend";
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 추천에 따른 스터디 리스트 조회에 실패한다")
@@ -173,10 +174,9 @@ class StudySearchApiControllerTest extends ControllerTest {
         @DisplayName("사용자의 관심사에 따른 스터디 리스트를 조회한다 [언어 / 면접 / 프로그래밍]")
         void success() throws Exception {
             // given
-            final Long memberId = 1L;
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
-            StudyRecommendCondition condition = new StudyRecommendCondition(memberId, sort, type, null, null);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+            StudyRecommendCondition condition = new StudyRecommendCondition(MEMBER_ID, sort, type, null, null);
 
             DefaultStudyResponse response = new DefaultStudyResponse(generateRecommendResult(8), true);
             given(studySearchService.findStudyByRecommend(condition, page)).willReturn(response);

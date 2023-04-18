@@ -30,9 +30,9 @@ public class StudySearchApiController {
     }
 
     @GetMapping("/recommend")
-    public ResponseEntity<DefaultStudyResponse> findStudyByRecommend(@ModelAttribute StudyRecommendSearchRequest request,
-                                                                     @ExtractPayload Long memberId) {
-        StudyRecommendCondition condition = new StudyRecommendCondition(request, memberId);
+    public ResponseEntity<DefaultStudyResponse> findStudyByRecommend(@ExtractPayload Long memberId,
+                                                                     @ModelAttribute StudyRecommendSearchRequest request) {
+        StudyRecommendCondition condition = new StudyRecommendCondition(memberId, request);
         DefaultStudyResponse result = studySearchService.findStudyByRecommend(condition, getDefaultPageRequest(request.page()));
         return ResponseEntity.ok(result);
     }

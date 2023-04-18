@@ -16,25 +16,25 @@ public class StudyNoticeApiController {
     private final NoticeService noticeService;
 
     @PostMapping("/notice")
-    public ResponseEntity<Void> register(@PathVariable Long studyId,
-                                         @ExtractPayload Long hostId,
+    public ResponseEntity<Void> register(@ExtractPayload Long hostId,
+                                         @PathVariable Long studyId,
                                          @RequestBody @Valid NoticeRequest request) {
         noticeService.register(studyId, hostId, request.title(), request.content());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/notices/{noticeId}")
-    public ResponseEntity<Void> remove(@PathVariable Long studyId,
-                                       @PathVariable Long noticeId,
-                                       @ExtractPayload Long hostId) {
+    public ResponseEntity<Void> remove(@ExtractPayload Long hostId,
+                                       @PathVariable Long studyId,
+                                       @PathVariable Long noticeId) {
         noticeService.remove(studyId, noticeId, hostId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/notices/{noticeId}")
-    public ResponseEntity<Void> update(@PathVariable Long studyId,
+    public ResponseEntity<Void> update(@ExtractPayload Long hostId,
+                                       @PathVariable Long studyId,
                                        @PathVariable Long noticeId,
-                                       @ExtractPayload Long hostId,
                                        @RequestBody @Valid NoticeRequest request) {
         noticeService.update(studyId, noticeId, hostId, request.title(), request.content());
         return ResponseEntity.noContent().build();

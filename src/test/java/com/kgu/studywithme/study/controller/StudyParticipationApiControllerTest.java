@@ -35,6 +35,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class apply {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants";
         private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long MEMBER_ID = 2L;
+        private static final Long PARTICIPANT_ID = 3L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 신청에 실패한다")
@@ -77,7 +80,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByRecruitmentCompleted() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.RECRUITMENT_IS_COMPLETE))
                     .when(participationService)
                     .apply(anyLong(), anyLong());
@@ -124,7 +127,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_HOST))
                     .when(participationService)
                     .apply(anyLong(), anyLong());
@@ -171,7 +174,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAlreadyApply() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_PARTICIPANT))
                     .when(participationService)
                     .apply(anyLong(), anyLong());
@@ -218,7 +221,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doNothing()
                     .when(participationService)
                     .apply(anyLong(), anyLong());
@@ -252,6 +255,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class applyCancel {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants";
         private static final Long STUDY_ID = 1L;
+        private static final Long APPLIER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 신청 취소에 실패한다")
@@ -294,7 +299,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
                     .when(participationService)
                     .applyCancel(anyLong(), anyLong());
@@ -341,7 +346,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(APPLIER_ID);
             doNothing()
                     .when(participationService)
                     .applyCancel(anyLong(), anyLong());
@@ -375,7 +380,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class approve {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/approve";
         private static final Long STUDY_ID = 1L;
-        private static final Long APPLIER_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long APPLIER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 승인에 실패한다")
@@ -419,7 +425,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
                     .when(participationService)
                     .approve(anyLong(), anyLong(), anyLong());
@@ -467,7 +473,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
                     .when(participationService)
                     .approve(anyLong(), anyLong(), anyLong());
@@ -515,7 +521,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAlreadyCapacityFull() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.STUDY_CAPACITY_IS_FULL))
                     .when(participationService)
                     .approve(anyLong(), anyLong(), anyLong());
@@ -563,7 +569,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(participationService)
                     .approve(anyLong(), anyLong(), anyLong());
@@ -598,7 +604,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class reject {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/reject";
         private static final Long STUDY_ID = 1L;
-        private static final Long APPLIER_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long APPLIER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 거절에 실패한다")
@@ -642,7 +649,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
                     .when(participationService)
                     .reject(anyLong(), anyLong(), anyLong());
@@ -690,7 +697,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
                     .when(participationService)
                     .reject(anyLong(), anyLong(), anyLong());
@@ -738,7 +745,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(participationService)
                     .reject(anyLong(), anyLong(), anyLong());
@@ -773,6 +780,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class cancel {
         private static final String BASE_URL = "/api/studies/{studyId}/participants/cancel";
         private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long PARTICIPANT_ID = 2L;
+        private static final Long ANONYMOUS_ID = 3L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 취소에 실패한다")
@@ -815,7 +825,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
                     .when(participationService)
                     .cancel(anyLong(), anyLong());
@@ -862,7 +872,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_HOST))
                     .when(participationService)
                     .cancel(anyLong(), anyLong());
@@ -909,7 +919,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
                     .when(participationService)
                     .cancel(anyLong(), anyLong());
@@ -956,7 +966,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(participationService)
                     .cancel(anyLong(), anyLong());
@@ -990,7 +1000,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class delegateAuthority {
         private static final String BASE_URL = "/api/studies/{studyId}/participants/{participantId}/delegation";
         private static final Long STUDY_ID = 1L;
-        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long PARTICIPANT_ID = 2L;
+        private static final Long ANONYMOUS_ID = 3L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 팀장 권한 위임에 실패한다")
@@ -1034,7 +1046,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
                     .when(participationService)
                     .delegateAuthority(anyLong(), anyLong(), anyLong());
@@ -1082,14 +1094,14 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
                     .when(participationService)
                     .delegateAuthority(anyLong(), anyLong(), anyLong());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
+                    .patch(BASE_URL, STUDY_ID, ANONYMOUS_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
@@ -1130,7 +1142,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(participationService)
                     .delegateAuthority(anyLong(), anyLong(), anyLong());
@@ -1165,6 +1177,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     class graduate {
         private static final String BASE_URL = "/api/studies/{studyId}/graduate";
         private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long PARTICIPANT_ID = 2L;
+        private static final Long ANONYMOUS_ID = 3L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 졸업에 실패한다")
@@ -1207,7 +1222,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByStudyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_CLOSED))
                     .when(participationService)
                     .graduate(anyLong(), anyLong());
@@ -1254,7 +1269,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_HOST))
                     .when(participationService)
                     .graduate(anyLong(), anyLong());
@@ -1301,7 +1316,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void failureByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
                     .when(participationService)
                     .graduate(anyLong(), anyLong());
@@ -1348,7 +1363,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(participationService)
                     .graduate(anyLong(), anyLong());

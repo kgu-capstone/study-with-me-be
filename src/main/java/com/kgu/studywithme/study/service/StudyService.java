@@ -26,7 +26,7 @@ public class StudyService {
     private final StudyFindService studyFindService;
 
     @Transactional
-    public Long register(StudyRegisterRequest request, Long hostId) {
+    public Long register(Long hostId, StudyRegisterRequest request) {
         validateUniqueNameForCreate(request.name());
 
         Member host = memberFindService.findById(hostId);

@@ -16,25 +16,25 @@ public class StudyNoticeCommentApiController {
     private final NoticeCommentService noticeCommentService;
 
     @PostMapping("/comment")
-    public ResponseEntity<Void> register(@PathVariable Long noticeId,
-                                         @ExtractPayload Long memberId,
+    public ResponseEntity<Void> register(@ExtractPayload Long memberId,
+                                         @PathVariable Long noticeId,
                                          @RequestBody @Valid NoticeCommentRequest request) {
         noticeCommentService.register(noticeId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<Void> remove(@PathVariable Long noticeId,
-                                       @PathVariable Long commentId,
-                                       @ExtractPayload Long memberId) {
+    public ResponseEntity<Void> remove(@ExtractPayload Long memberId,
+                                       @PathVariable Long noticeId,
+                                       @PathVariable Long commentId) {
         noticeCommentService.remove(commentId, memberId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<Void> update(@PathVariable Long noticeId,
+    public ResponseEntity<Void> update(@ExtractPayload Long memberId,
+                                       @PathVariable Long noticeId,
                                        @PathVariable Long commentId,
-                                       @ExtractPayload Long memberId,
                                        @RequestBody @Valid NoticeCommentRequest request) {
         noticeCommentService.update(commentId, memberId, request.content());
         return ResponseEntity.noContent().build();

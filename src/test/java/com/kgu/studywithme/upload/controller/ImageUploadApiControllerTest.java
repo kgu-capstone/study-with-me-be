@@ -39,6 +39,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
     @DisplayName("이미지 업로드 API [POST /api/image]")
     class findAllCategory {
         private static final String BASE_URL = "/api/image";
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다")
@@ -83,7 +84,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
         void notAllowedExtension() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello5.webp", "image/webp");
@@ -130,7 +131,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
         void emptyFile() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doThrow(StudyWithMeException.type(UploadErrorCode.FILE_IS_EMPTY))
                     .when(uploader)
                     .uploadWeeklyImage(any());
@@ -179,7 +180,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
             final String uploadLink = String.format(
                     "https://kr.object.ncloudstorage.com/bucket/images/%s-hello4.png",

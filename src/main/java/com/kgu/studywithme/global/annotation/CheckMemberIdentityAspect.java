@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class CheckMemberIdentityAspect {
-    @Before("@annotation(com.kgu.studywithme.global.annotation.CheckMemberIdentity) && args(memberId, payloadId, ..)")
-    public void checkPayloadId(Long memberId, Long payloadId) {
-        if (isAnonymousMember(memberId, payloadId)) {
+    @Before("@annotation(com.kgu.studywithme.global.annotation.CheckMemberIdentity) && args(payloadId, memberId, ..)")
+    public void checkPayloadId(Long payloadId, Long memberId) {
+        if (isAnonymousMember(payloadId, memberId)) {
             throw StudyWithMeException.type(AuthErrorCode.INVALID_PERMISSION);
         }
     }
 
-    private boolean isAnonymousMember(Long memberId, Long payloadId) {
-        return !memberId.equals(payloadId);
+    private boolean isAnonymousMember(Long payloadId, Long memberId) {
+        return !payloadId.equals(memberId);
     }
 }

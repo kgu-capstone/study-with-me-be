@@ -44,20 +44,21 @@ class AttendanceApiControllerTest extends ControllerTest {
     class manualCheckAttendance {
         private static final String BASE_URL = "/api/studies/{studyId}/attendance/{memberId}";
         private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
         private static final Long PARTICIPANT_ID = 2L;
         private static final Long ANONYMOUS_ID = 3L;
 
         @BeforeEach
         void setUp() {
-            Member host = createMember(JIWON, 1L);
-            Member memberA = createMember(DUMMY1, 2L);
-            Member memberB = createMember(DUMMY2, 2L);
-            given(memberFindService.findById(1L)).willReturn(host);
-            given(memberFindService.findById(2L)).willReturn(memberA);
-            given(memberFindService.findById(3L)).willReturn(memberB);
+            Member host = createMember(JIWON, HOST_ID);
+            Member memberA = createMember(DUMMY1, PARTICIPANT_ID);
+            Member memberB = createMember(DUMMY2, ANONYMOUS_ID);
+            given(memberFindService.findById(HOST_ID)).willReturn(host);
+            given(memberFindService.findById(PARTICIPANT_ID)).willReturn(memberA);
+            given(memberFindService.findById(ANONYMOUS_ID)).willReturn(memberB);
 
-            Study study = createSpringStudy(host, 1L);
-            given(studyFindService.findById(1L)).willReturn(study);
+            Study study = createSpringStudy(host, STUDY_ID);
+            given(studyFindService.findById(STUDY_ID)).willReturn(study);
 
             study.applyParticipation(memberA);
             study.approveParticipation(memberA);
@@ -124,7 +125,7 @@ class AttendanceApiControllerTest extends ControllerTest {
         void throwExceptionByAnonymousMember() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
             final AttendanceRequest request = createAttendanceRequest();
@@ -176,7 +177,7 @@ class AttendanceApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(attendanceService)
                     .manualCheckAttendance(any(), any(), any(), any(), any());
@@ -231,7 +232,7 @@ class AttendanceApiControllerTest extends ControllerTest {
         void throwExceptionByAttendanceNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND))
                     .when(attendanceService)
                     .manualCheckAttendance(any(), any(), any(), any(), any());
@@ -285,7 +286,7 @@ class AttendanceApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(attendanceService)
                     .manualCheckAttendance(any(), any(), any(), any(), any());

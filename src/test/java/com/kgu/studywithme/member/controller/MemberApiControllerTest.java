@@ -144,6 +144,7 @@ class MemberApiControllerTest extends ControllerTest {
     class report {
         private static final String BASE_URL = "/api/members/{reporteeId}/report";
         private static final Long REPORTEE_ID = 1L;
+        private static final Long REPORTER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 사용자 신고를 실패한다")
@@ -186,7 +187,7 @@ class MemberApiControllerTest extends ControllerTest {
         void failureByPreviousReportIsStillPending() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.REPORT_IS_STILL_RECEIVED))
                     .when(memberService)
                     .report(anyLong(), anyLong(), anyString());
@@ -239,7 +240,7 @@ class MemberApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
             doAnswer(invocation -> 1L)
                     .when(memberService)
                     .report(anyLong(), anyLong(), anyString());

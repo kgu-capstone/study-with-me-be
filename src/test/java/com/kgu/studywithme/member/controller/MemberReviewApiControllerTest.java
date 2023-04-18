@@ -36,6 +36,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
     class writeReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
+        private static final Long REVIEWER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 등록을 실패한다")
@@ -78,7 +79,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void throwExceptionByAlreadyReview() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.ALREADY_REVIEW))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -131,7 +132,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void throwExceptionBySelfReviewNotAllowed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWEE_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -184,7 +185,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void throwExceptionByCommonStudyNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_NOT_FOUND))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -237,7 +238,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doNothing()
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -276,6 +277,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
     class updateReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
+        private static final Long REVIEWER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 수정을 실패한다")
@@ -319,7 +321,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void reviewNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.REVIEW_NOT_FOUND))
                     .when(memberReviewService)
                     .updateReview(any(), any(), any());
@@ -372,7 +374,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doNothing()
                     .when(memberReviewService)
                     .updateReview(any(), any(), any());

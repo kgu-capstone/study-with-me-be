@@ -18,16 +18,17 @@ public class StudyApiController {
     private final StudyService studyService;
 
     @PostMapping("/study")
-    public ResponseEntity<Void> register(@RequestBody @Valid StudyRegisterRequest request, @ExtractPayload Long hostId) {
-        Long savedStudyId = studyService.register(request, hostId);
+    public ResponseEntity<Void> register(@ExtractPayload Long hostId,
+                                         @RequestBody @Valid StudyRegisterRequest request) {
+        Long savedStudyId = studyService.register(hostId, request);
         return ResponseEntity
                 .created(UriComponentsBuilder.fromPath("/api/studies/{id}").build(savedStudyId))
                 .build();
     }
 
     @PatchMapping("/studies/{studyId}")
-    public ResponseEntity<Void> update(@PathVariable Long studyId,
-                                       @ExtractPayload Long hostId,
+    public ResponseEntity<Void> update(@ExtractPayload Long hostId,
+                                       @PathVariable Long studyId,
                                        @RequestBody @Valid StudyUpdateRequest request) {
         studyService.update(studyId, hostId, request);
         return ResponseEntity.noContent().build();

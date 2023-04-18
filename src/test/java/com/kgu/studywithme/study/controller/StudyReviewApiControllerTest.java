@@ -37,6 +37,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
     class write {
         private static final String BASE_URL = "/api/studies/{studyId}/review";
         private static final Long STUDY_ID = 1L;
+        private static final Long GRADUATE_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 작성을 실패한다")
@@ -85,7 +87,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void memberIsNotGraduate() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_GRADUATED))
                     .when(studyReviewService)
                     .write(any(), any(), any());
@@ -138,7 +140,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(GRADUATE_ID);
             doNothing()
                     .when(studyReviewService)
                     .write(any(), any(), any());
@@ -179,6 +181,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
         private static final Long STUDY_ID = 1L;
         private static final Long REVIEW_ID = 1L;
+        private static final Long WRITER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 삭제를 실패한다")
@@ -224,7 +228,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void memberIdNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(studyReviewService)
                     .remove(any(), any());
@@ -272,7 +276,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(WRITER_ID);
             doNothing()
                     .when(studyReviewService)
                     .remove(any(), any());
@@ -308,6 +312,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
         private static final Long STUDY_ID = 1L;
         private static final Long REVIEW_ID = 1L;
+        private static final Long WRITER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 수정에 실패한다")
@@ -356,7 +362,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void memberIdNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(studyReviewService)
                     .update(any(), any(), any());
@@ -410,7 +416,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(WRITER_ID);
             doNothing()
                     .when(studyReviewService)
                     .update(any(), any(), any());

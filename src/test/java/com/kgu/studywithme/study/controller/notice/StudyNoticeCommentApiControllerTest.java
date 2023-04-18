@@ -37,6 +37,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
     class register {
         private static final String BASE_URL = "/api/notices/{noticeId}/comment";
         private static final Long NOTICE_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 등록에 실패한다")
@@ -85,7 +87,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         void memberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
                     .when(commentService)
                     .register(any(), any(), any());
@@ -138,7 +140,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .register(any(), any(), any());
@@ -179,6 +181,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 삭제에 실패한다")
@@ -222,7 +226,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         void memberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(commentService)
                     .remove(any(), any());
@@ -267,10 +271,10 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("공지사항에 등록한 댓글 삭제에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .remove(any(), any());
@@ -306,6 +310,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 수정에 실패한다")
@@ -355,7 +361,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         void memberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(commentService)
                     .update(any(), any(), any());
@@ -407,10 +413,10 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("공지사항에 대한 댓글 수정에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .update(any(), any(), any());

@@ -36,6 +36,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
     class register {
         private static final String BASE_URL = "/api/studies/{studyId}/notice";
         private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
@@ -85,7 +86,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(noticeService)
                     .register(any(), any(), any(), any());
@@ -139,7 +140,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doAnswer(invocation -> 1L)
                     .when(noticeService)
                     .register(any(), any(), any(), any());
@@ -181,10 +182,11 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/notices/{noticeId}";
         private static final Long STUDY_ID = 1L;
         private static final Long NOTICE_ID = 1L;
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 삭제를 실패한다")
-        void withoutAccessToken () throws Exception {
+        void withoutAccessToken() throws Exception {
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .delete(BASE_URL, STUDY_ID, NOTICE_ID);
@@ -221,10 +223,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 삭제할 수 없다")
-        void throwExceptionByMemberNotHost () throws Exception {
+        void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(noticeService)
                     .remove(any(), any(), any());
@@ -269,10 +271,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 삭제할 수 없다")
-        void throwExceptionByMemberNotWriter () throws Exception {
+        void throwExceptionByMemberNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(noticeService)
                     .remove(any(), any(), any());
@@ -317,10 +319,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("공지사항 삭제에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(noticeService)
                     .remove(any(), any(), any());
@@ -356,10 +358,11 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/notices/{noticeId}";
         private static final Long STUDY_ID = 1L;
         private static final Long NOTICE_ID = 1L;
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다")
-        void withoutAccessToken () throws Exception {
+        void withoutAccessToken() throws Exception {
             // when
             final NoticeRequest request = createNoticeRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -403,10 +406,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 수정할 수 없다")
-        void throwExceptionByMemberNotHost () throws Exception {
+        void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
                     .when(noticeService)
                     .update(any(), any(), any(), any(), any());
@@ -458,10 +461,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 수정할 수 없다")
-        void throwExceptionByMemberNotWriter () throws Exception {
+        void throwExceptionByMemberNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(noticeService)
                     .update(any(), any(), any(), any(), any());
@@ -513,10 +516,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("공지사항 수정에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(noticeService)
                     .update(any(), any(), any(), any(), any());
