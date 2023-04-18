@@ -28,6 +28,8 @@ import com.kgu.studywithme.study.service.*;
 import com.kgu.studywithme.study.service.attendance.AttendanceService;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import com.kgu.studywithme.study.service.notice.NoticeService;
+import com.kgu.studywithme.upload.controller.ImageUploadApiController;
+import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyApiController.class, StudyInformationApiController.class, StudyParticipationApiController.class,
         StudyReviewApiController.class, StudySearchApiController.class,
         StudyNoticeApiController.class, StudyNoticeCommentApiController.class,
-        AttendanceApiController.class
+        AttendanceApiController.class,
+
+        // upload
+        ImageUploadApiController.class
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
@@ -137,6 +142,10 @@ public abstract class ControllerTest {
 
     @MockBean
     protected AttendanceService attendanceService;
+
+    // upload
+    @MockBean
+    protected FileUploader uploader;
 
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider provider) {
