@@ -21,8 +21,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -114,9 +112,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
@@ -154,9 +150,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Register/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
@@ -242,9 +236,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
@@ -277,9 +269,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
@@ -373,9 +363,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
@@ -413,9 +401,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")

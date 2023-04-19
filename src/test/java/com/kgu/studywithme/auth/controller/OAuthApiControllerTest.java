@@ -23,8 +23,6 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -240,9 +238,7 @@ class OAuthApiControllerTest extends ControllerTest {
                                     "OAuthApi/Logout/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    )
+                                    getHeaderWithAccessToken()
                             )
                     );
         }

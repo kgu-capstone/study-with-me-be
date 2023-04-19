@@ -60,6 +60,9 @@ import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -181,6 +184,18 @@ public abstract class ControllerTest {
 
     protected OperationResponsePreprocessor getDocumentResponse() {
         return preprocessResponse(prettyPrint());
+    }
+
+    protected Snippet getHeaderWithAccessToken() {
+        return requestHeaders(
+                headerWithName(AUTHORIZATION).description("Access Token")
+        );
+    }
+
+    protected Snippet getHeaderWithRefreshToken() {
+        return requestHeaders(
+                headerWithName(AUTHORIZATION).description("Refresh Token")
+        );
     }
 
     protected Snippet getExceptionResponseFiels() {

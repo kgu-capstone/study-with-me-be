@@ -18,8 +18,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -99,9 +97,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Like/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     ),
@@ -131,9 +127,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Like/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     )
@@ -213,9 +207,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Cancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     ),
@@ -247,9 +239,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Cancel/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     )

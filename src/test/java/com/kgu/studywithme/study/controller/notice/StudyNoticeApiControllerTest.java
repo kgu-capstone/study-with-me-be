@@ -22,8 +22,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -119,9 +117,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)")
                                     ),
@@ -158,9 +154,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Register/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)")
                                     ),
@@ -250,9 +244,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
@@ -294,9 +286,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Remove/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
@@ -329,9 +319,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
@@ -428,9 +416,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
@@ -479,9 +465,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Update/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
@@ -521,9 +505,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     "StudyApi/Notice/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
                                             parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")

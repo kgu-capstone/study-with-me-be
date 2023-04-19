@@ -22,8 +22,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -105,9 +103,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Apply/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
                                     ),
@@ -148,9 +144,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Apply/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
                                     ),
@@ -191,9 +185,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Apply/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
                                     ),
@@ -225,9 +217,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Apply/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
                                     )
@@ -308,9 +298,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/ApplyCancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
                                     ),
@@ -342,9 +330,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/ApplyCancel/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
                                     )
@@ -429,9 +415,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Approve/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -473,9 +457,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Approve/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -517,9 +499,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Approve/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -561,9 +541,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Approve/Failure/Case5",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -596,9 +574,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Approve/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -684,9 +660,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Reject/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
@@ -728,9 +702,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Reject/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
@@ -772,9 +744,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Reject/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
@@ -807,9 +777,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Reject/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
@@ -896,9 +864,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Cancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
@@ -939,9 +905,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Cancel/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
@@ -982,9 +946,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Cancel/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
@@ -1016,9 +978,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Cancel/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     )
@@ -1104,9 +1064,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/DelegateAuthority/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("participantId").description("권한을 위임할 사용자 ID(PK)")
@@ -1148,9 +1106,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/DelegateAuthority/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("participantId").description("권한을 위임할 사용자 ID(PK)")
@@ -1192,9 +1148,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/DelegateAuthority/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("participantId").description("권한을 위임할 사용자 ID(PK)")
@@ -1227,9 +1181,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/DelegateAuthority/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("participantId").description("권한을 위임할 사용자 ID(PK)")
@@ -1316,9 +1268,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Graduate/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
                                     ),
@@ -1359,9 +1309,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Graduate/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
                                     ),
@@ -1402,9 +1350,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Graduate/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
                                     ),
@@ -1436,9 +1382,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     "StudyApi/Participation/Graduate/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
                                     )

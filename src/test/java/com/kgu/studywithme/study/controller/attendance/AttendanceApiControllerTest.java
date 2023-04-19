@@ -22,8 +22,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -121,9 +119,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                                     "StudyApi/Attendance/ManualCheck/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
@@ -172,9 +168,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                                     "StudyApi/Attendance/ManualCheck/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
@@ -214,9 +208,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                                     "StudyApi/Attendance/ManualCheck/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")

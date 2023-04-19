@@ -26,8 +26,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -125,9 +123,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -174,9 +170,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -222,9 +216,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -341,9 +333,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -403,9 +393,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -465,9 +453,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -518,9 +504,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -570,9 +554,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),

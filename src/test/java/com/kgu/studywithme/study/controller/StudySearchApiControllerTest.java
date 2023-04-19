@@ -30,8 +30,6 @@ import static com.kgu.studywithme.study.utils.PagingConstants.getDefaultPageRequ
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -193,9 +191,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                     "StudyApi/Search/Recommend/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParameters(
                                             parameterWithName("sort").description("정렬 기준")
                                                     .attributes(constraint("date=최신순 / favorite=찜 / review=리뷰")),

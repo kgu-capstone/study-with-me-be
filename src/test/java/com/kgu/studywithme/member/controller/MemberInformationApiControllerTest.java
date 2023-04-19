@@ -25,8 +25,6 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -104,9 +102,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/Basic/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -138,9 +134,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/Basic/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -228,9 +222,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Participate/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -262,9 +254,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Participate/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -345,9 +335,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Graduated/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -379,9 +367,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Graduated/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -462,9 +448,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Favorite/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -496,9 +480,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/RelatedStudy/Favorite/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
@@ -573,9 +555,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     "MemberApi/Information/PeerReview/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("memberId").description("피어리뷰를 조회할 사용자 ID(PK)")
                                     ),

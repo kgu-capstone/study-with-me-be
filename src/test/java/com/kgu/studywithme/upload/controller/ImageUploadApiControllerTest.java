@@ -23,8 +23,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -107,9 +105,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
@@ -152,9 +148,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
@@ -195,9 +189,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),

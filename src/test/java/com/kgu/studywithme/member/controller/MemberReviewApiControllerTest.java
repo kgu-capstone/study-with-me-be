@@ -20,8 +20,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -106,9 +104,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
@@ -155,9 +151,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
@@ -204,9 +198,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
@@ -244,9 +236,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
@@ -332,9 +322,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
@@ -372,9 +360,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),

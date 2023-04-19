@@ -21,8 +21,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -114,9 +112,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 작성할 스터디 ID(PK)")
                                     ),
@@ -154,9 +150,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 작성할 스터디 ID(PK)")
                                     ),
@@ -244,9 +238,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
@@ -279,9 +271,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
@@ -373,9 +363,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
@@ -414,9 +402,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
