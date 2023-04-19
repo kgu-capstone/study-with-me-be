@@ -144,13 +144,14 @@ class TokenReissueApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("RefreshToken으로 AccessToken과 RefreshToken을 재발급받는다")
-        void reissueSuccess() throws Exception {
+        void success() throws Exception {
             // given
+            final Long memberId = 1L;
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
 
             TokenResponse response = createTokenResponse();
-            given(tokenReissueService.reissueTokens(1L, REFRESH_TOKEN)).willReturn(response);
+            given(tokenReissueService.reissueTokens(memberId, REFRESH_TOKEN)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders

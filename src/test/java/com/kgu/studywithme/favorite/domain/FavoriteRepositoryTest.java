@@ -43,7 +43,7 @@ class FavoriteRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("특정 스터디에 대해서 사용자가 찜을 했는지 여부를 확인한다")
-    void exists() {
+    void existsByStudyIdAndMemberId() {
         // given
         favoriteRepository.save(Favorite.favoriteMarking(study1.getId(), member.getId()));
 
@@ -60,7 +60,7 @@ class FavoriteRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("특정 스터디에 대한 사용자 찜 현황을 삭제한다")
-    void delete() {
+    void deleteByStudyIdAndMemberId() {
         // given
         favoriteRepository.save(Favorite.favoriteMarking(study1.getId(), member.getId()));
 

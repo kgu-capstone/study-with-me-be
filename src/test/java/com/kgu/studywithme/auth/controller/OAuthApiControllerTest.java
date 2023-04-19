@@ -49,19 +49,19 @@ class OAuthApiControllerTest extends ControllerTest {
     @DisplayName("Google OAuth Authorization Code 요청을 위한 URI 조회 API [GET /api/oauth/access]")
     class getAuthorizationCodeForAccessGoogle {
         private static final String BASE_URL = "/api/oauth/access";
-        private static final String redirectUrl = "http://localhost:3000";
+        private static final String REDIRECT_URL = "http://localhost:3000";
 
         @Test
         @DisplayName("Authorization Code 요청을 위한 URI를 생성한다")
         void success() throws Exception {
             // given
-            String authorizationCodeRequestUri = generateAuthorizationCodeRequestUri(redirectUrl);
-            given(oAuthUri.generate(redirectUrl)).willReturn(authorizationCodeRequestUri);
+            String authorizationCodeRequestUri = generateAuthorizationCodeRequestUri(REDIRECT_URL);
+            given(oAuthUri.generate(REDIRECT_URL)).willReturn(authorizationCodeRequestUri);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .get(BASE_URL)
-                    .param("redirectUrl", redirectUrl);
+                    .param("redirectUrl", REDIRECT_URL);
 
             // then
             mockMvc.perform(requestBuilder)
@@ -90,21 +90,21 @@ class OAuthApiControllerTest extends ControllerTest {
     @DisplayName("Google OAuth 인증 API [GET /api/oauth/login]")
     class oAuthLogin {
         private static final String BASE_URL = "/api/oauth/login";
-        private static final String authorizationCode = UUID.randomUUID().toString().replaceAll("-", "").repeat(2);
-        private static final String redirectUrl = "http://localhost:3000";
+        private static final String AUTHORIZATION_CODE = UUID.randomUUID().toString().replaceAll("-", "").repeat(2);
+        private static final String REDIRECT_URL = "http://localhost:3000";
 
         @Test
         @DisplayName("Google 이메일에 해당하는 사용자가 DB에 존재하지 않을 경우 예외가 발생하고 추가정보 기입을 통해서 회원가입을 진행한다")
         void throwExceptionIfGoogleAuthUserNotInDB() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
-            given(oAuthService.login(authorizationCode, redirectUrl)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
+            given(oAuthService.login(AUTHORIZATION_CODE, REDIRECT_URL)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .get(BASE_URL)
-                    .param("authorizationCode", authorizationCode)
-                    .param("redirectUrl", redirectUrl);
+                    .param("authorizationCode", AUTHORIZATION_CODE)
+                    .param("redirectUrl", REDIRECT_URL);
 
             // then
             mockMvc.perform(requestBuilder)
@@ -141,13 +141,13 @@ class OAuthApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             LoginResponse response = JIWON.toLoginResponse();
-            given(oAuthService.login(authorizationCode, redirectUrl)).willReturn(response);
+            given(oAuthService.login(AUTHORIZATION_CODE, REDIRECT_URL)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .get(BASE_URL)
-                    .param("authorizationCode", authorizationCode)
-                    .param("redirectUrl", redirectUrl);
+                    .param("authorizationCode", AUTHORIZATION_CODE)
+                    .param("redirectUrl", REDIRECT_URL);
 
             // then
             mockMvc.perform(requestBuilder)

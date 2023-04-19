@@ -17,21 +17,22 @@ class PeerReviewTest {
         // given
         final Member jiwon = JIWON.toMember();
         final Member ghost = GHOST.toMember();
+        final String review = "Good!!";
 
         // when
-        PeerReview peerReview = PeerReview.doReview(jiwon, ghost, "Good!!");
+        PeerReview peerReview = PeerReview.doReview(jiwon, ghost, review);
 
         // then
         assertAll(
                 () -> assertThat(peerReview.getReviewee()).isEqualTo(jiwon),
                 () -> assertThat(peerReview.getReviewer()).isEqualTo(ghost),
-                () -> assertThat(peerReview.getContent()).isEqualTo("Good!!")
+                () -> assertThat(peerReview.getContent()).isEqualTo(review)
         );
     }
 
     @Test
     @DisplayName("사용자 리뷰를 수정한다")
-    void update() {
+    void updateReview() {
         // given
         final Member jiwon = JIWON.toMember();
         final Member ghost = GHOST.toMember();

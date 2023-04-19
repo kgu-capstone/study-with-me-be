@@ -81,7 +81,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("허용하는 이미지 확장자[jpg, jpeg, png, gif]가 아니면 클라우드에 업로드가 불가능하다")
-        void notAllowedExtension() throws Exception {
+        void throwExceptionByNotAllowedExtension() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
@@ -128,7 +128,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("이미지를 업로드하지 않으면 클라우드에 업로드를 실패한다")
-        void emptyFile() throws Exception {
+        void throwExceptionByFileIsEmpty() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);

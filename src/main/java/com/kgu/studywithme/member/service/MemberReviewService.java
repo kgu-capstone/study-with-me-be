@@ -49,7 +49,7 @@ public class MemberReviewService {
                 );
 
         if (!hasCommonMetadata) {
-            throw StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_NOT_FOUND);
+            throw StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_RECORD_NOT_FOUND);
         }
     }
 
@@ -60,7 +60,7 @@ public class MemberReviewService {
     @Transactional
     public void updateReview(Long revieweeId, Long reviewerId, String content) {
         PeerReview peerReview = peerReviewRepository.findByRevieweeIdAndReviewerId(revieweeId, reviewerId)
-                .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> StudyWithMeException.type(MemberErrorCode.PEER_REVIEW_NOT_FOUND));
         peerReview.updateReview(content);
     }
 }

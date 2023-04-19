@@ -1,9 +1,11 @@
 package com.kgu.studywithme.study.service.notice;
 
+import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
+import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.StudyFindService;
 import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NoticeService {
     private final NoticeRepository noticeRepository;
-    private final NoticeFindService noticeFindService;
     private final CommentRepository commentRepository;
     private final StudyFindService studyFindService;
     private final StudyValidator studyValidator;
@@ -44,11 +45,16 @@ public class NoticeService {
     public void update(Long noticeId, Long hostId, String title, String content) {
         validateNoticeWriter(noticeId, hostId);
 
-        Notice notice = noticeFindService.findById(noticeId);
+        Notice notice = findById(noticeId);
         notice.updateNoticeInformation(title, content);
     }
 
     private void validateNoticeWriter(Long noticeId, Long memberId) {
         studyValidator.validateNoticeWriter(noticeId, memberId);
+    }
+
+    private Notice findById(Long noticeId) {
+        return noticeRepository.findById(noticeId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.NOTICE_NOT_FOUND));
     }
 }

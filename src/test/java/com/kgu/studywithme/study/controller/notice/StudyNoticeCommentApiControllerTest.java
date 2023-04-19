@@ -84,7 +84,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다")
-        void memberIsNotParticipant() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -223,7 +223,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 삭제할 수 없다")
-        void memberIsNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -358,7 +358,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 수정할 수 없다")
-        void memberIsNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);

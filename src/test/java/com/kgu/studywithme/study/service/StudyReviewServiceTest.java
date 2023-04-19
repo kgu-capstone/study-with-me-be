@@ -45,7 +45,7 @@ class StudyReviewServiceTest extends ServiceTest {
     class write {
         @Test
         @DisplayName("졸업자가 아니면 리뷰를 작성할 수 없다")
-        void memberIsNotGraduate() {
+        void throwExceptionByMemberIsNotGraduated() {
             assertThatThrownBy(() -> studyReviewService.write(study.getId(), member2.getId(), "It's good"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_GRADUATED.getMessage());
@@ -53,7 +53,7 @@ class StudyReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("이미 스터디에 대한 리뷰를 작성했다면 2회 이상 작성할 수 없다")
-        void alreadyWritten() {
+        void throwExceptionByAlreadyReviewWritten() {
             // given
             studyReviewService.write(study.getId(), member1.getId(), "It's good");
 
@@ -75,10 +75,10 @@ class StudyReviewServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getReviews().size()).isEqualTo(1),
                     () -> assertThat(findStudy.getReviews())
                             .map(Review::getWriter)
-                            .containsExactly(member1),
+                            .containsExactlyInAnyOrder(member1),
                     () -> assertThat(findStudy.getReviews())
                             .map(Review::getContent)
-                            .containsExactly("It's good")
+                            .containsExactlyInAnyOrder("It's good")
             );
         }
     }
@@ -95,7 +95,7 @@ class StudyReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 삭제할 수 없다")
-        void memberIsNotWriter() {
+        void throwExceptionByMemberIsNotWriter() {
             assertThatThrownBy(() -> studyReviewService.remove(review.getId(), member2.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
@@ -124,7 +124,7 @@ class StudyReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 수정할 수 없다")
-        void memberIsNotWriter() {
+        void throwExceptionByMemberIsNotWriter() {
             assertThatThrownBy(() -> studyReviewService.update(review.getId(), member2.getId(), "It's bad"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());

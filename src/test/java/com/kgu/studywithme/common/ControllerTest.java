@@ -80,7 +80,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         AttendanceApiController.class,
 
         // upload
-        ImageUploadApiController.class
+        ImageUploadApiController.class,
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)

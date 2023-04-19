@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -21,7 +21,7 @@ class WeeklyTest {
 
     @Test
     @DisplayName("이미 해당 주차가 등록되어 있으며 중복으로 등록할 수 없다")
-    void registerFailure() {
+    void throwExceptionByAlreadyWeekCreated() {
         // given
         final Week week = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
         Weekly weekly = Weekly.createWeeklyPage();
@@ -36,16 +36,21 @@ class WeeklyTest {
 
     @Test
     @DisplayName("스터디 주차를 등록한다")
-    void registerSuccess() {
-        final Week week = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
+    void success() {
+        final Week week1 = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
+        final Week week2 = STUDY_WEEKLY_2.toWeekWithAssignment(STUDY);
+        final Week week3 = STUDY_WEEKLY_3.toWeekWithAssignment(STUDY);
+
         Weekly weekly = Weekly.createWeeklyPage();
-        weekly.registerWeek(week);
+        weekly.registerWeek(week1);
+        weekly.registerWeek(week2);
+        weekly.registerWeek(week3);
 
         assertAll(
-                () -> assertThat(weekly.getCount()).isEqualTo(1),
+                () -> assertThat(weekly.getCount()).isEqualTo(3),
                 () -> assertThat(weekly.getWeeks())
                         .map(Week::getWeek)
-                        .containsExactly(1)
+                        .containsExactly(1, 2, 3)
         );
     }
 }

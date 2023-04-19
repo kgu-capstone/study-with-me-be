@@ -49,7 +49,6 @@ class OAuthServiceTest extends ServiceTest {
         // given
         GoogleTokenResponse googleTokenResponse = createGoogleTokenResponse();
         GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
-
         given(oAuthConnector.getToken(authorizationCode, properties.getRedirectUrl())).willReturn(googleTokenResponse);
         given(oAuthConnector.getUserInfo(ACCESS_TOKEN)).willReturn(googleUserResponse);
 
@@ -68,7 +67,6 @@ class OAuthServiceTest extends ServiceTest {
 
         GoogleTokenResponse googleTokenResponse = createGoogleTokenResponse();
         GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
-
         given(oAuthConnector.getToken(authorizationCode, properties.getRedirectUrl())).willReturn(googleTokenResponse);
         given(oAuthConnector.getUserInfo(ACCESS_TOKEN)).willReturn(googleUserResponse);
 

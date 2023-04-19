@@ -38,7 +38,7 @@ class StudyServiceTest extends ServiceTest {
     class register {
         @Test
         @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다")
-        void duplicateNameOnline() {
+        void throwExceptionByDuplicateName() {
             // given
             StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             studyService.register(host.getId(), request);
@@ -93,7 +93,7 @@ class StudyServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("다른 스터디가 사용하고 있는 스터디명으로 수정할 수 없다")
-        void duplicateName() {
+        void throwExceptionByDuplicateName() {
             StudyUpdateRequest request = StudyUpdateRequest.builder()
                     .name(offlineStudy.getNameValue())
                     .build();
@@ -105,12 +105,12 @@ class StudyServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
-        void capacityLessThanMembers() {
+        void throwExceptionByCapacityCannotBeLessThanParticipants() {
             StudyUpdateRequest request = generateOnlineStudyUpdateRequest(2);
 
             assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS.getMessage());
+                    .hasMessage(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_PARTICIPANTS.getMessage());
         }
 
         @Test
@@ -133,7 +133,7 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
                     () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
-                    () -> assertThat(findStudy.getHashtags()).containsExactlyElementsOf(request.hashtags())
+                    () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
 
@@ -158,7 +158,7 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
                     () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
-                    () -> assertThat(findStudy.getHashtags()).containsExactlyElementsOf(request.hashtags())
+                    () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
     }

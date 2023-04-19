@@ -102,6 +102,7 @@ class MemberRepositoryTest extends RepositoryTest {
         // then
         assertAll(
                 () -> assertThat(findMember1).isPresent(),
+                () -> assertThat(findMember1.get()).isEqualTo(member),
                 () -> assertThat(findMember2).isEmpty()
         );
     }

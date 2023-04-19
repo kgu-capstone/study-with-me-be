@@ -37,7 +37,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
     class write {
         private static final String BASE_URL = "/api/studies/{studyId}/review";
         private static final Long STUDY_ID = 1L;
-        private static final Long GRADUATE_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
         private static final Long ANONYMOUS_ID = 2L;
 
         @Test
@@ -84,7 +84,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("졸업자가 아니면 리뷰를 작성할 수 없다")
-        void memberIsNotGraduate() throws Exception {
+        void throwExceptionByMemberIsNotGraduated() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -140,7 +140,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(GRADUATE_ID);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doNothing()
                     .when(studyReviewService)
                     .write(any(), any(), any());
@@ -225,7 +225,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 삭제할 수 없다")
-        void memberIdNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -359,7 +359,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 수정할 수 없다")
-        void memberIdNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);

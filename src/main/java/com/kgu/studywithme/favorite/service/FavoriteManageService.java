@@ -24,7 +24,7 @@ public class FavoriteManageService {
 
     private void validateLike(Long studyId, Long memberId) {
         if (favoriteRepository.existsByStudyIdAndMemberId(studyId, memberId)) {
-            throw StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST);
+            throw StudyWithMeException.type(FavoriteErrorCode.ALREADY_FAVORITE_MARKED);
         }
     }
 
@@ -36,7 +36,7 @@ public class FavoriteManageService {
 
     private void validateCancel(Long studyId, Long memberId) {
         if (!favoriteRepository.existsByStudyIdAndMemberId(studyId, memberId)) {
-            throw StudyWithMeException.type(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE);
+            throw StudyWithMeException.type(FavoriteErrorCode.NOT_FAVORITE_MARKED);
         }
     }
 }

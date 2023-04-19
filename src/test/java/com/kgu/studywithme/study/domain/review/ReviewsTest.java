@@ -26,7 +26,7 @@ class ReviewsTest {
     class writeReview {
         @Test
         @DisplayName("이전에 이미 리뷰를 작성했다면 중복으로 리뷰를 작성할 수 없다")
-        void writeFailure() {
+        void throwExceptionByAlreadyReviewWritten() {
             // given
             Reviews reviews = Reviews.createReviewsPage();
             reviews.writeReview(Review.writeReview(STUDY, PARTICIPANT, "리뷰 1"));
@@ -39,7 +39,7 @@ class ReviewsTest {
 
         @Test
         @DisplayName("리뷰 작성에 성공한다")
-        void writeSuccess() {
+        void success() {
             // given
             Reviews reviews = Reviews.createReviewsPage();
 
@@ -51,7 +51,7 @@ class ReviewsTest {
                     () -> assertThat(reviews.getReviews()).hasSize(1),
                     () -> assertThat(reviews.getReviews())
                             .map(Review::getContent)
-                            .containsExactly("리뷰 1")
+                            .containsExactlyInAnyOrder("리뷰 1")
             );
         }
     }

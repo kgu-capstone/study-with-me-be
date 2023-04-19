@@ -40,7 +40,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("모집이 마감된 스터디에는 참여 신청을 할 수 없다")
-        void failureByRecruitmentCompleted() {
+        void throwExceptionByRecruitmentIsComplete() {
             // given
             study.completeRecruitment();
 
@@ -52,7 +52,7 @@ class ParticipationServiceTest extends ServiceTest {
         
         @Test
         @DisplayName("스터디 팀장은 참여 신청을 할 수 없다")
-        void failureByHost() {
+        void throwExceptionByMemberIsHost() {
             assertThatThrownBy(() -> participationService.apply(study.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
@@ -60,7 +60,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("이미 참여 신청을 했거나 참여중이라면 중복으로 참여 신청을 할 수 없다")
-        void failureByAlreadyApply() {
+        void throwExceptionByMemberIsAlreadyParticipate() {
             // given
             study.applyParticipation(applier);
 
@@ -80,9 +80,9 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, applier),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
                     () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
     }
@@ -103,7 +103,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 신청을 취소할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotApplier() {
             assertThatThrownBy(() -> participationService.applyCancel(study.getId(), applier.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
@@ -143,7 +143,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 승인을 할 수 없다")
-        void failureByStudyClosed() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             // given
             study.close();
 
@@ -155,7 +155,7 @@ class ParticipationServiceTest extends ServiceTest {
         
         @Test
         @DisplayName("참여 신청자가 아니면 참여 승인을 할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotApplier() {
             assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
@@ -163,7 +163,7 @@ class ParticipationServiceTest extends ServiceTest {
         
         @Test
         @DisplayName("참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다")
-        void failureByAlreadyCapacityFull() {
+        void throwExceptionByStudyCapacityIsFull() {
             // given
             study.applyParticipation(applier);
             makeCapacityFull(study);
@@ -191,9 +191,9 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, applier),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
                     () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host, applier)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applier)
             );
         }
     }
@@ -214,7 +214,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 거절을 할 수 없다")
-        void failureByStudyClosed() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             // given
             study.close();
 
@@ -226,7 +226,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotApplier() {
             assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
@@ -245,9 +245,9 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, applier),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
                     () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
     }
@@ -268,7 +268,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 취소를 할 수 없다")
-        void failureByStudyClosed() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             // given
             study.applyParticipation(participant);
             study.approveParticipation(participant);
@@ -282,7 +282,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디 팀장은 참여 취소를 할 수 없다")
-        void failureByHost() {
+        void throwExceptionByMemberIsHost() {
             assertThatThrownBy(() -> participationService.cancel(study.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
@@ -290,7 +290,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("참여자가 아니면 참여 취소를 할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotParticipant() {
             assertThatThrownBy(() -> participationService.cancel(study.getId(), participant.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
@@ -310,9 +310,9 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, participant),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participant),
                     () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
     }
@@ -333,7 +333,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 졸업을 할 수 없다")
-        void failureByStudyClosed() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             // given
             study.applyParticipation(participant);
             study.approveParticipation(participant);
@@ -347,7 +347,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디 팀장은 졸업을 할 수 없다")
-        void failureByHost() {
+        void throwExceptionByMemberIsHost() {
             assertThatThrownBy(() -> participationService.graduate(study.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
@@ -355,7 +355,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("참여자가 아니면 졸업을 할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotParticipant() {
             assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
@@ -375,11 +375,11 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactly(host, participant),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participant),
                     () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(host),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host),
                     () -> assertThat(findStudy.getGraduatedParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getGraduatedParticipants()).containsExactly(participant)
+                    () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participant)
             );
         }
     }
@@ -400,7 +400,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 팀장 권한을 위임할 수 없다")
-        void failureByStudyClosed() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             // given
             study.applyParticipation(participant);
             study.approveParticipation(participant);
@@ -414,7 +414,7 @@ class ParticipationServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("참여자가 아니면 팀장 권한을 위임할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotParticipant() {
             assertThatThrownBy(() -> participationService.delegateAuthority(study.getId(), participant.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
@@ -429,7 +429,7 @@ class ParticipationServiceTest extends ServiceTest {
 
             assertAll(
                     () -> assertThat(study.getHost()).isEqualTo(host),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(host, participant)
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(host, participant)
             );
 
             // when
@@ -439,7 +439,7 @@ class ParticipationServiceTest extends ServiceTest {
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getHost()).isEqualTo(participant),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactly(participant, host)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, participant)
             );
         }
     }

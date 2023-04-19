@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class PeriodTest {
     @Test
     @DisplayName("Period을 생성한다")
-    void constructSuccess() {
+    void construct() {
         final LocalDateTime startDate = LocalDateTime.now().plusDays(1);
         final LocalDateTime endDate = LocalDateTime.now().plusDays(7);
         Period period = Period.of(startDate, endDate);
@@ -28,7 +28,7 @@ class PeriodTest {
     
     @Test
     @DisplayName("시작일이 종료일보다 늦는다면 Period 생성에 실패한다")
-    void failureByReversedDate() {
+    void throwExceptionByPeriodStartDateMustBeBeforeEndDate() {
         final LocalDateTime startDate = LocalDateTime.now().plusDays(7);
         final LocalDateTime endDate = LocalDateTime.now().plusDays(1);
 
@@ -39,7 +39,7 @@ class PeriodTest {
     
     @Test
     @DisplayName("종료일이 현재 날짜 이전이면 Period 생성에 실패한다")
-    void failureByInvalidEndDate() {
+    void throwExceptionByPeriodEndDateMustBeSetFromNowOn() {
         final LocalDateTime startDate = LocalDateTime.now().minusDays(7);
         final LocalDateTime endDate = LocalDateTime.now().minusDays(1);
 

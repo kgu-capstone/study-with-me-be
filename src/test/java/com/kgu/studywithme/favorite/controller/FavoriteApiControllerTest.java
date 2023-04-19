@@ -15,7 +15,8 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -74,11 +75,11 @@ class FavoriteApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("이미 찜 등록된 스터디를 찜할 수 없다")
-        void throwExceptionByAlreadyExist() throws Exception {
+        void throwExceptionByAlreadyFavoriteMarked() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
-            doThrow(StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST))
+            doThrow(StudyWithMeException.type(FavoriteErrorCode.ALREADY_FAVORITE_MARKED))
                     .when(favoriteManageService)
                     .like(any(), any());
 
@@ -88,7 +89,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
-            final FavoriteErrorCode expectedError = FavoriteErrorCode.ALREADY_EXIST;
+            final FavoriteErrorCode expectedError = FavoriteErrorCode.ALREADY_FAVORITE_MARKED;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -125,9 +126,7 @@ class FavoriteApiControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
-            doAnswer(invocation -> 1L)
-                    .when(favoriteManageService)
-                    .like(any(), any());
+            given(favoriteManageService.like(any(), any())).willReturn(1L);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -198,11 +197,11 @@ class FavoriteApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("찜 등록이 되지 않은 스터디를 취소할 수 없다")
-        void throwExceptionByNotFavorite() throws Exception {
+        void throwExceptionByNotFavoriteMarked() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
-            doThrow(StudyWithMeException.type(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE))
+            doThrow(StudyWithMeException.type(FavoriteErrorCode.NOT_FAVORITE_MARKED))
                     .when(favoriteManageService)
                     .cancel(any(), any());
 
@@ -212,7 +211,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
-            final FavoriteErrorCode expectedError = FavoriteErrorCode.STUDY_IS_NOT_FAVORITE;
+            final FavoriteErrorCode expectedError = FavoriteErrorCode.NOT_FAVORITE_MARKED;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),

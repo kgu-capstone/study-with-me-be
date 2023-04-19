@@ -52,7 +52,7 @@ class AttendanceServiceTest extends ServiceTest {
     class manualCheckAttendance {
         @Test
         @DisplayName("스터디 참여자가 아니면 출석 정보 Instance가 존재하지 않고 그에 따라서 출석 체크를 할 수 없다")
-        void attendanceNotFound() {
+        void throwExceptionByAttendanceNotFound() {
             assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), anonymous.getId(), WEEK, STATUS))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ATTENDANCE_NOT_FOUND.getMessage());

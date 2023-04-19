@@ -18,7 +18,8 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -91,7 +92,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 등록할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -146,9 +147,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
-            doAnswer(invocation -> 1L)
-                    .when(noticeService)
-                    .register(any(), any(), any());
+            given(noticeService.register(any(), anyString(), anyString())).willReturn(1L);
 
             // when
             final NoticeRequest request = createNoticeRequest();
@@ -235,7 +234,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 삭제할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -280,7 +279,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 삭제할 수 없다")
-        void throwExceptionByMemberNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -422,7 +421,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 공지사항을 수정할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -474,7 +473,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 수정할 수 없다")
-        void throwExceptionByMemberNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);

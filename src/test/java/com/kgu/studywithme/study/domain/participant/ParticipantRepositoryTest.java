@@ -41,7 +41,7 @@ class ParticipantRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("스터디 참여 신청자를 삭제한다")
-    void deleteByStudyAndMember() {
+    void deleteApplier() {
         // given
         Participant participant = Participant.applyInStudy(study, member);
         participantRepository.save(participant);

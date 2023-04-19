@@ -5,7 +5,7 @@
 :toc: left
 :toclevels: 2
 
-== 공지사항 생성
+== 공지사항 등록
 === 1. Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Notice/Register/Failure/Case1/http-request.adoc[]

@@ -21,7 +21,6 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -184,11 +183,11 @@ class MemberApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("이전에 신고한 내역이 여전히 처리중이라면 중복 신고를 하지 못한다")
-        void failureByPreviousReportIsStillPending() throws Exception {
+        void throwExceptionByPreviousReportIsStillPending() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
-            doThrow(StudyWithMeException.type(MemberErrorCode.REPORT_IS_STILL_RECEIVED))
+            doThrow(StudyWithMeException.type(MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING))
                     .when(memberService)
                     .report(anyLong(), anyLong(), anyString());
 
@@ -201,7 +200,7 @@ class MemberApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final MemberErrorCode expectedError = MemberErrorCode.REPORT_IS_STILL_RECEIVED;
+            final MemberErrorCode expectedError = MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -241,9 +240,7 @@ class MemberApiControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
-            doAnswer(invocation -> 1L)
-                    .when(memberService)
-                    .report(anyLong(), anyLong(), anyString());
+            given(memberService.report(any(), any(), any())).willReturn(1L);
 
             // when
             final MemberReportRequest request = createReportRequest();

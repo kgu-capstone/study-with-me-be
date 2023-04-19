@@ -81,7 +81,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("모집이 마감된 스터디에는 참여 신청을 할 수 없다")
-        void failureByRecruitmentCompleted() throws Exception {
+        void throwExceptionByRecruitmentIsComplete() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
@@ -128,7 +128,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 팀장은 참여 신청을 할 수 없다")
-        void failureByHost() throws Exception {
+        void throwExceptionByMemberIsHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -175,7 +175,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("이미 참여 신청을 했거나 참여중이라면 중복으로 참여 신청을 할 수 없다")
-        void failureByAlreadyApply() throws Exception {
+        void throwExceptionByMemberIsParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
@@ -300,7 +300,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 신청을 취소할 수 없다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByMemberIsNotApplier() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -432,7 +432,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 팀장이 아니면 참여 승인 권한이 없다")
-        void isNotStudyHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(APPLIER_ID);
@@ -477,7 +477,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 승인을 할 수 없다")
-        void failureByStudyClosed() throws Exception {
+        void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -525,7 +525,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 승인을 할 수 없다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByMemberIsNotApplier() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -573,7 +573,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다")
-        void failureByAlreadyCapacityFull() throws Exception {
+        void throwExceptionByStudyCapacityIsFull() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -707,7 +707,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 팀장이 아니면 참여 거절 권한이 없다")
-        void isNotStudyHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(APPLIER_ID);
@@ -752,7 +752,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 거절을 할 수 없다")
-        void failureByStudyClosed() throws Exception {
+        void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -800,7 +800,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByMemberIsNotApplier() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -935,7 +935,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여자가 아니면 참여 취소를 할 수 없다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -979,7 +979,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 취소를 할 수 없다")
-        void failureByStudyClosed() throws Exception {
+        void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
@@ -1026,7 +1026,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 팀장은 참여 취소를 할 수 없다")
-        void failureByHost() throws Exception {
+        void throwExceptionByMemberIsHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -1159,7 +1159,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 팀장 권한을 위임할 수 없다")
-        void isNotStudyHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
@@ -1204,7 +1204,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 팀장 권한을 위임할 수 없다")
-        void failureByStudyClosed() throws Exception {
+        void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -1252,7 +1252,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여자가 아니면 팀장 권한을 위임할 수 없다")
-        void failureByHost() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
@@ -1387,7 +1387,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("참여자가 아니면 졸업을 할 수 없다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -1431,7 +1431,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디가 종료되었다면 졸업을 할 수 없다")
-        void failureByStudyClosed() throws Exception {
+        void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
@@ -1477,8 +1477,8 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 팀장은 졸업을 할 수 없다")
-        void failureByHost() throws Exception {
+        @DisplayName("스터디 팀장은 졸업이 불가능하고 졸업을 하기 위해서는 팀장 권한을 위임해야 한다")
+        void throwExceptionByMemberIsHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);

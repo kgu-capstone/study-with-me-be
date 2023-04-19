@@ -94,7 +94,7 @@ class AttendanceApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);

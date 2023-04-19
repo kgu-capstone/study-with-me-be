@@ -199,8 +199,8 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("해당 스터디 참여자가 아니면 스터디 공지사항 조회에 실패한다")
-        void failureByAnonymousMember() throws Exception {
+        @DisplayName("스터디 참여자가 아니면 스터디 공지사항 조회에 실패한다")
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
@@ -342,7 +342,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 스터디 신청자 정보를 조회할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        void throwByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
@@ -481,7 +481,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("스터디 참여자가 아니라면 스터디 주차별 출석 정보를 조회할 수 없다")
-        void throwExceptionByAttendanceNotFound() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);

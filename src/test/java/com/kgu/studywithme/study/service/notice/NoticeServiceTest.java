@@ -71,7 +71,7 @@ class NoticeServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 삭제할 수 없다")
-        void memberIsNotWriter() {
+        void throwExceptionByMemberIsNotWriter() {
             // given
             study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
 
@@ -110,7 +110,7 @@ class NoticeServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("작성자가 아니라면 공지사항을 수정할 수 없다")
-        void memberIsNotWriter() {
+        void throwExceptionByMemberIsNotWriter() {
             // given
             study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
 

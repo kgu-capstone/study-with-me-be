@@ -52,7 +52,7 @@ class MemberReviewServiceTest extends ServiceTest {
     class writeReview {
         @Test
         @DisplayName("해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다")
-        void alreadyReview() {
+        void throwExceptionByAlreadyReview() {
             // given
             memberReviewService.writeReview(participants[0].getId(), participants[1].getId(), "GOOD-1");
 
@@ -64,7 +64,7 @@ class MemberReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("본인에게 피어리뷰를 남길 수 없다")
-        void selfReviewNotAllowed() {
+        void throwExceptionBySelfReviewNotAllowed() {
             assertThatThrownBy(() -> memberReviewService.writeReview(participants[0].getId(), participants[0].getId(), "GOOD"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED.getMessage());
@@ -72,17 +72,17 @@ class MemberReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다")
-        void commonStudyNotFound() {
+        void throwExceptionByCommonStudyRecordNotFound() {
             // given
             Member outsider = memberRepository.save(GHOST.toMember());
 
             // when - then
             assertThatThrownBy(() -> memberReviewService.writeReview(participants[0].getId(), outsider.getId(), "BAD"))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(MemberErrorCode.COMMON_STUDY_NOT_FOUND.getMessage());
+                    .hasMessage(MemberErrorCode.COMMON_STUDY_RECORD_NOT_FOUND.getMessage());
             assertThatThrownBy(() -> memberReviewService.writeReview(outsider.getId(), participants[0].getId(), "BAD"))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(MemberErrorCode.COMMON_STUDY_NOT_FOUND.getMessage());
+                    .hasMessage(MemberErrorCode.COMMON_STUDY_RECORD_NOT_FOUND.getMessage());
 
             assertDoesNotThrow(() -> memberReviewService.writeReview(host.getId(), participants[1].getId(), "GOOD"));
             assertDoesNotThrow(() -> memberReviewService.writeReview(participants[1].getId(), host.getId(), "GOOD"));
@@ -129,10 +129,10 @@ class MemberReviewServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("피어리뷰 기록이 없다면 수정할 수 없다")
-        void reviewNotFound() {
+        void throwExceptionByPeerReviewNotFound() {
             assertThatThrownBy(() -> memberReviewService.updateReview(host.getId(), participants[1].getId(), UPDATE_CONTENT))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(MemberErrorCode.REVIEW_NOT_FOUND.getMessage());
+                    .hasMessage(MemberErrorCode.PEER_REVIEW_NOT_FOUND.getMessage());
 
             assertDoesNotThrow(() -> memberReviewService.updateReview(host.getId(), participants[0].getId(), UPDATE_CONTENT));
         }

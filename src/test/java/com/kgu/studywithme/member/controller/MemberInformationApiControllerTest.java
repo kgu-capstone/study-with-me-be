@@ -68,7 +68,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -81,7 +81,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
         
         @Test
         @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 사용자 정보 조회에 실패한다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByInvalidPermission() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
@@ -112,7 +112,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -150,10 +150,10 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("id").description("사용자 ID(PK)"),
+                                            fieldWithPath("id").description("조회할 사용자 ID(PK)"),
                                             fieldWithPath("name").description("사용자 이름"),
                                             fieldWithPath("nickname").description("사용자 닉네임"),
                                             fieldWithPath("email").description("사용자 이메일"),
@@ -200,7 +200,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -213,7 +213,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 참여중인 스터디 리스트 조회에 실패한다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByInvalidPermission() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
@@ -244,7 +244,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -282,7 +282,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
@@ -325,7 +325,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -338,7 +338,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 졸업한 스터디 리스트 조회에 실패한다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByInvalidPermission() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
@@ -369,7 +369,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -407,7 +407,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("result[].id").description("졸업한 스터디 ID(PK)"),
@@ -450,7 +450,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -463,7 +463,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 찜한 스터디 리스트 조회에 실패한다")
-        void failureByAnonymousMember() throws Exception {
+        void throwExceptionByInvalidPermission() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
@@ -494,7 +494,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("status").description("HTTP 상태 코드"),
@@ -532,7 +532,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             headerWithName(AUTHORIZATION).description("Access Token")
                                     ),
                                     pathParameters(
-                                            parameterWithName("memberId").description("사용자 ID(PK)")
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
                                     responseFields(
                                             fieldWithPath("result[].id").description("찜한 스터디 ID(PK)"),

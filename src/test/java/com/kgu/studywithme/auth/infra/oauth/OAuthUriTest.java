@@ -32,7 +32,7 @@ class OAuthUriTest extends InfraTest {
     }
 
     @Test
-    @DisplayName("Google Authorization Server로부터 Access Token을 받는 과정에서 선행적으로 Authorization Code를 받기 위한 URI를 생성한다")
+    @DisplayName("Google Authorization Server로부터 Access Token을 받기 위해서 선행적으로 Authorization Code를 요청하기 위한 URI를 생성한다")
     void generateAuthorizationCodeUri() {
         // when
         String uri = oAuthUri.generate(properties.getRedirectUrl());

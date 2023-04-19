@@ -211,7 +211,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getFavoriteCount()).isEqualTo(1), // 스터디 팀장만 찜
                     () -> assertThat(actual.getReviewCount()).isEqualTo(0),
-                    () -> assertThat(actual.getHashtags()).containsAll(expect.getHashtags())
+                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags())
             );
         }
     }
