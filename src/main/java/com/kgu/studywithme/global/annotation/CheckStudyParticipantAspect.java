@@ -16,7 +16,7 @@ public class CheckStudyParticipantAspect {
     private final StudyFindService studyFindService;
     private final MemberFindService memberFindService;
 
-    @Before("@annotation(com.kgu.studywithme.global.annotation.CheckStudyParticipant) && args(memberId, studyId, ..)")
+    @Before("@annotation(CheckStudyParticipant) && args(memberId, studyId, ..)")
     public void checkParticipant(Long studyId, Long memberId) {
         Study study = studyFindService.findById(studyId);
         Member member = memberFindService.findById(memberId);

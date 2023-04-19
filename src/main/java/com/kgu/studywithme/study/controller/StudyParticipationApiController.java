@@ -1,5 +1,7 @@
 package com.kgu.studywithme.study.controller;
 
+import com.kgu.studywithme.global.annotation.CheckStudyHost;
+import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.service.ParticipationService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
     @PatchMapping("/applicants/{applierId}/approve")
     public ResponseEntity<Void> approve(@ExtractPayload Long hostId,
                                         @PathVariable Long studyId,
@@ -32,6 +35,7 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
     @PatchMapping("/applicants/{applierId}/reject")
     public ResponseEntity<Void> reject(@ExtractPayload Long hostId,
                                        @PathVariable Long studyId,
@@ -40,12 +44,14 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyParticipant
     @PatchMapping("/participants/cancel")
-    public ResponseEntity<Void> cancel(@ExtractPayload Long participantId, @PathVariable Long studyId) {
-        participationService.cancel(studyId, participantId);
+    public ResponseEntity<Void> cancel(@ExtractPayload Long memberId, @PathVariable Long studyId) {
+        participationService.cancel(studyId, memberId);
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
     @PatchMapping("/participants/{participantId}/delegation")
     public ResponseEntity<Void> delegateAuthority(@ExtractPayload Long hostId,
                                                   @PathVariable Long studyId,
@@ -54,9 +60,10 @@ public class StudyParticipationApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyParticipant
     @PatchMapping("/graduate")
-    public ResponseEntity<Void> graduate(@ExtractPayload Long participantId, @PathVariable Long studyId) {
-        participationService.graduate(studyId, participantId);
+    public ResponseEntity<Void> graduate(@ExtractPayload Long memberId, @PathVariable Long studyId) {
+        participationService.graduate(studyId, memberId);
         return ResponseEntity.noContent().build();
     }
 }

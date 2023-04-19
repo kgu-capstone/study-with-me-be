@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.controller;
 
+import com.kgu.studywithme.global.annotation.CheckStudyHost;
 import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.service.StudyInformationService;
@@ -36,14 +37,16 @@ public class StudyInformationApiController {
         return ResponseEntity.ok(response);
     }
 
+    @CheckStudyHost
     @GetMapping("/applicants")
-    public ResponseEntity<StudyApplicant> getApplicants(@PathVariable Long studyId) {
+    public ResponseEntity<StudyApplicant> getApplicants(@ExtractPayload Long hostId, @PathVariable Long studyId) {
         StudyApplicant response = studyInformationService.getApplicants(studyId);
         return ResponseEntity.ok(response);
     }
 
+    @CheckStudyParticipant
     @GetMapping("/attendances")
-    public ResponseEntity<AttendanceAssmbler> getAttendances(@PathVariable Long studyId) {
+    public ResponseEntity<AttendanceAssmbler> getAttendances(@ExtractPayload Long memberId, @PathVariable Long studyId) {
         AttendanceAssmbler response = studyInformationService.getAttendances(studyId);
         return ResponseEntity.ok(response);
     }

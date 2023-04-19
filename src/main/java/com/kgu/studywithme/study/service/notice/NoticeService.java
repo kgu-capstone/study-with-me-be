@@ -21,8 +21,7 @@ public class NoticeService {
     private final StudyValidator studyValidator;
 
     @Transactional
-    public Long register(Long studyId, Long hostId, String title, String content) {
-        validateHost(studyId, hostId);
+    public Long register(Long studyId, String title, String content) {
         Study study = studyFindService.findByIdWithHost(studyId);
         Notice notice = Notice.builder()
                 .title(title)
@@ -34,8 +33,7 @@ public class NoticeService {
     }
 
     @Transactional
-    public void remove(Long studyId, Long noticeId, Long hostId) {
-        validateHost(studyId, hostId);
+    public void remove(Long noticeId, Long hostId) {
         validateNoticeWriter(noticeId, hostId);
 
         commentRepository.deleteByNoticeId(noticeId);
@@ -43,16 +41,11 @@ public class NoticeService {
     }
 
     @Transactional
-    public void update(Long studyId, Long noticeId, Long hostId, String title, String content) {
-        validateHost(studyId, hostId);
+    public void update(Long noticeId, Long hostId, String title, String content) {
         validateNoticeWriter(noticeId, hostId);
 
         Notice notice = noticeFindService.findById(noticeId);
         notice.updateNoticeInformation(title, content);
-    }
-
-    private void validateHost(Long studyId, Long memberId) {
-        studyValidator.validateHost(studyId, memberId);
     }
 
     private void validateNoticeWriter(Long noticeId, Long memberId) {

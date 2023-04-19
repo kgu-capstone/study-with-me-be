@@ -1,6 +1,6 @@
 package com.kgu.studywithme.study.controller.attendance;
 
-import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
+import com.kgu.studywithme.global.annotation.CheckStudyHost;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.AttendanceRequest;
 import com.kgu.studywithme.study.service.attendance.AttendanceService;
@@ -16,13 +16,13 @@ import javax.validation.Valid;
 public class AttendanceApiController {
     private final AttendanceService attendanceService;
 
-    @CheckStudyParticipant
+    @CheckStudyHost
     @PatchMapping
     public ResponseEntity<Void> manualCheckAttendance(@ExtractPayload Long hostId,
                                                       @PathVariable Long studyId,
                                                       @PathVariable Long memberId,
                                                       @RequestBody @Valid AttendanceRequest request) {
-        attendanceService.manualCheckAttendance(studyId, memberId, hostId, request.week(), request.status());
+        attendanceService.manualCheckAttendance(studyId, memberId, request.week(), request.status());
         return ResponseEntity.noContent().build();
     }
 }

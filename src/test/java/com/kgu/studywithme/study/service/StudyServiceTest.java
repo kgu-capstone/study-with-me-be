@@ -13,8 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
@@ -78,19 +77,18 @@ class StudyServiceTest extends ServiceTest {
     class update {
         private Study onlineStudy;
         private Study offlineStudy;
-        private Member member;
 
         @BeforeEach
         void setUp() {
-            member = memberRepository.save(GHOST.toMember());
+            Member memberA = memberRepository.save(DUMMY1.toMember());
+            Member memberB = memberRepository.save(DUMMY2.toMember());
+            Member memberC = memberRepository.save(DUMMY3.toMember());
 
             onlineStudy = studyRepository.save(TOEIC.toOnlineStudy(host));
-            onlineStudy.applyParticipation(member);
-            onlineStudy.approveParticipation(member);
+            beParticipation(onlineStudy, memberA, memberB, memberC);
 
             offlineStudy = studyRepository.save(KAKAO_INTERVIEW.toOfflineStudy(host));
-            offlineStudy.applyParticipation(member);
-            offlineStudy.approveParticipation(member);
+            beParticipation(offlineStudy, memberA, memberB, memberC);
         }
 
         @Test
@@ -100,25 +98,15 @@ class StudyServiceTest extends ServiceTest {
                     .name(offlineStudy.getNameValue())
                     .build();
 
-            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), member.getId(), request))
+            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_NAME.getMessage());
         }
 
         @Test
-        @DisplayName("스터디 팀장이 아니면 스터디 정보를 수정할 수 없다")
-        void memberIsNotHost() {
-            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(5);
-
-            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), member.getId(), request))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
-        }
-
-        @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
         void capacityLessThanMembers() {
-            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(1);
+            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(2);
 
             assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
@@ -201,5 +189,12 @@ class StudyServiceTest extends ServiceTest {
                 .recruitmentStatus(true)
                 .hashtags(GOOGLE_INTERVIEW.getHashtags())
                 .build();
+    }
+
+    private void beParticipation(Study study, Member... members) {
+        for (Member member : members) {
+            study.applyParticipation(member);
+            study.approveParticipation(member);
+        }
     }
 }

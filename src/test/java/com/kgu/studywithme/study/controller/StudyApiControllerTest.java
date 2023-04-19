@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
 import com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -322,6 +323,13 @@ class StudyApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}";
         private static final Long STUDY_ID = 1L;
         private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
@@ -379,14 +387,11 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("다른 스터디가 사용하고 있는 스터디명이라면 정보를 수정할 수 없다")
-        void throwExceptionByDuplicateName() throws Exception {
+        @DisplayName("스터디 팀장이 아니라면 정보를 수정할 수 없다")
+        void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
-            doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
-                    .when(studyService)
-                    .update(any(), any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
             final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
@@ -397,7 +402,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.DUPLICATE_NAME;
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -445,12 +450,12 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 팀장이 아니라면 정보를 수정할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        @DisplayName("다른 스터디가 사용하고 있는 스터디명이라면 정보를 수정할 수 없다")
+        void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .update(any(), any(), any());
 
@@ -463,7 +468,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
+            final StudyErrorCode expectedError = StudyErrorCode.DUPLICATE_NAME;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),

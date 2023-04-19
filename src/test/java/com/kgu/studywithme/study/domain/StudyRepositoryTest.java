@@ -52,10 +52,7 @@ class StudyRepositoryTest extends RepositoryTest {
         Study findStudy = studyRepository.findByIdAndHostId(study.getId(), host.getId()).orElseThrow();
 
         // then
-        assertAll(
-                () -> assertThat(findStudy).isEqualTo(study),
-                () -> assertThat(findStudy.getHost()).isEqualTo(host)
-        );
+        assertThat(findStudy).isEqualTo(study);
     }
 
     @Test

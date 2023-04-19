@@ -7,7 +7,6 @@ import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
-import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,19 +43,10 @@ class NoticeServiceTest extends ServiceTest {
     @DisplayName("공지사항 등록")
     class register {
         @Test
-        @DisplayName("팀장이 아니라면 공지사항을 등록할 수 없다")
-        void memberIsNotHost() {
-            // when - then
-            assertThatThrownBy(() -> noticeService.register(study.getId(), member.getId(), "제목", "내용"))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
-        }
-
-        @Test
         @DisplayName("공지사항 등록에 성공한다")
         void success() {
             // when
-            Long savedNoticeId = noticeService.register(study.getId(), host.getId(), "제목", "내용");
+            Long savedNoticeId = noticeService.register(study.getId(), "제목", "내용");
 
             // then
             Notice findNotice = noticeRepository.findById(savedNoticeId).orElseThrow();
@@ -80,21 +70,13 @@ class NoticeServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("팀장이 아니라면 공지사항을 삭제할 수 없다")
-        void memberIsNotHost() {
-            assertThatThrownBy(() -> noticeService.remove(study.getId(), notice.getId(), member.getId()))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
-        }
-
-        @Test
         @DisplayName("작성자가 아니라면 공지사항을 삭제할 수 없다")
         void memberIsNotWriter() {
             // given
             study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
 
             // when - then
-            assertThatThrownBy(() -> noticeService.remove(study.getId(), notice.getId(), member.getId()))
+            assertThatThrownBy(() -> noticeService.remove(notice.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         }
@@ -106,7 +88,7 @@ class NoticeServiceTest extends ServiceTest {
             Comment comment = commentRepository.save(Comment.writeComment(notice, member, "댓글1")); // 댓글 작성
 
             // when
-            noticeService.remove(study.getId(), notice.getId(), host.getId());
+            noticeService.remove(notice.getId(), host.getId());
 
             // then
             assertAll(
@@ -127,21 +109,13 @@ class NoticeServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("팀장이 아니라면 공지사항을 수정할 수 없다")
-        void memberIsNotHost() {
-            assertThatThrownBy(() -> noticeService.update(study.getId(), notice.getId(), member.getId(), "공지사항22", "내용22"))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
-        }
-
-        @Test
         @DisplayName("작성자가 아니라면 공지사항을 수정할 수 없다")
         void memberIsNotWriter() {
             // given
             study.delegateStudyHostAuthority(member); // 팀장(작성자) 위임
 
             // when - then
-            assertThatThrownBy(() -> noticeService.update(study.getId(), notice.getId(), member.getId(), "공지사항22", "내용22"))
+            assertThatThrownBy(() -> noticeService.update(notice.getId(), member.getId(), "공지사항22", "내용22"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         }
@@ -150,7 +124,7 @@ class NoticeServiceTest extends ServiceTest {
         @DisplayName("공지사항 수정에 성공한다")
         void success() {
             // when
-            noticeService.update(study.getId(), notice.getId(), host.getId(), "공지사항22", "내용22");
+            noticeService.update(notice.getId(), host.getId(), "공지사항22", "내용22");
 
             // then
             Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();

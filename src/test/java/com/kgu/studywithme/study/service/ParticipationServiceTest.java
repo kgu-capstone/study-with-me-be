@@ -399,7 +399,7 @@ class ParticipationServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("스터디가 종료되었다면 팀장 권함을 위임할 수 없다")
+        @DisplayName("스터디가 종료되었다면 팀장 권한을 위임할 수 없다")
         void failureByStudyClosed() {
             // given
             study.applyParticipation(participant);

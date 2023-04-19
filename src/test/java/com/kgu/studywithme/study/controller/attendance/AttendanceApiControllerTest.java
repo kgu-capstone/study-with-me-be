@@ -2,24 +2,18 @@ package com.kgu.studywithme.study.controller.attendance;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
-import com.kgu.studywithme.fixture.MemberFixture;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
-import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.controller.dto.request.AttendanceRequest;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.*;
-import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,30 +44,8 @@ class AttendanceApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Member host = createMember(JIWON, HOST_ID);
-            Member memberA = createMember(DUMMY1, PARTICIPANT_ID);
-            Member memberB = createMember(DUMMY2, ANONYMOUS_ID);
-            given(memberFindService.findById(HOST_ID)).willReturn(host);
-            given(memberFindService.findById(PARTICIPANT_ID)).willReturn(memberA);
-            given(memberFindService.findById(ANONYMOUS_ID)).willReturn(memberB);
-
-            Study study = createSpringStudy(host, STUDY_ID);
-            given(studyFindService.findById(STUDY_ID)).willReturn(study);
-
-            study.applyParticipation(memberA);
-            study.approveParticipation(memberA);
-        }
-
-        private Member createMember(MemberFixture fixture, Long id) {
-            Member member = fixture.toMember();
-            ReflectionTestUtils.setField(member, "id", id);
-            return member;
-        }
-
-        private Study createSpringStudy(Member host, Long id) {
-            Study study = SPRING.toOnlineStudy(host);
-            ReflectionTestUtils.setField(study, "id", id);
-            return study;
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, PARTICIPANT_ID, false);
         }
 
         @Test
@@ -121,22 +93,22 @@ class AttendanceApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 참여자가 아니면 출석 체크를 할 수 없다")
-        void throwExceptionByAnonymousMember() throws Exception {
+        @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
+        void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
 
             // when
             final AttendanceRequest request = createAttendanceRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, ANONYMOUS_ID)
+                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT;
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -173,28 +145,28 @@ class AttendanceApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
+        @DisplayName("스터디 참여자가 아니라면 출석 정보가 존재하지 않고 출석 체크를 진행할 수 없다")
+        void throwExceptionByAttendanceNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND))
                     .when(attendanceService)
-                    .manualCheckAttendance(any(), any(), any(), any(), any());
+                    .manualCheckAttendance(any(), any(), any(), any());
 
             // when
             final AttendanceRequest request = createAttendanceRequest();
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
+                    .patch(BASE_URL, STUDY_ID, ANONYMOUS_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
                     .contentType(APPLICATION_JSON)
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
+            final StudyErrorCode expectedError = StudyErrorCode.ATTENDANCE_NOT_FOUND;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
-                            status().isConflict(),
+                            status().isNotFound(),
                             jsonPath("$.status").exists(),
                             jsonPath("$.status").value(expectedError.getStatus().value()),
                             jsonPath("$.errorCode").exists(),
@@ -228,60 +200,6 @@ class AttendanceApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("해당 사용자의 출석 정보가 존재하지 않는다")
-        void throwExceptionByAttendanceNotFound() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
-            doThrow(StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND))
-                    .when(attendanceService)
-                    .manualCheckAttendance(any(), any(), any(), any(), any());
-            // when
-            final AttendanceRequest request = createAttendanceRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final StudyErrorCode expectedError = StudyErrorCode.ATTENDANCE_NOT_FOUND;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isNotFound(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Attendance/ManualCheck/Failure/Case4",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
-                                            parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("week").description("수동 출석할 주차"),
-                                            fieldWithPath("status").description("출석 정보")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("수동 출석 체크에 성공한다")
         void success() throws Exception {
             // given
@@ -289,7 +207,7 @@ class AttendanceApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(attendanceService)
-                    .manualCheckAttendance(any(), any(), any(), any(), any());
+                    .manualCheckAttendance(any(), any(), any(), any());
 
             // when
             final AttendanceRequest request = createAttendanceRequest();

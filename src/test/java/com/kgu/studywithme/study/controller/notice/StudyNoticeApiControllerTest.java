@@ -6,6 +6,7 @@ import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/notice";
         private static final Long STUDY_ID = 1L;
         private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
@@ -86,10 +94,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
-                    .when(noticeService)
-                    .register(any(), any(), any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
             final NoticeRequest request = createNoticeRequest();
@@ -143,7 +148,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doAnswer(invocation -> 1L)
                     .when(noticeService)
-                    .register(any(), any(), any(), any());
+                    .register(any(), any(), any());
 
             // when
             final NoticeRequest request = createNoticeRequest();
@@ -183,6 +188,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         private static final Long STUDY_ID = 1L;
         private static final Long NOTICE_ID = 1L;
         private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 삭제를 실패한다")
@@ -226,10 +238,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
-                    .when(noticeService)
-                    .remove(any(), any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -274,10 +283,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(noticeService)
-                    .remove(any(), any(), any());
+                    .remove(any(), any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -325,7 +334,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(noticeService)
-                    .remove(any(), any(), any());
+                    .remove(any(), any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -359,6 +368,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         private static final Long STUDY_ID = 1L;
         private static final Long NOTICE_ID = 1L;
         private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다")
@@ -409,10 +425,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
-                    .when(noticeService)
-                    .update(any(), any(), any(), any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
             final NoticeRequest request = createNoticeRequest();
@@ -464,10 +477,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void throwExceptionByMemberNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID + 10000L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(noticeService)
-                    .update(any(), any(), any(), any(), any());
+                    .update(any(), any(), any(), any());
 
             // when
             final NoticeRequest request = createNoticeRequest();
@@ -522,7 +535,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(noticeService)
-                    .update(any(), any(), any(), any(), any());
+                    .update(any(), any(), any(), any());
 
             // when
             final NoticeRequest request = createNoticeRequest();

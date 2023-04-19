@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.controller;
 
+import com.kgu.studywithme.global.annotation.CheckStudyHost;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
@@ -26,6 +27,7 @@ public class StudyApiController {
                 .build();
     }
 
+    @CheckStudyHost
     @PatchMapping("/studies/{studyId}")
     public ResponseEntity<Void> update(@ExtractPayload Long hostId,
                                        @PathVariable Long studyId,
