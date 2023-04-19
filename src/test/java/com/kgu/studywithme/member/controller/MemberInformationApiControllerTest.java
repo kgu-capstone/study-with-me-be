@@ -70,11 +70,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -114,11 +110,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -202,11 +194,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -246,11 +234,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -327,11 +311,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -371,11 +351,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -452,11 +428,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -496,11 +468,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -577,11 +545,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("memberId").description("피어리뷰를 조회할 사용자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

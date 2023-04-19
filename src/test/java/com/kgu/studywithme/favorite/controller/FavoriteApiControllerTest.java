@@ -21,8 +21,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,11 +62,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -111,11 +105,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -186,11 +176,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -233,11 +219,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

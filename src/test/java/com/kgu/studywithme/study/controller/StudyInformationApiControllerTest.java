@@ -189,11 +189,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -233,11 +229,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -331,11 +323,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -375,11 +363,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -470,11 +454,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -514,11 +494,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

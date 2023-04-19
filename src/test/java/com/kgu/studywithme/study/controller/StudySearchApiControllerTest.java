@@ -161,11 +161,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화"))
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

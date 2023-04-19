@@ -27,7 +27,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -85,11 +86,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -172,11 +169,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -225,11 +218,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("reason").description("신고 사유")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

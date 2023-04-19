@@ -70,11 +70,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -117,11 +113,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -166,11 +158,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }

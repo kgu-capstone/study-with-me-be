@@ -48,6 +48,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -60,6 +61,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -178,6 +181,14 @@ public abstract class ControllerTest {
 
     protected OperationResponsePreprocessor getDocumentResponse() {
         return preprocessResponse(prettyPrint());
+    }
+
+    protected Snippet getExceptionResponseFiels() {
+        return responseFields(
+                fieldWithPath("status").description("HTTP 상태 코드"),
+                fieldWithPath("errorCode").description("커스텀 예외 코드"),
+                fieldWithPath("message").description("예외 메시지")
+        );
     }
 
     protected Attributes.Attribute constraint(String value) {
