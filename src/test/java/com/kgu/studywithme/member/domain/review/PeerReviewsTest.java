@@ -23,7 +23,7 @@ class PeerReviewsTest {
     class writeReview {
         @Test
         @DisplayName("이전에 이미 리뷰를 작성했다면 중복으로 리뷰를 작성할 수 없다")
-        void writeFailure() {
+        void throwExceptionByAlreadyReview() {
             // given
             PeerReviews reviews = PeerReviews.createPeerReviewsPage();
             reviews.writeReview(PeerReview.doReview(REVIEWEE, REVIEWER, "열심히 하시는 팀원이에요."));
@@ -36,7 +36,7 @@ class PeerReviewsTest {
 
         @Test
         @DisplayName("리뷰 작성에 성공한다")
-        void writeSuccess() {
+        void success() {
             // given
             PeerReviews reviews = PeerReviews.createPeerReviewsPage();
 

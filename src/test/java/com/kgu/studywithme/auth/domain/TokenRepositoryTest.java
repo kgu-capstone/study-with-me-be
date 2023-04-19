@@ -28,16 +28,14 @@ class TokenRepositoryTest extends RepositoryTest {
     @DisplayName("사용자 ID(PK)를 통해서 보유하고 있는 RefreshToken을 조회한다")
     void findRefreshTokenWithMemberId() {
         // when
-        Optional<Token> findToken = tokenRepository.findByMemberId(MEMBER_ID);
+        Optional<Token> emptyToken = tokenRepository.findByMemberId(MEMBER_ID + 10000L);
+        Token findToken = tokenRepository.findByMemberId(MEMBER_ID).orElseThrow();
 
         // then
-        assertThat(findToken).isPresent();
         assertAll(
-                () -> {
-                    Token token = findToken.get();
-                    assertThat(token.getMemberId()).isEqualTo(MEMBER_ID);
-                    assertThat(token.getRefreshToken()).isEqualTo(REFRESH_TOKEN);
-                }
+                () -> assertThat(emptyToken).isEmpty(),
+                () -> assertThat(findToken.getMemberId()).isEqualTo(MEMBER_ID),
+                () -> assertThat(findToken.getRefreshToken()).isEqualTo(REFRESH_TOKEN)
         );
     }
 
@@ -57,9 +55,8 @@ class TokenRepositoryTest extends RepositoryTest {
     @DisplayName("사용자가 보유하고 있는 RefreshToken인지 확인한다")
     void checkMemberHasSpecificRefreshToken() {
         // when
-        final String fakeRefreshToken = "fake";
         boolean actual1 = tokenRepository.existsByMemberIdAndRefreshToken(MEMBER_ID, REFRESH_TOKEN);
-        boolean actual2 = tokenRepository.existsByMemberIdAndRefreshToken(MEMBER_ID, fakeRefreshToken);
+        boolean actual2 = tokenRepository.existsByMemberIdAndRefreshToken(MEMBER_ID, "fake");
 
         // then
         assertAll(
@@ -70,7 +67,7 @@ class TokenRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("사용자가 보유하고 있는 RefreshToken을 삭제한다")
-    void deleteRefreshTokenByMemberId() {
+    void deleteByMemberId() {
         // when
         tokenRepository.deleteByMemberId(MEMBER_ID);
 

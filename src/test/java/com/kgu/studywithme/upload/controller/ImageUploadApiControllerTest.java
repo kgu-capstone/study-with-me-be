@@ -23,8 +23,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -39,6 +37,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
     @DisplayName("이미지 업로드 API [POST /api/image]")
     class findAllCategory {
         private static final String BASE_URL = "/api/image";
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다")
@@ -69,21 +68,17 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("허용하는 이미지 확장자[jpg, jpeg, png, gif]가 아니면 클라우드에 업로드가 불가능하다")
-        void notAllowedExtension() throws Exception {
+        void throwExceptionByNotAllowedExtension() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello5.webp", "image/webp");
@@ -110,27 +105,21 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("이미지를 업로드하지 않으면 클라우드에 업로드를 실패한다")
-        void emptyFile() throws Exception {
+        void throwExceptionByFileIsEmpty() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doThrow(StudyWithMeException.type(UploadErrorCode.FILE_IS_EMPTY))
                     .when(uploader)
                     .uploadWeeklyImage(any());
@@ -159,17 +148,11 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -179,7 +162,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
             final String uploadLink = String.format(
                     "https://kr.object.ncloudstorage.com/bucket/images/%s-hello4.png",
@@ -206,9 +189,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                                     "ImageUploadApi/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestParts(
                                             partWithName("file").description("글에 포함되는 이미지")
                                     ),

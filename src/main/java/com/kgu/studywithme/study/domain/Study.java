@@ -54,7 +54,7 @@ public class Study extends BaseEntity {
     private StudyType type;
 
     @Embedded
-    private StudyArea area;
+    private StudyLocation location;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "recruitment_status", nullable = false)
@@ -83,12 +83,12 @@ public class Study extends BaseEntity {
 
     @Builder
     private Study(Member host, StudyName name, Description description, Capacity capacity,
-                  Category category, StudyType type, StudyArea area, Set<String> hashtags) {
+                  Category category, StudyType type, StudyLocation location, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.category = category;
         this.type = type;
-        this.area = area;
+        this.location = location;
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
         this.closed = false;
@@ -103,8 +103,8 @@ public class Study extends BaseEntity {
     }
 
     public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity,
-                                          Category category, StudyType type, StudyArea area, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, area, hashtags);
+                                           Category category, StudyType type, StudyLocation location, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, type, location, hashtags);
     }
 
     public void update(StudyName name, Description description, int capacity, Category category, StudyType type,
@@ -114,7 +114,7 @@ public class Study extends BaseEntity {
         this.participants.updateCapacity(capacity);
         this.category = category;
         this.type = type;
-        this.area = (type == OFFLINE) ? StudyArea.of(province, city) : null;
+        this.location = (type == OFFLINE) ? StudyLocation.of(province, city) : null;
         this.recruitmentStatus = recruitmentStatus;
         applyHashtags(hashtags);
     }

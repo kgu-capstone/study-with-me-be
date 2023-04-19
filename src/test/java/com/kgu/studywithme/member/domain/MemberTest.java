@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class MemberTest {
     @Test
     @DisplayName("Member를 생성한다")
-    void createMember() {
+    void constuct() {
         Member member = JIWON.toMember();
 
         assertAll(
@@ -32,7 +32,7 @@ class MemberTest {
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
                 () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
-                () -> assertThat(member.getInterests()).containsAll(JIWON.getInterests())
+                () -> assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(JIWON.getInterests())
         );
     }
 
@@ -47,7 +47,7 @@ class MemberTest {
         member.applyInterests(interests);
 
         // then
-        assertThat(member.getInterests()).containsAll(interests);
+        assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(interests);
     }
 
     @Test
@@ -93,9 +93,11 @@ class MemberTest {
 
         @BeforeEach
         void setUp() {
+            // 리뷰 받는 사람
             reviewee1 = JIWON.toMember();
             reviewee2 = GHOST.toMember();
 
+            // 리뷰 작성하는 사람
             reviewer1 = DUMMY1.toMember();
             reviewer2 = DUMMY2.toMember();
         }
@@ -129,19 +131,19 @@ class MemberTest {
                     () -> assertThat(reviewee1.getPeerReviews()).hasSize(1),
                     () -> assertThat(reviewee1.getPeerReviews())
                             .map(PeerReview::getReviewer)
-                            .containsExactly(reviewer1),
+                            .containsExactlyInAnyOrder(reviewer1),
                     () -> assertThat(reviewee1.getPeerReviews())
                             .map(PeerReview::getContent)
-                            .containsExactly("좋은 팀원이에요."),
+                            .containsExactlyInAnyOrder("좋은 팀원이에요."),
 
                     // reviewee2
                     () -> assertThat(reviewee2.getPeerReviews()).hasSize(2),
                     () -> assertThat(reviewee2.getPeerReviews())
                             .map(PeerReview::getReviewer)
-                            .containsExactly(reviewer1, reviewer2),
+                            .containsExactlyInAnyOrder(reviewer1, reviewer2),
                     () -> assertThat(reviewee2.getPeerReviews())
                             .map(PeerReview::getContent)
-                            .containsExactly("열심히 안해요.", "열심히 안해요.")
+                            .containsExactlyInAnyOrder("열심히 안해요.", "열심히 안해요.")
             );
         }
     }

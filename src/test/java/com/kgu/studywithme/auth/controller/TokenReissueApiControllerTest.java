@@ -14,8 +14,6 @@ import static com.kgu.studywithme.common.utils.TokenUtils.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -53,11 +51,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
                                     "TokenReissueApi/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -90,14 +84,8 @@ class TokenReissueApiControllerTest extends ControllerTest {
                                     "TokenReissueApi/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Refresh Token")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getHeaderWithRefreshToken(),
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -130,27 +118,22 @@ class TokenReissueApiControllerTest extends ControllerTest {
                                     "TokenReissueApi/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Refresh Token")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getHeaderWithRefreshToken(),
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("RefreshToken으로 AccessToken과 RefreshToken을 재발급받는다")
-        void reissueSuccess() throws Exception {
+        void success() throws Exception {
             // given
+            final Long memberId = 1L;
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(memberId);
 
             TokenResponse response = createTokenResponse();
-            given(tokenReissueService.reissueTokens(1L, REFRESH_TOKEN)).willReturn(response);
+            given(tokenReissueService.reissueTokens(memberId, REFRESH_TOKEN)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -171,9 +154,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
                                     "TokenReissueApi/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Refresh Token")
-                                    ),
+                                    getHeaderWithRefreshToken(),
                                     responseFields(
                                             fieldWithPath("accessToken").description("새로 발급된 Access Token (Expire - 2시간)"),
                                             fieldWithPath("refreshToken").description("새로 발급된 Refresh Token (Expire - 2주)")

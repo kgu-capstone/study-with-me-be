@@ -26,7 +26,7 @@ public class StudyService {
     private final StudyFindService studyFindService;
 
     @Transactional
-    public Long register(StudyRegisterRequest request, Long hostId) {
+    public Long register(Long hostId, StudyRegisterRequest request) {
         validateUniqueNameForCreate(request.name());
 
         Member host = memberFindService.findById(hostId);
@@ -35,35 +35,8 @@ public class StudyService {
         return studyRepository.save(study).getId();
     }
 
-    @Transactional
-    public void update(Long studyId, Long hostId, StudyUpdateRequest request) {
-        validateUniqueNameForUpdate(request.name(), studyId);
-        validateHost(studyId, hostId);
-
-        Study study = studyFindService.findById(studyId);
-        study.update(
-                StudyName.from(request.name()),
-                Description.from(request.description()),
-                request.capacity(),
-                Category.from(request.category()),
-                request.type().equals(ONLINE.getDescription()) ? ONLINE : OFFLINE,
-                request.province(),
-                request.city(),
-                request.recruitmentStatus() ? IN_PROGRESS : COMPLETE,
-                request.hashtags()
-        );
-    }
-
     private void validateUniqueNameForCreate(String name) {
         studyValidator.validateUniqueNameForCreate(StudyName.from(name));
-    }
-
-    private void validateUniqueNameForUpdate(String name, Long studyId) {
-        studyValidator.validateUniqueNameForUpdate(StudyName.from(name), studyId);
-    }
-
-    private void validateHost(Long studyId, Long memberId) {
-        studyValidator.validateHost(studyId, memberId);
     }
 
     private Study buildStudy(StudyRegisterRequest request, Member host) {
@@ -85,9 +58,31 @@ public class StudyService {
                     Capacity.from(request.capacity()),
                     Category.from(request.category()),
                     OFFLINE,
-                    StudyArea.of(request.province(), request.city()),
+                    StudyLocation.of(request.province(), request.city()),
                     request.hashtags()
             );
         }
+    }
+
+    @Transactional
+    public void update(Long studyId, Long hostId, StudyUpdateRequest request) {
+        validateUniqueNameForUpdate(request.name(), studyId);
+
+        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        study.update(
+                StudyName.from(request.name()),
+                Description.from(request.description()),
+                request.capacity(),
+                Category.from(request.category()),
+                request.type().equals(ONLINE.getDescription()) ? ONLINE : OFFLINE,
+                request.province(),
+                request.city(),
+                request.recruitmentStatus() ? IN_PROGRESS : COMPLETE,
+                request.hashtags()
+        );
+    }
+
+    private void validateUniqueNameForUpdate(String name, Long studyId) {
+        studyValidator.validateUniqueNameForUpdate(StudyName.from(name), studyId);
     }
 }

@@ -15,7 +15,7 @@ include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/request-fields
 HTTP Response
 include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/response-body.adoc[]
 
-=== 2. 참여자가 아니면 댓글을 등록할 수 없다
+=== 2. 스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/request-headers.adoc[]

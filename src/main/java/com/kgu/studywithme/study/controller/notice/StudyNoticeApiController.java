@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.controller.notice;
 
+import com.kgu.studywithme.global.annotation.CheckStudyHost;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.NoticeRequest;
 import com.kgu.studywithme.study.service.notice.NoticeService;
@@ -15,28 +16,31 @@ import javax.validation.Valid;
 public class StudyNoticeApiController {
     private final NoticeService noticeService;
 
+    @CheckStudyHost
     @PostMapping("/notice")
-    public ResponseEntity<Void> register(@PathVariable Long studyId,
-                                         @ExtractPayload Long hostId,
+    public ResponseEntity<Void> register(@ExtractPayload Long hostId,
+                                         @PathVariable Long studyId,
                                          @RequestBody @Valid NoticeRequest request) {
-        noticeService.register(studyId, hostId, request.title(), request.content());
+        noticeService.register(studyId, request.title(), request.content());
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
     @DeleteMapping("/notices/{noticeId}")
-    public ResponseEntity<Void> remove(@PathVariable Long studyId,
-                                       @PathVariable Long noticeId,
-                                       @ExtractPayload Long hostId) {
-        noticeService.remove(studyId, noticeId, hostId);
+    public ResponseEntity<Void> remove(@ExtractPayload Long hostId,
+                                       @PathVariable Long studyId,
+                                       @PathVariable Long noticeId) {
+        noticeService.remove(noticeId, hostId);
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
     @PatchMapping("/notices/{noticeId}")
-    public ResponseEntity<Void> update(@PathVariable Long studyId,
+    public ResponseEntity<Void> update(@ExtractPayload Long hostId,
+                                       @PathVariable Long studyId,
                                        @PathVariable Long noticeId,
-                                       @ExtractPayload Long hostId,
                                        @RequestBody @Valid NoticeRequest request) {
-        noticeService.update(studyId, noticeId, hostId, request.title(), request.content());
+        noticeService.update(noticeId, hostId, request.title(), request.content());
         return ResponseEntity.noContent().build();
     }
 }

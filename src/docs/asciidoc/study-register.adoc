@@ -14,7 +14,7 @@ include::{snippets}/StudyApi/Register/Failure/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Register/Failure/Case1/response-body.adoc[]
 
-=== 2. 중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 온라인
+=== 2. 중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Register/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Register/Failure/Case2/request-headers.adoc[]
@@ -23,16 +23,7 @@ include::{snippets}/StudyApi/Register/Failure/Case2/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Register/Failure/Case2/response-body.adoc[]
 
-=== 3. 중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 오프라인
-HTTP Request
-include::{snippets}/StudyApi/Register/Failure/Case3/http-request.adoc[]
-include::{snippets}/StudyApi/Register/Failure/Case3/request-headers.adoc[]
-include::{snippets}/StudyApi/Register/Failure/Case3/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Register/Failure/Case3/response-body.adoc[]
-
-=== 4. 스터디 생성에 성공한다 - 온라인
+=== 3. 스터디 생성에 성공한다 - 온라인
 HTTP Request
 include::{snippets}/StudyApi/Register/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Register/Success/Case1/request-headers.adoc[]
@@ -41,7 +32,7 @@ include::{snippets}/StudyApi/Register/Success/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Register/Success/Case1/http-response.adoc[]
 
-=== 5. 스터디 생성에 성공한다 - 오프라인
+=== 4. 스터디 생성에 성공한다 - 오프라인
 HTTP Request
 include::{snippets}/StudyApi/Register/Success/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Register/Success/Case2/request-headers.adoc[]

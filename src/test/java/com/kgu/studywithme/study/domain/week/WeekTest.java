@@ -52,7 +52,7 @@ class WeekTest {
 
     @Test
     @DisplayName("과제 제출이 필수인 Week에 과제를 제출한다")
-    void submit() {
+    void submitAssignment() {
         // given
         Week week = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
 
@@ -67,10 +67,10 @@ class WeekTest {
                 () -> assertThat(week.getSubmits().size()).isEqualTo(2),
                 () -> assertThat(week.getSubmits())
                         .map(Submit::getParticipant)
-                        .containsExactly(HOST, PARTICIPANT),
+                        .containsExactlyInAnyOrder(HOST, PARTICIPANT),
                 () -> assertThat(week.getSubmits())
                         .map(Submit::getUpload)
-                        .containsExactly(hostUpload, participantUpload)
+                        .containsExactlyInAnyOrder(hostUpload, participantUpload)
         );
     }
 }

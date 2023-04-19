@@ -36,7 +36,7 @@ class CategoryTest {
 
     @Test
     @DisplayName("없는 카테고리를 조회하면 예외가 발생한다")
-    void findAnonymousCategory() {
+    void throwExceptionByfindAnonymousCategory() {
         // given
         final long anonymous = 100000000L;
 

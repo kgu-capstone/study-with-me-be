@@ -38,23 +38,23 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getDescriptionValue()).isEqualTo(SPRING.getDescription()),
                 () -> assertThat(onlineStudy.getCategory()).isEqualTo(SPRING.getCategory()),
                 () -> assertThat(onlineStudy.getType()).isEqualTo(SPRING.getType()),
-                () -> assertThat(onlineStudy.getArea()).isNull(),
+                () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(SPRING.getCapacity()),
-                () -> assertThat(onlineStudy.getHashtags()).containsExactlyElementsOf(SPRING.getHashtags()),
+                () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(SPRING.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
-                () -> assertThat(onlineStudy.getParticipants()).containsExactly(HOST),
-                () -> assertThat(onlineStudy.getApproveParticipants()).containsExactly(HOST),
+                () -> assertThat(onlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
+                () -> assertThat(onlineStudy.getApproveParticipants()).containsExactlyInAnyOrder(HOST),
 
                 () -> assertThat(offlineStudy.getNameValue()).isEqualTo(TOSS_INTERVIEW.getName()),
                 () -> assertThat(offlineStudy.getDescriptionValue()).isEqualTo(TOSS_INTERVIEW.getDescription()),
                 () -> assertThat(offlineStudy.getCategory()).isEqualTo(TOSS_INTERVIEW.getCategory()),
                 () -> assertThat(offlineStudy.getType()).isEqualTo(TOSS_INTERVIEW.getType()),
-                () -> assertThat(offlineStudy.getArea()).isEqualTo(TOSS_INTERVIEW.getArea()),
+                () -> assertThat(offlineStudy.getLocation()).isEqualTo(TOSS_INTERVIEW.getLocation()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
-                () -> assertThat(offlineStudy.getHashtags()).containsExactlyElementsOf(TOSS_INTERVIEW.getHashtags()),
+                () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(TOSS_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
-                () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST),
-                () -> assertThat(offlineStudy.getApproveParticipants()).containsExactly(HOST)
+                () -> assertThat(offlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
+                () -> assertThat(offlineStudy.getApproveParticipants()).containsExactlyInAnyOrder(HOST)
         );
     }
 
@@ -81,7 +81,7 @@ class StudyTest {
                 KAKAO_INTERVIEW.getCapacity(),
                 KAKAO_INTERVIEW.getCategory(),
                 KAKAO_INTERVIEW.getType(),
-                KAKAO_INTERVIEW.getArea().getProvince(), KAKAO_INTERVIEW.getArea().getCity(),
+                KAKAO_INTERVIEW.getLocation().getProvince(), KAKAO_INTERVIEW.getLocation().getCity(),
                 IN_PROGRESS,
                 KAKAO_INTERVIEW.getHashtags()
         );
@@ -91,26 +91,26 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getDescriptionValue()).isEqualTo(CHINESE.getDescription()),
                 () -> assertThat(onlineStudy.getCategory()).isEqualTo(CHINESE.getCategory()),
                 () -> assertThat(onlineStudy.getType()).isEqualTo(CHINESE.getType()),
-                () -> assertThat(onlineStudy.getArea()).isNull(),
+                () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(CHINESE.getCapacity()),
                 () -> assertThat(onlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
                 () -> assertThat(onlineStudy.getHashtags()).hasSize(CHINESE.getHashtags().size()),
-                () -> assertThat(onlineStudy.getHashtags()).containsExactlyElementsOf(CHINESE.getHashtags()),
+                () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(CHINESE.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
-                () -> assertThat(onlineStudy.getParticipants()).containsExactly(HOST),
+                () -> assertThat(onlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
 
                 () -> assertThat(offlineStudy.getNameValue()).isEqualTo(KAKAO_INTERVIEW.name()),
                 () -> assertThat(offlineStudy.getDescriptionValue()).isEqualTo(KAKAO_INTERVIEW.getDescription()),
                 () -> assertThat(offlineStudy.getCategory()).isEqualTo(KAKAO_INTERVIEW.getCategory()),
                 () -> assertThat(offlineStudy.getType()).isEqualTo(KAKAO_INTERVIEW.getType()),
-                () -> assertThat(offlineStudy.getArea().getProvince()).isEqualTo(KAKAO_INTERVIEW.getArea().getProvince()),
-                () -> assertThat(offlineStudy.getArea().getCity()).isEqualTo(KAKAO_INTERVIEW.getArea().getCity()),
+                () -> assertThat(offlineStudy.getLocation().getProvince()).isEqualTo(KAKAO_INTERVIEW.getLocation().getProvince()),
+                () -> assertThat(offlineStudy.getLocation().getCity()).isEqualTo(KAKAO_INTERVIEW.getLocation().getCity()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(KAKAO_INTERVIEW.getCapacity()),
                 () -> assertThat(offlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
                 () -> assertThat(offlineStudy.getHashtags()).hasSize(KAKAO_INTERVIEW.getHashtags().size()),
-                () -> assertThat(offlineStudy.getHashtags()).containsExactlyElementsOf(KAKAO_INTERVIEW.getHashtags()),
+                () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(KAKAO_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
-                () -> assertThat(offlineStudy.getParticipants()).containsExactly(HOST)
+                () -> assertThat(offlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST)
         );
     }
 
@@ -154,7 +154,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에는 참여 신청을 할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.applyParticipation(participant))
@@ -164,7 +164,7 @@ class StudyTest {
 
         @Test
         @DisplayName("스터디 모집이 완료됐다면 참여 신청을 할 수 없다")
-        void failureByCompletedRecruitment() {
+        void throwExceptionByRecruitmentIsComplete() {
             study.completeRecruitment();
 
             assertThatThrownBy(() -> study.applyParticipation(participant))
@@ -180,9 +180,9 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
-                    () -> assertThat(study.getApplier()).containsExactly(participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST)
+                    () -> assertThat(study.getParticipants()).containsExactlyInAnyOrder(HOST, participant),
+                    () -> assertThat(study.getApplier()).containsExactlyInAnyOrder(participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(HOST)
             );
         }
     }
@@ -203,7 +203,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에는 참여 승인을 할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.approveParticipation(participant))
@@ -219,8 +219,8 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST, participant)
+                    () -> assertThat(study.getParticipants()).containsExactlyInAnyOrder(HOST, participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(HOST, participant)
             );
         }
     }
@@ -241,7 +241,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에는 참여 거절을 할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.rejectParticipation(participant))
@@ -257,8 +257,8 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST)
+                    () -> assertThat(study.getParticipants()).containsExactlyInAnyOrder(HOST, participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(HOST)
             );
         }
     }
@@ -280,7 +280,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에는 참여 취소를 할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.cancelParticipation(participant))
@@ -296,8 +296,8 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST)
+                    () -> assertThat(study.getParticipants()).containsExactlyInAnyOrder(HOST, participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(HOST)
             );
         }
     }
@@ -319,7 +319,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에서는 졸업을 할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.graduateParticipant(participant))
@@ -335,9 +335,9 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getParticipants()).containsExactly(HOST, participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(HOST),
-                    () -> assertThat(study.getGraduatedParticipants()).containsExactly(participant)
+                    () -> assertThat(study.getParticipants()).containsExactlyInAnyOrder(HOST, participant),
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(HOST),
+                    () -> assertThat(study.getGraduatedParticipants()).containsExactlyInAnyOrder(participant)
             );
         }
     }
@@ -359,7 +359,7 @@ class StudyTest {
 
         @Test
         @DisplayName("종료된 스터디에서는 팀장 권한을 위임할 수 없다")
-        void failureByClosedStudy() {
+        void throwExceptionByStudyIsAlreadyClosed() {
             study.close();
 
             assertThatThrownBy(() -> study.delegateStudyHostAuthority(participant))
@@ -376,14 +376,14 @@ class StudyTest {
             // then
             assertAll(
                     () -> assertThat(study.getHost()).isEqualTo(participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactly(participant, HOST)
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(participant, HOST)
             );
         }
     }
 
     @Test
     @DisplayName("스터디에 대한 공지사항을 작성한다")
-    void writeNotice() {
+    void addNotice() {
         // given
         Study study = SPRING.toOnlineStudy(HOST);
 
@@ -397,10 +397,10 @@ class StudyTest {
                 () -> assertThat(study.getNotices().size()).isEqualTo(3),
                 () -> assertThat(study.getNotices())
                         .map(Notice::getTitle)
-                        .containsExactly("Notice 1", "Notice 2", "Notice 3"),
+                        .containsExactlyInAnyOrder("Notice 1", "Notice 2", "Notice 3"),
                 () -> assertThat(study.getNotices())
                         .map(Notice::getContent)
-                        .containsExactly("공지사항1 입니다.", "공지사항2 입니다.", "공지사항3 입니다.")
+                        .containsExactlyInAnyOrder("공지사항1 입니다.", "공지사항2 입니다.", "공지사항3 입니다.")
         );
     }
 
@@ -420,7 +420,7 @@ class StudyTest {
 
         @Test
         @DisplayName("스터디에 참여하고 있지 않은 사용자에 대한 출석 체크는 불가능하다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotParticipant() {
             assertThatThrownBy(() -> study.recordAttendance(participant, 1, ATTENDANCE))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
@@ -441,13 +441,13 @@ class StudyTest {
                     () -> assertThat(study.getAttendances().size()).isEqualTo(2),
                     () -> assertThat(study.getAttendances())
                             .map(Attendance::getStatus)
-                            .containsExactly(ATTENDANCE, LATE),
+                            .containsExactlyInAnyOrder(ATTENDANCE, LATE),
                     () -> assertThat(study.getAttendances())
                             .map(Attendance::getStudy)
-                            .containsExactly(study, study),
+                            .containsExactlyInAnyOrder(study, study),
                     () -> assertThat(study.getAttendances())
                             .map(Attendance::getParticipant)
-                            .containsExactly(HOST, participant)
+                            .containsExactlyInAnyOrder(HOST, participant)
             );
         }
     }
@@ -486,7 +486,7 @@ class StudyTest {
 
         @Test
         @DisplayName("이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다")
-        void failureByAlreadyRegisterPerWeek() {
+        void throwExceptionByAlreadyWeekCreated() {
             // given
             study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments());
 
@@ -526,13 +526,12 @@ class StudyTest {
 
         @Test
         @DisplayName("이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다")
-        void failureByAlreadyRegisterPerWeek() {
+        void throwExceptionByAlreadyWeekCreated() {
             // given
             study.createWeekWithAssignment(
                     week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(),
                     true, true, STUDY_WEEKLY_1.getAttachments()
             );
-            ;
 
             // when - then
             assertThatThrownBy(() -> study.createWeekWithAssignment(
@@ -580,7 +579,7 @@ class StudyTest {
 
         @Test
         @DisplayName("스터디 졸업생이 아니면 리뷰를 작성할 수 없다")
-        void failureByAnonymousMember() {
+        void throwExceptionByMemberIsNotGraduated() {
             assertThatThrownBy(() -> study.writeReview(participant, "리뷰입니다."))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_GRADUATED.getMessage());
@@ -588,7 +587,7 @@ class StudyTest {
 
         @Test
         @DisplayName("이미 리뷰를 작성했다면 중복으로 작성할 수 없다")
-        void failureByAlreadyRegisterPerWeek() {
+        void throwExceptionByAlreadyReviewWritten() {
             // given
             study.graduateParticipant(participant);
             study.writeReview(participant, "리뷰입니다.");

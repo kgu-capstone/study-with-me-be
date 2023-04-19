@@ -62,7 +62,7 @@ public class Participants {
 
     public void apply(Study study, Member member) {
         validateMemberIsNotHost(member);
-        validateMemberIsNotApplierAndParticipant(member);
+        validateMemberIsNotApplierOrParticipant(member);
         participants.add(Participant.applyInStudy(study, member));
     }
 
@@ -101,7 +101,7 @@ public class Participants {
         }
     }
 
-    private void validateMemberIsNotApplierAndParticipant(Member member) {
+    private void validateMemberIsNotApplierOrParticipant(Member member) {
         if (isApplierOrParticipant(member)) {
             throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_PARTICIPANT);
         }
@@ -133,7 +133,7 @@ public class Participants {
 
     public void updateCapacity(int capacity) {
         if (getNumberOfApproveParticipants() > capacity) {
-            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS);
+            throw StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_PARTICIPANTS);
         }
         this.capacity = Capacity.from(capacity);
     }

@@ -20,13 +20,12 @@ class TokenReissueServiceTest extends ServiceTest {
     @Autowired
     private TokenReissueService tokenReissueService;
 
-    private Long memberId;
+    private static final Long MEMBER_ID = 1L;
     private String refreshToken;
 
     @BeforeEach
     void setUp() {
-        memberId = 1L;
-        refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+        refreshToken = jwtTokenProvider.createRefreshToken(MEMBER_ID);
     }
 
     @Nested
@@ -36,7 +35,7 @@ class TokenReissueServiceTest extends ServiceTest {
         @DisplayName("RefreshToken이 유효하지 않으면 토큰 재발급에 실패한다")
         void throwExceptionByInvalidRefreshToken() {
             // when - then
-            assertThatThrownBy(() -> tokenReissueService.reissueTokens(memberId, refreshToken))
+            assertThatThrownBy(() -> tokenReissueService.reissueTokens(MEMBER_ID, refreshToken))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(AuthErrorCode.AUTH_INVALID_TOKEN.getMessage());
         }
@@ -45,10 +44,10 @@ class TokenReissueServiceTest extends ServiceTest {
         @DisplayName("유효성이 확인된 RefreshToken을 통해서 AccessToken과 RefreshToken을 재발급받는다")
         void reissueSuccess() {
             // given
-            tokenRepository.save(Token.issueRefreshToken(memberId, refreshToken));
+            tokenRepository.save(Token.issueRefreshToken(MEMBER_ID, refreshToken));
 
             // when
-            TokenResponse response = tokenReissueService.reissueTokens(memberId, refreshToken);
+            TokenResponse response = tokenReissueService.reissueTokens(MEMBER_ID, refreshToken);
 
             // then
             assertAll(

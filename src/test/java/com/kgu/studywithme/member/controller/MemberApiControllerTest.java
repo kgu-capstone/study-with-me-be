@@ -21,14 +21,12 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -86,11 +84,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -144,6 +138,7 @@ class MemberApiControllerTest extends ControllerTest {
     class report {
         private static final String BASE_URL = "/api/members/{reporteeId}/report";
         private static final Long REPORTEE_ID = 1L;
+        private static final Long REPORTER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 사용자 신고를 실패한다")
@@ -172,22 +167,18 @@ class MemberApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("이전에 신고한 내역이 여전히 처리중이라면 중복 신고를 하지 못한다")
-        void failureByPreviousReportIsStillPending() throws Exception {
+        void throwExceptionByPreviousReportIsStillPending() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
-            doThrow(StudyWithMeException.type(MemberErrorCode.REPORT_IS_STILL_RECEIVED))
+            given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
+            doThrow(StudyWithMeException.type(MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING))
                     .when(memberService)
                     .report(anyLong(), anyLong(), anyString());
 
@@ -200,7 +191,7 @@ class MemberApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final MemberErrorCode expectedError = MemberErrorCode.REPORT_IS_STILL_RECEIVED;
+            final MemberErrorCode expectedError = MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -216,20 +207,14 @@ class MemberApiControllerTest extends ControllerTest {
                                     "MemberApi/Report/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("reason").description("신고 사유")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -239,10 +224,8 @@ class MemberApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
-            doAnswer(invocation -> 1L)
-                    .when(memberService)
-                    .report(anyLong(), anyLong(), anyString());
+            given(jwtTokenProvider.getId(anyString())).willReturn(REPORTER_ID);
+            given(memberService.report(any(), any(), any())).willReturn(1L);
 
             // when
             final MemberReportRequest request = createReportRequest();
@@ -260,9 +243,7 @@ class MemberApiControllerTest extends ControllerTest {
                                     "MemberApi/Report/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
                                     ),

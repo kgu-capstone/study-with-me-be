@@ -26,7 +26,7 @@ class ReportTest {
 
     @Test
     @DisplayName("관리자가 접수된 신고를 승인한다")
-    void approve() {
+    void approveReport() {
         // given
         Report report = Report.createReportWithReason(1L, 2L, REASON);
 
@@ -39,7 +39,7 @@ class ReportTest {
 
     @Test
     @DisplayName("관리자가 접수된 신고를 거부한다")
-    void reject() {
+    void rejectReport() {
         // given
         Report report = Report.createReportWithReason(1L, 2L, REASON);
 

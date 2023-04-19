@@ -32,7 +32,7 @@ include::{snippets}/StudyApi/Information/Notice/Failure/Case1/path-parameters.ad
 HTTP Response
 include::{snippets}/StudyApi/Information/Notice/Failure/Case1/response-body.adoc[]
 
-=== 2. 해당 스터디 참여자가 아니면 스터디 공지사항 조회에 실패한다
+=== 2. 스터디 참여자가 아니면 스터디 공지사항 조회에 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Information/Notice/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Notice/Failure/Case2/request-headers.adoc[]
@@ -52,19 +52,55 @@ include::{snippets}/StudyApi/Information/Notice/Success/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Notice/Success/response-fields.adoc[]
 
 == 스터디 신청자
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 신청자 정보를 조회할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Information/Applicants/http-request.adoc[]
-include::{snippets}/StudyApi/Information/Applicants/path-parameters.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case1/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Information/Applicants/response-body.adoc[]
-include::{snippets}/StudyApi/Information/Applicants/response-fields.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case1/response-body.adoc[]
+
+=== 2. 팀장이 아니라면 스터디 신청자 정보를 조회할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Applicants/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 신청자 정보를 조회한다
+HTTP Request
+include::{snippets}/StudyApi/Information/Applicants/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Applicants/Success/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Applicants/Success/response-fields.adoc[]
 
 == 스터디 주차별 출석 정보
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 주차별 출석 정보를 조회할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Information/Attendances/http-request.adoc[]
-include::{snippets}/StudyApi/Information/Attendances/path-parameters.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case1/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Information/Attendances/response-body.adoc[]
-include::{snippets}/StudyApi/Information/Attendances/response-fields.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디 참여자가 아니라면 스터디 주차별 출석 정보를 조회할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case2/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Attendances/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 주차별 출석 정보를 조회한다
+HTTP Request
+include::{snippets}/StudyApi/Information/Attendances/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Information/Attendances/Success/response-body.adoc[]
+include::{snippets}/StudyApi/Information/Attendances/Success/response-fields.adoc[]

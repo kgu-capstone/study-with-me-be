@@ -5,7 +5,7 @@
 :toc: left
 :toclevels: 2
 
-== 사용자 신고 접수
+== 사용자 신고
 === 1. Authorization Header에 AccessToken이 없으면 사용자 신고를 실패한다
 HTTP Request
 include::{snippets}/MemberApi/Report/Failure/Case1/http-request.adoc[]

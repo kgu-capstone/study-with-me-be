@@ -21,10 +21,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +36,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
     class register {
         private static final String BASE_URL = "/api/notices/{noticeId}/comment";
         private static final Long NOTICE_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 등록에 실패한다")
@@ -71,21 +72,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("댓글 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다")
-        void memberIsNotParticipant() throws Exception {
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
                     .when(commentService)
                     .register(any(), any(), any());
@@ -115,20 +112,14 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("댓글 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -138,7 +129,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .register(any(), any(), any());
@@ -159,9 +150,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Register/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 등록할 공지사항 ID(PK)")
                                     ),
@@ -179,6 +168,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 삭제에 실패한다")
@@ -208,21 +199,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                             parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 삭제할 수 없다")
-        void memberIsNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(commentService)
                     .remove(any(), any());
@@ -249,28 +236,22 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("공지사항에 등록한 댓글 삭제에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .remove(any(), any());
@@ -288,9 +269,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 삭제할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("삭제할 댓글 ID(PK)")
@@ -306,6 +285,8 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/notices/{noticeId}/comments/{commentId}";
         private static final Long NOTICE_ID = 1L;
         private static final Long COMMENT_ID = 1L;
+        private static final Long PARTICIPANT_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 댓글 수정에 실패한다")
@@ -341,21 +322,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("수정할 댓글 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 수정할 수 없다")
-        void memberIsNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(commentService)
                     .update(any(), any(), any());
@@ -386,9 +363,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")
@@ -396,21 +371,17 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("수정할 댓글 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("공지사항에 대한 댓글 수정에 성공한다")
-        void success () throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
             doNothing()
                     .when(commentService)
                     .update(any(), any(), any());
@@ -430,9 +401,7 @@ class StudyNoticeCommentApiControllerTest extends ControllerTest {
                                     "StudyApi/NoticeComment/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("noticeId").description("댓글을 수정할 공지사항 ID(PK)"),
                                             parameterWithName("commentId").description("수정할 댓글 ID(PK)")

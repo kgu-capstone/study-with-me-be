@@ -46,7 +46,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .where(
                         categoryEq(condition.category()),
                         studyType(condition.type()),
-                        studyAreaEq(condition.province(), condition.city())
+                        studyLocationEq(condition.province(), condition.city())
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
@@ -60,7 +60,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .where(
                         categoryEq(condition.category()),
                         studyType(condition.type()),
-                        studyAreaEq(condition.province(), condition.city())
+                        studyLocationEq(condition.province(), condition.city())
                 )
                 .fetch()
                 .size();
@@ -84,7 +84,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .where(
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
-                        studyAreaEq(condition.province(), condition.city())
+                        studyLocationEq(condition.province(), condition.city())
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
@@ -98,7 +98,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .where(
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
-                        studyAreaEq(condition.province(), condition.city())
+                        studyLocationEq(condition.province(), condition.city())
                 )
                 .fetch()
                 .size();
@@ -152,15 +152,15 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         return (memberInterests != null) ? study.category.in(memberInterests) : null;
     }
 
-    private BooleanExpression studyAreaEq(String province, String city) {
+    private BooleanExpression studyLocationEq(String province, String city) {
         if (isEmpty(province) && isEmpty(city)) {
             return null;
         } else if (isEmpty(province)) {
-            return study.area.city.eq(city);
+            return study.location.city.eq(city);
         } else if (isEmpty(city)) {
-            return study.area.province.eq(province);
+            return study.location.province.eq(province);
         } else {
-            return study.area.province.eq(province).and(study.area.city.eq(city));
+            return study.location.province.eq(province).and(study.location.city.eq(city));
         }
     }
 

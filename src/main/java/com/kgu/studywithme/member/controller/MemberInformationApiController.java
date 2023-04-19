@@ -21,34 +21,34 @@ public class MemberInformationApiController {
 
     @CheckMemberIdentity
     @GetMapping
-    public ResponseEntity<MemberInformation> getInformation(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+    public ResponseEntity<MemberInformation> getInformation(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         MemberInformation response = memberInformationService.getInformation(memberId);
         return ResponseEntity.ok(response);
     }
 
     @CheckMemberIdentity
     @GetMapping("/studies/participate")
-    public ResponseEntity<RelatedStudy> getParticipateStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+    public ResponseEntity<RelatedStudy> getParticipateStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         RelatedStudy response = memberInformationService.getParticipateStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
     @CheckMemberIdentity
     @GetMapping("/studies/graduated")
-    public ResponseEntity<RelatedStudy> getGraduatedStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+    public ResponseEntity<RelatedStudy> getGraduatedStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
     @CheckMemberIdentity
     @GetMapping("/studies/favorite")
-    public ResponseEntity<RelatedStudy> getFavoriteStudy(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+    public ResponseEntity<RelatedStudy> getFavoriteStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         RelatedStudy response = memberInformationService.getFavoriteStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<PeerReviewAssembler> getReviews(@PathVariable Long memberId, @ExtractPayload Long payloadId) {
+    public ResponseEntity<PeerReviewAssembler> getReviews(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         PeerReviewAssembler response = memberInformationService.getPeerReviews(memberId);
         return ResponseEntity.ok(response);
     }

@@ -493,11 +493,13 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         registerWithFavorite(language[4], member[0]);
         registerWithFavorite(language[5], member[0], member[1], member[2], member[3], member[4]);
         registerWithFavorite(language[6], member[0], member[1], member[2]);
+
         registerWithFavorite(interview[0], member[0]); // Offline
         registerWithFavorite(interview[1], member[0], member[1], member[2], member[3]); // Offline
         registerWithFavorite(interview[2], member[0], member[1]); // Offline
         registerWithFavorite(interview[3], member[0], member[1], member[2], member[3], member[4], member[5], member[6]); // Offline
         registerWithFavorite(interview[4], member[0], member[1], member[2], member[3]); // Offline
+
         registerWithFavorite(programming[0], member[0], member[1], member[2], member[3], member[4]);
         registerWithFavorite(programming[1], member[0], member[1], member[2]);
         registerWithFavorite(programming[2], member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]); // Offline

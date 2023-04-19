@@ -13,26 +13,26 @@ import javax.persistence.Embeddable;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
-public class StudyArea {
+public class StudyLocation {
     @Column(name = "province")
     private String province;
 
     @Column(name = "city")
     private String city;
 
-    private StudyArea(String province, String city) {
+    private StudyLocation(String province, String city) {
         this.province = province;
         this.city = city;
     }
 
-    public static StudyArea of(String province, String city) {
+    public static StudyLocation of(String province, String city) {
         validateProvinceAndCityIsNotEmpty(province, city);
-        return new StudyArea(province, city);
+        return new StudyLocation(province, city);
     }
 
     private static void validateProvinceAndCityIsNotEmpty(String province, String city) {
         if (isEmptyText(province) || isEmptyText(city)) {
-            throw StudyWithMeException.type(StudyErrorCode.STUDY_AREA_IS_BLANK);
+            throw StudyWithMeException.type(StudyErrorCode.STUDY_LOCATION_IS_BLANK);
         }
     }
 

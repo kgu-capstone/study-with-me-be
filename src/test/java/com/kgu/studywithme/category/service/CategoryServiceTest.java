@@ -28,7 +28,10 @@ class CategoryServiceTest extends ServiceTest {
                 () -> assertThat(categoryResponse.size()).isEqualTo(6),
                 () -> assertThat(categoryResponse)
                         .extracting("name")
-                        .containsExactly(LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName(), APTITUDE_NCS.getName(), CERTIFICATION.getName(), ETC.getName())
+                        .containsExactlyInAnyOrder(
+                                LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName(),
+                                APTITUDE_NCS.getName(), CERTIFICATION.getName(), ETC.getName()
+                        )
         );
     }
 }
