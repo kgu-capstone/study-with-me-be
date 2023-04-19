@@ -58,7 +58,7 @@ public class StudyService {
                     Capacity.from(request.capacity()),
                     Category.from(request.category()),
                     OFFLINE,
-                    StudyArea.of(request.province(), request.city()),
+                    StudyLocation.of(request.province(), request.city()),
                     request.hashtags()
             );
         }

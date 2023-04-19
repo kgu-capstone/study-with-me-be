@@ -641,8 +641,8 @@ class StudyApiControllerTest extends ControllerTest {
                 .capacity(TOSS_INTERVIEW.getCapacity())
                 .category(TOSS_INTERVIEW.getCategory().getId())
                 .type(TOSS_INTERVIEW.getType().getDescription())
-                .province(TOSS_INTERVIEW.getArea().getProvince())
-                .city(TOSS_INTERVIEW.getArea().getCity())
+                .province(TOSS_INTERVIEW.getLocation().getProvince())
+                .city(TOSS_INTERVIEW.getLocation().getCity())
                 .recruitmentStatus(true)
                 .hashtags(TOSS_INTERVIEW.getHashtags())
                 .build();

@@ -65,9 +65,9 @@ class StudyServiceTest extends ServiceTest {
             Study offlineStudy = studyRepository.findById(offlineStudyId).orElseThrow();
             assertAll(
                     () -> assertThat(onlineStudy.getNameValue()).isEqualTo(onlineRequest.name()),
-                    () -> assertThat(onlineStudy.getArea()).isNull(),
+                    () -> assertThat(onlineStudy.getLocation()).isNull(),
                     () -> assertThat(offlineStudy.getNameValue()).isEqualTo(offlineRequest.name()),
-                    () -> assertThat(offlineStudy.getArea()).isNotNull()
+                    () -> assertThat(offlineStudy.getLocation()).isNotNull()
             );
         }
     }
@@ -129,7 +129,7 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
                     () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
                     () -> assertThat(findStudy.getType().getDescription()).isEqualTo(request.type()),
-                    () -> assertThat(findStudy.getArea()).isNull(),
+                    () -> assertThat(findStudy.getLocation()).isNull(),
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
                     () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
@@ -153,8 +153,8 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
                     () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
                     () -> assertThat(findStudy.getType().getDescription()).isEqualTo(request.type()),
-                    () -> assertThat(findStudy.getArea().getProvince()).isEqualTo(request.province()),
-                    () -> assertThat(findStudy.getArea().getCity()).isEqualTo(request.city()),
+                    () -> assertThat(findStudy.getLocation().getProvince()).isEqualTo(request.province()),
+                    () -> assertThat(findStudy.getLocation().getCity()).isEqualTo(request.city()),
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
                     () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
@@ -184,8 +184,8 @@ class StudyServiceTest extends ServiceTest {
                 .category(GOOGLE_INTERVIEW.getCategory().getId())
                 .capacity(capacity)
                 .type(GOOGLE_INTERVIEW.getType().getDescription())
-                .province(GOOGLE_INTERVIEW.getArea().getProvince())
-                .city(GOOGLE_INTERVIEW.getArea().getCity())
+                .province(GOOGLE_INTERVIEW.getLocation().getProvince())
+                .city(GOOGLE_INTERVIEW.getLocation().getCity())
                 .recruitmentStatus(true)
                 .hashtags(GOOGLE_INTERVIEW.getHashtags())
                 .build();

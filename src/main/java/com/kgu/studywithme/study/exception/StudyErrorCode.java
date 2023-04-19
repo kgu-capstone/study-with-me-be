@@ -24,7 +24,7 @@ public enum StudyErrorCode implements ErrorCode {
     ALREADY_WEEK_CREATED(HttpStatus.CONFLICT, "STUDY_014", "이미 해당 주차와 관련된 내용이 등록되었습니다."),
     DESCRIPTION_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_015", "스터디 설명은 공백을 허용하지 않습니다."),
     STUDY_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_016", "스터디가 존재하지 않습니다."),
-    STUDY_AREA_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_017", "오프라인으로 진행되는 스터디는 장소가 필수입니다."),
+    STUDY_LOCATION_IS_BLANK(HttpStatus.BAD_REQUEST, "STUDY_017", "오프라인으로 진행되는 스터디는 장소가 필수입니다."),
     ALREADY_REVIEW_WRITTEN(HttpStatus.CONFLICT, "STUDY_018", "이미 리뷰를 작성했습니다."),
     MEMBER_IS_NOT_GRADUATED(HttpStatus.CONFLICT, "STUDY_019", "스터디 졸업생이 아닙니다."),
     DUPLICATE_NAME(HttpStatus.CONFLICT, "STUDY_020", "이미 사용중인 스터디 이름입니다."),
