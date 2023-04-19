@@ -36,17 +36,17 @@ class FavoriteManageServiceTest extends ServiceTest {
 
     @Nested
     @DisplayName("찜 등록")
-    class enroll {
+    class like {
         @Test
         @DisplayName("이미 찜 등록된 스터디를 찜할 수 없다")
-        void alreadyExist() {
+        void throwExceptionByAlreadyFavoriteMarked() {
             // given
             favoriteManageService.like(study.getId(), member.getId());
 
             // when - then
             assertThatThrownBy(() -> favoriteManageService.like(study.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(FavoriteErrorCode.ALREADY_EXIST.getMessage());
+                    .hasMessage(FavoriteErrorCode.ALREADY_FAVORITE_MARKED.getMessage());
         }
 
         @Test
@@ -69,10 +69,10 @@ class FavoriteManageServiceTest extends ServiceTest {
     class cancel {
         @Test
         @DisplayName("찜 등록이 되지 않은 스터디를 취소할 수 없다")
-        void notFavorite() {
+        void throwExceptionByNotFavoriteMarked() {
             assertThatThrownBy(() -> favoriteManageService.cancel(study.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE.getMessage());
+                    .hasMessage(FavoriteErrorCode.NOT_FAVORITE_MARKED.getMessage());
         }
 
         @Test

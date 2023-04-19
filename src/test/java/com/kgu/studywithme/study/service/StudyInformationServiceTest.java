@@ -65,12 +65,12 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.description()).isEqualTo(study.getDescriptionValue()),
                 () -> assertThat(information.category()).isEqualTo(study.getCategory().getName()),
                 () -> assertThat(information.type()).isEqualTo(study.getType().getDescription()),
-                () -> assertThat(information.area()).isNull(),
+                () -> assertThat(information.location()).isNull(),
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),
                 () -> assertThat(information.currentMembers()).isEqualTo(study.getApproveParticipants().size()),
                 () -> assertThat(information.maxMembers()).isEqualTo(study.getMaxMembers()),
                 () -> assertThat(information.averageAge()).isEqualTo(MemberAgeCalculator.getAverage(getMemberAgeList())),
-                () -> assertThat(information.hashtags()).containsAll(study.getHashtags()),
+                () -> assertThat(information.hashtags()).containsExactlyInAnyOrderElementsOf(study.getHashtags()),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
                 () -> assertThat(information.host().nickname()).isEqualTo(host.getNicknameValue())
@@ -98,7 +98,7 @@ class StudyInformationServiceTest extends ServiceTest {
                             .map(StudyMember::nickname)
                             .toList();
 
-                    assertThat(reviewers).containsAll(
+                    assertThat(reviewers).containsExactlyInAnyOrderElementsOf(
                             Arrays.stream(members)
                                     .map(Member::getNicknameValue)
                                     .toList()

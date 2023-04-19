@@ -39,7 +39,7 @@ public class Nickname {
 
     private static void validateNicknamePattern(String value) {
         if (isInvalidPattern(value)) {
-            throw StudyWithMeException.type(MemberErrorCode.INVALID_NICKNAME);
+            throw StudyWithMeException.type(MemberErrorCode.INVALID_NICKNAME_FORMAT);
         }
     }
 

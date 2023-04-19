@@ -16,25 +16,25 @@ public class StudyReviewApiController {
     private final StudyReviewService studyReviewService;
 
     @PostMapping("/review")
-    public ResponseEntity<Void> write(@PathVariable Long studyId,
-                                      @ExtractPayload Long memberId,
+    public ResponseEntity<Void> write(@ExtractPayload Long memberId,
+                                      @PathVariable Long studyId,
                                       @RequestBody @Valid ReviewRequest request) {
         studyReviewService.write(studyId, memberId, request.content());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> remove(@PathVariable Long studyId,
-                                       @PathVariable Long reviewId,
-                                       @ExtractPayload Long memberId) {
+    public ResponseEntity<Void> remove(@ExtractPayload Long memberId,
+                                       @PathVariable Long studyId,
+                                       @PathVariable Long reviewId) {
         studyReviewService.remove(reviewId, memberId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> update(@PathVariable Long studyId,
+    public ResponseEntity<Void> update(@ExtractPayload Long memberId,
+                                       @PathVariable Long studyId,
                                        @PathVariable Long reviewId,
-                                       @ExtractPayload Long memberId,
                                        @RequestBody @Valid ReviewRequest request) {
         studyReviewService.update(reviewId, memberId, request.content());
         return ResponseEntity.noContent().build();

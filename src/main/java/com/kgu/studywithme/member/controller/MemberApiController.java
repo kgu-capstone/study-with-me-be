@@ -26,8 +26,8 @@ public class MemberApiController {
     }
 
     @PostMapping("/members/{reporteeId}/report")
-    public ResponseEntity<Void> report(@PathVariable Long reporteeId,
-                                       @ExtractPayload Long reporterId,
+    public ResponseEntity<Void> report(@ExtractPayload Long reporterId,
+                                       @PathVariable Long reporteeId,
                                        @RequestBody @Valid MemberReportRequest request) {
         memberService.report(reporteeId, reporterId, request.reason());
         return ResponseEntity.noContent().build();

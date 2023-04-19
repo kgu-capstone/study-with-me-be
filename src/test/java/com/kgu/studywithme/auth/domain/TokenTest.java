@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TokenTest {
     @Test
     @DisplayName("Token을 업데이트한다")
-    void updateToken() {
+    void updateRefreshToken() {
         // given
         Token token = Token.builder()
                 .memberId(1L)

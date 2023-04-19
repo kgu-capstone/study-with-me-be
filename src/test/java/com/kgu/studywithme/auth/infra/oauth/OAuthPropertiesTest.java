@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -24,7 +22,7 @@ class OAuthPropertiesTest {
                 () -> assertThat(properties.getClientId()).isEqualTo("client_id"),
                 () -> assertThat(properties.getClientSecret()).isEqualTo("client_secret"),
                 () -> assertThat(properties.getRedirectUrl()).isEqualTo("http://localhost:8080/login/oauth2/code/google"),
-                () -> assertThat(properties.getScope()).containsAll(List.of("openid", "profile", "email")),
+                () -> assertThat(properties.getScope()).containsExactlyInAnyOrder("openid", "profile", "email"),
                 () -> assertThat(properties.getAuthUrl()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth"),
                 () -> assertThat(properties.getTokenUrl()).isEqualTo("https://www.googleapis.com/oauth2/v4/token"),
                 () -> assertThat(properties.getUserInfoUrl()).isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo")

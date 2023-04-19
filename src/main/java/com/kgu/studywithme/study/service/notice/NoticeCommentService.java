@@ -5,6 +5,7 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.Notice;
+import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
@@ -17,18 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoticeCommentService {
-    private final NoticeFindService noticeFindService;
+    private final NoticeRepository noticeRepository;
     private final CommentRepository commentRepository;
     private final MemberFindService memberFindService;
     private final StudyValidator studyValidator;
 
     @Transactional
     public void register(Long noticeId, Long memberId, String content) {
-        Notice notice = noticeFindService.findByIdWithStudy(noticeId);
+        Notice notice = findNoticeById(noticeId);
         Member writer = memberFindService.findById(memberId);
         validateWriterIsParticipant(notice, writer);
 
         notice.addComment(writer, content);
+    }
+
+    public Notice findNoticeById(Long noticeId) {
+        return noticeRepository.findByIdWithStudy(noticeId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.NOTICE_NOT_FOUND));
     }
 
     private void validateWriterIsParticipant(Notice notice, Member writer) {
@@ -45,11 +51,11 @@ public class NoticeCommentService {
     @Transactional
     public void update(Long commentId, Long memberId, String content) {
         validateCommentWriter(commentId, memberId);
-        Comment comment = findById(commentId);
+        Comment comment = findCommentById(commentId);
         comment.updateComment(content);
     }
 
-    private Comment findById(Long commentId) {
+    private Comment findCommentById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.COMMENT_NOT_FOUND));
     }

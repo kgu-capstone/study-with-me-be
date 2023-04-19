@@ -21,10 +21,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +36,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
     class write {
         private static final String BASE_URL = "/api/studies/{studyId}/review";
         private static final Long STUDY_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 작성을 실패한다")
@@ -71,21 +72,17 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("졸업자가 아니면 리뷰를 작성할 수 없다")
-        void memberIsNotGraduate() throws Exception {
+        void throwExceptionByMemberIsNotGraduated() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_GRADUATED))
                     .when(studyReviewService)
                     .write(any(), any(), any());
@@ -115,20 +112,14 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 작성할 스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -138,7 +129,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doNothing()
                     .when(studyReviewService)
                     .write(any(), any(), any());
@@ -159,9 +150,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 작성할 스터디 ID(PK)")
                                     ),
@@ -179,6 +168,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
         private static final Long STUDY_ID = 1L;
         private static final Long REVIEW_ID = 1L;
+        private static final Long WRITER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 삭제를 실패한다")
@@ -210,21 +201,17 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 삭제할 수 없다")
-        void memberIdNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(studyReviewService)
                     .remove(any(), any());
@@ -251,18 +238,12 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -272,7 +253,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(WRITER_ID);
             doNothing()
                     .when(studyReviewService)
                     .remove(any(), any());
@@ -290,9 +271,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Remove/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 삭제할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("삭제할 리뷰 ID(PK)")
@@ -308,6 +287,8 @@ class StudyReviewApiControllerTest extends ControllerTest {
         private static final String BASE_URL = "/api/studies/{studyId}/reviews/{reviewId}";
         private static final Long STUDY_ID = 1L;
         private static final Long REVIEW_ID = 1L;
+        private static final Long WRITER_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 리뷰 수정에 실패한다")
@@ -342,21 +323,17 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("수정할 리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("작성자가 아니면 리뷰를 수정할 수 없다")
-        void memberIdNotWriter() throws Exception {
+        void throwExceptionByMemberIsNotWriter() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER))
                     .when(studyReviewService)
                     .update(any(), any(), any());
@@ -386,9 +363,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")
@@ -396,11 +371,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     requestFields(
                                             fieldWithPath("content").description("수정할 리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -410,7 +381,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(WRITER_ID);
             doNothing()
                     .when(studyReviewService)
                     .update(any(), any(), any());
@@ -431,9 +402,7 @@ class StudyReviewApiControllerTest extends ControllerTest {
                                     "StudyApi/Review/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("리뷰를 수정할 스터디 ID(PK)"),
                                             parameterWithName("reviewId").description("수정할 리뷰 ID(PK)")

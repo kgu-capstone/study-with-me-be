@@ -14,20 +14,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Member 도메인 {Email VO} 테스트")
 class EmailTest {
     @ParameterizedTest(name = "{index}: {0}")
-    @ValueSource(strings = {"test1@gmail.com", "test2@gmail.com"})
-    @DisplayName("Email을 생성한다")
-    void constructSuccess(String value) {
-        Email email = Email.from(value);
-        assertThat(email.getValue()).isEqualTo(value);
-    }
-    
-    @ParameterizedTest(name = "{index}: {0}")
     @ValueSource(strings = {"", "abc", "@gmail.com", "abc@gmail", "abc@naver.com", "abc@kakao.com"})
     @DisplayName("형식에 맞지 않는 Email이면 생성에 실패한다")
-    void constructFailure(String value) {
+    void throwExceptionByInvalidEmailFormat(String value) {
         assertThatThrownBy(() -> Email.from(value))
                 .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(MemberErrorCode.INVALID_EMAIL.getMessage());
+                .hasMessage(MemberErrorCode.INVALID_EMAIL_FORMAT.getMessage());
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @ValueSource(strings = {"test1@gmail.com", "test2@gmail.com"})
+    @DisplayName("Email을 생성한다")
+    void construct(String value) {
+        Email email = Email.from(value);
+        assertThat(email.getValue()).isEqualTo(value);
     }
 
     @Test

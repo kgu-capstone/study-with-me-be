@@ -49,7 +49,7 @@ class FileUploaderTest extends InfraTest {
     class uploadWeeklyImage {
         @Test
         @DisplayName("파일을 전송하지 않았거나 파일의 사이즈가 0이면 업로드가 불가능하다")
-        void fileIsNullOrEmpty() {
+        void throwExceptionByFileIsEmpty() {
             // given
             MultipartFile nullFile = null;
             MultipartFile emptyFile = new MockMultipartFile("file", "hello.png", "image/png", new byte[]{});
@@ -90,7 +90,7 @@ class FileUploaderTest extends InfraTest {
     class uploadWeeklyAttachments {
         @Test
         @DisplayName("첨부파일이 존재하지 않으면 빈 리스트를 응답받는다")
-        void fileIsNullOrEmpty() {
+        void getEmptyListByAttachmentIsNotExists() {
             // given
             List<MultipartFile> nullFiles = null;
             List<MultipartFile> emptyFiles = List.of();
@@ -143,7 +143,7 @@ class FileUploaderTest extends InfraTest {
     class uploadWeeklySubmit {
         @Test
         @DisplayName("파일을 전송하지 않았거나 파일의 사이즈가 0이면 업로드가 불가능하다")
-        void fileIsNullOrEmpty() {
+        void throwExceptionByFileIsEmpty() {
             // given
             MultipartFile nullFile = null;
             MultipartFile emptyFile = new MockMultipartFile("file", "empty.txt", "text/plain", new byte[]{});

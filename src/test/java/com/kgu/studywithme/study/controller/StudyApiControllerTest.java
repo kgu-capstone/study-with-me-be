@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
 import com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,15 +19,16 @@ import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.StudyFixture.TOEFL;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +40,7 @@ class StudyApiControllerTest extends ControllerTest {
     @DisplayName("스터디 생성 API [POST /api/study]")
     class register {
         private static final String BASE_URL = "/api/study";
+        private static final Long HOST_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
@@ -80,21 +83,17 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
-        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다 - 온라인")
-        void throwExceptionByDuplicateNameOnline() throws Exception {
+        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다")
+        void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .register(any(), any());
@@ -124,9 +123,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -141,76 +138,9 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
-        }
-
-        @Test
-        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성에 실패한다 - 오프라인")
-        void throwExceptionByDuplicateNameOffline() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
-                    .when(studyService)
-                    .register(any(), any());
-
-            // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(BASE_URL)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final StudyErrorCode expectedError = StudyErrorCode.DUPLICATE_NAME;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isConflict(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Register/Failure/Case3",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("name").description("스터디명"),
-                                            fieldWithPath("description").description("스터디 설명"),
-                                            fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("hashtags").description("해시태그")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
-                            )
-                    );
-
-
         }
 
         @Test
@@ -218,10 +148,8 @@ class StudyApiControllerTest extends ControllerTest {
         void successOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
-                    .when(studyService)
-                    .register(any(), anyLong());
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            given(studyService.register(any(), any())).willReturn(1L);
 
             // when
             final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
@@ -242,9 +170,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -268,10 +194,8 @@ class StudyApiControllerTest extends ControllerTest {
         void successOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
-                    .when(studyService)
-                    .register(any(), anyLong());
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            given(studyService.register(any(), any())).willReturn(1L);
 
             // when
             final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
@@ -292,9 +216,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Register/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
@@ -318,7 +240,15 @@ class StudyApiControllerTest extends ControllerTest {
     @DisplayName("스터디 정보 수정 API [PATCH /api/studies/{studyId}]")
     class update {
         private static final String BASE_URL = "/api/studies/{studyId}";
-        private static final String STUDY_ID = "1";
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
@@ -366,11 +296,64 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 팀장이 아니라면 정보를 수정할 수 없다")
+        void throwExceptionByMemberIsNotHost() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+
+            // when
+            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Update/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
+                                                    .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                    ),
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -380,7 +363,7 @@ class StudyApiControllerTest extends ControllerTest {
         void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_NAME))
                     .when(studyService)
                     .update(any(), any(), any());
@@ -407,78 +390,10 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case2",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("name").description("스터디명"),
-                                            fieldWithPath("description").description("스터디 설명"),
-                                            fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
-                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
-                                                    .attributes(constraint("활성화=true / 비활성화=false")),
-                                            fieldWithPath("hashtags").description("해시태그")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("스터디 팀장이 아니라면 정보를 수정할 수 없다")
-        void throwExceptionByMemberNotHost() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_HOST))
-                    .when(studyService)
-                    .update(any(), any(), any());
-
-            // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isConflict(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
                                     "StudyApi/Update/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -498,22 +413,18 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
-        void throwExceptionByCapacityLessThanMembers() throws Exception {
+        void throwExceptionByCapacityCannotBeLessThanParticipants() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS))
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_PARTICIPANTS))
                     .when(studyService)
                     .update(any(), any(), any());
 
@@ -526,7 +437,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final StudyErrorCode expectedError = StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_MEMBERS;
+            final StudyErrorCode expectedError = StudyErrorCode.CAPACITY_CANNOT_BE_LESS_THAN_PARTICIPANTS;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -542,9 +453,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -564,11 +473,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -578,7 +483,7 @@ class StudyApiControllerTest extends ControllerTest {
         void successOnline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(studyService)
                     .update(any(), any(), any());
@@ -599,9 +504,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Success/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -630,7 +533,7 @@ class StudyApiControllerTest extends ControllerTest {
         void successOffline() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doNothing()
                     .when(studyService)
                     .update(any(), any(), any());
@@ -651,9 +554,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     "StudyApi/Update/Success/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("수정할 스터디 ID(PK)")
                                     ),
@@ -699,8 +600,8 @@ class StudyApiControllerTest extends ControllerTest {
                 .capacity(TOSS_INTERVIEW.getCapacity())
                 .category(TOSS_INTERVIEW.getCategory().getId())
                 .type(TOSS_INTERVIEW.getType().getDescription())
-                .province(TOSS_INTERVIEW.getArea().getProvince())
-                .city(TOSS_INTERVIEW.getArea().getCity())
+                .province(TOSS_INTERVIEW.getLocation().getProvince())
+                .city(TOSS_INTERVIEW.getLocation().getCity())
                 .recruitmentStatus(true)
                 .hashtags(TOSS_INTERVIEW.getHashtags())
                 .build();

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ParticipantTest {
     @Test
     @DisplayName("스터디에 참여 신청을 진행한 사용자를 생성한다")
-    void constructSuccess() {
+    void construct() {
         // given
         final Study study = SPRING.toOnlineStudy(JIWON.toMember());
         final Member member = GHOST.toMember();
@@ -56,7 +56,7 @@ class ParticipantTest {
 
     @Test
     @DisplayName("참여 상태를 업데이트한다")
-    void updateParticipationStatus() {
+    void updateStatus() {
         final Study study = SPRING.toOnlineStudy(JIWON.toMember());
         final Member member = GHOST.toMember();
         Participant participant = Participant.applyInStudy(study, member);

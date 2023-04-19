@@ -9,7 +9,7 @@ public record StudyRecommendCondition(
         String province,
         String city
 ) {
-    public StudyRecommendCondition(StudyRecommendSearchRequest request, Long memberId) {
+    public StudyRecommendCondition(Long memberId, StudyRecommendSearchRequest request) {
         this(memberId, request.sort(), request.type(), request.province(), request.city());
     }
 }

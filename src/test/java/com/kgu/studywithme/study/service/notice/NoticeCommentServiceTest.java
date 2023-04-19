@@ -46,9 +46,10 @@ class NoticeCommentServiceTest extends ServiceTest {
     class register {
         @Test
         @DisplayName("스터디 참여자가 아니면 댓글을 등록할 수 없다")
-        void memberIsNotParticipant() {
+        void throwExceptionByMemberIsNotParticipant() {
             Member anonymous = memberRepository.save(ANONYMOUS.toMember());
-            assertThatThrownBy(() -> noticeCommentService.register(notice.getId(), anonymous.getId(), "weird test"))
+
+            assertThatThrownBy(() -> noticeCommentService.register(notice.getId(), anonymous.getId(), "댓글"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
         }
@@ -57,7 +58,7 @@ class NoticeCommentServiceTest extends ServiceTest {
         @DisplayName("공지사항에 대한 댓글 등록에 성공한다")
         void success() {
             // given
-            noticeCommentService.register(notice.getId(), host.getId(), "normal test");
+            noticeCommentService.register(notice.getId(), host.getId(), "댓글");
 
             // when - then
             Notice findNotice = noticeRepository.findById(notice.getId()).orElseThrow();
@@ -65,7 +66,7 @@ class NoticeCommentServiceTest extends ServiceTest {
                     () -> assertThat(findNotice.getComments()).hasSize(1),
                     () -> assertThat(findNotice.getComments())
                             .map(Comment::getContent)
-                            .containsExactly("normal test")
+                            .containsExactly("댓글")
             );
         }
     }
@@ -77,13 +78,12 @@ class NoticeCommentServiceTest extends ServiceTest {
 
         @BeforeEach
         void setUp() {
-            comment = commentRepository.save(Comment.writeComment(notice, host, "test"));
+            comment = commentRepository.save(Comment.writeComment(notice, host, "댓글"));
         }
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 삭제할 수 없다")
-        void memberIsNotWriter() {
-            // when - then
+        void throwExceptionByMemberIsNotWriter() {
             assertThatThrownBy(() -> noticeCommentService.remove(comment.getId(), member.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
@@ -107,14 +107,13 @@ class NoticeCommentServiceTest extends ServiceTest {
 
         @BeforeEach
         void setUp() {
-            comment = commentRepository.save(Comment.writeComment(notice, host, "test"));
+            comment = commentRepository.save(Comment.writeComment(notice, host, "댓글"));
         }
 
         @Test
         @DisplayName("작성자가 아니라면 댓글을 수정할 수 없다")
-        void memberIsNotWriter() {
-            // when - then
-            assertThatThrownBy(() -> noticeCommentService.update(comment.getId(), member.getId(), "change"))
+        void throwExceptionByMemberIsNotWriter() {
+            assertThatThrownBy(() -> noticeCommentService.update(comment.getId(), member.getId(), "수정된 댓글"))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(MemberErrorCode.MEMBER_IS_NOT_WRITER.getMessage());
         }
@@ -123,10 +122,10 @@ class NoticeCommentServiceTest extends ServiceTest {
         @DisplayName("공지사항에 대한 댓글 수정에 성공한다")
         void success() {
             // when
-            noticeCommentService.update(comment.getId(), host.getId(), "change");
+            noticeCommentService.update(comment.getId(), host.getId(), "수정된 댓글");
 
             // then
-            assertThat(comment.getContent()).isEqualTo("change");
+            assertThat(comment.getContent()).isEqualTo("수정된 댓글");
         }
     }
 }

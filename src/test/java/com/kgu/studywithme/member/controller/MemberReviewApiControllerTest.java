@@ -20,10 +20,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,6 +35,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
     class writeReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
+        private static final Long REVIEWER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 등록을 실패한다")
@@ -64,11 +64,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -78,7 +74,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void throwExceptionByAlreadyReview() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.ALREADY_REVIEW))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -108,20 +104,14 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -131,7 +121,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void throwExceptionBySelfReviewNotAllowed() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWEE_ID);
             doThrow(StudyWithMeException.type(MemberErrorCode.SELF_REVIEW_NOT_ALLOWED))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -161,31 +151,25 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다")
-        void throwExceptionByCommonStudyNotFound() throws Exception {
+        void throwExceptionByCommonStudyRecordNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
-            doThrow(StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_NOT_FOUND))
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
+            doThrow(StudyWithMeException.type(MemberErrorCode.COMMON_STUDY_RECORD_NOT_FOUND))
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
 
@@ -198,7 +182,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final MemberErrorCode expectedError = MemberErrorCode.COMMON_STUDY_NOT_FOUND;
+            final MemberErrorCode expectedError = MemberErrorCode.COMMON_STUDY_RECORD_NOT_FOUND;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -214,20 +198,14 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -237,7 +215,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doNothing()
                     .when(memberReviewService)
                     .writeReview(any(), any(), any());
@@ -258,9 +236,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Write/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 등록 대상자 ID(PK)")
                                     ),
@@ -276,6 +252,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
     class updateReview {
         private static final String BASE_URL = "/api/members/{revieweeId}/review";
         private static final Long REVIEWEE_ID = 1L;
+        private static final Long REVIEWER_ID = 2L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 피어리뷰 수정을 실패한다")
@@ -304,11 +281,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
 
@@ -316,11 +289,11 @@ class MemberReviewApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("상호간에 피어리뷰한 기록이 존재하지 않는다면 수정에 실패한다")
-        void reviewNotFound() throws Exception {
+        void throwExceptionByPeerReviewNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
-            doThrow(StudyWithMeException.type(MemberErrorCode.REVIEW_NOT_FOUND))
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
+            doThrow(StudyWithMeException.type(MemberErrorCode.PEER_REVIEW_NOT_FOUND))
                     .when(memberReviewService)
                     .updateReview(any(), any(), any());
 
@@ -333,7 +306,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                     .content(convertObjectToJson(request));
 
             // then
-            final MemberErrorCode expectedError = MemberErrorCode.REVIEW_NOT_FOUND;
+            final MemberErrorCode expectedError = MemberErrorCode.PEER_REVIEW_NOT_FOUND;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isNotFound(),
@@ -349,20 +322,14 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("content").description("리뷰 내용")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -372,7 +339,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(2L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(REVIEWER_ID);
             doNothing()
                     .when(memberReviewService)
                     .updateReview(any(), any(), any());
@@ -393,9 +360,7 @@ class MemberReviewApiControllerTest extends ControllerTest {
                                     "MemberApi/PeerReview/Update/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("revieweeId").description("피어리뷰 수정 대상자 ID(PK)")
                                     ),

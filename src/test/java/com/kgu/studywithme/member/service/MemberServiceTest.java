@@ -31,7 +31,7 @@ class MemberServiceTest extends ServiceTest {
     class signUp {
         @Test
         @DisplayName("이미 사용하고 있는 이메일이면 회원가입에 실패한다")
-        void duplicateEmail() {
+        void throwExceptionByDuplicateEmail() {
             // given
             final Member member = memberRepository.save(JIWON.toMember());
 
@@ -48,7 +48,7 @@ class MemberServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("이미 사용하고 있는 닉네임이면 회원가입에 실패한다")
-        void duplicateNickname() {
+        void throwExceptionByDuplicateNickname() {
             // given
             final Member member = memberRepository.save(JIWON.toMember());
 
@@ -65,7 +65,7 @@ class MemberServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("이미 사용하고 있는 전화번호면 회원가입에 실패한다")
-        void duplicatePhone() {
+        void throwExceptionByDuplicatePhone() {
             // given
             final Member member = memberRepository.save(JIWON.toMember());
 
@@ -93,7 +93,7 @@ class MemberServiceTest extends ServiceTest {
             Member findMember = memberRepository.findById(member.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findMember.getId()).isEqualTo(savedMemberId),
-                    () -> assertThat(findMember.getInterests()).containsAll(JIWON.getInterests())
+                    () -> assertThat(findMember.getInterests()).containsExactlyInAnyOrderElementsOf(JIWON.getInterests())
             );
         }
     }
@@ -112,14 +112,14 @@ class MemberServiceTest extends ServiceTest {
 
         @Test
         @DisplayName("이전에 신고한 내역이 여전히 처리중이라면 중복 신고를 하지 못한다")
-        void failureByPreviousReportIsStillPending() {
+        void throwExceptionByPreviousReportIsStillPending() {
             // given
             memberService.report(reportee.getId(), reporter.getId(), "참여를 안해요");
 
             // when - then
             assertThatThrownBy(() -> memberService.report(reportee.getId(), reporter.getId(), "10주 연속 미출석입니다"))
                     .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(MemberErrorCode.REPORT_IS_STILL_RECEIVED.getMessage());
+                    .hasMessage(MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING.getMessage());
         }
 
         @Test

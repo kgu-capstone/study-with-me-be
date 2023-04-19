@@ -51,17 +51,9 @@ class AttendanceServiceTest extends ServiceTest {
     @DisplayName("수동 출석 체크")
     class manualCheckAttendance {
         @Test
-        @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
-        void memberIsNotHost() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), member.getId(), member.getId(), WEEK, STATUS))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
-        }
-
-        @Test
         @DisplayName("스터디 참여자가 아니면 출석 정보 Instance가 존재하지 않고 그에 따라서 출석 체크를 할 수 없다")
-        void attendanceNotFound() {
-            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), anonymous.getId(), host.getId(), WEEK, STATUS))
+        void throwExceptionByAttendanceNotFound() {
+            assertThatThrownBy(() -> attendanceService.manualCheckAttendance(study.getId(), anonymous.getId(), WEEK, STATUS))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ATTENDANCE_NOT_FOUND.getMessage());
         }
@@ -69,14 +61,24 @@ class AttendanceServiceTest extends ServiceTest {
         @Test
         @DisplayName("수동 출석 체크에 성공한다")
         void success() {
-            attendanceService.manualCheckAttendance(study.getId(), member.getId(), host.getId(), WEEK, STATUS);
+            // when
+            attendanceService.manualCheckAttendance(study.getId(), host.getId(), WEEK, STATUS);
+            attendanceService.manualCheckAttendance(study.getId(), member.getId(), WEEK, STATUS);
 
-            Attendance findAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), member.getId(), WEEK)
+            // then
+            Attendance findohostAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK)
+                    .orElseThrow();
+            Attendance findMemberAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), member.getId(), WEEK)
                     .orElseThrow();
 
             assertAll(
-                    () -> assertThat(findAttendance.getWeek()).isEqualTo(WEEK),
-                    () -> assertThat(findAttendance.getStatus().getDescription()).isEqualTo(STATUS)
+                    () -> assertThat(findohostAttendance.getParticipant()).isEqualTo(host),
+                    () -> assertThat(findohostAttendance.getWeek()).isEqualTo(WEEK),
+                    () -> assertThat(findohostAttendance.getStatus().getDescription()).isEqualTo(STATUS),
+
+                    () -> assertThat(findMemberAttendance.getParticipant()).isEqualTo(member),
+                    () -> assertThat(findMemberAttendance.getWeek()).isEqualTo(WEEK),
+                    () -> assertThat(findMemberAttendance.getStatus().getDescription()).isEqualTo(STATUS)
             );
         }
     }

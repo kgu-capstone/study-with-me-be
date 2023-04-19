@@ -40,7 +40,7 @@ public class MemberService {
 
     private void validatePreviousReportIsStillPending(Long reporteeId, Long reporterId) {
         if (memberRepository.isReportReceived(reporteeId, reporterId)) {
-            throw StudyWithMeException.type(MemberErrorCode.REPORT_IS_STILL_RECEIVED);
+            throw StudyWithMeException.type(MemberErrorCode.PREVIOUS_REPORT_IS_STILL_PENDING);
         }
     }
 }

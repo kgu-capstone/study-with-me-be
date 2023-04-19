@@ -45,6 +45,7 @@ class ReviewRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("리뷰 ID + 사용자 ID를 통해서 리뷰 작성자인지 확인한다")
     void existsByIdAndWriterId() {
         // when
         boolean actual1 = reviewRepository.existsByIdAndWriterId(review.getId(), member.getId());

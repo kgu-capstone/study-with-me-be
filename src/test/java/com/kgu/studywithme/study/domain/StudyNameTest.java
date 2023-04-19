@@ -15,14 +15,14 @@ class StudyNameTest {
     @ParameterizedTest(name = "{index}: {0}")
     @ValueSource(strings = {"a", "aaaaaaaaaaaaaaaaaaaa"})
     @DisplayName("StudyName을 생성한다")
-    void constructSuccess(String value) {
+    void construct(String value) {
         StudyName name = StudyName.from(value);
         assertThat(name.getValue()).isEqualTo(value);
     }
     
     @Test
     @DisplayName("StudyName이 공백이면 생성에 실패한다")
-    void constructFailureByEmpty() {
+    void throwExceptionByNameIsBlank() {
         assertThatThrownBy(() -> StudyName.from(""))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.NAME_IS_BLANK.getMessage());
@@ -30,7 +30,7 @@ class StudyNameTest {
     
     @Test
     @DisplayName("StudyName이 길이 제한을 넘어선다면 생성에 실패한다")
-    void constructFailureByOverflow() {
+    void throwExceptionByNameLengthOutOfRange() {
         final String value = "a".repeat(21);
 
         assertThatThrownBy(() -> StudyName.from(value))

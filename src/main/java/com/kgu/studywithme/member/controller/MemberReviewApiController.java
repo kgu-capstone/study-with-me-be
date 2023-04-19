@@ -16,16 +16,16 @@ public class MemberReviewApiController {
     private final MemberReviewService memberReviewService;
 
     @PostMapping
-    public ResponseEntity<Void> writeReview(@PathVariable Long revieweeId,
-                                            @ExtractPayload Long reviewerId,
+    public ResponseEntity<Void> writeReview(@ExtractPayload Long reviewerId,
+                                            @PathVariable Long revieweeId,
                                             @RequestBody @Valid MemberReviewRequest request) {
         memberReviewService.writeReview(revieweeId, reviewerId, request.content());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping
-    public ResponseEntity<Void> updateReview(@PathVariable Long revieweeId,
-                                             @ExtractPayload Long reviewerId,
+    public ResponseEntity<Void> updateReview(@ExtractPayload Long reviewerId,
+                                             @PathVariable Long revieweeId,
                                              @RequestBody @Valid MemberReviewRequest request) {
         memberReviewService.updateReview(revieweeId, reviewerId, request.content());
         return ResponseEntity.noContent().build();

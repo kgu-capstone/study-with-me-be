@@ -15,13 +15,10 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +31,7 @@ class FavoriteApiControllerTest extends ControllerTest {
     class like {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 찜 등록을 실패한다")
@@ -62,22 +60,18 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("이미 찜 등록된 스터디를 찜할 수 없다")
-        void throwExceptionByAlreadyExist() throws Exception {
+        void throwExceptionByAlreadyFavoriteMarked() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(FavoriteErrorCode.ALREADY_EXIST))
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+            doThrow(StudyWithMeException.type(FavoriteErrorCode.ALREADY_FAVORITE_MARKED))
                     .when(favoriteManageService)
                     .like(any(), any());
 
@@ -87,7 +81,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
-            final FavoriteErrorCode expectedError = FavoriteErrorCode.ALREADY_EXIST;
+            final FavoriteErrorCode expectedError = FavoriteErrorCode.ALREADY_FAVORITE_MARKED;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -103,17 +97,11 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Like/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -123,10 +111,8 @@ class FavoriteApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doAnswer(invocation -> 1L)
-                    .when(favoriteManageService)
-                    .like(any(), any());
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+            given(favoriteManageService.like(any(), any())).willReturn(1L);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -141,9 +127,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Like/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
                                     )
@@ -157,6 +141,7 @@ class FavoriteApiControllerTest extends ControllerTest {
     class cancel {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
+        private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("Authorization Header에 AccessToken이 없으면 찜 취소를 실패한다")
@@ -185,22 +170,18 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
 
         @Test
         @DisplayName("찜 등록이 되지 않은 스터디를 취소할 수 없다")
-        void throwExceptionByNotFavorite() throws Exception {
+        void throwExceptionByNotFavoriteMarked() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
-            doThrow(StudyWithMeException.type(FavoriteErrorCode.STUDY_IS_NOT_FAVORITE))
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+            doThrow(StudyWithMeException.type(FavoriteErrorCode.NOT_FAVORITE_MARKED))
                     .when(favoriteManageService)
                     .cancel(any(), any());
 
@@ -210,7 +191,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
 
             // then
-            final FavoriteErrorCode expectedError = FavoriteErrorCode.STUDY_IS_NOT_FAVORITE;
+            final FavoriteErrorCode expectedError = FavoriteErrorCode.NOT_FAVORITE_MARKED;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -226,17 +207,11 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Cancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     ),
-                                    responseFields(
-                                            fieldWithPath("status").description("HTTP 상태 코드"),
-                                            fieldWithPath("errorCode").description("커스텀 예외 코드"),
-                                            fieldWithPath("message").description("예외 메시지")
-                                    )
+                                    getExceptionResponseFiels()
                             )
                     );
         }
@@ -246,7 +221,7 @@ class FavoriteApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
             doNothing()
                     .when(favoriteManageService)
                     .cancel(any(), any());
@@ -264,9 +239,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                                     "StudyApi/Favorite/Cancel/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
-                                    requestHeaders(
-                                            headerWithName(AUTHORIZATION).description("Access Token")
-                                    ),
+                                    getHeaderWithAccessToken(),
                                     pathParameters(
                                             parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
                                     )

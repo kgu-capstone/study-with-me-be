@@ -62,7 +62,9 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.phone()).isEqualTo(member.getPhone()),
                 () -> assertThat(information.gender()).isEqualTo(member.getGender().getValue()),
                 () -> assertThat(information.region()).isEqualTo(member.getRegion()),
-                () -> assertThat(information.interests()).containsAll(List.of(LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()))
+                () -> assertThat(information.interests()).containsExactlyInAnyOrder(
+                        LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()
+                )
         );
     }
 
@@ -123,7 +125,9 @@ class MemberInformationServiceTest extends ServiceTest {
 
         // then
         assertAll(
+                () -> assertThat(hostReview.reviews()).hasSize(1),
                 () -> assertThat(hostReview.reviews()).containsExactly("host는 최고다."),
+                () -> assertThat(memberReview.reviews()).hasSize(1),
                 () -> assertThat(memberReview.reviews()).containsExactly("member는 최고다.")
         );
     }

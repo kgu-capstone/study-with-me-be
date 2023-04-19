@@ -6,7 +6,7 @@
 :toclevels: 2
 
 == 스터디 리뷰 작성
-=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 리뷰 작성을 실패한다
+=== 1. Authorization Header에 AccessToken이 없으면 리뷰 작성을 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Review/Write/Failure/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Review/Write/Failure/Case1/path-parameters.adoc[]
@@ -36,7 +36,7 @@ HTTP Response
 include::{snippets}/StudyApi/Review/Write/Success/http-response.adoc[]
 
 == 스터디 리뷰 삭제
-=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 리뷰 삭제를 실패한다
+=== 1. Authorization Header에 AccessToken이 없으면 리뷰 삭제를 실패한다
 HTTP Request
 include::{snippets}/StudyApi/Review/Remove/Failure/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Review/Remove/Failure/Case1/path-parameters.adoc[]

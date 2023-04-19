@@ -13,13 +13,13 @@ public class FavoriteApiController {
     private final FavoriteManageService favoriteManageService;
 
     @PostMapping
-    public ResponseEntity<Void> like(@PathVariable Long studyId, @ExtractPayload Long memberId) {
+    public ResponseEntity<Void> like(@ExtractPayload Long memberId, @PathVariable Long studyId) {
         favoriteManageService.like(studyId, memberId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> cancel(@PathVariable Long studyId, @ExtractPayload Long memberId) {
+    public ResponseEntity<Void> cancel(@ExtractPayload Long memberId, @PathVariable Long studyId) {
         favoriteManageService.cancel(studyId, memberId);
         return ResponseEntity.noContent().build();
     }
