@@ -324,7 +324,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @Test
         @DisplayName("팀장이 아니라면 스터디 신청자 정보를 조회할 수 없다")
-        void throwByMemberIsNotHost() throws Exception {
+        void throwExceptionByMemberIsNotHost() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);

@@ -25,7 +25,7 @@ class CategoryServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(categoryResponse.size()).isEqualTo(6),
+                () -> assertThat(categoryResponse).hasSize(6),
                 () -> assertThat(categoryResponse)
                         .extracting("name")
                         .containsExactlyInAnyOrder(

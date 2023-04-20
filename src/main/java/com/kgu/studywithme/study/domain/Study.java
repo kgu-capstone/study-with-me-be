@@ -150,8 +150,8 @@ public class Study extends BaseEntity {
     }
 
     public void createWeekWithAssignment(String title, String content, int week, Period period,
-                                         boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
-        weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, assignmentExists, autoAttendance, attachments));
+                                         boolean autoAttendance, List<String> attachments) {
+        weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, autoAttendance, attachments));
     }
 
     public void validateMemberIsParticipant(Member participant) {
@@ -267,5 +267,9 @@ public class Study extends BaseEntity {
 
     public List<Review> getReviews() {
         return reviews.getReviews();
+    }
+
+    public List<Week> getWeeks() {
+        return weekly.getWeeks();
     }
 }

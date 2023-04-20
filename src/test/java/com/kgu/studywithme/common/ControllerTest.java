@@ -27,12 +27,14 @@ import com.kgu.studywithme.study.controller.*;
 import com.kgu.studywithme.study.controller.attendance.AttendanceApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
+import com.kgu.studywithme.study.controller.week.StudyWeeklyApiController;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.*;
 import com.kgu.studywithme.study.service.attendance.AttendanceService;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import com.kgu.studywithme.study.service.notice.NoticeService;
+import com.kgu.studywithme.study.service.week.StudyWeeklyService;
 import com.kgu.studywithme.upload.controller.ImageUploadApiController;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,7 +85,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StudyApiController.class, StudyInformationApiController.class, StudyParticipationApiController.class,
         StudyReviewApiController.class, StudySearchApiController.class,
         StudyNoticeApiController.class, StudyNoticeCommentApiController.class,
-        AttendanceApiController.class,
+        AttendanceApiController.class, StudyWeeklyApiController.class,
 
         // upload
         ImageUploadApiController.class,
@@ -163,6 +165,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected AttendanceService attendanceService;
+
+    @MockBean
+    protected StudyWeeklyService studyWeeklyService;
 
     // upload
     @MockBean

@@ -64,7 +64,7 @@ class WeekTest {
 
         // then
         assertAll(
-                () -> assertThat(week.getSubmits().size()).isEqualTo(2),
+                () -> assertThat(week.getSubmits()).hasSize(2),
                 () -> assertThat(week.getSubmits())
                         .map(Submit::getParticipant)
                         .containsExactlyInAnyOrder(HOST, PARTICIPANT),
