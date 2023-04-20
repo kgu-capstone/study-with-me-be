@@ -24,7 +24,7 @@ public class ImageUploadApiController {
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SimpleResponseWrapper<String>> uploadImage(@ExtractPayload Long memberId,
                                                                      @ModelAttribute @Valid ImageUploadRequest request) {
-        String uploadLink = uploader.uploadWeeklyImage(request.file());
-        return ResponseEntity.ok(new SimpleResponseWrapper<>(uploadLink));
+        String imageUploadLink = uploader.uploadWeeklyImage(request.file());
+        return ResponseEntity.ok(new SimpleResponseWrapper<>(imageUploadLink));
     }
 }

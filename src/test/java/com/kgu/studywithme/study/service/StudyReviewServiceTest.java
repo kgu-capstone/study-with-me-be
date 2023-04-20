@@ -72,7 +72,7 @@ class StudyReviewServiceTest extends ServiceTest {
             // when - then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getReviews().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getReviews()).hasSize(1),
                     () -> assertThat(findStudy.getReviews())
                             .map(Review::getWriter)
                             .containsExactlyInAnyOrder(member1),
@@ -108,7 +108,7 @@ class StudyReviewServiceTest extends ServiceTest {
             studyReviewService.remove(review.getId(), member1.getId());
 
             // then
-            assertThat(study.getReviews().size()).isEqualTo(0);
+            assertThat(study.getReviews()).hasSize(0);
         }
     }
 

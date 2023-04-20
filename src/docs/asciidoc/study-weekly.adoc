@@ -1,0 +1,105 @@
+= 스터디 주차 관련 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 스터디 주차 생성
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 주차를 생성할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/response-body.adoc[]
+
+=== 2. 팀장이 아니라면 스터디 주차를 생성할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/response-body.adoc[]
+
+=== 3. 스터디 주차를 생성한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Create/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Success/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Success/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Success/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Create/Success/http-response.adoc[]
+
+== 스터디 주차별 과제 제출
+=== 1. Authorization Header에 AccessToken이 없으면 스터디 주차별 과제를 제출할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case1/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case1/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디 참여자가 아니라면 스터디 주차별 과제를 제출할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case2/response-body.adoc[]
+
+=== 3. 과제 제출물을 업로드 하지 않으면 예외가 발생한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case3/response-body.adoc[]
+
+=== 4. 링크 + 파일을 둘다 업로드하면 예외가 발생한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Failure/Case4/response-body.adoc[]
+
+=== 5. 스터디 주차별 과제를 제출한다 - 파일
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case1/http-response.adoc[]
+
+=== 6. 스터디 주차별 과제를 제출한다 - 링크
+HTTP Request
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/http-response.adoc[]

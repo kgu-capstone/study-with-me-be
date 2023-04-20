@@ -79,9 +79,9 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
@@ -121,8 +121,8 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(1),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1)
+                    () -> assertThat(findStudy.getParticipants()).hasSize(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1)
             );
         }
     }
@@ -190,9 +190,9 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applier)
             );
         }
@@ -244,9 +244,9 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
@@ -309,9 +309,9 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participant),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
         }
@@ -374,11 +374,11 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getParticipants().size()).isEqualTo(2),
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participant),
-                    () -> assertThat(findStudy.getApproveParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host),
-                    () -> assertThat(findStudy.getGraduatedParticipants().size()).isEqualTo(1),
+                    () -> assertThat(findStudy.getGraduatedParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participant)
             );
         }

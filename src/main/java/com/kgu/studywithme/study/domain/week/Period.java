@@ -27,7 +27,6 @@ public class Period {
 
     public static Period of(LocalDateTime startDate, LocalDateTime endDate) {
         validateStartIsBeforeEnd(startDate, endDate);
-        validateEndDateIsNotPast(endDate);
         return new Period(startDate, endDate);
     }
 
@@ -37,9 +36,7 @@ public class Period {
         }
     }
 
-    private static void validateEndDateIsNotPast(LocalDateTime endDate) {
-        if (endDate.isBefore(LocalDateTime.now())) {
-            throw StudyWithMeException.type(StudyErrorCode.PERIOD_END_DATE_MUST_BE_SET_FROM_NOW_ON);
-        }
+    public boolean isDateWithInRange(LocalDateTime time) {
+        return startDate.isBefore(time) && endDate.isAfter(time);
     }
 }
