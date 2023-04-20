@@ -7,38 +7,49 @@ import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.controller.utils.StudyWeeklyRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
+import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.week.Week;
+import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
+import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.upload.utils.FileUploader;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createMultipleMockMultipartFile;
+import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
 import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_2;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
-@DisplayName("Study [Service Layer] -> StudyReviewService 테스트")
+@DisplayName("Study [Service Layer] -> StudyWeeklyService 테스트")
 class StudyWeeklyServiceTest extends ServiceTest {
     @Autowired
     private StudyWeeklyService studyWeeklyService;
 
     @MockBean
     private FileUploader fileUploader;
+
+    @Autowired
+    private WeekRepository weekRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     private Member host;
     private final Member[] members = new Member[5];
@@ -181,6 +192,216 @@ class StudyWeeklyServiceTest extends ServiceTest {
             List<Member> expectParticipants = List.of(host, members[0], members[1], members[2], members[3]);
             List<AttendanceStatus> expectStatus = List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE);
             assertThatAttendancesMatch(attendances, expectWeeks, expectParticipants, expectStatus);
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 주차별 과제 제출")
+    class submitAssignment {
+        @AfterEach
+        void restore() {
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [링크 + 자동 출석 O -> 출석]")
+        void submitLinkWithAutoAttendance1() {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final String submitLink = "https://notion.so";
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [링크 + 자동 출석 O -> 지각]")
+        void submitLinkWithAutoAttendance2() {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final String submitLink = "https://notion.so";
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(LATE);
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [링크 + 자동 출석 X]")
+        void submitLinkWithNonAutoAttendance() {
+            // given
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final String submitLink = "https://notion.so";
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isFalse(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE);
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [파일 + 자동 출석 O -> 출석]")
+        void submitFileWithAutoAttendance1() throws IOException {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
+
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [파일 + 자동 출석 O -> 지각]")
+        void submitFileWithAutoAttendance2() throws IOException {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
+
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(LATE);
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [파일 + 자동 출석 X]")
+        void submitFileWithNonAutoAttendance() throws IOException {
+            // given
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            // when
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
+
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isFalse(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE);
+        }
+
+        private void reflectionWeekPeriod(WeekFixture fixture, LocalDateTime startDate, LocalDateTime endDate) {
+            ReflectionTestUtils.setField(fixture.getPeriod(), "startDate", startDate);
+            ReflectionTestUtils.setField(fixture.getPeriod(), "endDate", endDate);
         }
     }
 

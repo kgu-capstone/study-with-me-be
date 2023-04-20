@@ -34,6 +34,7 @@ public enum StudyErrorCode implements ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_024", "작성한 리뷰가 존재하지 않습니다."),
     CAPACITY_CANNOT_BE_LESS_THAN_PARTICIPANTS(HttpStatus.CONFLICT, "STUDY_025", "현재 참여인원보다 더 적게 최대인원을 수정할 수 없습니다."),
     ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_026", "출석 정보가 존재하지 않습니다."),
+    WEEK_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_027", "주차 정보가 존재하지 않습니다."),
     ;
 
     private final HttpStatus status;
