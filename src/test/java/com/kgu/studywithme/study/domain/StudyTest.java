@@ -394,7 +394,7 @@ class StudyTest {
 
         // then
         assertAll(
-                () -> assertThat(study.getNotices().size()).isEqualTo(3),
+                () -> assertThat(study.getNotices()).hasSize(3),
                 () -> assertThat(study.getNotices())
                         .map(Notice::getTitle)
                         .containsExactlyInAnyOrder("Notice 1", "Notice 2", "Notice 3"),
@@ -438,7 +438,7 @@ class StudyTest {
 
             // then
             assertAll(
-                    () -> assertThat(study.getAttendances().size()).isEqualTo(2),
+                    () -> assertThat(study.getAttendances()).hasSize(2),
                     () -> assertThat(study.getAttendances())
                             .map(Attendance::getStatus)
                             .containsExactlyInAnyOrder(ATTENDANCE, LATE),
