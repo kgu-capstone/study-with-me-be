@@ -1,6 +1,7 @@
 package com.kgu.studywithme.study.infra.query;
 
 import com.kgu.studywithme.common.RepositoryTest;
+import com.kgu.studywithme.fixture.WeekFixture;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.Study;
@@ -10,6 +11,11 @@ import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
+import com.kgu.studywithme.study.domain.week.Week;
+import com.kgu.studywithme.study.domain.week.WeekRepository;
+import com.kgu.studywithme.study.domain.week.attachment.Attachment;
+import com.kgu.studywithme.study.domain.week.submit.Submit;
+import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +27,7 @@ import java.util.Map;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -38,6 +45,9 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private WeekRepository weekRepository;
 
     private Member host;
     private Study study;
@@ -183,6 +193,106 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         assertThatAttendancesMatch(result2, expectWeek2, expectMember2, expectStatus2);
     }
 
+    @Test
+    @DisplayName("스터디 각 주차를 조회한다")
+    void findWeeklyByStudyId() {
+        // given
+        applyAndApproveMembers(members[0], members[1], members[2], members[3]);
+
+        Week week1 = addWeek(STUDY_WEEKLY_1);
+        Week week2 = addWeek(STUDY_WEEKLY_2);
+        Week week3 = addWeek(STUDY_WEEKLY_3);
+        Week week4 = addWeek(STUDY_WEEKLY_4);
+        submitLinkAssignment(week1, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week2, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week4, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+
+        // when
+        List<Week> weeks = studyRepository.findWeeklyByStudyId(study.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(weeks).hasSize(4),
+                () -> assertThat(weeks)
+                        .map(Week::getWeek)
+                        .containsExactly(
+                                STUDY_WEEKLY_4.getWeek(),
+                                STUDY_WEEKLY_3.getWeek(),
+                                STUDY_WEEKLY_2.getWeek(),
+                                STUDY_WEEKLY_1.getWeek()
+                        ),
+                () -> {
+                    List<List<String>> attachmentLinks = weeks.stream()
+                            .map(Week::getAttachments)
+                            .map(attachments -> attachments.stream()
+                                    .map(Attachment::getLink)
+                                    .toList())
+                            .toList();
+                    assertThat(attachmentLinks).containsExactlyInAnyOrder(
+                            STUDY_WEEKLY_1.getAttachments(),
+                            STUDY_WEEKLY_2.getAttachments(),
+                            STUDY_WEEKLY_3.getAttachments(),
+                            STUDY_WEEKLY_4.getAttachments()
+                    );
+                },
+                () -> {
+                    List<List<Submit>> submits = weeks.stream()
+                            .map(Week::getSubmits)
+                            .toList();
+
+                    List<List<Member>> participants = submits.stream()
+                            .map(submit -> submit.stream()
+                                    .map(Submit::getParticipant)
+                                    .toList())
+                            .toList();
+                    assertThat(participants).containsExactlyInAnyOrder(
+                            List.of(host, members[0], members[1], members[2], members[3]),
+                            List.of(host, members[0], members[1], members[2], members[3]),
+                            List.of(host, members[0], members[1], members[2], members[3]),
+                            List.of(host, members[0], members[1], members[2], members[3])
+                    );
+
+                    List<List<String>> links = submits.stream()
+                            .map(submit -> submit.stream()
+                                    .map(Submit::getUpload)
+                                    .map(Upload::getLink)
+                                    .toList())
+                            .toList();
+                    assertThat(links).containsExactlyInAnyOrder(
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            )
+                    );
+                }
+        );
+    }
+
     private void applyAndApproveMembers(Member... members) {
         for (Member member : members) {
             study.applyParticipation(member);
@@ -211,6 +321,16 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     private void applyAttendance(int week, Map<Member, AttendanceStatus> data) {
         for (Member member : data.keySet()) {
             study.recordAttendance(member, week, data.get(member));
+        }
+    }
+
+    private Week addWeek(WeekFixture fixture) {
+        return weekRepository.save(fixture.toWeekWithAssignment(study));
+    }
+
+    private void submitLinkAssignment(Week week, String link, Member... participants) {
+        for (Member participant : participants) {
+            week.submitAssignment(participant, Upload.withLink(link + participant.getId()));
         }
     }
 

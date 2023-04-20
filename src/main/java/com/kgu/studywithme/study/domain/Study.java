@@ -272,4 +272,12 @@ public class Study extends BaseEntity {
     public List<Week> getWeeks() {
         return weekly.getWeeks();
     }
+
+    public List<Integer> getParticipantsAges() {
+        return participants.getParticipantsAges();
+    }
+
+    public double getParticipantsAverageAge() {
+        return participants.getParticipantsAverageAge();
+    }
 }

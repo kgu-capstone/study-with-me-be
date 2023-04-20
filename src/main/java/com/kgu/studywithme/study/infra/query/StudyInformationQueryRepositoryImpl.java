@@ -1,5 +1,7 @@
 package com.kgu.studywithme.study.infra.query;
 
+import com.kgu.studywithme.study.domain.week.QWeek;
+import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,6 +18,7 @@ import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APP
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 import static com.kgu.studywithme.study.domain.review.QReview.review;
+import static com.kgu.studywithme.study.domain.week.submit.QSubmit.submit;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -65,13 +68,11 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .innerJoin(comment.writer, member)
                 .fetch();
 
-        noticeResult.forEach(notice -> {
-            notice.setComments(
-                    commentResult.stream()
-                            .filter(comment -> comment.getNoticeId().equals(notice.getId()))
-                            .toList()
-            );
-        });
+        noticeResult.forEach(notice -> notice.setComments(
+                commentResult.stream()
+                        .filter(comment -> comment.getNoticeId().equals(notice.getId()))
+                        .toList()
+        ));
     }
 
     @Override
@@ -93,6 +94,20 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .innerJoin(attendance.participant, member)
                 .where(attendance.study.id.eq(studyId))
                 .orderBy(attendance.week.desc(), member.id.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Week> findWeeklyByStudyId(Long studyId) {
+        QWeek weekly = new QWeek("week");
+
+        return query
+                .selectDistinct(weekly)
+                .from(weekly)
+                .leftJoin(weekly.submits, submit).fetchJoin()
+                .innerJoin(submit.participant).fetchJoin()
+                .where(weekly.study.id.eq(studyId))
+                .orderBy(weekly.id.desc())
                 .fetch();
     }
 

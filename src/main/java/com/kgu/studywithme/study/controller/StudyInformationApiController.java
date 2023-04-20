@@ -50,4 +50,11 @@ public class StudyInformationApiController {
         AttendanceAssmbler response = studyInformationService.getAttendances(studyId);
         return ResponseEntity.ok(response);
     }
+
+    @CheckStudyParticipant
+    @GetMapping("/weeks")
+    public ResponseEntity<WeeklyAssembler> getWeeks(@ExtractPayload Long memberId, @PathVariable Long studyId) {
+        WeeklyAssembler response = studyInformationService.getWeeks(studyId);
+        return ResponseEntity.ok(response);
+    }
 }

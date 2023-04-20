@@ -11,6 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
+
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
@@ -610,5 +614,35 @@ class StudyTest {
             // then
             assertThat(study.getReviews()).hasSize(1);
         }
+    }
+
+    @Test
+    @DisplayName("스터디 참여자 나이 목록과 평균 나이를 계산한다")
+    void getParticipantsAgesAndAverageAge() {
+        Study study = SPRING.toOnlineStudy(HOST);
+        Member participant = GHOST.toMember();
+
+        /* 참여자 -> HOST */
+        List<Integer> ages1 = study.getParticipantsAges();
+        double averageAge1 = study.getParticipantsAverageAge();
+        assertAll(
+                () -> assertThat(ages1).containsExactlyInAnyOrder(getAge(HOST.getBirth())),
+                () -> assertThat(averageAge1).isEqualTo(getAge(HOST.getBirth()))
+        );
+
+        /* 참여자 -> HOST & PARTICIPANT */
+        study.applyParticipation(participant);
+        study.approveParticipation(participant);
+
+        List<Integer> ages2 = study.getParticipantsAges();
+        double averageAge2 = study.getParticipantsAverageAge();
+        assertAll(
+                () -> assertThat(ages2).containsExactlyInAnyOrder(getAge(HOST.getBirth()), getAge(participant.getBirth())),
+                () -> assertThat(averageAge2).isEqualTo((double) (getAge(HOST.getBirth()) + getAge(participant.getBirth())) / 2)
+        );
+    }
+
+    private int getAge(LocalDate birth) {
+        return Period.between(birth, LocalDate.now()).getYears();
     }
 }
