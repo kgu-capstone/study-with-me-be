@@ -17,11 +17,11 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/image")
-public class ImageUploadApiController {
+@RequestMapping("/api")
+public class UploadApiController {
     private final FileUploader uploader;
 
-    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/image", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SimpleResponseWrapper<String>> uploadImage(@ExtractPayload Long memberId,
                                                                      @ModelAttribute @Valid ImageUploadRequest request) {
         String imageUploadLink = uploader.uploadWeeklyImage(request.file());

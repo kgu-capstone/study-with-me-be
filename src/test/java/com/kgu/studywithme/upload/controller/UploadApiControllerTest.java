@@ -31,8 +31,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Upload [Controller Layer] -> ImageUploadApiController 테스트")
-class ImageUploadApiControllerTest extends ControllerTest {
+@DisplayName("Upload [Controller Layer] -> UploadApiController 테스트")
+class UploadApiControllerTest extends ControllerTest {
     @Nested
     @DisplayName("이미지 업로드 API [POST /api/image]")
     class findAllCategory {
@@ -62,7 +62,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "ImageUploadApi/Failure/Case1",
+                                    "UploadApi/Image/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestParts(
@@ -102,7 +102,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "ImageUploadApi/Failure/Case2",
+                                    "UploadApi/Image/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -145,7 +145,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "ImageUploadApi/Failure/Case3",
+                                    "UploadApi/Image/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -186,7 +186,7 @@ class ImageUploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "ImageUploadApi/Success",
+                                    "UploadApi/Image/Success",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

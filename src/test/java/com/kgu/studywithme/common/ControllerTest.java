@@ -35,7 +35,7 @@ import com.kgu.studywithme.study.service.attendance.AttendanceService;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import com.kgu.studywithme.study.service.notice.NoticeService;
 import com.kgu.studywithme.study.service.week.StudyWeeklyService;
-import com.kgu.studywithme.upload.controller.ImageUploadApiController;
+import com.kgu.studywithme.upload.controller.UploadApiController;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,7 +88,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         AttendanceApiController.class, StudyWeeklyApiController.class,
 
         // upload
-        ImageUploadApiController.class,
+        UploadApiController.class,
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(TestAopConfiguration.class)
