@@ -1,12 +1,14 @@
 package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.common.ServiceTest;
+import com.kgu.studywithme.fixture.WeekFixture;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
+import com.kgu.studywithme.study.domain.week.Week;
+import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
@@ -17,15 +19,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -69,7 +69,8 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),
                 () -> assertThat(information.currentMembers()).isEqualTo(study.getApproveParticipants().size()),
                 () -> assertThat(information.maxMembers()).isEqualTo(study.getMaxMembers()),
-                () -> assertThat(information.averageAge()).isEqualTo(MemberAgeCalculator.getAverage(getMemberAgeList())),
+                () -> assertThat(information.averageAge()).isEqualTo(study.getParticipantsAverageAge()),
+                () -> assertThat(information.participantsAges()).containsExactlyInAnyOrderElementsOf(study.getParticipantsAges()),
                 () -> assertThat(information.hashtags()).containsExactlyInAnyOrderElementsOf(study.getHashtags()),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
@@ -213,15 +214,171 @@ class StudyInformationServiceTest extends ServiceTest {
         assertThatAttendancesMatch(result2.summaries(), expectWeek2, expectSummary2);
     }
 
-    private List<Integer> getMemberAgeList() {
-        List<Integer> list = new ArrayList<>();
-        list.add(Period.between(host.getBirth(), LocalDate.now()).getYears());
+    @Test
+    @DisplayName("스터디 각 주차를 조회한다")
+    void getWeeks() {
+        // given
+        applyAndApproveMembers(members[0], members[1], members[2], members[3]);
 
-        for (Member member : members) {
-            list.add(Period.between(member.getBirth(), LocalDate.now()).getYears());
-        }
+        Week week1 = addWeek(STUDY_WEEKLY_1);
+        Week week2 = addWeek(STUDY_WEEKLY_2);
+        Week week3 = addWeek(STUDY_WEEKLY_3);
+        Week week4 = addWeek(STUDY_WEEKLY_4);
+        submitLinkAssignment(week1, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week2, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week4, "https://notion.so", host, members[0], members[1], members[2], members[3]);
 
-        return list;
+        // when
+        WeeklyAssembler weeklyAssembler = studyInformationService.getWeeks(study.getId());
+        List<WeeklySummary> weeks = weeklyAssembler.weeks();
+
+        // then
+        assertAll(
+                () -> assertThat(weeks).hasSize(4),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::id)
+                        .containsExactly(week4.getId(), week3.getId(), week2.getId(), week1.getId()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::title)
+                        .containsExactly(week4.getTitle(), week3.getTitle(), week2.getTitle(), week1.getTitle()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::content)
+                        .containsExactly(week4.getContent(), week3.getContent(), week2.getContent(), week1.getContent()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::week)
+                        .containsExactly(week4.getWeek(), week3.getWeek(), week2.getWeek(), week1.getWeek()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::period)
+                        .containsExactly(week4.getPeriod(), week3.getPeriod(), week2.getPeriod(), week1.getPeriod()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::creator)
+                        .map(StudyMember::id)
+                        .containsExactly(host.getId(), host.getId(), host.getId(), host.getId()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::creator)
+                        .map(StudyMember::nickname)
+                        .containsExactly(host.getNicknameValue(), host.getNicknameValue(), host.getNicknameValue(), host.getNicknameValue()),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::assignmentExists)
+                        .containsExactly(
+                                STUDY_WEEKLY_4.isAssignmentExists(),
+                                STUDY_WEEKLY_3.isAssignmentExists(),
+                                STUDY_WEEKLY_2.isAssignmentExists(),
+                                STUDY_WEEKLY_1.isAssignmentExists()
+                        ),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::autoAttendance)
+                        .containsExactly(
+                                STUDY_WEEKLY_4.isAutoAttendance(),
+                                STUDY_WEEKLY_3.isAutoAttendance(),
+                                STUDY_WEEKLY_2.isAutoAttendance(),
+                                STUDY_WEEKLY_1.isAutoAttendance()
+                        ),
+                () -> assertThat(weeks)
+                        .map(WeeklySummary::attachments)
+                        .containsExactly(
+                                STUDY_WEEKLY_4.getAttachments(),
+                                STUDY_WEEKLY_3.getAttachments(),
+                                STUDY_WEEKLY_2.getAttachments(),
+                                STUDY_WEEKLY_1.getAttachments()
+                        ),
+                () -> {
+                    List<List<WeeklySubmitSummary>> submits = weeks.stream()
+                            .map(WeeklySummary::submits)
+                            .toList();
+
+                    List<List<Long>> participantIds = submits.stream()
+                            .map(submit -> submit.stream()
+                                    .map(WeeklySubmitSummary::participant)
+                                    .toList())
+                            .map(participant -> participant.stream()
+                                    .map(StudyMember::id)
+                                    .toList())
+                            .toList();
+                    assertThat(participantIds).containsExactlyInAnyOrder(
+                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
+                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
+                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
+                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId())
+                    );
+
+                    List<List<String>> participantNicknames = submits.stream()
+                            .map(submit -> submit.stream()
+                                    .map(WeeklySubmitSummary::participant)
+                                    .toList())
+                            .map(participant -> participant.stream()
+                                    .map(StudyMember::nickname)
+                                    .toList())
+                            .toList();
+                    assertThat(participantNicknames).containsExactlyInAnyOrder(
+                            List.of(
+                                    host.getNicknameValue(),
+                                    members[0].getNicknameValue(),
+                                    members[1].getNicknameValue(),
+                                    members[2].getNicknameValue(),
+                                    members[3].getNicknameValue()
+                            ),
+                            List.of(
+                                    host.getNicknameValue(),
+                                    members[0].getNicknameValue(),
+                                    members[1].getNicknameValue(),
+                                    members[2].getNicknameValue(),
+                                    members[3].getNicknameValue()
+                            ),
+                            List.of(
+                                    host.getNicknameValue(),
+                                    members[0].getNicknameValue(),
+                                    members[1].getNicknameValue(),
+                                    members[2].getNicknameValue(),
+                                    members[3].getNicknameValue()
+                            ),
+                            List.of(
+                                    host.getNicknameValue(),
+                                    members[0].getNicknameValue(),
+                                    members[1].getNicknameValue(),
+                                    members[2].getNicknameValue(),
+                                    members[3].getNicknameValue()
+                            )
+                    );
+
+                    List<List<String>> submitLinks = submits.stream()
+                            .map(submit -> submit.stream()
+                                    .map(WeeklySubmitSummary::submitLink)
+                                    .toList())
+                            .toList();
+                    assertThat(submitLinks).containsExactlyInAnyOrder(
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + host.getId(),
+                                    "https://notion.so" + members[0].getId(),
+                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[2].getId(),
+                                    "https://notion.so" + members[3].getId()
+                            )
+                    );
+                }
+        );
     }
 
     private void applyAndApproveMembers(Member... members) {
@@ -254,6 +411,16 @@ class StudyInformationServiceTest extends ServiceTest {
     private void applyAttendance(int week, Map<Member, AttendanceStatus> data) {
         for (Member member : data.keySet()) {
             study.recordAttendance(member, week, data.get(member));
+        }
+    }
+
+    private Week addWeek(WeekFixture fixture) {
+        return weekRepository.save(fixture.toWeekWithAssignment(study));
+    }
+
+    private void submitLinkAssignment(Week week, String link, Member... participants) {
+        for (Member participant : participants) {
+            week.submitAssignment(participant, Upload.withLink(link + participant.getId()));
         }
     }
 

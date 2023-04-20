@@ -27,10 +27,12 @@ import java.util.Map;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.DUMMY1;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
+import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -87,6 +89,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("maxMembers").description("스터디 최대 인원"),
                                             fieldWithPath("averageAge").description("스터디 참여자 평균 나이"),
+                                            fieldWithPath("participantsAges[]").description("스터디 참여자 나이 목록"),
                                             fieldWithPath("hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("host.id").description("스터디 팀장 ID(PK)"),
                                             fieldWithPath("host.nickname").description("스터디 팀장 닉네임")
@@ -525,14 +528,157 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("스터디 주차별 정보 조회 API [GET /api/studies/{studyId}/weeks]")
+    class getWeeks {
+        private static final String BASE_URL = "/api/studies/{studyId}/weeks";
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            Study study = createSpringStudy(HOST_ID, STUDY_ID);
+            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+        }
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 주차별 정보를 조회할 수 없다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Weeks/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 참여자가 아니라면 스터디 주차별 정보를 조회할 수 없다")
+        void throwExceptionByMemberIsNotParticipant() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Weeks/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 주차별 정보를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            WeeklyAssembler response = generateStudyWeeks();
+            given(studyInformationService.getWeeks(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Weeks/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("weeks[].id").description("스터디 주차 ID(PK)"),
+                                            fieldWithPath("weeks[].title").description("스터디 주차 제목"),
+                                            fieldWithPath("weeks[].content").description("스터디 주차 내용"),
+                                            fieldWithPath("weeks[].week").description("스터디 주차 주 정보"),
+                                            fieldWithPath("weeks[].period.startDate").description("스터디 주차 시작날짜"),
+                                            fieldWithPath("weeks[].period.endDate").description("스터디 주차 종료날짜"),
+                                            fieldWithPath("weeks[].creator.id").description("스터디 주차 생성자 ID(PK)"),
+                                            fieldWithPath("weeks[].creator.nickname").description("스터디 주차 생성자 닉네임"),
+                                            fieldWithPath("weeks[].assignmentExists").description("스터디 주차 과제 존재 여부"),
+                                            fieldWithPath("weeks[].autoAttendance").description("스터디 주차 자동 출석 여부"),
+                                            fieldWithPath("weeks[].attachments[]").description("스터디 주차 첨부파일"),
+                                            fieldWithPath("weeks[].submits[].participant.id").description("스터디 주차 과제 제출자 ID(PK)"),
+                                            fieldWithPath("weeks[].submits[].participant.nickname").description("스터디 주차 과제 제출자 닉네임"),
+                                            fieldWithPath("weeks[].submits[].submitType").description("스터디 주차 과제 제출 타입"),
+                                            fieldWithPath("weeks[].submits[].submitLink").description("스터디 주차 과제 제출 링크")
+                                    )
+                            )
+                    );
+        }
+    }
+
     private StudyInformation generateStudyInformationResponse() {
         Member host = generateHost();
+        Member participant = generateParticipant();
+
         Study study = generateStudy(host);
+        study.applyParticipation(participant);
+        study.approveParticipation(participant);
         return new StudyInformation(study);
     }
 
     private Member generateHost() {
         Member member = JIWON.toMember();
+        ReflectionTestUtils.setField(member, "id", 1L);
+        return member;
+    }
+
+    private Member generateParticipant() {
+        Member member = GHOST.toMember();
         ReflectionTestUtils.setField(member, "id", 1L);
         return member;
     }
@@ -633,5 +779,108 @@ class StudyInformationApiControllerTest extends ControllerTest {
         );
 
         return new AttendanceAssmbler(summaries);
+    }
+
+    private WeeklyAssembler generateStudyWeeks() {
+        List<WeeklySummary> weeks = new ArrayList<>();
+
+        weeks.add(new WeeklySummary(
+                3L,
+                STUDY_WEEKLY_3.getTitle(),
+                STUDY_WEEKLY_3.getContent(),
+                STUDY_WEEKLY_3.getWeek(),
+                STUDY_WEEKLY_3.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                true,
+                true,
+                List.of(
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
+                ),
+                List.of(
+                        new WeeklySubmitSummary(
+                                new StudyMember(1L, "닉네임1"),
+                                LINK.name(),
+                                "https://notion.so"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(2L, "닉네임2"),
+                                FILE.name(),
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(3L, "닉네임3"),
+                                LINK.name(),
+                                "https://notion.so"
+                        )
+                )
+        ));
+        weeks.add(new WeeklySummary(
+                2L,
+                STUDY_WEEKLY_2.getTitle(),
+                STUDY_WEEKLY_2.getContent(),
+                STUDY_WEEKLY_2.getWeek(),
+                STUDY_WEEKLY_2.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                true,
+                true,
+                List.of(
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
+                ),
+                List.of(
+                        new WeeklySubmitSummary(
+                                new StudyMember(1L, "닉네임1"),
+                                LINK.name(),
+                                "https://notion.so"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(2L, "닉네임2"),
+                                FILE.name(),
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(3L, "닉네임3"),
+                                LINK.name(),
+                                "https://notion.so"
+                        )
+                )
+        ));
+        weeks.add(new WeeklySummary(
+                1L,
+                STUDY_WEEKLY_1.getTitle(),
+                STUDY_WEEKLY_1.getContent(),
+                STUDY_WEEKLY_1.getWeek(),
+                STUDY_WEEKLY_1.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                true,
+                true,
+                List.of(
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
+                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
+                ),
+                List.of(
+                        new WeeklySubmitSummary(
+                                new StudyMember(1L, "닉네임1"),
+                                LINK.name(),
+                                "https://notion.so"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(2L, "닉네임2"),
+                                FILE.name(),
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                        ),
+                        new WeeklySubmitSummary(
+                                new StudyMember(3L, "닉네임3"),
+                                LINK.name(),
+                                "https://notion.so"
+                        )
+                )
+        ));
+
+        return new WeeklyAssembler(weeks);
     }
 }

@@ -8,6 +8,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
+
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +52,7 @@ class ParticipantsTest {
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
         }
-        
+
         @Test
         @DisplayName("팀장 권한 위임에 성공한다")
         void success() {
@@ -307,5 +311,34 @@ class ParticipantsTest {
             // then
             assertThat(participants.getCapacity().getValue()).isEqualTo(2);
         }
+    }
+
+    @Test
+    @DisplayName("스터디 참여자 나이 목록과 평균 나이를 계산한다")
+    void getParticipantsAgesAndAverageAge() {
+        /* 참여자 -> HOST */
+        Participants participants = Participants.of(HOST, CAPACITY);
+        participants.apply(STUDY, PARTICIPANT);
+
+        List<Integer> ages1 = participants.getParticipantsAges();
+        double averageAge1 = participants.getParticipantsAverageAge();
+        assertAll(
+                () -> assertThat(ages1).containsExactlyInAnyOrder(getAge(HOST.getBirth())),
+                () -> assertThat(averageAge1).isEqualTo(getAge(HOST.getBirth()))
+        );
+
+        /* 참여자 -> HOST & PARTICIPANT */
+        participants.approve(PARTICIPANT);
+
+        List<Integer> ages2 = participants.getParticipantsAges();
+        double averageAge2 = participants.getParticipantsAverageAge();
+        assertAll(
+                () -> assertThat(ages2).containsExactlyInAnyOrder(getAge(HOST.getBirth()), getAge(PARTICIPANT.getBirth())),
+                () -> assertThat(averageAge2).isEqualTo((double) (getAge(HOST.getBirth()) + getAge(PARTICIPANT.getBirth())) / 2)
+        );
+    }
+
+    private int getAge(LocalDate birth) {
+        return Period.between(birth, LocalDate.now()).getYears();
     }
 }

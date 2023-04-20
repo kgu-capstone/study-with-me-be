@@ -2,6 +2,7 @@ package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.infra.query.dto.response.AttendanceInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
@@ -58,5 +59,15 @@ public class StudyInformationService {
                 ));
 
         return new AttendanceAssmbler(summaries);
+    }
+
+    public WeeklyAssembler getWeeks(Long studyId) {
+        List<Week> weeks = studyRepository.findWeeklyByStudyId(studyId);
+
+        List<WeeklySummary> result = weeks.stream()
+                .map(WeeklySummary::new)
+                .toList();
+
+        return new WeeklyAssembler(result);
     }
 }
