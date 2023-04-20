@@ -77,8 +77,8 @@ public class Week extends BaseEntity {
     }
 
     public static Week createWeekWithAssignment(Study study, String title, String content, int week, Period period,
-                                                boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
-        return new Week(study, title, content, week, period, assignmentExists, autoAttendance, attachments);
+                                                boolean autoAttendance, List<String> attachments) {
+        return new Week(study, title, content, week, period, true, autoAttendance, attachments);
     }
 
     private void applyAttachments(List<String> attachments) {

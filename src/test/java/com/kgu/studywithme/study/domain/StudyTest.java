@@ -506,7 +506,7 @@ class StudyTest {
             study.createWeek(week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments());
 
             // then
-            assertThat(study.getWeekly().getCount()).isEqualTo(2);
+            assertThat(study.getWeeks()).hasSize(2);
         }
     }
 
@@ -530,13 +530,13 @@ class StudyTest {
             // given
             study.createWeekWithAssignment(
                     week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(),
-                    true, true, STUDY_WEEKLY_1.getAttachments()
+                    true, STUDY_WEEKLY_1.getAttachments()
             );
 
             // when - then
             assertThatThrownBy(() -> study.createWeekWithAssignment(
                     week2.getTitle(), week2.getContent(), week1.getWeek(), week2.getPeriod(),
-                    true, true, STUDY_WEEKLY_2.getAttachments()
+                    true, STUDY_WEEKLY_2.getAttachments()
             ))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_WEEK_CREATED.getMessage());
@@ -548,17 +548,17 @@ class StudyTest {
             // given
             study.createWeekWithAssignment(
                     week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(),
-                    true, true, STUDY_WEEKLY_1.getAttachments()
+                    true, STUDY_WEEKLY_1.getAttachments()
             );
 
             // when
             study.createWeekWithAssignment(
                     week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(),
-                    true, true, STUDY_WEEKLY_2.getAttachments()
+                    true, STUDY_WEEKLY_2.getAttachments()
             );
 
             // then
-            assertThat(study.getWeekly().getCount()).isEqualTo(2);
+            assertThat(study.getWeeks()).hasSize(2);
         }
     }
 

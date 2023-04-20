@@ -59,7 +59,7 @@ public enum WeekFixture {
 
     public Week toWeekWithAssignment(Study study) {
         return Week.createWeekWithAssignment(
-                study, title, content, week, period.toPeriod(), assignmentExists, autoAttendance, attachments
+                study, title, content, week, period.toPeriod(), autoAttendance, attachments
         );
     }
 }
