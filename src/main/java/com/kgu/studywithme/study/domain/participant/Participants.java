@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -162,6 +164,22 @@ public class Participants {
     private boolean isGraduatedMember(Member member) {
         return getGraduatedParticipants().stream()
                 .anyMatch(graduated -> graduated.isSameMember(member));
+    }
+
+    public List<Integer> getParticipantsAges() {
+        return getApproveParticipants()
+                .stream()
+                .map(Member::getBirth)
+                .map(birth -> Period.between(birth, LocalDate.now()).getYears())
+                .toList();
+    }
+
+    public double getParticipantsAverageAge() {
+        int sum = getParticipantsAges().stream()
+                .mapToInt(age -> age)
+                .sum();
+
+        return (double) sum / getApproveParticipants().size();
     }
 
     public List<Member> getParticipants() {

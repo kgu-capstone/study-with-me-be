@@ -27,8 +27,7 @@ import java.util.Map;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.DUMMY1;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -87,6 +86,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("maxMembers").description("스터디 최대 인원"),
                                             fieldWithPath("averageAge").description("스터디 참여자 평균 나이"),
+                                            fieldWithPath("participantsAges[]").description("스터디 참여자 나이 목록"),
                                             fieldWithPath("hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("host.id").description("스터디 팀장 ID(PK)"),
                                             fieldWithPath("host.nickname").description("스터디 팀장 닉네임")
@@ -527,12 +527,22 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
     private StudyInformation generateStudyInformationResponse() {
         Member host = generateHost();
+        Member participant = generateParticipant();
+
         Study study = generateStudy(host);
+        study.applyParticipation(participant);
+        study.approveParticipation(participant);
         return new StudyInformation(study);
     }
 
     private Member generateHost() {
         Member member = JIWON.toMember();
+        ReflectionTestUtils.setField(member, "id", 1L);
+        return member;
+    }
+
+    private Member generateParticipant() {
+        Member member = GHOST.toMember();
         ReflectionTestUtils.setField(member, "id", 1L);
         return member;
     }

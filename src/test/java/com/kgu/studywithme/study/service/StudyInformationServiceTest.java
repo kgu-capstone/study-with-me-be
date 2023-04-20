@@ -2,7 +2,6 @@ package com.kgu.studywithme.study.service;
 
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.utils.MemberAgeCalculator;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
@@ -69,7 +68,8 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),
                 () -> assertThat(information.currentMembers()).isEqualTo(study.getApproveParticipants().size()),
                 () -> assertThat(information.maxMembers()).isEqualTo(study.getMaxMembers()),
-                () -> assertThat(information.averageAge()).isEqualTo(MemberAgeCalculator.getAverage(getMemberAgeList())),
+                () -> assertThat(information.averageAge()).isEqualTo(study.getParticipantsAverageAge()),
+                () -> assertThat(information.participantsAges()).containsExactlyInAnyOrderElementsOf(study.getParticipantsAges()),
                 () -> assertThat(information.hashtags()).containsExactlyInAnyOrderElementsOf(study.getHashtags()),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
