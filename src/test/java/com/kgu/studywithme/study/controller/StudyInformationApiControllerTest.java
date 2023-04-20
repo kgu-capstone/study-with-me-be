@@ -650,11 +650,18 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("weeks[].creator.nickname").description("스터디 주차 생성자 닉네임"),
                                             fieldWithPath("weeks[].assignmentExists").description("스터디 주차 과제 존재 여부"),
                                             fieldWithPath("weeks[].autoAttendance").description("스터디 주차 자동 출석 여부"),
-                                            fieldWithPath("weeks[].attachments[]").description("스터디 주차 첨부파일"),
-                                            fieldWithPath("weeks[].submits[].participant.id").description("스터디 주차 과제 제출자 ID(PK)"),
-                                            fieldWithPath("weeks[].submits[].participant.nickname").description("스터디 주차 과제 제출자 닉네임"),
-                                            fieldWithPath("weeks[].submits[].submitType").description("스터디 주차 과제 제출 타입"),
+                                            fieldWithPath("weeks[].attachments[]").description("스터디 주차 첨부파일")
+                                                    .optional(),
+                                            fieldWithPath("weeks[].submits[]").description("스터디 주차 과제 관련 정보")
+                                                    .optional(),
+                                            fieldWithPath("weeks[].submits[].participant.id").description("스터디 주차 과제 제출자 ID(PK)")
+                                                    .optional(),
+                                            fieldWithPath("weeks[].submits[].participant.nickname").description("스터디 주차 과제 제출자 닉네임")
+                                                    .optional(),
+                                            fieldWithPath("weeks[].submits[].submitType").description("스터디 주차 과제 제출 타입")
+                                                    .optional(),
                                             fieldWithPath("weeks[].submits[].submitLink").description("스터디 주차 과제 제출 링크")
+                                                    .optional()
                                     )
                             )
                     );
@@ -785,19 +792,39 @@ class StudyInformationApiControllerTest extends ControllerTest {
         List<WeeklySummary> weeks = new ArrayList<>();
 
         weeks.add(new WeeklySummary(
-                3L,
-                STUDY_WEEKLY_3.getTitle(),
-                STUDY_WEEKLY_3.getContent(),
-                STUDY_WEEKLY_3.getWeek(),
-                STUDY_WEEKLY_3.getPeriod().toPeriod(),
+                6L,
+                STUDY_WEEKLY_6.getTitle(),
+                STUDY_WEEKLY_6.getContent(),
+                STUDY_WEEKLY_6.getWeek(),
+                STUDY_WEEKLY_6.getPeriod().toPeriod(),
                 new StudyMember(1L, "닉네임1"),
-                true,
-                true,
-                List.of(
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
-                ),
+                STUDY_WEEKLY_6.isAssignmentExists(),
+                STUDY_WEEKLY_6.isAutoAttendance(),
+                STUDY_WEEKLY_6.getAttachments(),
+                List.of()
+        ));
+        weeks.add(new WeeklySummary(
+                5L,
+                STUDY_WEEKLY_5.getTitle(),
+                STUDY_WEEKLY_5.getContent(),
+                STUDY_WEEKLY_5.getWeek(),
+                STUDY_WEEKLY_5.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                STUDY_WEEKLY_5.isAssignmentExists(),
+                STUDY_WEEKLY_5.isAutoAttendance(),
+                STUDY_WEEKLY_5.getAttachments(),
+                List.of()
+        ));
+        weeks.add(new WeeklySummary(
+                4L,
+                STUDY_WEEKLY_4.getTitle(),
+                STUDY_WEEKLY_4.getContent(),
+                STUDY_WEEKLY_4.getWeek(),
+                STUDY_WEEKLY_4.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                STUDY_WEEKLY_4.isAssignmentExists(),
+                STUDY_WEEKLY_4.isAutoAttendance(),
+                STUDY_WEEKLY_4.getAttachments(),
                 List.of(
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),
@@ -808,7 +835,20 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
                                 "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
-                        ),
+                        )
+                )
+        ));
+        weeks.add(new WeeklySummary(
+                3L,
+                STUDY_WEEKLY_3.getTitle(),
+                STUDY_WEEKLY_3.getContent(),
+                STUDY_WEEKLY_3.getWeek(),
+                STUDY_WEEKLY_3.getPeriod().toPeriod(),
+                new StudyMember(1L, "닉네임1"),
+                STUDY_WEEKLY_3.isAssignmentExists(),
+                STUDY_WEEKLY_3.isAutoAttendance(),
+                STUDY_WEEKLY_3.getAttachments(),
+                List.of(
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
                                 LINK.name(),
@@ -823,13 +863,9 @@ class StudyInformationApiControllerTest extends ControllerTest {
                 STUDY_WEEKLY_2.getWeek(),
                 STUDY_WEEKLY_2.getPeriod().toPeriod(),
                 new StudyMember(1L, "닉네임1"),
-                true,
-                true,
-                List.of(
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
-                ),
+                STUDY_WEEKLY_2.isAssignmentExists(),
+                STUDY_WEEKLY_2.isAutoAttendance(),
+                STUDY_WEEKLY_2.getAttachments(),
                 List.of(
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),
@@ -855,13 +891,9 @@ class StudyInformationApiControllerTest extends ControllerTest {
                 STUDY_WEEKLY_1.getWeek(),
                 STUDY_WEEKLY_1.getPeriod().toPeriod(),
                 new StudyMember(1L, "닉네임1"),
-                true,
-                true,
-                List.of(
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello1.txt",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello2.pdf",
-                        "https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello3.png"
-                ),
+                STUDY_WEEKLY_1.isAssignmentExists(),
+                STUDY_WEEKLY_1.isAutoAttendance(),
+                STUDY_WEEKLY_1.getAttachments(),
                 List.of(
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),

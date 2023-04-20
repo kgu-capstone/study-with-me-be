@@ -105,7 +105,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .selectDistinct(weekly)
                 .from(weekly)
                 .leftJoin(weekly.submits, submit).fetchJoin()
-                .innerJoin(submit.participant).fetchJoin()
+                .leftJoin(submit.participant).fetchJoin()
                 .where(weekly.study.id.eq(studyId))
                 .orderBy(weekly.id.desc())
                 .fetch();

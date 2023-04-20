@@ -199,24 +199,29 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         // given
         applyAndApproveMembers(members[0], members[1], members[2], members[3]);
 
-        Week week1 = addWeek(STUDY_WEEKLY_1);
-        Week week2 = addWeek(STUDY_WEEKLY_2);
-        Week week3 = addWeek(STUDY_WEEKLY_3);
-        Week week4 = addWeek(STUDY_WEEKLY_4);
+        Week week1 = addWeek(STUDY_WEEKLY_1, true);
+        Week week2 = addWeek(STUDY_WEEKLY_2, true);
+        Week week3 = addWeek(STUDY_WEEKLY_3, true);
+        Week week4 = addWeek(STUDY_WEEKLY_4, true);
+        addWeek(STUDY_WEEKLY_5, false);
+        addWeek(STUDY_WEEKLY_6, false);
+
         submitLinkAssignment(week1, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week2, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week4, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week2, "https://notion.so", host);
+        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1]);
+        submitLinkAssignment(week4, "https://notion.so", members[0], members[2], members[3]);
 
         // when
         List<Week> weeks = studyRepository.findWeeklyByStudyId(study.getId());
 
         // then
         assertAll(
-                () -> assertThat(weeks).hasSize(4),
+                () -> assertThat(weeks).hasSize(6),
                 () -> assertThat(weeks)
                         .map(Week::getWeek)
                         .containsExactly(
+                                STUDY_WEEKLY_6.getWeek(),
+                                STUDY_WEEKLY_5.getWeek(),
                                 STUDY_WEEKLY_4.getWeek(),
                                 STUDY_WEEKLY_3.getWeek(),
                                 STUDY_WEEKLY_2.getWeek(),
@@ -233,7 +238,9 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                             STUDY_WEEKLY_1.getAttachments(),
                             STUDY_WEEKLY_2.getAttachments(),
                             STUDY_WEEKLY_3.getAttachments(),
-                            STUDY_WEEKLY_4.getAttachments()
+                            STUDY_WEEKLY_4.getAttachments(),
+                            STUDY_WEEKLY_5.getAttachments(),
+                            STUDY_WEEKLY_6.getAttachments()
                     );
                 },
                 () -> {
@@ -248,9 +255,11 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                             .toList();
                     assertThat(participants).containsExactlyInAnyOrder(
                             List.of(host, members[0], members[1], members[2], members[3]),
-                            List.of(host, members[0], members[1], members[2], members[3]),
-                            List.of(host, members[0], members[1], members[2], members[3]),
-                            List.of(host, members[0], members[1], members[2], members[3])
+                            List.of(host),
+                            List.of(host, members[0], members[1]),
+                            List.of(members[0], members[2], members[3]),
+                            List.of(),
+                            List.of()
                     );
 
                     List<List<String>> links = submits.stream()
@@ -268,26 +277,20 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                                     "https://notion.so" + members[3].getId()
                             ),
                             List.of(
-                                    "https://notion.so" + host.getId(),
-                                    "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
-                                    "https://notion.so" + members[2].getId(),
-                                    "https://notion.so" + members[3].getId()
+                                    "https://notion.so" + host.getId()
                             ),
                             List.of(
                                     "https://notion.so" + host.getId(),
                                     "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[1].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + members[0].getId(),
                                     "https://notion.so" + members[2].getId(),
                                     "https://notion.so" + members[3].getId()
                             ),
-                            List.of(
-                                    "https://notion.so" + host.getId(),
-                                    "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
-                                    "https://notion.so" + members[2].getId(),
-                                    "https://notion.so" + members[3].getId()
-                            )
+                            List.of(),
+                            List.of()
                     );
                 }
         );
@@ -324,8 +327,12 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         }
     }
 
-    private Week addWeek(WeekFixture fixture) {
-        return weekRepository.save(fixture.toWeekWithAssignment(study));
+    private Week addWeek(WeekFixture fixture, boolean isAssignmentExists) {
+        if (isAssignmentExists) {
+            return weekRepository.save(fixture.toWeekWithAssignment(study));
+        } else {
+            return weekRepository.save(fixture.toWeek(study));
+        }
     }
 
     private void submitLinkAssignment(Week week, String link, Member... participants) {
