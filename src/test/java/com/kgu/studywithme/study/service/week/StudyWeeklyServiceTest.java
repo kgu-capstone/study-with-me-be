@@ -2,6 +2,7 @@ package com.kgu.studywithme.study.service.week;
 
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.fixture.WeekFixture;
+import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.controller.utils.StudyWeeklyRequestUtils;
@@ -13,6 +14,7 @@ import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
+import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
@@ -201,6 +204,27 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @AfterEach
         void restore() {
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
+        }
+
+        @Test
+        @DisplayName("과제 제출물을 업로드 하지 않으면 예외가 발생한다")
+        void throwExceptionByMissingSubmission() {
+            assertThatThrownBy(() -> studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, null))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MISSING_SUBMISSION.getMessage());
+        }
+
+        @Test
+        @DisplayName("과제 제출물로 링크 + 파일 둘다 업로드하면 예외가 발생한다")
+        void throwExceptionByDuplicateSubmission() throws IOException {
+            // given
+            final String submitLink = "https://notion.so";
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+
+            // when - then
+            assertThatThrownBy(() -> studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", file, submitLink))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.DUPLICATE_SUBMISSION.getMessage());
         }
 
         @Test

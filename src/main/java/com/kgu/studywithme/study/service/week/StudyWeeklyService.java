@@ -70,11 +70,23 @@ public class StudyWeeklyService {
 
     @Transactional
     public void submitAssignment(Long participantId, Long studyId, Integer week, String type, MultipartFile file, String link) {
+        validateAssignmentSubmissionExists(file, link);
+
         Week specificWeek = getSpecificWeek(studyId, week);
         Member participant = memberFindService.findById(participantId);
 
         handleAssignmentSubmission(specificWeek, participant, type, file, link);
         processAttendanceBasedOnAutoAttendanceFlag(specificWeek, participant);
+    }
+
+    private void validateAssignmentSubmissionExists(MultipartFile file, String link) {
+        if (file == null && link == null) {
+            throw StudyWithMeException.type(StudyErrorCode.MISSING_SUBMISSION);
+        }
+
+        if (file != null && link != null) {
+            throw StudyWithMeException.type(StudyErrorCode.DUPLICATE_SUBMISSION);
+        }
     }
 
     private Week getSpecificWeek(Long studyId, Integer week) {
