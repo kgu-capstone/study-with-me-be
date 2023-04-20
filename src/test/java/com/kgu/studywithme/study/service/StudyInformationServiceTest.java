@@ -220,14 +220,17 @@ class StudyInformationServiceTest extends ServiceTest {
         // given
         applyAndApproveMembers(members[0], members[1], members[2], members[3]);
 
-        Week week1 = addWeek(STUDY_WEEKLY_1);
-        Week week2 = addWeek(STUDY_WEEKLY_2);
-        Week week3 = addWeek(STUDY_WEEKLY_3);
-        Week week4 = addWeek(STUDY_WEEKLY_4);
+        Week week1 = addWeek(STUDY_WEEKLY_1, true);
+        Week week2 = addWeek(STUDY_WEEKLY_2, true);
+        Week week3 = addWeek(STUDY_WEEKLY_3, true);
+        Week week4 = addWeek(STUDY_WEEKLY_4, true);
+        Week week5 = addWeek(STUDY_WEEKLY_5, false);
+        Week week6 = addWeek(STUDY_WEEKLY_6, false);
+
         submitLinkAssignment(week1, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week2, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1], members[2], members[3]);
-        submitLinkAssignment(week4, "https://notion.so", host, members[0], members[1], members[2], members[3]);
+        submitLinkAssignment(week2, "https://notion.so", host);
+        submitLinkAssignment(week3, "https://notion.so", host, members[0], members[1]);
+        submitLinkAssignment(week4, "https://notion.so", members[0], members[2], members[3]);
 
         // when
         WeeklyAssembler weeklyAssembler = studyInformationService.getWeeks(study.getId());
@@ -235,33 +238,42 @@ class StudyInformationServiceTest extends ServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(weeks).hasSize(4),
+                () -> assertThat(weeks).hasSize(6),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::id)
-                        .containsExactly(week4.getId(), week3.getId(), week2.getId(), week1.getId()),
+                        .containsExactly(week6.getId(), week5.getId(), week4.getId(), week3.getId(), week2.getId(), week1.getId()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::title)
-                        .containsExactly(week4.getTitle(), week3.getTitle(), week2.getTitle(), week1.getTitle()),
+                        .containsExactly(week6.getTitle(), week5.getTitle(), week4.getTitle(), week3.getTitle(), week2.getTitle(), week1.getTitle()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::content)
-                        .containsExactly(week4.getContent(), week3.getContent(), week2.getContent(), week1.getContent()),
+                        .containsExactly(week6.getContent(), week5.getContent(), week4.getContent(), week3.getContent(), week2.getContent(), week1.getContent()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::week)
-                        .containsExactly(week4.getWeek(), week3.getWeek(), week2.getWeek(), week1.getWeek()),
+                        .containsExactly(week6.getWeek(), week5.getWeek(), week4.getWeek(), week3.getWeek(), week2.getWeek(), week1.getWeek()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::period)
-                        .containsExactly(week4.getPeriod(), week3.getPeriod(), week2.getPeriod(), week1.getPeriod()),
+                        .containsExactly(week6.getPeriod(), week5.getPeriod(), week4.getPeriod(), week3.getPeriod(), week2.getPeriod(), week1.getPeriod()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::creator)
                         .map(StudyMember::id)
-                        .containsExactly(host.getId(), host.getId(), host.getId(), host.getId()),
+                        .containsExactly(host.getId(), host.getId(), host.getId(), host.getId(), host.getId(), host.getId()),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::creator)
                         .map(StudyMember::nickname)
-                        .containsExactly(host.getNicknameValue(), host.getNicknameValue(), host.getNicknameValue(), host.getNicknameValue()),
+                        .containsExactly(
+                                host.getNicknameValue(),
+                                host.getNicknameValue(),
+                                host.getNicknameValue(),
+                                host.getNicknameValue(),
+                                host.getNicknameValue(),
+                                host.getNicknameValue()
+                        ),
                 () -> assertThat(weeks)
                         .map(WeeklySummary::assignmentExists)
                         .containsExactly(
+                                STUDY_WEEKLY_6.isAssignmentExists(),
+                                STUDY_WEEKLY_5.isAssignmentExists(),
                                 STUDY_WEEKLY_4.isAssignmentExists(),
                                 STUDY_WEEKLY_3.isAssignmentExists(),
                                 STUDY_WEEKLY_2.isAssignmentExists(),
@@ -270,6 +282,8 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(weeks)
                         .map(WeeklySummary::autoAttendance)
                         .containsExactly(
+                                STUDY_WEEKLY_6.isAutoAttendance(),
+                                STUDY_WEEKLY_5.isAutoAttendance(),
                                 STUDY_WEEKLY_4.isAutoAttendance(),
                                 STUDY_WEEKLY_3.isAutoAttendance(),
                                 STUDY_WEEKLY_2.isAutoAttendance(),
@@ -278,6 +292,8 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(weeks)
                         .map(WeeklySummary::attachments)
                         .containsExactly(
+                                STUDY_WEEKLY_6.getAttachments(),
+                                STUDY_WEEKLY_5.getAttachments(),
                                 STUDY_WEEKLY_4.getAttachments(),
                                 STUDY_WEEKLY_3.getAttachments(),
                                 STUDY_WEEKLY_2.getAttachments(),
@@ -298,9 +314,11 @@ class StudyInformationServiceTest extends ServiceTest {
                             .toList();
                     assertThat(participantIds).containsExactlyInAnyOrder(
                             List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
-                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
-                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId()),
-                            List.of(host.getId(), members[0].getId(), members[1].getId(), members[2].getId(), members[3].getId())
+                            List.of(host.getId()),
+                            List.of(host.getId(), members[0].getId(), members[1].getId()),
+                            List.of(members[0].getId(), members[2].getId(), members[3].getId()),
+                            List.of(),
+                            List.of()
                     );
 
                     List<List<String>> participantNicknames = submits.stream()
@@ -320,26 +338,20 @@ class StudyInformationServiceTest extends ServiceTest {
                                     members[3].getNicknameValue()
                             ),
                             List.of(
-                                    host.getNicknameValue(),
-                                    members[0].getNicknameValue(),
-                                    members[1].getNicknameValue(),
-                                    members[2].getNicknameValue(),
-                                    members[3].getNicknameValue()
+                                    host.getNicknameValue()
                             ),
                             List.of(
                                     host.getNicknameValue(),
                                     members[0].getNicknameValue(),
-                                    members[1].getNicknameValue(),
+                                    members[1].getNicknameValue()
+                            ),
+                            List.of(
+                                    members[0].getNicknameValue(),
                                     members[2].getNicknameValue(),
                                     members[3].getNicknameValue()
                             ),
-                            List.of(
-                                    host.getNicknameValue(),
-                                    members[0].getNicknameValue(),
-                                    members[1].getNicknameValue(),
-                                    members[2].getNicknameValue(),
-                                    members[3].getNicknameValue()
-                            )
+                            List.of(),
+                            List.of()
                     );
 
                     List<List<String>> submitLinks = submits.stream()
@@ -356,26 +368,20 @@ class StudyInformationServiceTest extends ServiceTest {
                                     "https://notion.so" + members[3].getId()
                             ),
                             List.of(
-                                    "https://notion.so" + host.getId(),
-                                    "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
-                                    "https://notion.so" + members[2].getId(),
-                                    "https://notion.so" + members[3].getId()
+                                    "https://notion.so" + host.getId()
                             ),
                             List.of(
                                     "https://notion.so" + host.getId(),
                                     "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
+                                    "https://notion.so" + members[1].getId()
+                            ),
+                            List.of(
+                                    "https://notion.so" + members[0].getId(),
                                     "https://notion.so" + members[2].getId(),
                                     "https://notion.so" + members[3].getId()
                             ),
-                            List.of(
-                                    "https://notion.so" + host.getId(),
-                                    "https://notion.so" + members[0].getId(),
-                                    "https://notion.so" + members[1].getId(),
-                                    "https://notion.so" + members[2].getId(),
-                                    "https://notion.so" + members[3].getId()
-                            )
+                            List.of(),
+                            List.of()
                     );
                 }
         );
@@ -414,8 +420,12 @@ class StudyInformationServiceTest extends ServiceTest {
         }
     }
 
-    private Week addWeek(WeekFixture fixture) {
-        return weekRepository.save(fixture.toWeekWithAssignment(study));
+    private Week addWeek(WeekFixture fixture, boolean isAssignmentExists) {
+        if (isAssignmentExists) {
+            return weekRepository.save(fixture.toWeekWithAssignment(study));
+        } else {
+            return weekRepository.save(fixture.toWeek(study));
+        }
     }
 
     private void submitLinkAssignment(Week week, String link, Member... participants) {
