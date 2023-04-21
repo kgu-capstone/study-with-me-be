@@ -9,8 +9,11 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import static com.kgu.studywithme.global.mail.utils.EmailMetadata.EMAIL_SUBJECT;
+import static com.kgu.studywithme.global.mail.utils.EmailMetadata.COMPLETION_SUBJECT;
+import static com.kgu.studywithme.global.mail.utils.EmailMetadata.PARTICIPATION_SUBJECT;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +25,8 @@ public class EmailSender {
     private String serviceEmail;
     private static final String APPROVE_TEMPLATE = "ParticipationApproveEmailTemplate";
     private static final String REJECT_TEMPLATE = "ParticipationRejectEmailTemplate";
+    private static final String CERTIFICATE_TEMPLATE = "StudyCertificateEmailTemplate";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
 
     public void sendParticipationApproveMail(String applierEmail, String nickname, String studyName) throws Exception {
         Context context = new Context();
@@ -29,7 +34,7 @@ public class EmailSender {
         context.setVariable("studyName", studyName);
 
         String mailBody = templateEngine.process(APPROVE_TEMPLATE, context);
-        sendMail(applierEmail, mailBody);
+        sendMail(PARTICIPATION_SUBJECT, applierEmail, mailBody);
     }
 
     public void sendParticipationRejectMail(String applierEmail, String nickname, String studyName, String reason) throws Exception {
@@ -39,13 +44,23 @@ public class EmailSender {
         context.setVariable("reason", reason);
 
         String mailBody = templateEngine.process(REJECT_TEMPLATE, context);
-        sendMail(applierEmail, mailBody);
+        sendMail(PARTICIPATION_SUBJECT, applierEmail, mailBody);
     }
 
-    private void sendMail(String applierEmail, String mailBody) throws Exception {
+    public void sendStudyCertificateMail(String applierEmail, String nickname, String studyName) throws Exception {
+        Context context = new Context();
+        context.setVariable("nickname", nickname);
+        context.setVariable("studyName", studyName);
+        context.setVariable("completionDate", LocalDate.now().format(DATE_TIME_FORMATTER));
+
+        String mailBody = templateEngine.process(CERTIFICATE_TEMPLATE, context);
+        sendMail(COMPLETION_SUBJECT, applierEmail, mailBody);
+    }
+
+    private void sendMail(String subjectType, String applierEmail, String mailBody) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, applierEmail);
-        message.setSubject(EMAIL_SUBJECT);
+        message.setSubject(subjectType);
         message.setText(mailBody, "UTF-8", "HTML");
         message.setFrom(new InternetAddress(serviceEmail, "여기서 구해볼래?"));
 
