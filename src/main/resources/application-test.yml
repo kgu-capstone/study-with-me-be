@@ -3,6 +3,29 @@ spring:
     import:
       - application-logging.yml
 
+  thymeleaf:
+    cache: false
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.naver.com
+    port: 465
+    username: username
+    password: password
+    properties:
+      mail:
+        mime:
+          charset: UTF-8
+        transport:
+          protocol: smtp
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+
   datasource:
     url: jdbc:h2:mem:test;MODE=MYSQL;
     username: sa
