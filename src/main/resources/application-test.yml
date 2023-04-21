@@ -44,3 +44,7 @@ cloud:
       secret-key: secret-key
     storage:
       bucket: bucket-name
+
+slack:
+  webhook:
+    url: slack-webhook-url
