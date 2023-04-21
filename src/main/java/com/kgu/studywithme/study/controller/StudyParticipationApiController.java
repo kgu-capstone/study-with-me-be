@@ -3,10 +3,13 @@ package com.kgu.studywithme.study.controller;
 import com.kgu.studywithme.global.annotation.CheckStudyHost;
 import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
 import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.study.controller.dto.request.ParticipationRejectRequest;
 import com.kgu.studywithme.study.service.ParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,8 +42,9 @@ public class StudyParticipationApiController {
     @PatchMapping("/applicants/{applierId}/reject")
     public ResponseEntity<Void> reject(@ExtractPayload Long hostId,
                                        @PathVariable Long studyId,
-                                       @PathVariable Long applierId) {
-        participationService.reject(studyId, applierId, hostId);
+                                       @PathVariable Long applierId,
+                                       @RequestBody @Valid ParticipationRejectRequest request) {
+        participationService.reject(studyId, applierId, hostId, request.reason());
         return ResponseEntity.noContent().build();
     }
 

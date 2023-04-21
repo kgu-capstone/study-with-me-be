@@ -204,6 +204,7 @@ class ParticipationServiceTest extends ServiceTest {
         private Member host;
         private Member applier;
         private Study study;
+        private static final String REASON = "나이가 너무 많아요";
 
         @BeforeEach
         void setUp() {
@@ -219,7 +220,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.close();
 
             // when - then
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
         }
@@ -227,7 +228,7 @@ class ParticipationServiceTest extends ServiceTest {
         @Test
         @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
         void throwExceptionByMemberIsNotApplier() {
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
         }
@@ -239,7 +240,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.applyParticipation(applier);
 
             // when
-            participationService.reject(study.getId(), applier.getId(), host.getId());
+            participationService.reject(study.getId(), applier.getId(), host.getId(), REASON);
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();

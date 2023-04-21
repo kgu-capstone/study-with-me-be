@@ -4,7 +4,11 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.participant.ParticipantRepository;
+import com.kgu.studywithme.study.event.StudyApprovedEvent;
+import com.kgu.studywithme.study.event.StudyGraduatedEvent;
+import com.kgu.studywithme.study.event.StudyRejectedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +19,7 @@ public class ParticipationService {
     private final StudyFindService studyFindService;
     private final MemberFindService memberFindService;
     private final ParticipantRepository participantRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void apply(Long studyId, Long memberId) {
@@ -39,14 +44,29 @@ public class ParticipationService {
         Member applier = memberFindService.findById(applierId);
 
         study.approveParticipation(applier);
+        eventPublisher.publishEvent(
+                new StudyApprovedEvent(
+                        applier.getEmailValue(),
+                        applier.getNicknameValue(),
+                        study.getNameValue()
+                )
+        );
     }
 
     @Transactional
-    public void reject(Long studyId, Long applierId, Long hostId) {
+    public void reject(Long studyId, Long applierId, Long hostId, String reason) {
         Study study = studyFindService.findByIdAndHostId(studyId, hostId);
         Member applier = memberFindService.findById(applierId);
 
         study.rejectParticipation(applier);
+        eventPublisher.publishEvent(
+                new StudyRejectedEvent(
+                        applier.getEmailValue(),
+                        applier.getNicknameValue(),
+                        study.getNameValue(),
+                        reason
+                )
+        );
     }
 
     @Transactional
@@ -71,5 +91,12 @@ public class ParticipationService {
         Member participant = memberFindService.findById(participantId);
 
         study.graduateParticipant(participant);
+        eventPublisher.publishEvent(
+                new StudyGraduatedEvent(
+                        participant.getEmailValue(),
+                        participant.getNicknameValue(),
+                        study.getNameValue()
+                )
+        );
     }
 }
