@@ -130,7 +130,7 @@ public class ApiGlobalExceptionHandler {
      * 내부 서버 오류 전용 ExceptionHandler (With Slack Logging)
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleAnyException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleAnyException(RuntimeException e, HttpServletRequest request) {
         sendSlackAlertErrorLog(e, request);
         return convert(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
