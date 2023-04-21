@@ -4,12 +4,17 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.event.StudyApprovedEvent;
+import com.kgu.studywithme.study.event.StudyGraduatedEvent;
+import com.kgu.studywithme.study.event.StudyRejectedEvent;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
@@ -19,10 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@RecordApplicationEvents
 @DisplayName("Study [Service Layer] -> ParticipationService 테스트")
 class ParticipationServiceTest extends ServiceTest {
     @Autowired
     private ParticipationService participationService;
+
+    @Autowired
+    private ApplicationEvents events;
 
     @Nested
     @DisplayName("스터디 참여 신청")
@@ -195,6 +204,9 @@ class ParticipationServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getApproveParticipants()).hasSize(2),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applier)
             );
+
+            int count = (int) events.stream(StudyApprovedEvent.class).count();
+            assertThat(count).isEqualTo(1);
         }
     }
 
@@ -204,6 +216,7 @@ class ParticipationServiceTest extends ServiceTest {
         private Member host;
         private Member applier;
         private Study study;
+        private static final String REASON = "나이가 너무 많아요";
 
         @BeforeEach
         void setUp() {
@@ -219,7 +232,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.close();
 
             // when - then
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
         }
@@ -227,7 +240,7 @@ class ParticipationServiceTest extends ServiceTest {
         @Test
         @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
         void throwExceptionByMemberIsNotApplier() {
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
         }
@@ -239,7 +252,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.applyParticipation(applier);
 
             // when
-            participationService.reject(study.getId(), applier.getId(), host.getId());
+            participationService.reject(study.getId(), applier.getId(), host.getId(), REASON);
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
@@ -249,6 +262,9 @@ class ParticipationServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
+
+            int count = (int) events.stream(StudyRejectedEvent.class).count();
+            assertThat(count).isEqualTo(1);
         }
     }
 
@@ -381,6 +397,9 @@ class ParticipationServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getGraduatedParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participant)
             );
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(1);
         }
     }
 

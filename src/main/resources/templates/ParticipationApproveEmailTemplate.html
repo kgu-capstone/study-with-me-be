@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>여기서 구해볼래?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            text-align: left;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><strong th:text="${studyName}"></strong> 참여 승인 메일</h1>
+    <p>축하드립니다! <strong th:text="${nickname}"></strong>님은 <strong th:text="${studyName}"></strong>에 참여하게 되셨습니다.</p>
+    <p>이 스터디에서 많은 도움과 지식을 얻으실 수 있기를 바랍니다.</p>
+    <p>스터디 관련 자세한 정보는 저희 사이트를 참고해주세요.</p>
+    <p>감사합니다.</p>
+</div>
+</body>
+</html>
