@@ -38,6 +38,7 @@ public enum StudyErrorCode implements ErrorCode {
     MISSING_SUBMISSION(HttpStatus.BAD_REQUEST, "STUDY_028", "과제 제출물은 반드시 링크 또는 파일로 업로드해야 합니다."),
     DUPLICATE_SUBMISSION(HttpStatus.BAD_REQUEST, "STUDY_029", "과제 제출물은 반드시 링크 또는 파일중 한가지만 업로드해야 합니다."),
     MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL(HttpStatus.CONFLICT, "STUDY_030", "이전에 졸업 또는 참여 취소한 스터디의 경우 다시 참여할 수 없습니다."),
+    GRADUATION_REQUIREMENTS_NOT_FULFILLED(HttpStatus.CONFLICT, "STUDY_031", "졸업 요건을 채우지 못하였습니다."),
     ;
 
     private final HttpStatus status;

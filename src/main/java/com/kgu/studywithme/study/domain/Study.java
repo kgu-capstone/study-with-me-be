@@ -226,6 +226,10 @@ public class Study extends BaseEntity {
         participants.validateMemberIsApplier(member);
     }
 
+    public boolean isGraduationRequirementsFulfilled(int value) {
+        return minimumAttendanceForGraduation <= value;
+    }
+
     // Add Getter
     public String getNameValue() {
         return name.getValue();

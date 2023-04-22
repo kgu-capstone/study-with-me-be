@@ -1402,6 +1402,47 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
+        @DisplayName("졸업 요건[최소 출석 횟수]를 만족하지 못했다면 졸업을 할 수 없다")
+        void throwExceptionByGraduationRequirementsNotFulfilled() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED))
+                    .when(participationService)
+                    .graduate(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Graduate/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
         @DisplayName("스터디가 종료되었다면 졸업을 할 수 없다")
         void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
@@ -1430,7 +1471,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case3",
+                                    "StudyApi/Participation/Graduate/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1471,7 +1512,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case4",
+                                    "StudyApi/Participation/Graduate/Failure/Case5",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

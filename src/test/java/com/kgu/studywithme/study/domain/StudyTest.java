@@ -649,4 +649,26 @@ class StudyTest {
     private int getAge(LocalDate birth) {
         return Period.between(birth, LocalDate.now()).getYears();
     }
+
+    @Test
+    @DisplayName("졸업 요건[최소 출석 횟수]을 만족했는지 여부를 확인한다")
+    void isGraduationRequirementsFulfilled() {
+        // given
+        Study study = SPRING.toOnlineStudy(HOST);
+        final int notEnough = study.getMinimumAttendanceForGraduation() - 1;
+        final int enough1 = study.getMinimumAttendanceForGraduation();
+        final int enough2 = study.getMinimumAttendanceForGraduation() + 1;
+
+        // when
+        boolean actual1 = study.isGraduationRequirementsFulfilled(notEnough);
+        boolean actual2 = study.isGraduationRequirementsFulfilled(enough1);
+        boolean actual3 = study.isGraduationRequirementsFulfilled(enough2);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isFalse(),
+                () -> assertThat(actual2).isTrue(),
+                () -> assertThat(actual3).isTrue()
+        );
+    }
 }
