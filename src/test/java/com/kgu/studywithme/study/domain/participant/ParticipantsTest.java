@@ -102,6 +102,36 @@ class ParticipantsTest {
         }
 
         @Test
+        @DisplayName("해당 스터디를 졸업했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyGraduate() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+            participants.apply(STUDY, PARTICIPANT);
+            participants.approve(PARTICIPANT);
+            participants.graduate(PARTICIPANT);
+
+            // when - then
+            assertThatThrownBy(() -> participants.apply(STUDY, PARTICIPANT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
+        }
+
+        @Test
+        @DisplayName("해당 스터디에 대해서 이전에 참여 취소를 했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyCancel() {
+            // given
+            Participants participants = Participants.of(HOST, CAPACITY);
+            participants.apply(STUDY, PARTICIPANT);
+            participants.approve(PARTICIPANT);
+            participants.cancel(PARTICIPANT);
+
+            // when - then
+            assertThatThrownBy(() -> participants.apply(STUDY, PARTICIPANT))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
+        }
+
+        @Test
         @DisplayName("참여 신청에 성공한다")
         void success() {
             // given

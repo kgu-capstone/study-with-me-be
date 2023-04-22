@@ -199,6 +199,47 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
+        @DisplayName("해당 스터디에 대해서 졸업 또는 참여 취소 이력이 존재한다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyGraduateOrCancel() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL))
+                    .when(participationService)
+                    .apply(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .post(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Apply/Failure/Case5",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
         @DisplayName("참여 신청에 성공한다")
         void success() throws Exception {
             // given

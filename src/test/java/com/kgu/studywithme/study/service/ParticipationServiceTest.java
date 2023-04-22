@@ -80,6 +80,34 @@ class ParticipationServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("해당 스터디를 졸업했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyGraduate() {
+            // given
+            study.applyParticipation(applier);
+            study.approveParticipation(applier);
+            study.graduateParticipant(applier);
+
+            // when - then
+            assertThatThrownBy(() -> participationService.apply(study.getId(), applier.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
+        }
+
+        @Test
+        @DisplayName("해당 스터디에 대해서 이전에 참여 취소를 했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyCancel() {
+            // given
+            study.applyParticipation(applier);
+            study.approveParticipation(applier);
+            study.cancelParticipation(applier);
+
+            // when - then
+            assertThatThrownBy(() -> participationService.apply(study.getId(), applier.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
+        }
+
+        @Test
         @DisplayName("참여 신청에 성공한다")
         void success() {
             // when

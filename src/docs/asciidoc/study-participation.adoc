@@ -41,7 +41,16 @@ include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/path-parameters.a
 HTTP Response
 include::{snippets}/StudyApi/Participation/Apply/Failure/Case4/response-body.adoc[]
 
-=== 5. 참여 신청에 성공한다
+=== 5. 해당 스터디에 대해서 졸업 또는 참여 취소 이력이 존재한다면 다시 참여 신청을 할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case5/http-request.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case5/request-headers.adoc[]
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case5/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Participation/Apply/Failure/Case5/response-body.adoc[]
+
+=== 6. 참여 신청에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Participation/Apply/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Participation/Apply/Success/request-headers.adoc[]
