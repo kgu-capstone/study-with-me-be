@@ -19,7 +19,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.JPA;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -77,13 +77,13 @@ class MemberSimpleQueryRepositoryTest extends RepositoryTest {
         // given
         List<Integer> hostWeek1 = List.of(1, 2, 3, 4, 5, 6);
         List<Integer> hostWeek2 = List.of(4, 5, 6);
-        applyAttandance(study1, host, hostWeek1);
-        applyAttandance(study2, host, hostWeek2);
+        applyAttendance(study1, host, hostWeek1);
+        applyAttendance(study2, host, hostWeek2);
 
         List<Integer> participantWeek1 = List.of(3, 4, 5);
         List<Integer> participantWeek2 = List.of(1, 2, 3, 4);
-        applyAttandance(study1, participant, participantWeek1);
-        applyAttandance(study2, participant, participantWeek2);
+        applyAttendance(study1, participant, participantWeek1);
+        applyAttendance(study2, participant, participantWeek2);
 
         // when - then
         List<StudyAttendanceMetadata> hostMetadata = memberRepository.findStudyAttendanceMetadataByMemberId(host.getId());
@@ -97,7 +97,56 @@ class MemberSimpleQueryRepositoryTest extends RepositoryTest {
         assertThatParticipationMetadataMatch(participantMetadata, expectParticipantStudy, expectParticipantWeek);
     }
 
-    private void applyAttandance(Study study, Member member, List<Integer> weeks) {
+    @Test
+    @DisplayName("참여자의 출석 현황을 조회한다")
+    void getAttendanceCount() {
+        /* 미출석 1회 */
+        study1.recordAttendance(host, 1, NON_ATTENDANCE);
+        assertAll(
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ATTENDANCE)).isEqualTo(0),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), LATE)).isEqualTo(0),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ABSENCE)).isEqualTo(0)
+        );
+
+        /* 미출석 1회 + 출석 1회 */
+        study1.recordAttendance(host, 2, ATTENDANCE);
+        assertAll(
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), LATE)).isEqualTo(0),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ABSENCE)).isEqualTo(0)
+        );
+
+        /* 미출석 1회 + 출석 2회 */
+        study1.recordAttendance(host, 3, ATTENDANCE);
+        assertAll(
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), LATE)).isEqualTo(0),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ABSENCE)).isEqualTo(0)
+        );
+
+        /* 미출석 1회 + 출석 2회 + 지각 1회 */
+        study1.recordAttendance(host, 4, LATE);
+        assertAll(
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), LATE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ABSENCE)).isEqualTo(0)
+        );
+
+        /* 미출석 1회 + 출석 2회 + 지각 1회 + 결석 1회 */
+        study1.recordAttendance(host, 5, ABSENCE);
+        assertAll(
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), LATE)).isEqualTo(1),
+                () -> assertThat(memberRepository.getAttendanceCount(study1.getId(), host.getId(), ABSENCE)).isEqualTo(1)
+        );
+    }
+
+    private void applyAttendance(Study study, Member member, List<Integer> weeks) {
         for (int week : weeks) {
             study.recordAttendance(member, week, ATTENDANCE);
         }
