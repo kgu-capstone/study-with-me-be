@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation;
+package com.kgu.studywithme.global.annotation.aop;
 
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
@@ -16,7 +16,7 @@ public class CheckStudyParticipantAspect {
     private final StudyFindService studyFindService;
     private final MemberFindService memberFindService;
 
-    @Before("@annotation(CheckStudyParticipant) && args(memberId, studyId, ..)")
+    @Before("@annotation(com.kgu.studywithme.global.annotation.aop.CheckStudyParticipant) && args(memberId, studyId, ..)")
     public void checkParticipant(Long studyId, Long memberId) {
         Study study = studyFindService.findById(studyId);
         Member member = memberFindService.findById(memberId);

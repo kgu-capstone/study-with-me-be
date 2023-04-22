@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation;
+package com.kgu.studywithme.global.annotation.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
