@@ -1,6 +1,6 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
-import com.kgu.studywithme.global.annotation.ValidHashtagCount;
+import com.kgu.studywithme.global.annotation.validation.ValidHashtagCount;
 import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;

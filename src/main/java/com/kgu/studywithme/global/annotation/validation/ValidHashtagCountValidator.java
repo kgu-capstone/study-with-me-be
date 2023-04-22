@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation;
+package com.kgu.studywithme.global.annotation.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
