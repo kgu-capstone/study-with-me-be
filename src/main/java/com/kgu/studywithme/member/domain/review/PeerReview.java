@@ -3,7 +3,6 @@ package com.kgu.studywithme.member.domain.review;
 import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,7 +28,6 @@ public class PeerReview extends BaseEntity {
     @JoinColumn(name = "reviewer_id", referencedColumnName = "id", nullable = false)
     private Member reviewer;
 
-    @Builder
     private PeerReview(Member reviewee, Member reviewer, String content) {
         this.reviewee = reviewee;
         this.reviewer = reviewer;

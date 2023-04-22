@@ -44,6 +44,7 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getType()).isEqualTo(SPRING.getType()),
                 () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(SPRING.getCapacity()),
+                () -> assertThat(onlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(SPRING.getMinimumAttendanceForGraduation()),
                 () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(SPRING.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(onlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
@@ -55,6 +56,7 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getType()).isEqualTo(TOSS_INTERVIEW.getType()),
                 () -> assertThat(offlineStudy.getLocation()).isEqualTo(TOSS_INTERVIEW.getLocation()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
+                () -> assertThat(offlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(TOSS_INTERVIEW.getMinimumAttendanceForGraduation()),
                 () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(TOSS_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(offlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
@@ -98,6 +100,7 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(CHINESE.getCapacity()),
                 () -> assertThat(onlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
+                () -> assertThat(onlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(JAPANESE.getMinimumAttendanceForGraduation()),
                 () -> assertThat(onlineStudy.getHashtags()).hasSize(CHINESE.getHashtags().size()),
                 () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(CHINESE.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
@@ -111,6 +114,7 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getLocation().getCity()).isEqualTo(KAKAO_INTERVIEW.getLocation().getCity()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(KAKAO_INTERVIEW.getCapacity()),
                 () -> assertThat(offlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
+                () -> assertThat(offlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(TOSS_INTERVIEW.getMinimumAttendanceForGraduation()),
                 () -> assertThat(offlineStudy.getHashtags()).hasSize(KAKAO_INTERVIEW.getHashtags().size()),
                 () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(KAKAO_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
@@ -644,5 +648,27 @@ class StudyTest {
 
     private int getAge(LocalDate birth) {
         return Period.between(birth, LocalDate.now()).getYears();
+    }
+
+    @Test
+    @DisplayName("졸업 요건[최소 출석 횟수]을 만족했는지 여부를 확인한다")
+    void isGraduationRequirementsFulfilled() {
+        // given
+        Study study = SPRING.toOnlineStudy(HOST);
+        final int notEnough = study.getMinimumAttendanceForGraduation() - 1;
+        final int enough1 = study.getMinimumAttendanceForGraduation();
+        final int enough2 = study.getMinimumAttendanceForGraduation() + 1;
+
+        // when
+        boolean actual1 = study.isGraduationRequirementsFulfilled(notEnough);
+        boolean actual2 = study.isGraduationRequirementsFulfilled(enough1);
+        boolean actual3 = study.isGraduationRequirementsFulfilled(enough2);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isFalse(),
+                () -> assertThat(actual2).isTrue(),
+                () -> assertThat(actual3).isTrue()
+        );
     }
 }

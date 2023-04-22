@@ -2,10 +2,10 @@ package com.kgu.studywithme.study.controller;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
+import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
-import com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,10 +15,13 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Set;
+
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.StudyFixture.TOEFL;
-import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
+import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -46,7 +49,7 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
@@ -74,14 +77,145 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 해시태그 개수가 0개면 스터디를 생성할 수 없다 [최소 1개]")
+        void throwExceptionByHashtagCountUnderflow() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            final StudyRegisterRequest request = StudyRegisterRequest.builder()
+                    .name(TOEIC.getName())
+                    .description(TOEIC.getDescription())
+                    .category(TOEIC.getCategory().getId())
+                    .capacity(TOEIC.getCapacity())
+                    .type(TOEIC.getType().getBrief())
+                    .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
+                    .hashtags(Set.of())
+                    .build();
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .post(BASE_URL)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final GlobalErrorCode expectedError = GlobalErrorCode.VALIDATION_ERROR;
+            final String message = "스터디는 최소 1개의 해시태그를 가져야 합니다.";
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(message)
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Register/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 해시태그 개수가 5개를 초과하면 스터디를 생성할 수 없다 [최대 5개]")
+        void throwExceptionByHashtagCountOverflow() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            final StudyRegisterRequest request = StudyRegisterRequest.builder()
+                    .name(TOEIC.getName())
+                    .description(TOEIC.getDescription())
+                    .category(TOEIC.getCategory().getId())
+                    .capacity(TOEIC.getCapacity())
+                    .type(TOEIC.getType().getBrief())
+                    .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
+                    .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
+                    .build();
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .post(BASE_URL)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final GlobalErrorCode expectedError = GlobalErrorCode.VALIDATION_ERROR;
+            final String message = "스터디는 최대 5개의 해시태그를 가질 수 있습니다.";
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(message)
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Register/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -99,7 +233,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .register(any(), any());
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -120,7 +254,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure/Case2",
+                                    "StudyApi/Register/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -129,14 +263,17 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -152,7 +289,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -176,14 +313,17 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     )
                             )
                     );
@@ -198,7 +338,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOfflineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -222,14 +362,17 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     )
                             )
                     );
@@ -285,7 +428,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -295,6 +439,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -342,7 +487,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -352,6 +498,147 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 해시태그 개수가 0개면 스터디 정보를 수정할 수 없다 [최소 1개]")
+        void throwExceptionByHashtagCountUnderflow() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            final StudyUpdateRequest request = StudyUpdateRequest.builder()
+                    .name(TOEFL.name())
+                    .description(TOEFL.getDescription())
+                    .capacity(TOEFL.getCapacity())
+                    .category(TOEFL.getCategory().getId())
+                    .type(TOEFL.getType().getBrief())
+                    .province(null)
+                    .city(null)
+                    .recruitmentStatus(true)
+                    .hashtags(Set.of())
+                    .build();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final GlobalErrorCode expectedError = GlobalErrorCode.VALIDATION_ERROR;
+            final String message = "스터디는 최소 1개의 해시태그를 가져야 합니다.";
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(message)
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Update/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
+                                                    .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 해시태그 개수가 5개를 초과하면 스터디 정보를 수정할 수 없다 [최대 5개]")
+        void throwExceptionByHashtagCountOverflow() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            final StudyUpdateRequest request = StudyUpdateRequest.builder()
+                    .name(TOEFL.name())
+                    .description(TOEFL.getDescription())
+                    .capacity(TOEFL.getCapacity())
+                    .category(TOEFL.getCategory().getId())
+                    .type(TOEFL.getType().getBrief())
+                    .province(null)
+                    .city(null)
+                    .recruitmentStatus(true)
+                    .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
+                    .build();
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final GlobalErrorCode expectedError = GlobalErrorCode.VALIDATION_ERROR;
+            final String message = "스터디는 최대 5개의 해시태그를 가질 수 있습니다.";
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(message)
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Update/Failure/Case4",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
+                                                    .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -390,7 +677,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case3",
+                                    "StudyApi/Update/Failure/Case5",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -402,7 +689,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -412,6 +700,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -450,7 +739,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case4",
+                                    "StudyApi/Update/Failure/Case6",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -462,7 +751,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -472,6 +762,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -513,7 +804,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -523,6 +815,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     )
                             )
                     );
@@ -563,7 +856,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -573,6 +867,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
                                             fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
                                     )
                             )
                     );
@@ -585,7 +880,7 @@ class StudyApiControllerTest extends ControllerTest {
                 .description(TOEFL.getDescription())
                 .capacity(TOEFL.getCapacity())
                 .category(TOEFL.getCategory().getId())
-                .type(TOEFL.getType().getDescription())
+                .type(TOEFL.getType().getBrief())
                 .province(null)
                 .city(null)
                 .recruitmentStatus(true)
@@ -599,7 +894,7 @@ class StudyApiControllerTest extends ControllerTest {
                 .description(TOSS_INTERVIEW.getDescription())
                 .capacity(TOSS_INTERVIEW.getCapacity())
                 .category(TOSS_INTERVIEW.getCategory().getId())
-                .type(TOSS_INTERVIEW.getType().getDescription())
+                .type(TOSS_INTERVIEW.getType().getBrief())
                 .province(TOSS_INTERVIEW.getLocation().getProvince())
                 .city(TOSS_INTERVIEW.getLocation().getCity())
                 .recruitmentStatus(true)

@@ -1,5 +1,6 @@
 package com.kgu.studywithme.global.annotation;
 
+import com.kgu.studywithme.global.annotation.validation.ValidImageExtensionValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("파일이 비어있으면 validator를 통과한다")
     void emptyFile() {
         // given
-        MultipartFile file = new MockMultipartFile("file", new byte[0]);
+        final MultipartFile file = new MockMultipartFile("file", new byte[0]);
 
         // when
         boolean actual = validator.isValid(file, null);
@@ -46,7 +47,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하지 않는 파일 확장자면 validator를 통과하지 못한다")
     void notAllowedExtension() throws IOException {
         // given
-        MultipartFile file = createSingleMockMultipartFile("hello5.webp", "image/webp");
+        final MultipartFile file = createSingleMockMultipartFile("hello5.webp", "image/webp");
 
         given(context.buildConstraintViolationWithTemplate(anyString())).willReturn(builder);
         given(builder.addConstraintViolation()).willReturn(context);
@@ -65,7 +66,7 @@ class ValidImageExtensionValidatorTest {
     @DisplayName("허용하는 확장자면 validator를 통과한다")
     void allowedExtension() throws IOException {
         // given
-        MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
+        final MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
 
         // when
         boolean actual = validator.isValid(file, context);

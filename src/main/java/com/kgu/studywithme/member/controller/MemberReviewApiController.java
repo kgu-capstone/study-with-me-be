@@ -1,6 +1,6 @@
 package com.kgu.studywithme.member.controller;
 
-import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.member.controller.dto.request.MemberReviewRequest;
 import com.kgu.studywithme.member.service.MemberReviewService;
 import lombok.RequiredArgsConstructor;

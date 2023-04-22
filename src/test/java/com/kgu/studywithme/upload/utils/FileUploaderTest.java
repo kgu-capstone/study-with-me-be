@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -177,6 +178,25 @@ class FileUploaderTest extends InfraTest {
             verify(amazonS3, times(1)).getUrl(eq(BUCKET), anyString());
             assertThat(uploadUrl).isEqualTo(mockUrl.toString());
         }
+    }
+
+    @Test
+    @DisplayName("NCP Object Storage와의 통신 간 네트워크적인 오류가 발생한다")
+    void throwExceptionByNCPCommunications() throws IOException {
+        // given
+        MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+
+        given(amazonS3.putObject(any(PutObjectRequest.class)))
+                .willThrow(StudyWithMeException.type(UploadErrorCode.S3_UPLOAD_FAILURE));
+
+        // when
+        assertThatThrownBy(() -> uploader.uploadWeeklySubmit(file))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(UploadErrorCode.S3_UPLOAD_FAILURE.getMessage());
+
+        // then
+        verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
+        verify(amazonS3, times(0)).getUrl(eq(BUCKET), anyString());
     }
 
     private String createUploadLink(String type, String originalFileName) {

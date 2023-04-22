@@ -1,11 +1,11 @@
-package com.kgu.studywithme.global.annotation;
+package com.kgu.studywithme.auth.utils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckStudyHost {
+public @interface ExtractPayload {
 }

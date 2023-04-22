@@ -1,7 +1,7 @@
 package com.kgu.studywithme.favorite.controller;
 
+import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
-import com.kgu.studywithme.global.annotation.ExtractPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

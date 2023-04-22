@@ -3,6 +3,8 @@ package com.kgu.studywithme.member.infra.query;
 import com.kgu.studywithme.member.domain.report.ReportStatus;
 import com.kgu.studywithme.member.infra.query.dto.response.QStudyAttendanceMetadata;
 import com.kgu.studywithme.member.infra.query.dto.response.StudyAttendanceMetadata;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,25 @@ public class MemberSimpleQueryRepositoryImpl implements MemberSimpleQueryReposit
         return query
                 .select(new QStudyAttendanceMetadata(attendance.study.id, attendance.week))
                 .from(attendance)
-                .where(attendance.participant.id.eq(memberId))
+                .where(participantIdEq(memberId))
                 .orderBy(attendance.study.id.asc())
                 .fetch();
+    }
+
+    @Override
+    public Long getAttendanceCount(Long studyId, Long memberId, AttendanceStatus status) {
+        return query
+                .select(attendance.count())
+                .from(attendance)
+                .where(
+                        attendance.study.id.eq(studyId),
+                        participantIdEq(memberId),
+                        attendance.status.eq(status)
+                )
+                .fetchOne();
+    }
+
+    private BooleanExpression participantIdEq(Long memberId) {
+        return attendance.participant.id.eq(memberId);
     }
 }
