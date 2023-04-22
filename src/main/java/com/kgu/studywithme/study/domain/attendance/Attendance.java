@@ -3,7 +3,6 @@ package com.kgu.studywithme.study.domain.attendance;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,7 +32,6 @@ public class Attendance {
     @JoinColumn(name = "participant_id", referencedColumnName = "id", nullable = false)
     private Member participant;
 
-    @Builder
     private Attendance(Study study, Member participant, int week, AttendanceStatus status) {
         this.study = study;
         this.participant = participant;

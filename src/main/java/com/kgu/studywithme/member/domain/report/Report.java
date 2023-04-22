@@ -2,7 +2,6 @@ package com.kgu.studywithme.member.domain.report;
 
 import com.kgu.studywithme.global.BaseEntity;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,7 +32,6 @@ public class Report extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ReportStatus status;
 
-    @Builder
     private Report(Long reporteeId, Long reporterId, String reason) {
         this.reporteeId = reporteeId;
         this.reporterId = reporterId;

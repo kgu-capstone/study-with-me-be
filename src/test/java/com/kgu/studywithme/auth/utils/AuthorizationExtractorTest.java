@@ -35,6 +35,19 @@ class AuthorizationExtractorTest {
         // then
         assertThat(token).isEmpty();
     }
+
+    @Test
+    @DisplayName("HTTP Request Message의 Authorization Header에 토큰 타입만 명시되었다면 Optional 빈 값을 응답한다")
+    void emptyTokenWithType() {
+        // given
+        given(request.getHeader(AUTHORIZATION)).willReturn(BEARER_TOKEN);
+
+        // when
+        Optional<String> token = AuthorizationExtractor.extractToken(request);
+
+        // then
+        assertThat(token).isEmpty();
+    }
     
     @Test
     @DisplayName("HTTP Request Message의 Authorization Header에 토큰이 있다면 Optional로 감싸서 응답한다")

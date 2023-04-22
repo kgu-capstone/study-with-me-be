@@ -7,7 +7,6 @@ import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
@@ -58,7 +57,6 @@ public class Week extends BaseEntity {
     @OneToMany(mappedBy = "week", cascade = CascadeType.PERSIST)
     private List<Submit> submits = new ArrayList<>();
 
-    @Builder
     private Week(Study study, String title, String content, int week, Period period,
                  boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
         this.study = study;

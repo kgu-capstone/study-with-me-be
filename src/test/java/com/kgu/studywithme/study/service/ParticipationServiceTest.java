@@ -255,7 +255,7 @@ class ParticipationServiceTest extends ServiceTest {
         private Member host;
         private Member applier;
         private Study study;
-        private static final String REASON = "나이가 너무 많아요";
+        private static final String REASON = "너무 멀리 사세요.";
 
         @BeforeEach
         void setUp() {

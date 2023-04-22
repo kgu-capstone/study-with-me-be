@@ -1557,6 +1557,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     private ParticipationRejectRequest createParticipationRejectRequest() {
-        return new ParticipationRejectRequest("나이가 너무 많아요");
+        return new ParticipationRejectRequest("너무 멀리 사세요.");
     }
 }

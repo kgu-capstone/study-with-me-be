@@ -17,7 +17,6 @@ import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.Weekly;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -84,7 +83,6 @@ public class Study extends BaseEntity {
     @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
     private List<Attendance> attendances = new ArrayList<>();
 
-    @Builder
     private Study(Member host, StudyName name, Description description, Capacity capacity, Category category, StudyType type,
                   StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
         this.name = name;
