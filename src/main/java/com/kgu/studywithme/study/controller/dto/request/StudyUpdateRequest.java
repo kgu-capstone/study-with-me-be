@@ -1,6 +1,7 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
 import com.kgu.studywithme.global.annotation.validation.ValidHashtagCount;
+import com.kgu.studywithme.global.annotation.validation.ValidStudyType;
 import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
@@ -20,6 +21,7 @@ public record StudyUpdateRequest (
         @NotNull(message = "카테고리는 필수입니다.")
         Long category,
 
+        @ValidStudyType
         @NotBlank(message = "온/오프라인 유무는 필수입니다.")
         String type,
 

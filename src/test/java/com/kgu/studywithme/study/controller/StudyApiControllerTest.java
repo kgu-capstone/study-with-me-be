@@ -6,7 +6,6 @@ import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyUpdateRequest;
-import com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +20,8 @@ import java.util.Set;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -48,7 +49,7 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
@@ -76,7 +77,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -105,7 +107,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEIC.getDescription())
                     .category(TOEIC.getCategory().getId())
                     .capacity(TOEIC.getCapacity())
-                    .type(TOEIC.getType().getDescription())
+                    .type(TOEIC.getType().getBrief())
                     .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
                     .hashtags(Set.of())
                     .build();
@@ -139,7 +141,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -168,7 +171,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEIC.getDescription())
                     .category(TOEIC.getCategory().getId())
                     .capacity(TOEIC.getCapacity())
-                    .type(TOEIC.getType().getDescription())
+                    .type(TOEIC.getType().getBrief())
                     .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
                     .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
                     .build();
@@ -202,7 +205,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -229,7 +233,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .register(any(), any());
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -259,7 +263,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -284,7 +289,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -308,7 +313,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -332,7 +338,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequestUtils.createOfflineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOfflineStudyRegisterRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -356,7 +362,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -421,7 +428,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -479,7 +487,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -509,7 +518,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEFL.getDescription())
                     .capacity(TOEFL.getCapacity())
                     .category(TOEFL.getCategory().getId())
-                    .type(TOEFL.getType().getDescription())
+                    .type(TOEFL.getType().getBrief())
                     .province(null)
                     .city(null)
                     .recruitmentStatus(true)
@@ -548,7 +557,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -578,7 +588,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEFL.getDescription())
                     .capacity(TOEFL.getCapacity())
                     .category(TOEFL.getCategory().getId())
-                    .type(TOEFL.getType().getDescription())
+                    .type(TOEFL.getType().getBrief())
                     .province(null)
                     .city(null)
                     .recruitmentStatus(true)
@@ -617,7 +627,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -678,7 +689,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -739,7 +751,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -791,7 +804,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -842,7 +856,8 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("type").description("온/오프라인 유무"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
@@ -865,7 +880,7 @@ class StudyApiControllerTest extends ControllerTest {
                 .description(TOEFL.getDescription())
                 .capacity(TOEFL.getCapacity())
                 .category(TOEFL.getCategory().getId())
-                .type(TOEFL.getType().getDescription())
+                .type(TOEFL.getType().getBrief())
                 .province(null)
                 .city(null)
                 .recruitmentStatus(true)
@@ -879,7 +894,7 @@ class StudyApiControllerTest extends ControllerTest {
                 .description(TOSS_INTERVIEW.getDescription())
                 .capacity(TOSS_INTERVIEW.getCapacity())
                 .category(TOSS_INTERVIEW.getCategory().getId())
-                .type(TOSS_INTERVIEW.getType().getDescription())
+                .type(TOSS_INTERVIEW.getType().getBrief())
                 .province(TOSS_INTERVIEW.getLocation().getProvince())
                 .city(TOSS_INTERVIEW.getLocation().getCity())
                 .recruitmentStatus(true)
