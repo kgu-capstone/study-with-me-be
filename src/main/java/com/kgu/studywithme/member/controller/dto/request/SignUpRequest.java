@@ -1,8 +1,7 @@
 package com.kgu.studywithme.member.controller.dto.request;
 
 import com.kgu.studywithme.category.domain.Category;
-import com.kgu.studywithme.global.exception.GlobalErrorCode;
-import com.kgu.studywithme.global.exception.StudyWithMeException;
+import com.kgu.studywithme.global.annotation.validation.ValidGender;
 import com.kgu.studywithme.member.domain.*;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,6 +34,7 @@ public record SignUpRequest(
         @NotBlank(message = "전화번호는 필수입니다.")
         String phone,
 
+        @ValidGender
         @NotBlank(message = "성별은 필수입니다.")
         String gender,
 
@@ -64,13 +64,7 @@ public record SignUpRequest(
     }
 
     private Gender convertStringToGender() {
-        if ("M".equalsIgnoreCase(gender)) {
-            return MALE;
-        } else if ("F".equalsIgnoreCase(gender)) {
-            return FEMALE;
-        } else {
-            throw StudyWithMeException.type(GlobalErrorCode.VALIDATION_ERROR);
-        }
+        return gender.equalsIgnoreCase("M") ? MALE : FEMALE;
     }
 
     private Set<Category> convertStringToCategory() {

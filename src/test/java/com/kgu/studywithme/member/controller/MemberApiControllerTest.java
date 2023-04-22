@@ -78,7 +78,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
-                                                    .attributes(constraint("M / F")),
+                                                    .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
@@ -122,7 +122,7 @@ class MemberApiControllerTest extends ControllerTest {
                                             fieldWithPath("birth").description("생년월일"),
                                             fieldWithPath("phone").description("전화번호"),
                                             fieldWithPath("gender").description("성별")
-                                                    .attributes(constraint("M / F")),
+                                                    .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
