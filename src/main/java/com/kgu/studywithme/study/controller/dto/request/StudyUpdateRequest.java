@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
+import com.kgu.studywithme.global.annotation.ValidHashtagCount;
 import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
@@ -28,6 +29,7 @@ public record StudyUpdateRequest (
 
         boolean recruitmentStatus,
 
+        @ValidHashtagCount
         Set<String> hashtags
 ) {
     @Builder

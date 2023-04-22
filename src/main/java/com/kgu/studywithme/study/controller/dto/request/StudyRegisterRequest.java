@@ -1,5 +1,6 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
+import com.kgu.studywithme.global.annotation.ValidHashtagCount;
 import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
@@ -26,6 +27,10 @@ public record StudyRegisterRequest(
 
         String city,
 
+        @NotNull(message = "스터디 졸업요건은 필수입니다. [최소 출석 횟수]")
+        Integer minimumAttendanceForGraduation,
+
+        @ValidHashtagCount
         Set<String> hashtags
 ) {
     @Builder

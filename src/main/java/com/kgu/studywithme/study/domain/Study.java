@@ -72,6 +72,9 @@ public class Study extends BaseEntity {
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
+    @Column(name = "min_attendance_for_graduation", nullable = false)
+    private int minimumAttendanceForGraduation;
+
     @OneToMany(mappedBy = "study", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>();
 
@@ -82,8 +85,8 @@ public class Study extends BaseEntity {
     private List<Attendance> attendances = new ArrayList<>();
 
     @Builder
-    private Study(Member host, StudyName name, Description description, Capacity capacity,
-                  Category category, StudyType type, StudyLocation location, Set<String> hashtags) {
+    private Study(Member host, StudyName name, Description description, Capacity capacity, Category category, StudyType type,
+                  StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.category = category;
@@ -92,23 +95,24 @@ public class Study extends BaseEntity {
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
         this.closed = false;
+        this.minimumAttendanceForGraduation = minimumAttendanceForGraduation;
         this.weekly = Weekly.createWeeklyPage();
         this.reviews = Reviews.createReviewsPage();
         applyHashtags(hashtags);
     }
 
-    public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity,
-                                    Category category, StudyType type, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, null, hashtags);
+    public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
+                                          StudyType type, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, type, null, minimumAttendanceForGraduation, hashtags);
     }
 
-    public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity,
-                                           Category category, StudyType type, StudyLocation location, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, location, hashtags);
+    public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
+                                           StudyType type, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, type, location, minimumAttendanceForGraduation, hashtags);
     }
 
-    public void update(StudyName name, Description description, int capacity, Category category, StudyType type,
-                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
+    public void update(StudyName name, Description description, int capacity, Category category, StudyType type, String province, String city,
+                       RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.participants.updateCapacity(capacity);

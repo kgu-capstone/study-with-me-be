@@ -13,6 +13,7 @@ public class StudyRegisterRequestUtils {
                 .category(TOEIC.getCategory().getId())
                 .capacity(TOEIC.getCapacity())
                 .type(TOEIC.getType().getDescription())
+                .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
                 .hashtags(TOEIC.getHashtags())
                 .build();
     }
@@ -26,6 +27,7 @@ public class StudyRegisterRequestUtils {
                 .type(TOSS_INTERVIEW.getType().getDescription())
                 .province(TOSS_INTERVIEW.getLocation().getProvince())
                 .city(TOSS_INTERVIEW.getLocation().getCity())
+                .minimumAttendanceForGraduation(TOSS_INTERVIEW.getMinimumAttendanceForGraduation())
                 .hashtags(TOSS_INTERVIEW.getHashtags())
                 .build();
     }
