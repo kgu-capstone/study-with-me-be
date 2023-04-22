@@ -1,6 +1,6 @@
 package com.kgu.studywithme.upload.controller;
 
-import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.global.dto.SimpleResponseWrapper;
 import com.kgu.studywithme.upload.controller.dto.request.ImageUploadRequest;
 import com.kgu.studywithme.upload.utils.FileUploader;

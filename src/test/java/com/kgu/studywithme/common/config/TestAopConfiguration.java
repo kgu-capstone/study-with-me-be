@@ -1,8 +1,8 @@
 package com.kgu.studywithme.common.config;
 
-import com.kgu.studywithme.global.annotation.CheckMemberIdentityAspect;
-import com.kgu.studywithme.global.annotation.CheckStudyHostAspect;
-import com.kgu.studywithme.global.annotation.CheckStudyParticipantAspect;
+import com.kgu.studywithme.global.annotation.aop.CheckMemberIdentityAspect;
+import com.kgu.studywithme.global.annotation.aop.CheckStudyHostAspect;
+import com.kgu.studywithme.global.annotation.aop.CheckStudyParticipantAspect;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.service.StudyFindService;
 import com.kgu.studywithme.study.service.StudyValidator;

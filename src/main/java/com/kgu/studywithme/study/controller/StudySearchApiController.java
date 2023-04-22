@@ -1,6 +1,6 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.StudyCategorySearchRequest;
 import com.kgu.studywithme.study.controller.dto.request.StudyRecommendSearchRequest;
 import com.kgu.studywithme.study.service.StudySearchService;

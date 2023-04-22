@@ -4,7 +4,6 @@ import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.week.Week;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +29,6 @@ public class Submit extends BaseEntity {
     @JoinColumn(name = "participant_id", referencedColumnName = "id", nullable = false)
     private Member participant;
 
-    @Builder
     private Submit(Week week, Member participant, Upload upload) {
         this.week = week;
         this.participant = participant;

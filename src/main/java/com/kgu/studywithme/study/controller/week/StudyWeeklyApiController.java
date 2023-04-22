@@ -1,8 +1,8 @@
 package com.kgu.studywithme.study.controller.week;
 
-import com.kgu.studywithme.global.annotation.CheckStudyHost;
-import com.kgu.studywithme.global.annotation.CheckStudyParticipant;
-import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
+import com.kgu.studywithme.global.annotation.aop.CheckStudyHost;
+import com.kgu.studywithme.global.annotation.aop.CheckStudyParticipant;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.controller.dto.request.WeeklyAssignmentSubmitRequest;
 import com.kgu.studywithme.study.service.week.StudyWeeklyService;

@@ -2,7 +2,6 @@ package com.kgu.studywithme.study.domain.week.attachment;
 
 import com.kgu.studywithme.study.domain.week.Week;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +23,6 @@ public class Attachment {
     @JoinColumn(name = "week_id", referencedColumnName = "id", nullable = false)
     private Week week;
 
-    @Builder
     private Attachment(Week week, String link) {
         this.week = week;
         this.link = link;

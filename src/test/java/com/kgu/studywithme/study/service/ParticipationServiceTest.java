@@ -8,10 +8,7 @@ import com.kgu.studywithme.study.event.StudyApprovedEvent;
 import com.kgu.studywithme.study.event.StudyGraduatedEvent;
 import com.kgu.studywithme.study.event.StudyRejectedEvent;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
@@ -77,6 +74,34 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.apply(study.getId(), applier.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_PARTICIPANT.getMessage());
+        }
+
+        @Test
+        @DisplayName("해당 스터디를 졸업했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyGraduate() {
+            // given
+            study.applyParticipation(applier);
+            study.approveParticipation(applier);
+            study.graduateParticipant(applier);
+
+            // when - then
+            assertThatThrownBy(() -> participationService.apply(study.getId(), applier.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
+        }
+
+        @Test
+        @DisplayName("해당 스터디에 대해서 이전에 참여 취소를 했다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyCancel() {
+            // given
+            study.applyParticipation(applier);
+            study.approveParticipation(applier);
+            study.cancelParticipation(applier);
+
+            // when - then
+            assertThatThrownBy(() -> participationService.apply(study.getId(), applier.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL.getMessage());
         }
 
         @Test
@@ -150,6 +175,11 @@ class ParticipationServiceTest extends ServiceTest {
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
+        @AfterEach
+        void restore() {
+            ReflectionTestUtils.setField(study.getCapacity(), "value", SPRING.getCapacity());
+        }
+
         @Test
         @DisplayName("스터디가 종료되었다면 더이상 참여 승인을 할 수 없다")
         void throwExceptionByStudyIsAlreadyClosed() {
@@ -160,6 +190,9 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+
+            int count = (int) events.stream(StudyApprovedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
         
         @Test
@@ -168,6 +201,9 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
+
+            int count = (int) events.stream(StudyApprovedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
         
         @Test
@@ -175,15 +211,18 @@ class ParticipationServiceTest extends ServiceTest {
         void throwExceptionByStudyCapacityIsFull() {
             // given
             study.applyParticipation(applier);
-            makeCapacityFull(study);
+            makeCapacityFull();
             
             // when - then
             assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.STUDY_CAPACITY_IS_FULL.getMessage());
+
+            int count = (int) events.stream(StudyApprovedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
-        private void makeCapacityFull(Study study) {
+        private void makeCapacityFull() {
             ReflectionTestUtils.setField(study.getCapacity(), "value", 1);
         }
 
@@ -216,7 +255,7 @@ class ParticipationServiceTest extends ServiceTest {
         private Member host;
         private Member applier;
         private Study study;
-        private static final String REASON = "나이가 너무 많아요";
+        private static final String REASON = "너무 멀리 사세요.";
 
         @BeforeEach
         void setUp() {
@@ -235,6 +274,9 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+
+            int count = (int) events.stream(StudyRejectedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
         @Test
@@ -243,6 +285,9 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
+
+            int count = (int) events.stream(StudyRejectedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
         @Test
@@ -347,10 +392,28 @@ class ParticipationServiceTest extends ServiceTest {
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
+        @AfterEach
+        void restore() {
+            ReflectionTestUtils.setField(study, "minimumAttendanceForGraduation", SPRING.getMinimumAttendanceForGraduation());
+        }
+
+        @Test
+        @DisplayName("졸업 요건[최소 출석 횟수]를 만족하지 못했다면 졸업을 할 수 없다")
+        void throwExceptionByGraduationRequirementsNotFulfilled() {
+            assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED.getMessage());
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(0);
+        }
+
         @Test
         @DisplayName("스터디가 종료되었다면 졸업을 할 수 없다")
         void throwExceptionByStudyIsAlreadyClosed() {
             // given
+            openGraduationByReflection();
+
             study.applyParticipation(participant);
             study.approveParticipation(participant);
             study.close();
@@ -359,28 +422,47 @@ class ParticipationServiceTest extends ServiceTest {
             assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
         @Test
         @DisplayName("스터디 팀장은 졸업을 할 수 없다")
         void throwExceptionByMemberIsHost() {
+            // given
+            openGraduationByReflection();
+
+            // when - then
             assertThatThrownBy(() -> participationService.graduate(study.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_HOST.getMessage());
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
         @Test
         @DisplayName("참여자가 아니면 졸업을 할 수 없다")
         void throwExceptionByMemberIsNotParticipant() {
+            // given
+            openGraduationByReflection();
+
+            // when - then
             assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
         @Test
         @DisplayName("졸업에 성공한다")
         void success() {
             // given
+            openGraduationByReflection();
+
             study.applyParticipation(participant);
             study.approveParticipation(participant);
 
@@ -400,6 +482,11 @@ class ParticipationServiceTest extends ServiceTest {
 
             int count = (int) events.stream(StudyGraduatedEvent.class).count();
             assertThat(count).isEqualTo(1);
+        }
+
+
+        private void openGraduationByReflection() {
+            ReflectionTestUtils.setField(study, "minimumAttendanceForGraduation", 0);
         }
     }
 

@@ -199,6 +199,47 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
+        @DisplayName("해당 스터디에 대해서 졸업 또는 참여 취소 이력이 존재한다면 다시 참여 신청을 할 수 없다")
+        void throwExceptionByMemberIsAlreadyGraduateOrCancel() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL))
+                    .when(participationService)
+                    .apply(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .post(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Apply/Failure/Case5",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
         @DisplayName("참여 신청에 성공한다")
         void success() throws Exception {
             // given
@@ -1361,6 +1402,47 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
+        @DisplayName("졸업 요건[최소 출석 횟수]를 만족하지 못했다면 졸업을 할 수 없다")
+        void throwExceptionByGraduationRequirementsNotFulfilled() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED))
+                    .when(participationService)
+                    .graduate(anyLong(), anyLong());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Graduate/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
         @DisplayName("스터디가 종료되었다면 졸업을 할 수 없다")
         void throwExceptionByStudyIsAlreadyClosed() throws Exception {
             // given
@@ -1389,7 +1471,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case3",
+                                    "StudyApi/Participation/Graduate/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1430,7 +1512,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case4",
+                                    "StudyApi/Participation/Graduate/Failure/Case5",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1475,6 +1557,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     private ParticipationRejectRequest createParticipationRejectRequest() {
-        return new ParticipationRejectRequest("나이가 너무 많아요");
+        return new ParticipationRejectRequest("너무 멀리 사세요.");
     }
 }

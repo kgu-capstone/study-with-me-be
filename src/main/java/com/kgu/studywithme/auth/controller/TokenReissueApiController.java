@@ -2,8 +2,8 @@ package com.kgu.studywithme.auth.controller;
 
 import com.kgu.studywithme.auth.service.TokenReissueService;
 import com.kgu.studywithme.auth.service.dto.response.TokenResponse;
-import com.kgu.studywithme.global.annotation.ExtractPayload;
-import com.kgu.studywithme.global.annotation.ExtractToken;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

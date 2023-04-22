@@ -1,8 +1,8 @@
 package com.kgu.studywithme.global.config;
 
+import com.kgu.studywithme.auth.utils.ExtractPayloadArgumentResolver;
+import com.kgu.studywithme.auth.utils.ExtractTokenArgumentResolver;
 import com.kgu.studywithme.auth.utils.JwtTokenProvider;
-import com.kgu.studywithme.global.annotation.ExtractPayloadArgumentResolver;
-import com.kgu.studywithme.global.annotation.ExtractTokenArgumentResolver;
 import com.kgu.studywithme.global.interceptor.TokenValidityInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,6 @@
-package com.kgu.studywithme.global.annotation;
+package com.kgu.studywithme.auth.utils;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
-import com.kgu.studywithme.auth.utils.AuthorizationExtractor;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;

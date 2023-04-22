@@ -65,6 +65,7 @@ public class Participants {
     public void apply(Study study, Member member) {
         validateMemberIsNotHost(member);
         validateMemberIsNotApplierOrParticipant(member);
+        validateGraduateOrCancelRecordIsExists(member);
         participants.add(Participant.applyInStudy(study, member));
     }
 
@@ -113,6 +114,18 @@ public class Participants {
         return participants.stream()
                 .filter(participant -> participant.isSameMember(member))
                 .anyMatch(participant -> participant.getStatus() == APPLY || participant.getStatus() == APPROVE);
+    }
+
+    private void validateGraduateOrCancelRecordIsExists(Member member) {
+        if (isAlreadyGraduateOrCancel(member)) {
+            throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_ALREADY_GRADUATE_OR_CANCEL);
+        }
+    }
+
+    private boolean isAlreadyGraduateOrCancel(Member member) {
+        return participants.stream()
+                .filter(participant -> participant.isSameMember(member))
+                .anyMatch(participant -> participant.getStatus() == GRADUATED || participant.getStatus() == CALCEL);
     }
 
     public void validateMemberIsApplier(Member member) {

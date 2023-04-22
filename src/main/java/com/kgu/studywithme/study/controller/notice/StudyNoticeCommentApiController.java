@@ -1,6 +1,6 @@
 package com.kgu.studywithme.study.controller.notice;
 
-import com.kgu.studywithme.global.annotation.ExtractPayload;
+import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.study.controller.dto.request.NoticeCommentRequest;
 import com.kgu.studywithme.study.service.notice.NoticeCommentService;
 import lombok.RequiredArgsConstructor;
