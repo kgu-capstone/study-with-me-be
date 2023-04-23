@@ -135,3 +135,22 @@ include::{snippets}/MemberApi/Information/PeerReview/Success/path-parameters.ado
 HTTP Response
 include::{snippets}/MemberApi/Information/PeerReview/Success/response-body.adoc[]
 include::{snippets}/MemberApi/Information/PeerReview/Success/response-fields.adoc[]
+
+== 사용자 출석률 조회
+=== 1. Authorization Header에 AccessToken이 없으면 사용자 출석률 조회에 실패한다
+HTTP Request
+include::{snippets}/MemberApi/Information/Attendances/Failure/http-request.adoc[]
+include::{snippets}/MemberApi/Information/Attendances/Failure/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/Attendances/Failure/response-body.adoc[]
+
+=== 2. 사용자의 출석률 조회에 성공한다
+HTTP Request
+include::{snippets}/MemberApi/Information/Attendances/Success/http-request.adoc[]
+include::{snippets}/MemberApi/Information/Attendances/Success/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/Attendances/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/Attendances/Success/response-body.adoc[]
+include::{snippets}/MemberApi/Information/Attendances/Success/response-fields.adoc[]

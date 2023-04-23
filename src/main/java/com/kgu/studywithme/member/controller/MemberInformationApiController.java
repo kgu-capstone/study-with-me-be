@@ -3,6 +3,7 @@ package com.kgu.studywithme.member.controller;
 import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.global.annotation.aop.CheckMemberIdentity;
 import com.kgu.studywithme.member.service.MemberInformationService;
+import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
@@ -50,6 +51,12 @@ public class MemberInformationApiController {
     @GetMapping("/reviews")
     public ResponseEntity<PeerReviewAssembler> getReviews(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         PeerReviewAssembler response = memberInformationService.getPeerReviews(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/attendances")
+    public ResponseEntity<AttendanceRatioAssembler> getAttendanceRatio(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
+        AttendanceRatioAssembler response = memberInformationService.getAttendanceRatio(memberId);
         return ResponseEntity.ok(response);
     }
 }
