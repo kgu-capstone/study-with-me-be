@@ -5,9 +5,11 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.member.domain.report.Report;
 import com.kgu.studywithme.member.domain.report.ReportRepository;
+import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
 import com.kgu.studywithme.member.infra.query.dto.response.StudyAttendanceMetadata;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -146,6 +148,70 @@ class MemberSimpleQueryRepositoryTest extends RepositoryTest {
         );
     }
 
+    @Test
+    @DisplayName("참여자의 출석률을 조회한다")
+    void findAttendanceRatioByMemberId() {
+        /* Week 1 */
+        study1.recordAttendance(host, 1, NON_ATTENDANCE);
+        study2.recordAttendance(host, 1, ATTENDANCE);
+        List<AttendanceRatio> result1 = memberRepository.findAttendanceRatioByMemberId(host.getId());
+        assertAll(
+                () -> assertThat(result1).hasSize(4),
+                () -> assertThat(findCountByStatus(result1, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result1, ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result1, LATE)).isEqualTo(0),
+                () -> assertThat(findCountByStatus(result1, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 2 */
+        study1.recordAttendance(host, 2, ATTENDANCE);
+        study2.recordAttendance(host, 2, LATE);
+        List<AttendanceRatio> result2 = memberRepository.findAttendanceRatioByMemberId(host.getId());
+        assertAll(
+                () -> assertThat(result2).hasSize(4),
+                () -> assertThat(findCountByStatus(result2, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result2, ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result2, LATE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result2, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 3 */
+        study1.recordAttendance(host, 3, ATTENDANCE);
+        study2.recordAttendance(host, 3, ATTENDANCE);
+        List<AttendanceRatio> result3 = memberRepository.findAttendanceRatioByMemberId(host.getId());
+        assertAll(
+                () -> assertThat(result3).hasSize(4),
+                () -> assertThat(findCountByStatus(result3, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result3, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result3, LATE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result3, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 4 */
+        study1.recordAttendance(host, 4, LATE);
+        study2.recordAttendance(host, 4, ABSENCE);
+        List<AttendanceRatio> result4 = memberRepository.findAttendanceRatioByMemberId(host.getId());
+        assertAll(
+                () -> assertThat(result4).hasSize(4),
+                () -> assertThat(findCountByStatus(result4, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result4, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result4, LATE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result4, ABSENCE)).isEqualTo(1)
+        );
+
+        /* Week 5 */
+        study1.recordAttendance(host, 5, ABSENCE);
+        study2.recordAttendance(host, 5, NON_ATTENDANCE);
+        List<AttendanceRatio> result5 = memberRepository.findAttendanceRatioByMemberId(host.getId());
+        assertAll(
+                () -> assertThat(result5).hasSize(4),
+                () -> assertThat(findCountByStatus(result5, NON_ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result5, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result5, LATE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result5, ABSENCE)).isEqualTo(2)
+        );
+    }
+
     private void applyAttendance(Study study, Member member, List<Integer> weeks) {
         for (int week : weeks) {
             study.recordAttendance(member, week, ATTENDANCE);
@@ -168,5 +234,13 @@ class MemberSimpleQueryRepositoryTest extends RepositoryTest {
                     () -> assertThat(specificMetadata.week()).isEqualTo(week)
             );
         }
+    }
+
+    private int findCountByStatus(List<AttendanceRatio> attendanceRatios, AttendanceStatus status) {
+        return attendanceRatios.stream()
+                .filter(ratio -> ratio.status() == status)
+                .findFirst()
+                .map(AttendanceRatio::count)
+                .orElse(0);
     }
 }

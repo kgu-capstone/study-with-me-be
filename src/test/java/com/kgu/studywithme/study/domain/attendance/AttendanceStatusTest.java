@@ -3,6 +3,8 @@ package com.kgu.studywithme.study.domain.attendance;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -19,5 +21,12 @@ class AttendanceStatusTest {
                 () -> assertThat(AttendanceStatus.fromDescription("미출결")).isEqualTo(NON_ATTENDANCE),
                 () -> assertThat(AttendanceStatus.fromDescription("????")).isEqualTo(NON_ATTENDANCE)
         );
+    }
+
+    @Test
+    @DisplayName("AttendanceStatus의 Description 목록을 가져온다")
+    void getAttendanceDescriptions() {
+        List<AttendanceStatus> result = AttendanceStatus.getAttendanceStatuses();
+        assertThat(result).containsExactlyInAnyOrder(ATTENDANCE, LATE, ABSENCE, NON_ATTENDANCE);
     }
 }
