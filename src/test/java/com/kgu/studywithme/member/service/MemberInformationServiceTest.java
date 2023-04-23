@@ -4,10 +4,12 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.favorite.domain.Favorite;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.review.PeerReview;
+import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +22,7 @@ import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -132,6 +135,70 @@ class MemberInformationServiceTest extends ServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("참여자의 출석률을 조회한다")
+    void getAttendanceRatio() {
+        /* Week 1 */
+        programming[0].recordAttendance(host, 1, NON_ATTENDANCE);
+        programming[1].recordAttendance(host, 1, ATTENDANCE);
+        List<AttendanceRatio> result1 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertAll(
+                () -> assertThat(result1).hasSize(4),
+                () -> assertThat(findCountByStatus(result1, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result1, ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result1, LATE)).isEqualTo(0),
+                () -> assertThat(findCountByStatus(result1, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 2 */
+        programming[0].recordAttendance(host, 2, ATTENDANCE);
+        programming[1].recordAttendance(host, 2, LATE);
+        List<AttendanceRatio> result2 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertAll(
+                () -> assertThat(result2).hasSize(4),
+                () -> assertThat(findCountByStatus(result2, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result2, ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result2, LATE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result2, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 3 */
+        programming[0].recordAttendance(host, 3, ATTENDANCE);
+        programming[1].recordAttendance(host, 3, ATTENDANCE);
+        List<AttendanceRatio> result3 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertAll(
+                () -> assertThat(result3).hasSize(4),
+                () -> assertThat(findCountByStatus(result3, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result3, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result3, LATE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result3, ABSENCE)).isEqualTo(0)
+        );
+
+        /* Week 4 */
+        programming[0].recordAttendance(host, 4, LATE);
+        programming[1].recordAttendance(host, 4, ABSENCE);
+        List<AttendanceRatio> result4 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertAll(
+                () -> assertThat(result4).hasSize(4),
+                () -> assertThat(findCountByStatus(result4, NON_ATTENDANCE)).isEqualTo(1),
+                () -> assertThat(findCountByStatus(result4, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result4, LATE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result4, ABSENCE)).isEqualTo(1)
+        );
+
+        /* Week 5 */
+        programming[0].recordAttendance(host, 5, ABSENCE);
+        programming[1].recordAttendance(host, 5, NON_ATTENDANCE);
+        List<AttendanceRatio> result5 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertAll(
+                () -> assertThat(result5).hasSize(4),
+                () -> assertThat(findCountByStatus(result5, NON_ATTENDANCE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result5, ATTENDANCE)).isEqualTo(4),
+                () -> assertThat(findCountByStatus(result5, LATE)).isEqualTo(2),
+                () -> assertThat(findCountByStatus(result5, ABSENCE)).isEqualTo(2)
+        );
+    }
+
     private void participateStudy(Member member, Study... studies) {
         for (Study study : studies) {
             study.applyParticipation(member);
@@ -165,5 +232,13 @@ class MemberInformationServiceTest extends ServiceTest {
                     () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName())
             );
         }
+    }
+
+    private int findCountByStatus(List<AttendanceRatio> attendanceRatios, AttendanceStatus status) {
+        return attendanceRatios.stream()
+                .filter(ratio -> ratio.status() == status)
+                .findFirst()
+                .map(AttendanceRatio::count)
+                .orElse(0);
     }
 }

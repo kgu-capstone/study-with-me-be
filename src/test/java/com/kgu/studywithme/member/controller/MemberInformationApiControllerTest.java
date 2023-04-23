@@ -3,6 +3,8 @@ package com.kgu.studywithme.member.controller;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
+import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
@@ -22,6 +24,7 @@ import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -567,6 +570,80 @@ class MemberInformationApiControllerTest extends ControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("사용자 출석률 조회 API [GET /api/members/{memberId}/attendances]")
+    class getAttendanceRatio {
+        private static final String BASE_URL = "/api/members/{memberId}/attendances";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 사용자 출석률 조회에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/Attendances/Failure",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("출석률 조회할 사용자 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("사용자의 출석률 조회에 성공한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(1L);
+
+            AttendanceRatioAssembler response = generateAttendanceRatio();
+            given(memberInformationService.getAttendanceRatio(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/Attendances/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("출석률 조회할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("result[].status").description("출석 상태"),
+                                            fieldWithPath("result[].count").description("출석 횟수")
+                                    )
+                            )
+                    );
+        }
+    }
+
     private MemberInformation generateMemberInformationResponse() {
         Member member = JIWON.toMember();
         ReflectionTestUtils.setField(member, "id", 1L);
@@ -591,5 +668,15 @@ class MemberInformationApiControllerTest extends ControllerTest {
                 "PeerReview4"
         );
         return new PeerReviewAssembler(result);
+    }
+
+    private AttendanceRatioAssembler generateAttendanceRatio() {
+        List<AttendanceRatio> result = List.of(
+                new AttendanceRatio(ATTENDANCE, 14),
+                new AttendanceRatio(LATE, 5),
+                new AttendanceRatio(ABSENCE, 1),
+                new AttendanceRatio(NON_ATTENDANCE, 0)
+        );
+        return new AttendanceRatioAssembler(result);
     }
 }

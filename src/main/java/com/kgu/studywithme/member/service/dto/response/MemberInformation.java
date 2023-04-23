@@ -13,8 +13,15 @@ public record MemberInformation(
 ) {
     public MemberInformation(Member member) {
         this(
-                member.getId(), member.getName(), member.getNicknameValue(), member.getEmailValue(), member.getBirth(),
-                member.getPhone(), member.getGender().getValue(), member.getRegion(), translateInterests(member)
+                member.getId(),
+                member.getName(),
+                member.getNicknameValue(),
+                member.getEmailValue(),
+                member.getBirth(),
+                member.getPhone(),
+                member.getGender().getValue(),
+                member.getRegion(),
+                translateInterests(member)
         );
     }
 

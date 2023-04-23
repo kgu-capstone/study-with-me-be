@@ -1,6 +1,8 @@
 package com.kgu.studywithme.member.infra.query;
 
 import com.kgu.studywithme.member.domain.report.ReportStatus;
+import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
+import com.kgu.studywithme.member.infra.query.dto.response.QAttendanceRatio;
 import com.kgu.studywithme.member.infra.query.dto.response.QStudyAttendanceMetadata;
 import com.kgu.studywithme.member.infra.query.dto.response.StudyAttendanceMetadata;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
@@ -9,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.kgu.studywithme.member.domain.report.QReport.report;
@@ -52,6 +55,37 @@ public class MemberSimpleQueryRepositoryImpl implements MemberSimpleQueryReposit
                         attendance.status.eq(status)
                 )
                 .fetchOne();
+    }
+
+    @Override
+    public List<AttendanceRatio> findAttendanceRatioByMemberId(Long memberId) {
+        List<AttendanceRatio> fetchResult = query
+                .select(new QAttendanceRatio(attendance.status, attendance.count().intValue()))
+                .from(attendance)
+                .where(participantIdEq(memberId))
+                .groupBy(attendance.status)
+                .fetch();
+
+        return includeMissingAttendanceStatuses(fetchResult);
+    }
+
+    private List<AttendanceRatio> includeMissingAttendanceStatuses(List<AttendanceRatio> fetchResult) {
+        List<AttendanceRatio> result = new ArrayList<>();
+
+        for (AttendanceStatus status : AttendanceStatus.getAttendanceStatuses()) {
+            AttendanceRatio specificAttendanceRatio = fetchResult.stream()
+                    .filter(ratio -> ratio.status() == status)
+                    .findFirst()
+                    .orElse(null);
+
+            result.add(
+                    specificAttendanceRatio != null
+                            ? specificAttendanceRatio
+                            : new AttendanceRatio(status, 0)
+            );
+        }
+
+        return result;
     }
 
     private BooleanExpression participantIdEq(Long memberId) {
