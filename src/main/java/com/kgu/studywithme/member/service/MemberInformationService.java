@@ -1,7 +1,10 @@
 package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.member.domain.Member;
+import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.member.domain.review.PeerReviewRepository;
+import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
+import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberInformationService {
     private final MemberFindService memberFindService;
+    private final MemberRepository memberRepository;
     private final StudyRepository studyRepository;
     private final PeerReviewRepository peerReviewRepository;
 
@@ -44,5 +48,10 @@ public class MemberInformationService {
     public PeerReviewAssembler getPeerReviews(Long memberId) {
         List<String> peerReviews = peerReviewRepository.findPeerReviewByMemberId(memberId);
         return new PeerReviewAssembler(peerReviews);
+    }
+
+    public AttendanceRatioAssembler getAttendanceRatio(Long memberId) {
+        List<AttendanceRatio> attendanceRatios = memberRepository.findAttendanceRatioByMemberId(memberId);
+        return new AttendanceRatioAssembler(attendanceRatios);
     }
 }

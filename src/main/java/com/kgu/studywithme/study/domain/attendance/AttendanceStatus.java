@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -21,5 +22,9 @@ public enum AttendanceStatus {
                 .filter(status -> status.getDescription().equals(description))
                 .findFirst()
                 .orElse(NON_ATTENDANCE);
+    }
+
+    public static List<AttendanceStatus> getAttendanceStatuses() {
+        return Arrays.stream(values()).toList();
     }
 }

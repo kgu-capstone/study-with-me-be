@@ -54,16 +54,15 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        int totalCount = query
-                .select(study.id)
+        Long totalCount = query
+                .select(study.id.count())
                 .from(study)
                 .where(
                         categoryEq(condition.category()),
                         studyType(condition.type()),
                         studyLocationEq(condition.province(), condition.city())
                 )
-                .fetch()
-                .size();
+                .fetchOne();
 
         return new SliceImpl<>(result, pageable, validateHasNext(pageable,  result.size(), totalCount));
     }
@@ -92,16 +91,15 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        int totalCount = query
-                .select(study.id)
+        Long totalCount = query
+                .select(study.id.count())
                 .from(study)
                 .where(
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
                         studyLocationEq(condition.province(), condition.city())
                 )
-                .fetch()
-                .size();
+                .fetchOne();
 
         return new SliceImpl<>(result, pageable, validateHasNext(pageable,  result.size(), totalCount));
     }
@@ -128,9 +126,9 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         return orderBy;
     }
 
-    private boolean validateHasNext(Pageable pageable, int contentSize, int totalCount) {
+    private boolean validateHasNext(Pageable pageable, int contentSize, Long totalCount) {
         if (contentSize == pageable.getPageSize()) {
-            return contentSize * (pageable.getPageNumber() + 1) != totalCount;
+            return (long) contentSize * (pageable.getPageNumber() + 1) != totalCount;
         }
 
         return false;
