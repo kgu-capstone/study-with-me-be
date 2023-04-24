@@ -68,7 +68,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .innerJoin(comment.writer, member)
                 .fetch();
 
-        noticeResult.forEach(notice -> notice.setComments(
+        noticeResult.forEach(notice -> notice.applyComments(
                 commentResult.stream()
                         .filter(comment -> comment.getNoticeId().equals(notice.getId()))
                         .toList()

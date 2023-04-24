@@ -146,7 +146,6 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
         applyStudyHashtags(studyIds, result);
         applyStudyFavoriteMarkingMembers(studyIds, result);
-
         return result;
     }
 

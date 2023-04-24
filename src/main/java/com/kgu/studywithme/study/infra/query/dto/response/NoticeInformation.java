@@ -31,7 +31,7 @@ public class NoticeInformation {
         this.writer = new StudyMember(writerId, writerNickname.getValue());
     }
 
-    public void setComments(List<CommentInformation> comments) {
+    public void applyComments(List<CommentInformation> comments) {
         this.comments = comments;
     }
 }
