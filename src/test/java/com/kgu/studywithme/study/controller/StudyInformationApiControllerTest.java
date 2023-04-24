@@ -79,6 +79,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("스터디 카테고리"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("스터디 타입")
                                                     .attributes(constraint("온라인 / 오프라인")),
                                             fieldWithPath("location.province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")

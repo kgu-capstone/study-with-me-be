@@ -6,7 +6,7 @@ import com.kgu.studywithme.study.domain.StudyLocation;
 import java.util.List;
 
 public record StudyInformation(
-        Long id, String name, String description, String category, String type, StudyLocation location, String recruitmentStatus,
+        Long id, String name, String description, String category, String thumbnail, String type, StudyLocation location, String recruitmentStatus,
         int currentMembers, int maxMembers, double averageAge, List<Integer> participantsAges, List<String> hashtags, StudyMember host
 ) {
     public StudyInformation(Study study) {
@@ -15,6 +15,7 @@ public record StudyInformation(
                 study.getNameValue(),
                 study.getDescriptionValue(),
                 study.getCategory().getName(),
+                study.getThumbnail().getImageName(),
                 study.getType().getDescription(),
                 study.getLocation(),
                 study.getRecruitmentStatus().getDescription(),

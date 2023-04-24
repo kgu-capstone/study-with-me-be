@@ -37,7 +37,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findParticipateStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category))
+                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
@@ -49,7 +49,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category))
+                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(participant).on(participant.study.id.eq(study.id))
                 .where(graduateStatus(), graduatedMemberIdEq(memberId))
@@ -60,7 +60,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findFavoriteStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category))
+                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(favorite).on(favorite.studyId.eq(study.id))
                 .where(favorite.memberId.eq(memberId))
