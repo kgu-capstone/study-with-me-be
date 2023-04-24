@@ -21,6 +21,9 @@ public record StudyUpdateRequest (
         @NotNull(message = "카테고리는 필수입니다.")
         Long category,
 
+        @NotBlank(message = "스터디 썸네일은 필수입니다.")
+        String thumbnail,
+
         @ValidStudyType
         @NotBlank(message = "온/오프라인 유무는 필수입니다.")
         String type,

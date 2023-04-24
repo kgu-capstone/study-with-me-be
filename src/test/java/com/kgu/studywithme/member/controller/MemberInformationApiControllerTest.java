@@ -24,6 +24,7 @@ import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -264,7 +265,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("참여중인 스터디명"),
-                                            fieldWithPath("result[].category").description("참여중인 스터디 카테고리")
+                                            fieldWithPath("result[].category").description("참여중인 스터디 카테고리"),
+                                            fieldWithPath("result[].thumbnail").description("참여중인 스터디 썸네일")
                                     )
                             )
                     );
@@ -377,7 +379,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("result[].id").description("졸업한 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("졸업한 스터디명"),
-                                            fieldWithPath("result[].category").description("졸업한 스터디 카테고리")
+                                            fieldWithPath("result[].category").description("졸업한 스터디 카테고리"),
+                                            fieldWithPath("result[].thumbnail").description("졸업한 스터디 썸네일")
                                     )
                             )
                     );
@@ -490,7 +493,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("result[].id").description("찜한 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("찜한 스터디명"),
-                                            fieldWithPath("result[].category").description("찜한 스터디 카테고리")
+                                            fieldWithPath("result[].category").description("찜한 스터디 카테고리"),
+                                            fieldWithPath("result[].thumbnail").description("찜한 스터디 썸네일")
                                     )
                             )
                     );
@@ -652,10 +656,10 @@ class MemberInformationApiControllerTest extends ControllerTest {
 
     private RelatedStudy generateRelatedStudyResponse() {
         List<SimpleStudy> result = List.of(
-                new SimpleStudy(1L, StudyName.from("Spring 스터디"), PROGRAMMING),
-                new SimpleStudy(2L, StudyName.from("JPA 스터디"), PROGRAMMING),
-                new SimpleStudy(3L, StudyName.from("Toss 면접 스터디"), INTERVIEW),
-                new SimpleStudy(4L, StudyName.from("AWS 스터디"), PROGRAMMING)
+                new SimpleStudy(1L, StudyName.from(SPRING.getName()), PROGRAMMING, SPRING.getThumbnail()),
+                new SimpleStudy(2L, StudyName.from(JPA.getName()), PROGRAMMING, JPA.getThumbnail()),
+                new SimpleStudy(3L, StudyName.from(TOSS_INTERVIEW.getName()), INTERVIEW, TOSS_INTERVIEW.getThumbnail()),
+                new SimpleStudy(4L, StudyName.from(AWS.getName()), PROGRAMMING, AWS.getThumbnail())
         );
         return new RelatedStudy(result);
     }

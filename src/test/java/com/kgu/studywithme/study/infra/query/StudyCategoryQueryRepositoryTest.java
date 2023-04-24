@@ -690,6 +690,7 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
                     () -> assertThat(actual.getName()).isEqualTo(expect.getNameValue()),
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expect.getThumbnail().getImageName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(expect.getApproveParticipants().size()),
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),

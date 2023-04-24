@@ -49,6 +49,10 @@ public class Study extends BaseEntity {
     private Category category;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "image", nullable = false)
+    private StudyThumbnail thumbnail;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "study_type", nullable = false, updatable = false)
     private StudyType type;
 
@@ -83,11 +87,12 @@ public class Study extends BaseEntity {
     @OneToMany(mappedBy = "study", cascade = CascadeType.PERSIST)
     private List<Attendance> attendances = new ArrayList<>();
 
-    private Study(Member host, StudyName name, Description description, Capacity capacity, Category category, StudyType type,
-                  StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
+    private Study(Member host, StudyName name, Description description, Capacity capacity, Category category, StudyThumbnail thumbnail,
+                  StudyType type, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.category = category;
+        this.thumbnail = thumbnail;
         this.type = type;
         this.location = location;
         this.recruitmentStatus = IN_PROGRESS;
@@ -100,21 +105,22 @@ public class Study extends BaseEntity {
     }
 
     public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
-                                          StudyType type, int minimumAttendanceForGraduation, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, null, minimumAttendanceForGraduation, hashtags);
+                                          StudyThumbnail thumbnail, StudyType type, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, thumbnail, type, null, minimumAttendanceForGraduation, hashtags);
     }
 
     public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
-                                           StudyType type, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, type, location, minimumAttendanceForGraduation, hashtags);
+                                           StudyThumbnail thumbnail, StudyType type, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, thumbnail, type, location, minimumAttendanceForGraduation, hashtags);
     }
 
-    public void update(StudyName name, Description description, int capacity, Category category, StudyType type, String province, String city,
-                       RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
+    public void update(StudyName name, Description description, int capacity, Category category, StudyThumbnail thumbnail, StudyType type,
+                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.participants.updateCapacity(capacity);
         this.category = category;
+        this.thumbnail = thumbnail;
         this.type = type;
         this.location = (type == OFFLINE) ? StudyLocation.of(province, city) : null;
         this.recruitmentStatus = recruitmentStatus;

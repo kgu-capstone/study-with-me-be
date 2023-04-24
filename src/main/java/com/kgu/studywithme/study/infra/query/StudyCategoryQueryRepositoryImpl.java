@@ -115,7 +115,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
     public static ConstructorExpression<BasicStudy> assembleStudyProjections() {
         return new QBasicStudy(
-                study.id, study.name, study.description, study.category, study.type, study.recruitmentStatus,
+                study.id, study.name, study.description, study.category, study.thumbnail, study.type, study.recruitmentStatus,
                 select(participant.count().intValue())
                         .from(participant)
                         .where(

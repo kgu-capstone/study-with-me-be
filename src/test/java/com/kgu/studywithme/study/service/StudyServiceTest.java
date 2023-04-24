@@ -14,9 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
-import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.fixture.StudyFixture.KAKAO_INTERVIEW;
+import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOfflineStudyUpdateRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOnlineStudyUpdateRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -106,7 +109,7 @@ class StudyServiceTest extends ServiceTest {
         @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
         void throwExceptionByCapacityCannotBeLessThanParticipants() {
-            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(2);
+            StudyUpdateRequest request = createOnlineStudyUpdateRequest(2);
 
             assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
@@ -117,7 +120,7 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("스터디 정보 수정에 성공한다 - 온라인")
         void successOnlineStudyUpdate() {
             // given
-            StudyUpdateRequest request = generateOnlineStudyUpdateRequest(5);
+            StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
 
             // when
             studyService.update(onlineStudy.getId(), host.getId(), request);
@@ -128,6 +131,7 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
                     () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
                     () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
+                    () -> assertThat(findStudy.getThumbnail().getImageName()).isEqualTo(request.thumbnail()),
                     () -> assertThat(findStudy.getType().getBrief()).isEqualTo(request.type()),
                     () -> assertThat(findStudy.getLocation()).isNull(),
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
@@ -141,7 +145,7 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("스터디 정보 수정에 성공한다 - 오프라인")
         void successOfflineStudyUpdate() {
             // given
-            StudyUpdateRequest request = generateOfflineStudyUpdateRequest(5);
+            StudyUpdateRequest request = createOfflineStudyUpdateRequest(5);
 
             // when
             studyService.update(offlineStudy.getId(), host.getId(), request);
@@ -152,6 +156,7 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getNameValue()).isEqualTo(request.name()),
                     () -> assertThat(findStudy.getDescriptionValue()).isEqualTo(request.description()),
                     () -> assertThat(findStudy.getCategory().getId()).isEqualTo(request.category()),
+                    () -> assertThat(findStudy.getThumbnail().getImageName()).isEqualTo(request.thumbnail()),
                     () -> assertThat(findStudy.getType().getBrief()).isEqualTo(request.type()),
                     () -> assertThat(findStudy.getLocation().getProvince()).isEqualTo(request.province()),
                     () -> assertThat(findStudy.getLocation().getCity()).isEqualTo(request.city()),
@@ -161,34 +166,6 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
-    }
-
-    public StudyUpdateRequest generateOnlineStudyUpdateRequest(Integer capacity) {
-        return StudyUpdateRequest.builder()
-                .name(JAPANESE.name())
-                .description(JAPANESE.getDescription())
-                .category(JAPANESE.getCategory().getId())
-                .capacity(capacity)
-                .type(JAPANESE.getType().getBrief())
-                .province(null)
-                .city(null)
-                .recruitmentStatus(true)
-                .hashtags(JAPANESE.getHashtags())
-                .build();
-    }
-
-    public StudyUpdateRequest generateOfflineStudyUpdateRequest(Integer capacity) {
-        return StudyUpdateRequest.builder()
-                .name(GOOGLE_INTERVIEW.name())
-                .description(GOOGLE_INTERVIEW.getDescription())
-                .category(GOOGLE_INTERVIEW.getCategory().getId())
-                .capacity(capacity)
-                .type(GOOGLE_INTERVIEW.getType().getBrief())
-                .province(GOOGLE_INTERVIEW.getLocation().getProvince())
-                .city(GOOGLE_INTERVIEW.getLocation().getCity())
-                .recruitmentStatus(true)
-                .hashtags(GOOGLE_INTERVIEW.getHashtags())
-                .build();
     }
 
     private void beParticipation(Study study, Member... members) {
