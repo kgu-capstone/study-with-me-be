@@ -729,7 +729,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     .build();
             comments.add(comment);
         }
-        notice.setComments(comments);
+        notice.applyComments(comments);
 
         return notice;
     }

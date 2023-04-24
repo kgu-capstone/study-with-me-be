@@ -4,6 +4,7 @@ import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.favorite.domain.Favorite;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.StudyType;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.service.dto.response.DefaultStudyResponse;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
@@ -37,8 +38,8 @@ class StudySearchServiceTest extends ServiceTest {
     private final Study[] programming = new Study[12];
 
     private static final String TOTAL = null;
-    private static final String ONLINE = "online";
-    private static final String OFFLINE = "offline";
+    private static final String ONLINE = StudyType.ONLINE.getBrief();
+    private static final String OFFLINE = StudyType.OFFLINE.getBrief();
     private static final Pageable PAGE_REQUEST_1 = getDefaultPageRequest(0);
     private static final Pageable PAGE_REQUEST_2 = getDefaultPageRequest(1);
     private static final Pageable PAGE_REQUEST_3 = getDefaultPageRequest(2);
@@ -209,9 +210,8 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(1), // 스터디 팀장만 참여중
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
-                    () -> assertThat(actual.getFavoriteCount()).isEqualTo(1), // 스터디 팀장만 찜
-                    () -> assertThat(actual.getReviewCount()).isEqualTo(0),
-                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags())
+                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),
+                    () -> assertThat(actual.getFavoriteMarkingMembers()).containsExactlyInAnyOrder(host.getId())
             );
         }
     }

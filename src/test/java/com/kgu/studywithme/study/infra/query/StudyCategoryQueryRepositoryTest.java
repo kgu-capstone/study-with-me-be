@@ -7,6 +7,7 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.StudyType;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
 import com.kgu.studywithme.study.utils.StudyRecommendCondition;
@@ -43,8 +44,8 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
     private FavoriteRepository favoriteRepository;
 
     private static final String TOTAL = null;
-    private static final String ONLINE = "online";
-    private static final String OFFLINE = "offline";
+    private static final String ONLINE = StudyType.ONLINE.getBrief();
+    private static final String OFFLINE = StudyType.OFFLINE.getBrief();
     private static final Pageable PAGE_REQUEST_1 = getDefaultPageRequest(0);
     private static final Pageable PAGE_REQUEST_2 = getDefaultPageRequest(1);
     private static final Pageable PAGE_REQUEST_3 = getDefaultPageRequest(2);
@@ -112,36 +113,54 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
-            List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[1], programming[0]);
             assertThat(result2.hasNext()).isFalse();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[1], programming[0]),
+                    List.of(List.of(), List.of())
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result3 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect3 = List.of(programming[6], programming[2]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(programming[6], programming[2]),
+                    List.of(List.of(), List.of())
+            );
 
             Slice<BasicStudy> result4 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect5 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
             assertThat(result5.hasNext()).isTrue();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect6 = List.of(programming[3], programming[2], programming[1], programming[0]);
             assertThat(result6.hasNext()).isFalse();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[3], programming[2], programming[1], programming[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of())
+            );
         }
 
         @Test
@@ -161,10 +180,21 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             assertThat(result2.hasNext()).isFalse();
             assertThat(result3.hasNext()).isFalse();
 
-            List<Study> expect = List.of(interview[3], interview[2], interview[1]);
-            assertThatStudiesMatch(result1.getContent(), expect);
-            assertThatStudiesMatch(result2.getContent(), expect);
-            assertThatStudiesMatch(result3.getContent(), expect);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(interview[3], interview[2], interview[1]),
+                    List.of(List.of(), List.of(), List.of())
+            );
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(interview[3], interview[2], interview[1]),
+                    List.of(List.of(), List.of(), List.of())
+            );
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(interview[3], interview[2], interview[1]),
+                    List.of(List.of(), List.of(), List.of())
+            );
         }
 
         @Test
@@ -178,36 +208,83 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
-            List<Study> expect1 = List.of(programming[9], programming[3], programming[5], programming[8], programming[7], programming[0], programming[11], programming[10]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[9], programming[3], programming[5], programming[8], programming[7], programming[0], programming[11], programming[10]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7], member[8]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3])
+                    )
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[1], programming[4]);
             assertThat(result2.hasNext()).isFalse();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[1], programming[4]),
+                    List.of(
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0])
+                    )
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result3 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect3 = List.of(programming[2], programming[6]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(programming[2], programming[6]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6])
+                    )
+            );
 
             Slice<BasicStudy> result4 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect5 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]);
             assertThat(result5.hasNext()).isTrue();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7], member[8]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4])
+                    )
+            );
 
             Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect6 = List.of(programming[11], programming[10], programming[1], programming[4]);
             assertThat(result6.hasNext()).isFalse();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[11], programming[10], programming[1], programming[4]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0])
+                    )
+            );
         }
 
         @Test
@@ -221,36 +298,54 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
-            List<Study> expect1 = List.of(programming[9], programming[3], programming[5], programming[8], programming[7], programming[0], programming[11], programming[10]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[9], programming[3], programming[5], programming[8], programming[7], programming[0], programming[11], programming[10]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByCategory(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[1], programming[4]);
             assertThat(result2.hasNext()).isFalse();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[1], programming[4]),
+                    List.of(List.of(), List.of())
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result3 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect3 = List.of(programming[2], programming[6]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(programming[2], programming[6]),
+                    List.of(List.of(), List.of())
+            );
 
             Slice<BasicStudy> result4 = studyRepository.findStudyByCategory(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect4 = List.of();
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result5 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect5 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]);
             assertThat(result5.hasNext()).isTrue();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(programming[9], programming[3], programming[2], programming[6], programming[5], programming[8], programming[7], programming[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result6 = studyRepository.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect6 = List.of(programming[11], programming[10], programming[1], programming[4]);
             assertThat(result6.hasNext()).isFalse();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[11], programming[10], programming[1], programming[4]),
+                    List.of(List.of(), List.of(), List.of(), List.of())
+            );
         }
     }
 
@@ -268,46 +363,70 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
-            List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[1], programming[0], language[6], language[5], language[4], language[3], language[2], language[1]);
             assertThat(result2.hasNext()).isTrue();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[1], programming[0], language[6], language[5], language[4], language[3], language[2], language[1]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result3 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_3);
-            List<Study> expect3 = List.of(language[0]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(language[0]),
+                    List.of(List.of())
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result4 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect4 = List.of(programming[6], programming[2], interview[4], interview[3], interview[2], interview[1], interview[0]);
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(programming[6], programming[2], interview[4], interview[3], interview[2], interview[1], interview[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result5 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect6 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
             assertThat(result6.hasNext()).isTrue();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect7 = List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1]);
             assertThat(result7.hasNext()).isTrue();
-            assertThatStudiesMatch(result7.getContent(), expect7);
+            assertThatStudiesMatch(
+                    result7.getContent(),
+                    List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
-            List<Study> expect8 = List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0]);
             assertThat(result8.hasNext()).isFalse();
-            assertThatStudiesMatch(result8.getContent(), expect8);
+            assertThatStudiesMatch(
+                    result8.getContent(),
+                    List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
         }
 
         @Test
@@ -327,10 +446,21 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             assertThat(result2.hasNext()).isFalse();
             assertThat(result3.hasNext()).isFalse();
 
-            List<Study> expect = List.of(programming[6], programming[2], interview[4], interview[0]);
-            assertThatStudiesMatch(result1.getContent(), expect);
-            assertThatStudiesMatch(result2.getContent(), expect);
-            assertThatStudiesMatch(result3.getContent(), expect);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[6], programming[2], interview[4], interview[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of())
+            );
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[6], programming[2], interview[4], interview[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of())
+            );
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(programming[6], programming[2], interview[4], interview[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of())
+            );
         }
 
         @Test
@@ -344,46 +474,123 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
-            List<Study> expect1 = List.of(programming[9], programming[3], programming[5], language[0], programming[8], programming[7], programming[0], language[5]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[9], programming[3], programming[5], language[0], programming[8], programming[7], programming[0], language[5]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7], member[8]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4])
+                    )
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[11], programming[10], language[3], programming[1], language[6], language[2], language[1], programming[4]);
             assertThat(result2.hasNext()).isTrue();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[11], programming[10], language[3], programming[1], language[6], language[2], language[1], programming[4]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0])
+                    )
+            );
 
             Slice<BasicStudy> result3 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_3);
-            List<Study> expect3 = List.of(language[4]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(language[4]),
+                    List.of(List.of())
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result4 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect4 = List.of(programming[2], programming[6], interview[3], interview[4], interview[1], interview[2], interview[0]);
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(programming[2], programming[6], interview[3], interview[4], interview[1], interview[2], interview[0]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1]),
+                            List.of(member[0])
+                    )
+            );
 
             Slice<BasicStudy> result5 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect6 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]);
             assertThat(result6.hasNext()).isTrue();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7], member[8]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6], member[7]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5], member[6]),
+                            List.of(member[0], member[1], member[2], member[3], member[4], member[5])
+                    )
+            );
 
             Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect7 = List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]);
             assertThat(result7.hasNext()).isTrue();
-            assertThatStudiesMatch(result7.getContent(), expect7);
+            assertThatStudiesMatch(
+                    result7.getContent(),
+                    List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]),
+                    List.of(
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3], member[4]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3]),
+                            List.of(member[0], member[1], member[2], member[3])
+                    )
+            );
 
             Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
-            List<Study> expect8 = List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]);
             assertThat(result8.hasNext()).isFalse();
-            assertThatStudiesMatch(result8.getContent(), expect8);
+            assertThatStudiesMatch(
+                    result8.getContent(),
+                    List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]),
+                    List.of(
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1], member[2]),
+                            List.of(member[0], member[1]),
+                            List.of(member[0]),
+                            List.of(member[0]),
+                            List.of()
+                    )
+            );
         }
 
         @Test
@@ -397,57 +604,86 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
 
             /* 온라인 스터디 */
             Slice<BasicStudy> result1 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
-            System.out.println("result -> " + result1.getContent().stream().map(BasicStudy::getReviewCount).toList());
-            List<Study> expect1 = List.of(programming[9], programming[3], programming[5], language[0], programming[8], programming[7], programming[0], language[5]);
             assertThat(result1.hasNext()).isTrue();
-            assertThatStudiesMatch(result1.getContent(), expect1);
+            assertThatStudiesMatch(
+                    result1.getContent(),
+                    List.of(programming[9], programming[3], programming[5], language[0], programming[8], programming[7], programming[0], language[5]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result2 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_2);
-            List<Study> expect2 = List.of(programming[11], programming[10], language[3], programming[1], language[6], language[2], language[1], programming[4]);
             assertThat(result2.hasNext()).isTrue();
-            assertThatStudiesMatch(result2.getContent(), expect2);
+            assertThatStudiesMatch(
+                    result2.getContent(),
+                    List.of(programming[11], programming[10], language[3], programming[1], language[6], language[2], language[1], programming[4]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result3 = studyRepository.findStudyByRecommend(onlineCondition, PAGE_REQUEST_3);
-            List<Study> expect3 = List.of(language[4]);
             assertThat(result3.hasNext()).isFalse();
-            assertThatStudiesMatch(result3.getContent(), expect3);
+            assertThatStudiesMatch(
+                    result3.getContent(),
+                    List.of(language[4]),
+                    List.of(List.of())
+            );
 
             /* 오프라인 스터디 */
             Slice<BasicStudy> result4 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_1);
-            List<Study> expect4 = List.of(programming[2], programming[6], interview[3], interview[4], interview[1], interview[2], interview[0]);
             assertThat(result4.hasNext()).isFalse();
-            assertThatStudiesMatch(result4.getContent(), expect4);
+            assertThatStudiesMatch(
+                    result4.getContent(),
+                    List.of(programming[2], programming[6], interview[3], interview[4], interview[1], interview[2], interview[0]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result5 = studyRepository.findStudyByRecommend(offlineCondition, PAGE_REQUEST_2);
-            List<Study> expect5 = List.of();
             assertThat(result5.hasNext()).isFalse();
-            assertThatStudiesMatch(result5.getContent(), expect5);
+            assertThatStudiesMatch(
+                    result5.getContent(),
+                    List.of(),
+                    List.of()
+            );
 
             /* 온라인 + 오프라인 통합 */
             Slice<BasicStudy> result6 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
-            List<Study> expect6 = List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]);
             assertThat(result6.hasNext()).isTrue();
-            assertThatStudiesMatch(result6.getContent(), expect6);
+            assertThatStudiesMatch(
+                    result6.getContent(),
+                    List.of(programming[9], programming[3], programming[2], programming[6], programming[5], interview[3], language[0], programming[8]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result7 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
-            List<Study> expect7 = List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]);
             assertThat(result7.hasNext()).isTrue();
-            assertThatStudiesMatch(result7.getContent(), expect7);
+            assertThatStudiesMatch(
+                    result7.getContent(),
+                    List.of(programming[7], programming[0], language[5], programming[11], programming[10], interview[4], interview[1], language[3]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
 
             Slice<BasicStudy> result8 = studyRepository.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
-            List<Study> expect8 = List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]);
             assertThat(result8.hasNext()).isFalse();
-            assertThatStudiesMatch(result8.getContent(), expect8);
+            assertThatStudiesMatch(
+                    result8.getContent(),
+                    List.of(programming[1], language[6], language[2], language[1], interview[2], programming[4], interview[0], language[4]),
+                    List.of(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of())
+            );
         }
     }
 
-    private void assertThatStudiesMatch(List<BasicStudy> actuals, List<Study> studies) {
+    private void assertThatStudiesMatch(List<BasicStudy> actuals,
+                                        List<Study> studies,
+                                        List<List<Member>> favoriteMarkingMembers) {
         int expectSize = studies.size();
         assertThat(actuals).hasSize(expectSize);
 
         for (int i = 0; i < expectSize; i++) {
             BasicStudy actual = actuals.get(i);
             Study expect = studies.get(i);
+            List<Long> favoriteMarkingMemberIds = favoriteMarkingMembers.get(i)
+                    .stream()
+                    .map(Member::getId)
+                    .toList();
 
             assertAll(
                     () -> assertThat(actual.getId()).isEqualTo(expect.getId()),
@@ -456,8 +692,8 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(expect.getApproveParticipants().size()),
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
-                    () -> assertThat(actual.getFavoriteCount()).isEqualTo(expect.getApproveParticipants().size() - 1), // 팀장 제외 스터디 참여자들은 전부 찜
-                    () -> assertThat(actual.getReviewCount()).isEqualTo(expect.getReviews().size())
+                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),
+                    () -> assertThat(actual.getFavoriteMarkingMembers()).containsExactlyInAnyOrderElementsOf(favoriteMarkingMemberIds)
             );
         }
     }
@@ -490,7 +726,7 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         registerWithFavorite(language[1], member[0], member[1], member[2]);
         registerWithFavorite(language[2], member[0], member[1], member[2]);
         registerWithFavorite(language[3], member[0], member[1], member[2], member[3]);
-        registerWithFavorite(language[4], member[0]);
+        registerWithFavorite(language[4]);
         registerWithFavorite(language[5], member[0], member[1], member[2], member[3], member[4]);
         registerWithFavorite(language[6], member[0], member[1], member[2]);
 
@@ -520,7 +756,7 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         registerWithReview(language[1], member[0], member[1], member[2]);
         registerWithReview(language[2], member[0], member[1], member[2]);
         registerWithReview(language[3], member[0], member[1], member[2], member[3]);
-        registerWithReview(language[4], member[0]);
+        registerWithReview(language[4]);
         registerWithReview(language[5], member[0], member[1], member[2], member[3], member[4]);
         registerWithReview(language[6], member[0], member[1], member[2]);
         registerWithReview(interview[0], member[0]); // Offline
