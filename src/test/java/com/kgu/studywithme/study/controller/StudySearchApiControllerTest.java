@@ -82,7 +82,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
+                                                    .attributes(constraint("null(온 + 오프) / on / off")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),
@@ -101,9 +101,8 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             fieldWithPath("studyList[].currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("studyList[].maxMembers").description("스터디 최대 인원"),
                                             fieldWithPath("studyList[].registerDate").description("스터디 생성 날짜"),
-                                            fieldWithPath("studyList[].favoriteCount").description("스터디 찜 횟수"),
-                                            fieldWithPath("studyList[].reviewCount").description("스터디 리뷰 횟수"),
                                             fieldWithPath("studyList[].hashtags[]").description("스터디 해시태그"),
+                                            fieldWithPath("studyList[].favoriteMarkingMembers[]").description("스터디 찜 사용자 ID(PK) 리스트"),
                                             fieldWithPath("hasNext").description("다음 스크롤 존재 여부")
                                                     .attributes(constraint("false면 무한 스크롤 종료"))
                                     )
@@ -151,7 +150,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
+                                                    .attributes(constraint("null(온 + 오프) / on / off")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),
@@ -198,7 +197,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
+                                                    .attributes(constraint("null(온 + 오프) / on / off")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),
@@ -217,9 +216,8 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             fieldWithPath("studyList[].currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("studyList[].maxMembers").description("스터디 최대 인원"),
                                             fieldWithPath("studyList[].registerDate").description("스터디 생성 날짜"),
-                                            fieldWithPath("studyList[].favoriteCount").description("스터디 찜 횟수"),
-                                            fieldWithPath("studyList[].reviewCount").description("스터디 리뷰 횟수"),
                                             fieldWithPath("studyList[].hashtags[]").description("스터디 해시태그"),
+                                            fieldWithPath("studyList[].favoriteMarkingMembers[]").description("스터디 찜 사용자 ID(PK) 리스트"),
                                             fieldWithPath("hasNext").description("다음 스크롤 존재 여부")
                                                     .attributes(constraint("false면 무한 스크롤 종료"))
                                     )
@@ -254,7 +252,7 @@ class StudySearchApiControllerTest extends ControllerTest {
         return result;
     }
 
-    private static BasicStudy buildStudy(StudyFixture study, long index) {
+    private BasicStudy buildStudy(StudyFixture study, long index) {
         return BasicStudy.builder()
                 .id(index)
                 .name(study.getName())
@@ -262,16 +260,29 @@ class StudySearchApiControllerTest extends ControllerTest {
                 .category(study.getCategory().getName())
                 .type(study.getType().getDescription())
                 .recruitmentStatus(IN_PROGRESS.getDescription())
-                .currentMembers(getRandomNumber())
+                .currentMembers(getRandomNumberWithRange7())
                 .maxMembers(study.getCapacity())
                 .registerDate(LocalDateTime.now().minusDays(index))
-                .favoriteCount(getRandomNumber())
-                .reviewCount(getRandomNumber())
                 .hashtags(new ArrayList<>(study.getHashtags()))
+                .favoriteMarkingMembers(generateRandomList(getRandomNumberWithRange7()))
                 .build();
     }
 
-    private static int getRandomNumber() {
+    private int getRandomNumberWithRange7() {
         return (int) (Math.random() * 7);
+    }
+
+    private List<Long> generateRandomList(int count) {
+        List<Long> result = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            result.add(getRandomNumberWithRange1000());
+        }
+
+        return result;
+    }
+
+    private Long getRandomNumberWithRange1000() {
+        return (long) (Math.random() * 100 + 1);
     }
 }

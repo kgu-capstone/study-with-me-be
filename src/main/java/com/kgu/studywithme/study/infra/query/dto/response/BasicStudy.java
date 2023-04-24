@@ -24,32 +24,32 @@ public class BasicStudy {
     private final String category;
     private final String type;
     private final String recruitmentStatus;
-    private final long currentMembers;
+    private final int currentMembers;
     private final int maxMembers;
     private final LocalDateTime registerDate;
-    private final long favoriteCount;
-    private final long reviewCount;
     private List<String> hashtags;
+    private List<Long> favoriteMarkingMembers;
 
     @QueryProjection
     public BasicStudy(Long id, StudyName name, Description description,
                       Category category, StudyType type, RecruitmentStatus recruitmentStatus,
-                      long currentMembers, Capacity capacity, LocalDateTime registerDate,
-                      long favoriteCount, long reviewCount) {
+                      int currentMembers, Capacity capacity, LocalDateTime registerDate) {
         this.id = id;
         this.name = name.getValue();
         this.description = description.getValue();
         this.category = category.getName();
         this.type = type.getDescription();
         this.recruitmentStatus = recruitmentStatus.getDescription();
-        this.currentMembers = currentMembers;
+        this.currentMembers = currentMembers + 1;
         this.maxMembers = capacity.getValue();
         this.registerDate = registerDate;
-        this.favoriteCount = favoriteCount;
-        this.reviewCount = reviewCount;
     }
 
-    public void setHashtags(List<String> hashtags) {
+    public void applyHashtags(List<String> hashtags) {
         this.hashtags = hashtags;
+    }
+
+    public void applyFavoriteMarkingMembers(List<Long> favoriteMarkingMembers) {
+        this.favoriteMarkingMembers = favoriteMarkingMembers;
     }
 }

@@ -1,13 +1,17 @@
 package com.kgu.studywithme.study.infra.query;
 
 import com.kgu.studywithme.category.domain.Category;
+import com.kgu.studywithme.favorite.domain.Favorite;
+import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicStudy;
+import com.kgu.studywithme.study.infra.query.dto.response.QBasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.QBasicStudy;
 import com.kgu.studywithme.study.utils.StudyCategoryCondition;
 import com.kgu.studywithme.study.utils.StudyRecommendCondition;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +28,12 @@ import static com.kgu.studywithme.member.domain.interest.QInterest.interest;
 import static com.kgu.studywithme.study.domain.QStudy.study;
 import static com.kgu.studywithme.study.domain.StudyType.OFFLINE;
 import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
+import static com.kgu.studywithme.study.domain.hashtag.QHashtag.hashtag;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPROVE;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 import static com.kgu.studywithme.study.domain.review.QReview.review;
-import static com.kgu.studywithme.study.utils.PagingConstants.SORT_DATE;
 import static com.kgu.studywithme.study.utils.PagingConstants.SORT_FAVORITE;
+import static com.kgu.studywithme.study.utils.PagingConstants.SORT_REVIEW;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @Transactional(readOnly = true)
@@ -38,29 +43,29 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
     @Override
     public Slice<BasicStudy> findStudyByCategory(StudyCategoryCondition condition, Pageable pageable) {
-        List<BasicStudy> result = query
+        JPAQuery<BasicStudy> fetchQuery = query
                 .select(assembleStudyProjections())
                 .from(study)
-                .leftJoin(favorite).on(favorite.studyId.eq(study.id))
-                .leftJoin(review).on(review.study.id.eq(study.id))
                 .where(
                         categoryEq(condition.category()),
                         studyType(condition.type()),
-                        studyLocationEq(condition.province(), condition.city())
+                        studyLocationProvinceEq(condition.province()),
+                        studyLocationCityEq(condition.city())
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .limit(pageable.getPageSize());
 
+        List<BasicStudy> result = makeFetchQueryResult(fetchQuery, condition.sort());
         Long totalCount = query
                 .select(study.id.count())
                 .from(study)
                 .where(
                         categoryEq(condition.category()),
                         studyType(condition.type()),
-                        studyLocationEq(condition.province(), condition.city())
+                        studyLocationProvinceEq(condition.province()),
+                        studyLocationCityEq(condition.city())
                 )
                 .fetchOne();
 
@@ -75,29 +80,33 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 .where(interest.member.id.eq(condition.memberId()))
                 .fetch();
 
-        List<BasicStudy> result = query
+        JPAQuery<BasicStudy> fetchQuery = query
                 .select(assembleStudyProjections())
                 .from(study)
-                .leftJoin(favorite).on(favorite.studyId.eq(study.id))
-                .leftJoin(review).on(review.study.id.eq(study.id))
+                .leftJoin(participant).on(
+                        participant.study.id.eq(study.id),
+                        participant.status.eq(APPROVE)
+                )
                 .where(
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
-                        studyLocationEq(condition.province(), condition.city())
+                        studyLocationProvinceEq(condition.province()),
+                        studyLocationCityEq(condition.city())
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .limit(pageable.getPageSize());
 
+        List<BasicStudy> result = makeFetchQueryResult(fetchQuery, condition.sort());
         Long totalCount = query
                 .select(study.id.count())
                 .from(study)
                 .where(
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
-                        studyLocationEq(condition.province(), condition.city())
+                        studyLocationProvinceEq(condition.province()),
+                        studyLocationCityEq(condition.city())
                 )
                 .fetchOne();
 
@@ -107,10 +116,13 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
     public static ConstructorExpression<BasicStudy> assembleStudyProjections() {
         return new QBasicStudy(
                 study.id, study.name, study.description, study.category, study.type, study.recruitmentStatus,
-                select(participant.count().add(1))
+                select(participant.count().intValue())
                         .from(participant)
-                        .where(participant.study.id.eq(study.id).and(participant.status.eq(APPROVE))),
-                study.participants.capacity, study.createdAt, favorite.count(), review.count()
+                        .where(
+                                participant.study.id.eq(study.id),
+                                participant.status.eq(APPROVE)
+                        ),
+                study.participants.capacity, study.createdAt
         );
     }
 
@@ -118,12 +130,73 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
         List<OrderSpecifier<?>> orderBy = new LinkedList<>();
 
         switch (sort) {
-            case SORT_DATE -> orderBy.add(study.id.desc()); // 최신순
-            case SORT_FAVORITE -> orderBy.addAll(List.of(favorite.count().desc(), study.id.desc())); // 찜 많은 순
-            default -> orderBy.addAll(List.of(review.count().desc(), study.id.desc())); // 리뷰 많은 순
+            case SORT_FAVORITE -> orderBy.addAll(List.of(favorite.count().desc(), study.id.desc()));
+            case SORT_REVIEW -> orderBy.addAll(List.of(review.count().desc(), study.id.desc()));
+            default -> orderBy.add(study.id.desc());
         }
 
         return orderBy;
+    }
+
+    private List<BasicStudy> makeFetchQueryResult(JPAQuery<BasicStudy> fetchQuery, String sort) {
+        List<BasicStudy> result = addJoinBySortOption(fetchQuery, sort);
+        List<Long> studyIds = result.stream()
+                .map(BasicStudy::getId)
+                .toList();
+
+        applyStudyHashtags(studyIds, result);
+        applyStudyFavoriteMarkingMembers(studyIds, result);
+        return result;
+    }
+
+    private List<BasicStudy> addJoinBySortOption(JPAQuery<BasicStudy> fetchQuery, String sort) {
+        return switch (sort) {
+            case SORT_FAVORITE -> fetchQuery
+                    .leftJoin(favorite).on(favorite.studyId.eq(study.id))
+                    .fetch();
+            case SORT_REVIEW -> fetchQuery
+                    .leftJoin(review).on(review.study.id.eq(study.id))
+                    .fetch();
+            default -> fetchQuery.fetch();
+        };
+    }
+
+    private void applyStudyHashtags(List<Long> studyIds, List<BasicStudy> result) {
+        List<BasicHashtag> hashtags = query
+                .select(new QBasicHashtag(study.id, hashtag.name))
+                .from(hashtag)
+                .innerJoin(study).on(study.id.eq(hashtag.study.id))
+                .where(study.id.in(studyIds))
+                .fetch();
+
+        result.forEach(study -> study.applyHashtags(collectHashtags(hashtags, study)));
+    }
+
+    private List<String> collectHashtags(List<BasicHashtag> hashtags, BasicStudy study) {
+        return hashtags
+                .stream()
+                .filter(hashtag -> hashtag.studyId().equals(study.getId()))
+                .map(BasicHashtag::name)
+                .toList();
+    }
+
+    private void applyStudyFavoriteMarkingMembers(List<Long> studyIds, List<BasicStudy> result) {
+        List<Favorite> favorites = query
+                .select(favorite)
+                .from(favorite)
+                .where(favorite.studyId.in(studyIds))
+                .fetch();
+
+        result.forEach(study -> study.applyFavoriteMarkingMembers(collectFavoriteMarkingMembers(favorites, study)));
+    }
+
+    private List<Long> collectFavoriteMarkingMembers(List<Favorite> favorites, BasicStudy study) {
+        return favorites
+                .stream()
+                .filter(favorite -> favorite.getStudyId().equals(study.getId()))
+                .map(Favorite::getMemberId)
+                .toList();
+
     }
 
     private boolean validateHasNext(Pageable pageable, int contentSize, Long totalCount) {
@@ -139,30 +212,26 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
     }
 
     private BooleanExpression studyType(String type) {
-        if (type == null) {
+        if (!hasText(type)) {
             return null;
         }
 
-        return "online".equalsIgnoreCase(type) ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
+        return ONLINE.getBrief().equalsIgnoreCase(type) ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
     }
 
     private BooleanExpression studyCategoryIn(List<Category> memberInterests) {
         return (memberInterests != null) ? study.category.in(memberInterests) : null;
     }
 
-    private BooleanExpression studyLocationEq(String province, String city) {
-        if (isEmpty(province) && isEmpty(city)) {
-            return null;
-        } else if (isEmpty(province)) {
-            return study.location.city.eq(city);
-        } else if (isEmpty(city)) {
-            return study.location.province.eq(province);
-        } else {
-            return study.location.province.eq(province).and(study.location.city.eq(city));
-        }
+    private BooleanExpression studyLocationProvinceEq(String province) {
+        return hasText(province) ? study.location.province.eq(province) : null;
     }
 
-    private boolean isEmpty(String str) {
-        return !StringUtils.hasText(str);
+    private BooleanExpression studyLocationCityEq(String city) {
+        return hasText(city) ? study.location.city.eq(city) : null;
+    }
+
+    private boolean hasText(String str) {
+        return StringUtils.hasText(str);
     }
 }
