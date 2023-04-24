@@ -64,6 +64,7 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.name()).isEqualTo(study.getNameValue()),
                 () -> assertThat(information.description()).isEqualTo(study.getDescriptionValue()),
                 () -> assertThat(information.category()).isEqualTo(study.getCategory().getName()),
+                () -> assertThat(information.thumbnail()).isEqualTo(study.getThumbnail().getImageName()),
                 () -> assertThat(information.type()).isEqualTo(study.getType().getDescription()),
                 () -> assertThat(information.location()).isNull(),
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),

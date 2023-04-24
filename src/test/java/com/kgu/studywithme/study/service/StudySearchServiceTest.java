@@ -88,36 +88,48 @@ class StudySearchServiceTest extends ServiceTest {
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByCategory(onlineCondition, PAGE_REQUEST_1);
-        List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
         assertThat(result1.hasNext()).isTrue();
-        assertThatStudiesMatch(result1, expect1);
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3])
+        );
 
         DefaultStudyResponse result2 = studySearchService.findStudyByCategory(onlineCondition, PAGE_REQUEST_2);
-        List<Study> expect2 = List.of(programming[1], programming[0]);
         assertThat(result2.hasNext()).isFalse();
-        assertThatStudiesMatch(result2, expect2);
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[1], programming[0])
+        );
 
         /* 오프라인 스터디 */
         DefaultStudyResponse result3 = studySearchService.findStudyByCategory(offlineCondition, PAGE_REQUEST_1);
-        List<Study> expect3 = List.of(programming[6], programming[2]);
         assertThat(result3.hasNext()).isFalse();
-        assertThatStudiesMatch(result3, expect3);
+        assertThatStudiesMatch(
+                result3,
+                List.of(programming[6], programming[2])
+        );
 
         DefaultStudyResponse result4 = studySearchService.findStudyByCategory(offlineCondition, PAGE_REQUEST_2);
-        List<Study> expect4 = List.of();
         assertThat(result4.hasNext()).isFalse();
-        assertThatStudiesMatch(result4, expect4);
+        assertThatStudiesMatch(
+                result4,
+                List.of()
+        );
 
         /* 온라인 + 오프라인 통합 */
         DefaultStudyResponse result5 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
-        List<Study> expect5 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
         assertThat(result5.hasNext()).isTrue();
-        assertThatStudiesMatch(result5, expect5);
+        assertThatStudiesMatch(
+                result5,
+                List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4])
+        );
 
         DefaultStudyResponse result6 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
-        List<Study> expect6 = List.of(programming[3], programming[2], programming[1], programming[0]);
         assertThat(result6.hasNext()).isFalse();
-        assertThatStudiesMatch(result6, expect6);
+        assertThatStudiesMatch(
+                result6,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
     }
 
     @Test
@@ -131,46 +143,62 @@ class StudySearchServiceTest extends ServiceTest {
 
         /* 온라인 스터디 */
         DefaultStudyResponse result1 = studySearchService.findStudyByRecommend(onlineCondition, PAGE_REQUEST_1);
-        List<Study> expect1 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3]);
         assertThat(result1.hasNext()).isTrue();
-        assertThatStudiesMatch(result1, expect1);
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[5], programming[4], programming[3])
+        );
 
         DefaultStudyResponse result2 = studySearchService.findStudyByRecommend(onlineCondition, PAGE_REQUEST_2);
-        List<Study> expect2 = List.of(programming[1], programming[0], language[6], language[5], language[4], language[3], language[2], language[1]);
         assertThat(result2.hasNext()).isTrue();
-        assertThatStudiesMatch(result2, expect2);
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[1], programming[0], language[6], language[5], language[4], language[3], language[2], language[1])
+        );
 
         DefaultStudyResponse result3 = studySearchService.findStudyByRecommend(onlineCondition, PAGE_REQUEST_3);
-        List<Study> expect3 = List.of(language[0]);
         assertThat(result3.hasNext()).isFalse();
-        assertThatStudiesMatch(result3, expect3);
+        assertThatStudiesMatch(
+                result3,
+                List.of(language[0])
+        );
 
         /* 오프라인 스터디 */
         DefaultStudyResponse result4 = studySearchService.findStudyByRecommend(offlineCondition, PAGE_REQUEST_1);
-        List<Study> expect4 = List.of(programming[6], programming[2], interview[4], interview[3], interview[2], interview[1], interview[0]);
         assertThat(result4.hasNext()).isFalse();
-        assertThatStudiesMatch(result4, expect4);
+        assertThatStudiesMatch(
+                result4,
+                List.of(programming[6], programming[2], interview[4], interview[3], interview[2], interview[1], interview[0])
+        );
 
         DefaultStudyResponse result5 = studySearchService.findStudyByRecommend(offlineCondition, PAGE_REQUEST_2);
-        List<Study> expect5 = List.of();
         assertThat(result5.hasNext()).isFalse();
-        assertThatStudiesMatch(result5, expect5);
+        assertThatStudiesMatch(
+                result5,
+                List.of()
+        );
 
         /* 온라인 + 오프라인 통합 */
         DefaultStudyResponse result6 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
-        List<Study> expect6 = List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4]);
         assertThat(result6.hasNext()).isTrue();
-        assertThatStudiesMatch(result6, expect6);
+        assertThatStudiesMatch(
+                result6,
+                List.of(programming[11], programming[10], programming[9], programming[8], programming[7], programming[6], programming[5], programming[4])
+        );
 
         DefaultStudyResponse result7 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
-        List<Study> expect7 = List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1]);
         assertThat(result7.hasNext()).isTrue();
-        assertThatStudiesMatch(result7, expect7);
+        assertThatStudiesMatch(
+                result7,
+                List.of(programming[3], programming[2], programming[1], programming[0], interview[4], interview[3], interview[2], interview[1])
+        );
 
         DefaultStudyResponse result8 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
-        List<Study> expect8 = List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0]);
         assertThat(result8.hasNext()).isFalse();
-        assertThatStudiesMatch(result8, expect8);
+        assertThatStudiesMatch(
+                result8,
+                List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0])
+        );
     }
 
     private void initDataWithRegisterDate() {
@@ -208,6 +236,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getName()).isEqualTo(expect.getNameValue()),
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expect.getThumbnail().getImageName()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(1), // 스터디 팀장만 참여중
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),

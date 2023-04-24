@@ -19,9 +19,12 @@ import java.util.Set;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.fixture.StudyFixture.TOEFL;
+import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOfflineStudyUpdateRequest;
+import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOnlineStudyUpdateRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -76,6 +79,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -106,6 +110,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .name(TOEIC.getName())
                     .description(TOEIC.getDescription())
                     .category(TOEIC.getCategory().getId())
+                    .thumbnail(TOEIC.getThumbnail().getImageName())
                     .capacity(TOEIC.getCapacity())
                     .type(TOEIC.getType().getBrief())
                     .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
@@ -140,6 +145,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -170,6 +176,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .name(TOEIC.getName())
                     .description(TOEIC.getDescription())
                     .category(TOEIC.getCategory().getId())
+                    .thumbnail(TOEIC.getThumbnail().getImageName())
                     .capacity(TOEIC.getCapacity())
                     .type(TOEIC.getType().getBrief())
                     .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
@@ -204,6 +211,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -262,6 +270,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -312,6 +321,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -361,6 +371,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("name").description("스터디명"),
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
@@ -397,7 +408,7 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .contentType(APPLICATION_JSON)
@@ -428,6 +439,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -454,7 +466,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -487,6 +499,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -518,9 +531,8 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEFL.getDescription())
                     .capacity(TOEFL.getCapacity())
                     .category(TOEFL.getCategory().getId())
+                    .thumbnail(TOEFL.getThumbnail().getImageName())
                     .type(TOEFL.getType().getBrief())
-                    .province(null)
-                    .city(null)
                     .recruitmentStatus(true)
                     .hashtags(Set.of())
                     .build();
@@ -557,6 +569,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -588,9 +601,8 @@ class StudyApiControllerTest extends ControllerTest {
                     .description(TOEFL.getDescription())
                     .capacity(TOEFL.getCapacity())
                     .category(TOEFL.getCategory().getId())
+                    .thumbnail(TOEFL.getThumbnail().getImageName())
                     .type(TOEFL.getType().getBrief())
-                    .province(null)
-                    .city(null)
                     .recruitmentStatus(true)
                     .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
                     .build();
@@ -627,6 +639,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -656,7 +669,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -689,6 +702,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -718,7 +732,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -751,6 +765,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -780,7 +795,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = generateOnlineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -804,6 +819,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -832,7 +848,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = generateOfflineStudyUpdateRequest();
+            final StudyUpdateRequest request = createOfflineStudyUpdateRequest(5);
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -856,6 +872,7 @@ class StudyApiControllerTest extends ControllerTest {
                                             fieldWithPath("description").description("스터디 설명"),
                                             fieldWithPath("capacity").description("최대 수용 인원"),
                                             fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
                                             fieldWithPath("type").description("온/오프라인 유무")
                                                     .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
                                             fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
@@ -872,33 +889,5 @@ class StudyApiControllerTest extends ControllerTest {
                             )
                     );
         }
-    }
-
-    public StudyUpdateRequest generateOnlineStudyUpdateRequest() {
-        return StudyUpdateRequest.builder()
-                .name(TOEFL.name())
-                .description(TOEFL.getDescription())
-                .capacity(TOEFL.getCapacity())
-                .category(TOEFL.getCategory().getId())
-                .type(TOEFL.getType().getBrief())
-                .province(null)
-                .city(null)
-                .recruitmentStatus(true)
-                .hashtags(TOEFL.getHashtags())
-                .build();
-    }
-
-    public StudyUpdateRequest generateOfflineStudyUpdateRequest() {
-        return StudyUpdateRequest.builder()
-                .name(TOSS_INTERVIEW.getName())
-                .description(TOSS_INTERVIEW.getDescription())
-                .capacity(TOSS_INTERVIEW.getCapacity())
-                .category(TOSS_INTERVIEW.getCategory().getId())
-                .type(TOSS_INTERVIEW.getType().getBrief())
-                .province(TOSS_INTERVIEW.getLocation().getProvince())
-                .city(TOSS_INTERVIEW.getLocation().getCity())
-                .recruitmentStatus(true)
-                .hashtags(TOSS_INTERVIEW.getHashtags())
-                .build();
     }
 }

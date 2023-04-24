@@ -47,6 +47,7 @@ public class StudyService {
                     Description.from(request.description()),
                     Capacity.from(request.capacity()),
                     Category.from(request.category()),
+                    StudyThumbnail.from(request.thumbnail()),
                     ONLINE,
                     request.minimumAttendanceForGraduation(),
                     request.hashtags()
@@ -58,6 +59,7 @@ public class StudyService {
                     Description.from(request.description()),
                     Capacity.from(request.capacity()),
                     Category.from(request.category()),
+                    StudyThumbnail.from(request.thumbnail()),
                     OFFLINE,
                     StudyLocation.of(request.province(), request.city()),
                     request.minimumAttendanceForGraduation(),
@@ -76,6 +78,7 @@ public class StudyService {
                 Description.from(request.description()),
                 request.capacity(),
                 Category.from(request.category()),
+                StudyThumbnail.from(request.thumbnail()),
                 request.type().equalsIgnoreCase(ONLINE.getBrief()) ? ONLINE : OFFLINE,
                 request.province(),
                 request.city(),
