@@ -20,6 +20,7 @@ public class BasicStudy {
     private final String description;
     private final String category;
     private final String thumbnail;
+    private final String thumbnailBackground;
     private final String type;
     private final String recruitmentStatus;
     private final int currentMembers;
@@ -37,6 +38,7 @@ public class BasicStudy {
         this.description = description.getValue();
         this.category = category.getName();
         this.thumbnail = thumbnail.getImageName();
+        this.thumbnailBackground = thumbnail.getBackground();
         this.type = type.getDescription();
         this.recruitmentStatus = recruitmentStatus.getDescription();
         this.currentMembers = currentMembers + 1;

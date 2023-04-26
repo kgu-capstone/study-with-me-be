@@ -12,6 +12,7 @@ public class SimpleStudy {
     private final String name;
     private final String category;
     private final String thumbnail;
+    private final String thumbnailBackground;
 
     @QueryProjection
     public SimpleStudy(Long id, StudyName name, Category category, StudyThumbnail thumbnail) {
@@ -19,5 +20,6 @@ public class SimpleStudy {
         this.name = name.getValue();
         this.category = category.getName();
         this.thumbnail = thumbnail.getImageName();
+        this.thumbnailBackground = thumbnail.getBackground();
     }
 }

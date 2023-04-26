@@ -230,7 +230,8 @@ class MemberInformationServiceTest extends ServiceTest {
                     () -> assertThat(actual.getId()).isEqualTo(expected.getId()),
                     () -> assertThat(actual.getName()).isEqualTo(expected.getNameValue()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName()),
-                    () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName())
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName()),
+                    () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expected.getThumbnail().getBackground())
             );
         }
     }

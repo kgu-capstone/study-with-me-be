@@ -237,6 +237,7 @@ class StudySearchServiceTest extends ServiceTest {
                     () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
                     () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
                     () -> assertThat(actual.getThumbnail()).isEqualTo(expect.getThumbnail().getImageName()),
+                    () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expect.getThumbnail().getBackground()),
                     () -> assertThat(actual.getCurrentMembers()).isEqualTo(1), // 스터디 팀장만 참여중
                     () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
                     () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),

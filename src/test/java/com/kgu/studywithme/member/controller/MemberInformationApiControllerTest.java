@@ -266,7 +266,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("참여중인 스터디명"),
                                             fieldWithPath("result[].category").description("참여중인 스터디 카테고리"),
-                                            fieldWithPath("result[].thumbnail").description("참여중인 스터디 썸네일")
+                                            fieldWithPath("result[].thumbnail").description("참여중인 스터디 썸네일 이미지"),
+                                            fieldWithPath("result[].thumbnailBackground").description("참여중인 스터디 썸네일 배경색")
                                     )
                             )
                     );
@@ -380,7 +381,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].id").description("졸업한 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("졸업한 스터디명"),
                                             fieldWithPath("result[].category").description("졸업한 스터디 카테고리"),
-                                            fieldWithPath("result[].thumbnail").description("졸업한 스터디 썸네일")
+                                            fieldWithPath("result[].thumbnail").description("졸업한 스터디 썸네일 이미지"),
+                                            fieldWithPath("result[].thumbnailBackground").description("졸업한 스터디 썸네일 배경색")
                                     )
                             )
                     );
@@ -494,7 +496,8 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].id").description("찜한 스터디 ID(PK)"),
                                             fieldWithPath("result[].name").description("찜한 스터디명"),
                                             fieldWithPath("result[].category").description("찜한 스터디 카테고리"),
-                                            fieldWithPath("result[].thumbnail").description("찜한 스터디 썸네일")
+                                            fieldWithPath("result[].thumbnail").description("찜한 스터디 썸네일 이미지"),
+                                            fieldWithPath("result[].thumbnailBackground").description("찜한 스터디 썸네일 배경색")
                                     )
                             )
                     );
