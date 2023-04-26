@@ -72,6 +72,23 @@ class MemberInformationServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("사용자가 신청한 스터디 리스트를 조회한다")
+    void getApplyStudy() {
+        // given
+        applyStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
+
+        // when
+        RelatedStudy relatedStudy = memberInformationService.getApplyStudy(member.getId());
+
+        // then
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
+    }
+
+
+    @Test
     @DisplayName("사용자가 참여중인 스터디 리스트를 조회한다")
     void getParticipateStudy() {
         // given
@@ -82,8 +99,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getParticipateStudy(member.getId());
 
         // then
-        List<Study> expectParticipate = List.of(programming[5], programming[4], programming[2], programming[0]);
-        assertThatStudiesMatch(relatedStudy.result(), expectParticipate);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[5], programming[4], programming[2], programming[0])
+        );
     }
 
     @Test
@@ -97,8 +116,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getGraduatedStudy(member.getId());
 
         // then
-        List<Study> expectGraduated = List.of(programming[6], programming[3], programming[1]);
-        assertThatStudiesMatch(relatedStudy.result(), expectGraduated);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[3], programming[1])
+        );
     }
 
     @Test
@@ -111,8 +132,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getFavoriteStudy(member.getId());
 
         // then
-        List<Study> expectFavorite = List.of(programming[6], programming[4], programming[3], programming[1], programming[0]);
-        assertThatStudiesMatch(relatedStudy.result(), expectFavorite);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[4], programming[3], programming[1], programming[0])
+        );
     }
 
     @Test
@@ -197,6 +220,12 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(findCountByStatus(result5, LATE)).isEqualTo(2),
                 () -> assertThat(findCountByStatus(result5, ABSENCE)).isEqualTo(2)
         );
+    }
+
+    private void applyStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.applyParticipation(member);
+        }
     }
 
     private void participateStudy(Member member, Study... studies) {
