@@ -30,6 +30,11 @@ public class MemberInformationService {
         return new MemberInformation(member);
     }
 
+    public RelatedStudy getApplyStudy(Long memberId) {
+        List<SimpleStudy> participateStudy = studyRepository.findApplyStudyByMemberId(memberId);
+        return new RelatedStudy(participateStudy);
+    }
+
     public RelatedStudy getParticipateStudy(Long memberId) {
         List<SimpleStudy> participateStudy = studyRepository.findParticipateStudyByMemberId(memberId);
         return new RelatedStudy(participateStudy);
