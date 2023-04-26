@@ -28,6 +28,13 @@ public class MemberInformationApiController {
     }
 
     @CheckMemberIdentity
+    @GetMapping("/studies/apply")
+    public ResponseEntity<RelatedStudy> getApplyStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
+        RelatedStudy response = memberInformationService.getApplyStudy(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @CheckMemberIdentity
     @GetMapping("/studies/participate")
     public ResponseEntity<RelatedStudy> getParticipateStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         RelatedStudy response = memberInformationService.getParticipateStudy(memberId);
