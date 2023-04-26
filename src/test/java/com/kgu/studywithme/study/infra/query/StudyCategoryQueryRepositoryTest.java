@@ -671,34 +671,6 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
         }
     }
 
-    private void assertThatStudiesMatch(List<BasicStudy> actuals,
-                                        List<Study> studies,
-                                        List<List<Member>> favoriteMarkingMembers) {
-        int expectSize = studies.size();
-        assertThat(actuals).hasSize(expectSize);
-
-        for (int i = 0; i < expectSize; i++) {
-            BasicStudy actual = actuals.get(i);
-            Study expect = studies.get(i);
-            List<Long> favoriteMarkingMemberIds = favoriteMarkingMembers.get(i)
-                    .stream()
-                    .map(Member::getId)
-                    .toList();
-
-            assertAll(
-                    () -> assertThat(actual.getId()).isEqualTo(expect.getId()),
-                    () -> assertThat(actual.getName()).isEqualTo(expect.getNameValue()),
-                    () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
-                    () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
-                    () -> assertThat(actual.getThumbnail()).isEqualTo(expect.getThumbnail().getImageName()),
-                    () -> assertThat(actual.getCurrentMembers()).isEqualTo(expect.getApproveParticipants().size()),
-                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
-                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),
-                    () -> assertThat(actual.getFavoriteMarkingMembers()).containsExactlyInAnyOrderElementsOf(favoriteMarkingMemberIds)
-            );
-        }
-    }
-
     private void initDataWithRegisterDate() {
         List<Study> buffer = new LinkedList<>();
         int day = language.length + interview.length + programming.length;
@@ -793,6 +765,35 @@ class StudyCategoryQueryRepositoryTest extends RepositoryTest {
             study.approveParticipation(member);
             study.graduateParticipant(member);
             study.writeReview(member, "리뷰");
+        }
+    }
+
+    private void assertThatStudiesMatch(List<BasicStudy> actuals,
+                                        List<Study> studies,
+                                        List<List<Member>> favoriteMarkingMembers) {
+        int expectSize = studies.size();
+        assertThat(actuals).hasSize(expectSize);
+
+        for (int i = 0; i < expectSize; i++) {
+            BasicStudy actual = actuals.get(i);
+            Study expect = studies.get(i);
+            List<Long> favoriteMarkingMemberIds = favoriteMarkingMembers.get(i)
+                    .stream()
+                    .map(Member::getId)
+                    .toList();
+
+            assertAll(
+                    () -> assertThat(actual.getId()).isEqualTo(expect.getId()),
+                    () -> assertThat(actual.getName()).isEqualTo(expect.getNameValue()),
+                    () -> assertThat(actual.getType()).isEqualTo(expect.getType().getDescription()),
+                    () -> assertThat(actual.getCategory()).isEqualTo(expect.getCategory().getName()),
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expect.getThumbnail().getImageName()),
+                    () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expect.getThumbnail().getBackground()),
+                    () -> assertThat(actual.getCurrentMembers()).isEqualTo(expect.getApproveParticipants().size()),
+                    () -> assertThat(actual.getMaxMembers()).isEqualTo(expect.getMaxMembers()),
+                    () -> assertThat(actual.getHashtags()).containsExactlyInAnyOrderElementsOf(expect.getHashtags()),
+                    () -> assertThat(actual.getFavoriteMarkingMembers()).containsExactlyInAnyOrderElementsOf(favoriteMarkingMemberIds)
+            );
         }
     }
 }

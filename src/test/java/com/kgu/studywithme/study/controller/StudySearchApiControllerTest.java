@@ -95,7 +95,8 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             fieldWithPath("studyList[].name").description("스터디명"),
                                             fieldWithPath("studyList[].description").description("스터디 설명"),
                                             fieldWithPath("studyList[].category").description("스터디 카테고리"),
-                                            fieldWithPath("studyList[].thumbnail").description("스터디 썸네일"),
+                                            fieldWithPath("studyList[].thumbnail").description("스터디 썸네일 이미지"),
+                                            fieldWithPath("studyList[].thumbnailBackground").description("스터디 썸네일 배경색"),
                                             fieldWithPath("studyList[].type").description("스터디 타입")
                                                     .attributes(constraint("온라인 / 오프라인")),
                                             fieldWithPath("studyList[].recruitmentStatus").description("스터디 모집 여부"),
@@ -212,6 +213,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             fieldWithPath("studyList[].description").description("스터디 설명"),
                                             fieldWithPath("studyList[].category").description("스터디 카테고리"),
                                             fieldWithPath("studyList[].thumbnail").description("스터디 썸네일"),
+                                            fieldWithPath("studyList[].thumbnailBackground").description("스터디 썸네일 배경색"),
                                             fieldWithPath("studyList[].type").description("스터디 타입")
                                                     .attributes(constraint("온라인 / 오프라인")),
                                             fieldWithPath("studyList[].recruitmentStatus").description("스터디 모집 여부"),
@@ -261,6 +263,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                 .description(study.getDescription())
                 .category(study.getCategory().getName())
                 .thumbnail(study.getThumbnail().getImageName())
+                .thumbnailBackground(study.getThumbnail().getBackground())
                 .type(study.getType().getDescription())
                 .recruitmentStatus(IN_PROGRESS.getDescription())
                 .currentMembers(getRandomNumberWithRange7())
