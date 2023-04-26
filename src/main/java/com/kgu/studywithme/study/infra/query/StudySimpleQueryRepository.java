@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface StudySimpleQueryRepository {
     List<BasicHashtag> findHashtags();
+    List<SimpleStudy> findApplyStudyByMemberId(Long memberId);
     List<SimpleStudy> findParticipateStudyByMemberId(Long memberId);
     List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId);
     List<SimpleStudy> findFavoriteStudyByMemberId(Long memberId);

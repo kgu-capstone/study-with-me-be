@@ -1,6 +1,7 @@
 package com.kgu.studywithme.study.infra.query;
 
 import com.kgu.studywithme.member.domain.QMember;
+import com.kgu.studywithme.study.domain.participant.ParticipantStatus;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.QBasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.QSimpleStudy;
@@ -15,8 +16,7 @@ import java.util.List;
 import static com.kgu.studywithme.favorite.domain.QFavorite.favorite;
 import static com.kgu.studywithme.study.domain.QStudy.study;
 import static com.kgu.studywithme.study.domain.hashtag.QHashtag.hashtag;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPROVE;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 
 @Transactional(readOnly = true)
@@ -35,13 +35,24 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
+    public List<SimpleStudy> findApplyStudyByMemberId(Long memberId) {
+        return query
+                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .from(study)
+                .innerJoin(participant).on(participant.study.id.eq(study.id))
+                .where(memberIdEq(memberId), participateStatusEq(APPLY))
+                .orderBy(study.id.desc())
+                .fetch();
+    }
+
+    @Override
     public List<SimpleStudy> findParticipateStudyByMemberId(Long memberId) {
         return query
                 .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
-                .where(participateStatus(), hostOrParticipant(memberId))
+                .where(hostOrParticipant(memberId), participateStatusEq(APPROVE))
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -52,7 +63,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(participant).on(participant.study.id.eq(study.id))
-                .where(graduateStatus(), graduatedMemberIdEq(memberId))
+                .where(memberIdEq(memberId), participateStatusEq(GRADUATED))
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -68,19 +79,15 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .fetch();
     }
 
-    private BooleanExpression participateStatus() {
-        return participant.status.eq(APPROVE);
+    private BooleanExpression participateStatusEq(ParticipantStatus status) {
+        return (status != null) ? participant.status.eq(status) : null;
     }
 
     private BooleanExpression hostOrParticipant(Long memberId) {
         return (memberId != null) ? host.id.eq(memberId).or(participant.member.id.eq(memberId)) : null;
     }
 
-    private BooleanExpression graduateStatus() {
-        return participant.status.eq(GRADUATED);
-    }
-
-    private BooleanExpression graduatedMemberIdEq(Long memberId) {
+    private BooleanExpression memberIdEq(Long memberId) {
         return (memberId != null) ? participant.member.id.eq(memberId) : null;
     }
 }

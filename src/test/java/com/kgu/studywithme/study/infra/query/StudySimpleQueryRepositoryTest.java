@@ -64,28 +64,64 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
                 .sum();
         assertThat(result).hasSize(totalSize);
     }
+    
+    @Test
+    @DisplayName("신청한 스터디에 대한 정보를 조회한다")
+    void findApplyStudyByMemberId() {
+        /* 7개 신청 */
+        applyStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
+        List<SimpleStudy> result1 = studyRepository.findApplyStudyByMemberId(member.getId());
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
+
+        /* 2개 승인 & 1개 거부 */
+        participateStudy(member, programming[6], programming[5]);
+        rejectStudy(member, programming[4]);
+        List<SimpleStudy> result2 = studyRepository.findApplyStudyByMemberId(member.getId());
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
+
+        /* 2개 승인 & 1개 거부 */
+        participateStudy(member, programming[3], programming[2]);
+        rejectStudy(member, programming[1]);
+        List<SimpleStudy> result3 = studyRepository.findApplyStudyByMemberId(member.getId());
+        assertThatStudiesMatch(
+                result3,
+                List.of(programming[0])
+        );
+    }
 
     @Test
     @DisplayName("참여하고 있는 스터디에 대한 정보를 조회한다")
     void findParticipateStudyByMemberId() {
         // Case 1
-        participateStudy(member, programming[0], programming[1], programming[2], programming[3]);
+        applyAndParticipateStudy(member, programming[0], programming[1], programming[2], programming[3]);
 
         List<SimpleStudy> result1 = studyRepository.findParticipateStudyByMemberId(member.getId());
-        List<Study> expect1 = List.of(programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result1, expect1);
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
 
         // Case 2
-        participateStudy(member, programming[4], programming[5], programming[6]);
+        applyAndParticipateStudy(member, programming[4], programming[5], programming[6]);
 
         List<SimpleStudy> result2 = studyRepository.findParticipateStudyByMemberId(member.getId());
-        List<Study> expect2 = List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result2, expect2);
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
 
         // Case 3 (host)
         List<SimpleStudy> result3 = studyRepository.findParticipateStudyByMemberId(host.getId());
-        List<Study> expect3 = List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result3, expect3);
+        assertThatStudiesMatch(
+                result3,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
     }
 
     @Test
@@ -95,15 +131,19 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         graduateStudy(member, programming[0], programming[1], programming[2], programming[3]);
 
         List<SimpleStudy> result1 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        List<Study> expect1 = List.of(programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result1, expect1);
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
 
         // Case 2
         graduateStudy(member, programming[4], programming[5], programming[6]);
 
         List<SimpleStudy> result2 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        List<Study> expect2 = List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result2, expect2);
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
     }
 
     @Test
@@ -113,18 +153,40 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         favoriteStudy(member, programming[0], programming[1], programming[2], programming[3]);
 
         List<SimpleStudy> result1 = studyRepository.findFavoriteStudyByMemberId(member.getId());
-        List<Study> expect1 = List.of(programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result1, expect1);
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
 
         // Case 2
         favoriteStudy(member, programming[4], programming[5], programming[6]);
 
         List<SimpleStudy> result2 = studyRepository.findFavoriteStudyByMemberId(member.getId());
-        List<Study> expect2 = List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(result2, expect2);
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
+    }
+
+    private void applyStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.applyParticipation(member);
+        }
     }
 
     private void participateStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.approveParticipation(member);
+        }
+    }
+
+    private void rejectStudy(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.rejectParticipation(member);
+        }
+    }
+
+    private void applyAndParticipateStudy(Member member, Study... studies) {
         for (Study study : studies) {
             study.applyParticipation(member);
             study.approveParticipation(member);

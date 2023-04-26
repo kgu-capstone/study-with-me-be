@@ -160,6 +160,121 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
+    @DisplayName("사용자가 신청한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/apply]")
+    class getApplyStudy {
+        private static final String BASE_URL = "/api/members/{memberId}/studies/apply";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 신청한 스터디 리스트 조회에 실패한다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID);
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Apply/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("Token Payload가 Endpoint의 memberId와 일치하지 않음에 따라 신청한 스터디 리스트 조회에 실패한다")
+        void throwExceptionByInvalidPermission() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Apply/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("사용자가 신청한 스터디 리스트를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+
+            RelatedStudy response = generateRelatedStudyResponse();
+            given(memberInformationService.getApplyStudy(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Apply/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("result[].id").description("신청한 스터디 ID(PK)"),
+                                            fieldWithPath("result[].name").description("신청한 스터디명"),
+                                            fieldWithPath("result[].category").description("신청한 스터디 카테고리"),
+                                            fieldWithPath("result[].thumbnail").description("신청한 스터디 썸네일 이미지"),
+                                            fieldWithPath("result[].thumbnailBackground").description("신청한 스터디 썸네일 배경색")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
     @DisplayName("사용자가 참여중인 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/participate]")
     class getParticipateStudy {
         private static final String BASE_URL = "/api/members/{memberId}/studies/participate";
