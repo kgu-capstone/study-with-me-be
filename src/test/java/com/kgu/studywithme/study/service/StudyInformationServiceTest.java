@@ -172,17 +172,20 @@ class StudyInformationServiceTest extends ServiceTest {
                         members[2], ABSENCE
                 )
         );
+
         AttendanceAssmbler result1 = studyInformationService.getAttendances(study.getId());
-        List<Integer> expectWeek1 = List.of(1);
-        List<Map<Long, AttendanceStatus>> expectSummary1 = List.of(
-                Map.of(
-                        host.getId(), ATTENDANCE,
-                        members[0].getId(), ATTENDANCE,
-                        members[1].getId(), LATE,
-                        members[2].getId(), ABSENCE
+        assertThatAttendancesMatch(
+                result1.summaries(),
+                List.of(1),
+                List.of(
+                        Map.of(
+                                host.getId(), ATTENDANCE,
+                                members[0].getId(), ATTENDANCE,
+                                members[1].getId(), LATE,
+                                members[2].getId(), ABSENCE
+                        )
                 )
         );
-        assertThatAttendancesMatch(result1.summaries(), expectWeek1, expectSummary1);
 
         /* 1주차 + 2주차 출석 */
         applyAndApproveMembers(members[3]);
@@ -196,24 +199,27 @@ class StudyInformationServiceTest extends ServiceTest {
                         members[3], ATTENDANCE
                 )
         );
+
         AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
-        List<Integer> expectWeek2 = List.of(2, 1);
-        List<Map<Long, AttendanceStatus>> expectSummary2 = List.of(
-                Map.of(
-                        host.getId(), ATTENDANCE,
-                        members[0].getId(), LATE,
-                        members[1].getId(), ATTENDANCE,
-                        members[2].getId(), ATTENDANCE,
-                        members[3].getId(), ATTENDANCE
-                ),
-                Map.of(
-                        host.getId(), ATTENDANCE,
-                        members[0].getId(), ATTENDANCE,
-                        members[1].getId(), LATE,
-                        members[2].getId(), ABSENCE
+        assertThatAttendancesMatch(
+                result2.summaries(),
+                List.of(2, 1),
+                List.of(
+                        Map.of(
+                                host.getId(), ATTENDANCE,
+                                members[0].getId(), LATE,
+                                members[1].getId(), ATTENDANCE,
+                                members[2].getId(), ATTENDANCE,
+                                members[3].getId(), ATTENDANCE
+                        ),
+                        Map.of(
+                                host.getId(), ATTENDANCE,
+                                members[0].getId(), ATTENDANCE,
+                                members[1].getId(), LATE,
+                                members[2].getId(), ABSENCE
+                        )
                 )
         );
-        assertThatAttendancesMatch(result2.summaries(), expectWeek2, expectSummary2);
     }
 
     @Test

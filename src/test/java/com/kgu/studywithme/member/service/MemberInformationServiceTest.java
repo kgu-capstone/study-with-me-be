@@ -81,8 +81,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getApplyStudy(member.getId());
 
         // then
-        List<Study> expectParticipate = List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]);
-        assertThatStudiesMatch(relatedStudy.result(), expectParticipate);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
     }
 
 
@@ -97,8 +99,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getParticipateStudy(member.getId());
 
         // then
-        List<Study> expectParticipate = List.of(programming[5], programming[4], programming[2], programming[0]);
-        assertThatStudiesMatch(relatedStudy.result(), expectParticipate);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[5], programming[4], programming[2], programming[0])
+        );
     }
 
     @Test
@@ -112,8 +116,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getGraduatedStudy(member.getId());
 
         // then
-        List<Study> expectGraduated = List.of(programming[6], programming[3], programming[1]);
-        assertThatStudiesMatch(relatedStudy.result(), expectGraduated);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[3], programming[1])
+        );
     }
 
     @Test
@@ -126,8 +132,10 @@ class MemberInformationServiceTest extends ServiceTest {
         RelatedStudy relatedStudy = memberInformationService.getFavoriteStudy(member.getId());
 
         // then
-        List<Study> expectFavorite = List.of(programming[6], programming[4], programming[3], programming[1], programming[0]);
-        assertThatStudiesMatch(relatedStudy.result(), expectFavorite);
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[4], programming[3], programming[1], programming[0])
+        );
     }
 
     @Test
