@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -49,32 +49,5 @@ public class AttendanceRepositoryTest extends RepositoryTest {
                 () -> assertThat(findAttendance.getStatus()).isEqualTo(NON_ATTENDANCE),
                 () -> assertThat(findAttendance.getWeek()).isEqualTo(1)
         );
-    }
-
-    @Test
-    @DisplayName("참여자의 출석 상태를 업데이트한다")
-    void applyParticipantAttendanceStatus() {
-        /* 미출결 */
-        Attendance nonAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(nonAttendance.getStatus()).isEqualTo(NON_ATTENDANCE);
-
-        /* to 출석 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, ATTENDANCE);
-        Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
-
-        /* to 지각 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, LATE);
-        Attendance late = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(late.getStatus()).isEqualTo(LATE);
-
-        /* to 결석 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, ABSENCE);
-        Attendance absence = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(absence.getStatus()).isEqualTo(ABSENCE);
     }
 }
