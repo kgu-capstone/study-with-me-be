@@ -16,21 +16,21 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class StudyParticipationEventListener {
     private final EmailSender emailSender;
 
-    @Async("asyncExecutor")
+    @Async("emailAsyncExecutor")
     @EventListener
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendParticipationApproveMail(StudyApprovedEvent event) throws Exception {
         emailSender.sendParticipationApproveMail(event.email(), event.nickname(), event.studyName());
     }
 
-    @Async("asyncExecutor")
+    @Async("emailAsyncExecutor")
     @EventListener
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendParticipationRejectMail(StudyRejectedEvent event) throws Exception {
         emailSender.sendParticipationRejectMail(event.email(), event.nickname(), event.studyName(), event.reason());
     }
 
-    @Async("asyncExecutor")
+    @Async("emailAsyncExecutor")
     @EventListener
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendStudyCertificateMail(StudyGraduatedEvent event) throws Exception {
