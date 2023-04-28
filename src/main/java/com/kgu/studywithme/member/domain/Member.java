@@ -48,6 +48,9 @@ public class Member extends BaseEntity {
     private Region region;
 
     @Embedded
+    private Score score;
+
+    @Embedded
     private PeerReviews peerReviews;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
@@ -63,6 +66,7 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.gender = gender;
         this.region = region;
+        this.score = Score.initScore();
         this.peerReviews = PeerReviews.createPeerReviewsPage();
         applyInterests(interests);
     }
@@ -93,6 +97,42 @@ public class Member extends BaseEntity {
         peerReviews.writeReview(PeerReview.doReview(this, reviewer, content));
     }
 
+    public void applyAttendance() {
+        this.score = this.score.applyAttendance();
+    }
+
+    public void applyLate() {
+        this.score = this.score.applyLate();
+    }
+
+    public void applyAbsence() {
+        this.score = this.score.applyAbsence();
+    }
+
+    public void updateAttendanceToLate() {
+        this.score = this.score.updateAttendanceToLate();
+    }
+
+    public void updateAttendanceToAbsence() {
+        this.score = this.score.updateAttendanceToAbsence();
+    }
+
+    public void updateLateToAttendance() {
+        this.score = this.score.updateLateToAttendance();
+    }
+
+    public void updateLateToAbsence() {
+        this.score = this.score.updateLateToAbsence();
+    }
+
+    public void updateAbsenceToAttendance() {
+        this.score = this.score.updateAbsenceToAttendance();
+    }
+
+    public void updateAbsenceToLate() {
+        this.score = this.score.updateAbsenceToLate();
+    }
+
     // Add Getter
     public String getNicknameValue() {
         return nickname.getValue();
@@ -110,13 +150,17 @@ public class Member extends BaseEntity {
         return region.getCity();
     }
 
-    public List<Category> getInterests() {
-        return interests.stream()
-                .map(Interest::getCategory)
-                .toList();
+    public int getScore() {
+        return score.getValue();
     }
 
     public List<PeerReview> getPeerReviews() {
         return peerReviews.getPeerReviews();
+    }
+
+    public List<Category> getInterests() {
+        return interests.stream()
+                .map(Interest::getCategory)
+                .toList();
     }
 }
