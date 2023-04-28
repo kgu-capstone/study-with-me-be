@@ -50,7 +50,8 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                         categoryEq(condition.category()),
                         studyType(condition.type()),
                         studyLocationProvinceEq(condition.province()),
-                        studyLocationCityEq(condition.city())
+                        studyLocationCityEq(condition.city()),
+                        studyIsNotClosed()
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
@@ -65,7 +66,8 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                         categoryEq(condition.category()),
                         studyType(condition.type()),
                         studyLocationProvinceEq(condition.province()),
-                        studyLocationCityEq(condition.city())
+                        studyLocationCityEq(condition.city()),
+                        studyIsNotClosed()
                 )
                 .fetchOne();
 
@@ -91,7 +93,8 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
                         studyLocationProvinceEq(condition.province()),
-                        studyLocationCityEq(condition.city())
+                        studyLocationCityEq(condition.city()),
+                        studyIsNotClosed()
                 )
                 .groupBy(study.id)
                 .orderBy(orderBySortType(condition.sort()).toArray(OrderSpecifier[]::new))
@@ -106,7 +109,8 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                         studyType(condition.type()),
                         studyCategoryIn(memberInterests),
                         studyLocationProvinceEq(condition.province()),
-                        studyLocationCityEq(condition.city())
+                        studyLocationCityEq(condition.city()),
+                        studyIsNotClosed()
                 )
                 .fetchOne();
 
@@ -229,6 +233,10 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
 
     private BooleanExpression studyLocationCityEq(String city) {
         return hasText(city) ? study.location.city.eq(city) : null;
+    }
+
+    private BooleanExpression studyIsNotClosed() {
+        return study.closed.eq(false);
     }
 
     private boolean hasText(String str) {

@@ -35,4 +35,12 @@ public class StudyApiController {
         studyService.update(studyId, hostId, request);
         return ResponseEntity.noContent().build();
     }
+
+    @CheckStudyHost
+    @DeleteMapping("/studies/{studyId}")
+    public ResponseEntity<Void> close(@ExtractPayload Long hostId,
+                                      @PathVariable Long studyId) {
+        studyService.close(studyId);
+        return ResponseEntity.noContent().build();
+    }
 }
