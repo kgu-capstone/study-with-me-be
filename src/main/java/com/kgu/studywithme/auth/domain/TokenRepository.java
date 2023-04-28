@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
     // @Query
-    @Modifying(clearAutomatically = true)
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Token t" +
             " SET t.refreshToken = :refreshToken" +
             " WHERE t.memberId = :memberId")
     void reissueRefreshTokenByRtrPolicy(@Param("memberId") Long memberId, @Param("refreshToken") String newRefreshToken);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("DELETE FROM Token t" +
             " WHERE t.memberId = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);

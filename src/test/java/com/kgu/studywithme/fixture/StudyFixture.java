@@ -45,7 +45,7 @@ public enum StudyFixture {
             StudyLocation.of("서울특별시", "강남구"), 10, 10, new HashSet<>(Set.of("면접", "구글", "기술 면접"))),
 
     SPRING("Spring 스터디", "Spring 스터디입니다", PROGRAMMING, IMAGE_PROGRAMMING_001, ONLINE,
-            null, 6, 10, new HashSet<>(Set.of("프로그래밍", "스프링", "Spring", "김영한"))),
+            null, 10, 10, new HashSet<>(Set.of("프로그래밍", "스프링", "Spring", "김영한"))),
     JPA("JPA 스터디", "JPA 스터디입니다", PROGRAMMING, IMAGE_PROGRAMMING_002, ONLINE,
             null, 4, 12, new HashSet<>(Set.of("프로그래밍", "JPA", "Hibernate", "김영한"))),
     REAL_MYSQL("Real MySQL 스터디", "Real MySQL 스터디입니다", PROGRAMMING, IMAGE_PROGRAMMING_003, OFFLINE,
