@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -166,10 +167,10 @@ class MemberTest {
             @DisplayName("출석에 대한 점수를 적용한다")
             void applyAttendance() {
                 // given
-                member.applyAbsence(); // 100 - 5 = 95
+                member.applyScoreByAttendanceStatus(ABSENCE); // 100 - 5 = 95
 
                 // when
-                member.applyAttendance(); // 95 + 1
+                member.applyScoreByAttendanceStatus(ATTENDANCE); // 95 + 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(96);
@@ -179,7 +180,7 @@ class MemberTest {
             @DisplayName("지각에 대한 점수를 적용한다")
             void applyLate() {
                 // when
-                member.applyLate(); // 100 - 1
+                member.applyScoreByAttendanceStatus(LATE); // 100 - 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(99);
@@ -189,7 +190,7 @@ class MemberTest {
             @DisplayName("결석에 대한 점수를 적용한다")
             void applyAbsence() {
                 // when
-                member.applyAbsence(); // 100 - 5
+                member.applyScoreByAttendanceStatus(ABSENCE); // 100 - 5
 
                 // then
                 assertThat(member.getScore()).isEqualTo(95);
@@ -202,7 +203,7 @@ class MemberTest {
             @BeforeEach
             void setUp() {
                 for (int i = 0; i < 5; i++) {
-                    member.applyAbsence();
+                    member.applyScoreByAttendanceStatus(ABSENCE);
                 } // 75
             }
 
@@ -210,7 +211,7 @@ class MemberTest {
             @DisplayName("출석 -> 지각으로 수정함에 따라 점수를 업데이트한다")
             void updateAttendanceToLate() {
                 // when
-                member.updateAttendanceToLate(); // 75 - 1 - 1
+                member.applyScoreByAttendanceStatus(ATTENDANCE, LATE); // 75 - 1 - 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(73);
@@ -220,7 +221,7 @@ class MemberTest {
             @DisplayName("출석 -> 결석으로 수정함에 따라 점수를 업데이트한다")
             void updateAttendanceToAbsence() {
                 // when
-                member.updateAttendanceToAbsence(); // 75 - 1 - 5
+                member.applyScoreByAttendanceStatus(ATTENDANCE, ABSENCE); // 75 - 1 - 5
 
                 // then
                 assertThat(member.getScore()).isEqualTo(69);
@@ -230,7 +231,7 @@ class MemberTest {
             @DisplayName("지각 -> 출석으로 수정함에 따라 점수를 업데이트한다")
             void updateLateToAttendance() {
                 // when
-                member.updateLateToAttendance(); // 75 + 1 + 1
+                member.applyScoreByAttendanceStatus(LATE, ATTENDANCE); // 75 + 1 + 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(77);
@@ -240,7 +241,7 @@ class MemberTest {
             @DisplayName("지각 -> 결석으로 수정함에 따라 점수를 업데이트한다")
             void updateLateToAbsence() {
                 // when
-                member.updateLateToAbsence(); // 75 + 1 - 5
+                member.applyScoreByAttendanceStatus(LATE, ABSENCE); // 75 + 1 - 5
 
                 // then
                 assertThat(member.getScore()).isEqualTo(71);
@@ -250,7 +251,7 @@ class MemberTest {
             @DisplayName("결석 -> 출석으로 수정함에 따라 점수를 업데이트한다")
             void updateAbsenceToAttendance() {
                 // when
-                member.updateAbsenceToAttendance(); // 75 + 5 + 1
+                member.applyScoreByAttendanceStatus(ABSENCE, ATTENDANCE); // 75 + 5 + 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(81);
@@ -260,7 +261,7 @@ class MemberTest {
             @DisplayName("결석 -> 지각으로 수정함에 따라 점수를 업데이트한다")
             void updateAbsenceToLate() {
                 // when
-                member.updateAbsenceToLate(); // 75 + 5 - 1
+                member.applyScoreByAttendanceStatus(ABSENCE, LATE); // 75 + 5 - 1
 
                 // then
                 assertThat(member.getScore()).isEqualTo(79);

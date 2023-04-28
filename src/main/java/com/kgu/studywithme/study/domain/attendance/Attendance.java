@@ -43,7 +43,7 @@ public class Attendance {
         return new Attendance(study, participant, week, status);
     }
 
-    public void updateAttendanceStatus(String status) {
-        this.status = AttendanceStatus.fromDescription(status);
+    public void updateAttendanceStatus(AttendanceStatus status) {
+        this.status = status;
     }
 }

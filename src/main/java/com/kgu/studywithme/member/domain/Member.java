@@ -5,6 +5,7 @@ import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.interest.Interest;
 import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.domain.review.PeerReviews;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -97,40 +98,41 @@ public class Member extends BaseEntity {
         peerReviews.writeReview(PeerReview.doReview(this, reviewer, content));
     }
 
-    public void applyAttendance() {
-        this.score = this.score.applyAttendance();
+    public void applyScoreByAttendanceStatus(AttendanceStatus status) {
+        switch (status) {
+            case ATTENDANCE -> this.score = this.score.applyAttendance();
+            case LATE -> this.score = this.score.applyLate();
+            default -> this.score = this.score.applyAbsence();
+        }
     }
 
-    public void applyLate() {
-        this.score = this.score.applyLate();
+    public void applyScoreByAttendanceStatus(AttendanceStatus previous, AttendanceStatus current) {
+        switch (previous) {
+            case ATTENDANCE -> updateAttenceToCurrent(current);
+            case LATE -> updateLateToCurrent(current);
+            default -> updateAbsenceToCurrent(current);
+        }
     }
 
-    public void applyAbsence() {
-        this.score = this.score.applyAbsence();
+    private void updateAttenceToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case LATE -> this.score = this.score.updateAttendanceToLate();
+            case ABSENCE -> this.score = this.score.updateAttendanceToAbsence();
+        }
     }
 
-    public void updateAttendanceToLate() {
-        this.score = this.score.updateAttendanceToLate();
+    private void updateLateToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case ATTENDANCE -> this.score = this.score.updateLateToAttendance();
+            case ABSENCE -> this.score = this.score.updateLateToAbsence();
+        }
     }
 
-    public void updateAttendanceToAbsence() {
-        this.score = this.score.updateAttendanceToAbsence();
-    }
-
-    public void updateLateToAttendance() {
-        this.score = this.score.updateLateToAttendance();
-    }
-
-    public void updateLateToAbsence() {
-        this.score = this.score.updateLateToAbsence();
-    }
-
-    public void updateAbsenceToAttendance() {
-        this.score = this.score.updateAbsenceToAttendance();
-    }
-
-    public void updateAbsenceToLate() {
-        this.score = this.score.updateAbsenceToLate();
+    private void updateAbsenceToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case ATTENDANCE -> this.score = this.score.updateAbsenceToAttendance();
+            case LATE -> this.score = this.score.updateAbsenceToLate();
+        }
     }
 
     // Add Getter

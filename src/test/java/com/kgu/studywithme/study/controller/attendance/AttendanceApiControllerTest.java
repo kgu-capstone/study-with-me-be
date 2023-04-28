@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -166,6 +167,55 @@ class AttendanceApiControllerTest extends ControllerTest {
                     .andDo(
                             document(
                                     "StudyApi/Attendance/ManualCheck/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
+                                            parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("week").description("수동 출석할 주차"),
+                                            fieldWithPath("status").description("출석 정보")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("미출석 상태로 출석 체크를 진행할 수 없다")
+        void throwExceptionByCannotUpdateToNonAttendance() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.CANNOT_UPDATE_TO_NON_ATTENDANCE))
+                    .when(attendanceService)
+                    .manualCheckAttendance(any(), any(), any(), any());
+
+            // when
+            final AttendanceRequest request = new AttendanceRequest(1, NON_ATTENDANCE.getDescription());
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, ANONYMOUS_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.CANNOT_UPDATE_TO_NON_ATTENDANCE;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Attendance/ManualCheck/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
