@@ -22,8 +22,8 @@ import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
 public class StudyService {
     private final StudyValidator studyValidator;
     private final StudyRepository studyRepository;
-    private final MemberFindService memberFindService;
     private final StudyFindService studyFindService;
+    private final MemberFindService memberFindService;
 
     @Transactional
     public Long register(Long hostId, StudyRegisterRequest request) {
@@ -89,5 +89,11 @@ public class StudyService {
 
     private void validateUniqueNameForUpdate(String name, Long studyId) {
         studyValidator.validateUniqueNameForUpdate(StudyName.from(name), studyId);
+    }
+
+    @Transactional
+    public void close(Long studyId) {
+        Study study = studyFindService.findById(studyId);
+        study.close();
     }
 }

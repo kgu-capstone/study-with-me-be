@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.kgu.studywithme.fixture.MemberFixture.*;
-import static com.kgu.studywithme.fixture.StudyFixture.KAKAO_INTERVIEW;
-import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
+import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOfflineStudyUpdateRequest;
@@ -166,6 +165,20 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
+    }
+
+    @Test
+    @DisplayName("스터디를 종료한다")
+    void close() {
+        // given
+        Study study = studyRepository.save(SPRING.toOnlineStudy(host));
+
+        // when
+        studyService.close(study.getId());
+
+        // then
+        Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+        assertThat(findStudy.isClosed()).isTrue();
     }
 
     private void beParticipation(Study study, Member... members) {
