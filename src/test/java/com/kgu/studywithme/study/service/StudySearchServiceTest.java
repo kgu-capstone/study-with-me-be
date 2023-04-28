@@ -130,6 +130,25 @@ class StudySearchServiceTest extends ServiceTest {
                 result6,
                 List.of(programming[3], programming[2], programming[1], programming[0])
         );
+
+        /* 온라인 + 오프라인 통합 + 3개 close */
+        programming[9].close();
+        programming[2].close();
+        programming[0].close();
+
+        DefaultStudyResponse result7 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_1);
+        assertThat(result7.hasNext()).isTrue();
+        assertThatStudiesMatch(
+                result7,
+                List.of(programming[11], programming[10], programming[8], programming[7], programming[6], programming[5], programming[4], programming[3])
+        );
+
+        DefaultStudyResponse result8 = studySearchService.findStudyByCategory(totalCondition, PAGE_REQUEST_2);
+        assertThat(result8.hasNext()).isFalse();
+        assertThatStudiesMatch(
+                result8,
+                List.of(programming[1])
+        );
     }
 
     @Test
@@ -198,6 +217,35 @@ class StudySearchServiceTest extends ServiceTest {
         assertThatStudiesMatch(
                 result8,
                 List.of(interview[0], language[6], language[5], language[4], language[3], language[2], language[1], language[0])
+        );
+
+        /* 온라인 + 오프라인 통합 + 6개 close */
+        programming[11].close();
+        programming[8].close();
+        programming[2].close();
+        programming[0].close();
+        interview[4].close();
+        language[2].close();
+
+        DefaultStudyResponse result9 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_1);
+        assertThat(result9.hasNext()).isTrue();
+        assertThatStudiesMatch(
+                result9,
+                List.of(programming[10], programming[9], programming[7], programming[6], programming[5], programming[4], programming[3], programming[1])
+        );
+
+        DefaultStudyResponse result10 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_2);
+        assertThat(result10.hasNext()).isTrue();
+        assertThatStudiesMatch(
+                result10,
+                List.of(interview[3], interview[2], interview[1], interview[0], language[6], language[5], language[4], language[3])
+        );
+
+        DefaultStudyResponse result11 = studySearchService.findStudyByRecommend(totalCondition, PAGE_REQUEST_3);
+        assertThat(result11.hasNext()).isFalse();
+        assertThatStudiesMatch(
+                result11,
+                List.of(language[1], language[0])
         );
     }
 
