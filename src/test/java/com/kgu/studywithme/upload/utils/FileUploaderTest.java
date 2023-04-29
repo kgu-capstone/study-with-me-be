@@ -159,7 +159,7 @@ class FileUploaderTest extends InfraTest {
         }
 
         @Test
-        @DisplayName("과제물 업로드를 성공한다")
+        @DisplayName("과제 업로드를 성공한다")
         void success() throws Exception {
             // given
             MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");

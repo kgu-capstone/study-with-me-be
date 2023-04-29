@@ -39,4 +39,14 @@ public class StudyWeeklyApiController {
         studyWeeklyService.submitAssignment(memberId, studyId, week, request.type(), request.file(), request.link());
         return ResponseEntity.noContent().build();
     }
+
+    @CheckStudyParticipant
+    @PostMapping(value = "/assignment/edit", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> editSubmittedAssignment(@ExtractPayload Long memberId,
+                                                        @PathVariable Long studyId,
+                                                        @PathVariable Integer week,
+                                                        @ModelAttribute @Valid WeeklyAssignmentSubmitRequest request) {
+        studyWeeklyService.editSubmittedAssignment(memberId, week, request.type(), request.file(), request.link());
+        return ResponseEntity.noContent().build();
+    }
 }
