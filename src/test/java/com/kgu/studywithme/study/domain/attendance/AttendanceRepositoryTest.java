@@ -10,9 +10,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import java.util.List;
+import java.util.Set;
+
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -28,12 +32,22 @@ public class AttendanceRepositoryTest extends RepositoryTest {
     private MemberRepository memberRepository;
 
     private Member host;
+    private final Member[] participants = new Member[7];
     private Study study;
 
     @BeforeEach
     void setUp() {
         host = memberRepository.save(JIWON.toMember());
+        participants[0] = memberRepository.save(DUMMY1.toMember());
+        participants[1] = memberRepository.save(DUMMY2.toMember());
+        participants[2] = memberRepository.save(DUMMY3.toMember());
+        participants[3] = memberRepository.save(DUMMY4.toMember());
+        participants[4] = memberRepository.save(DUMMY5.toMember());
+        participants[5] = memberRepository.save(DUMMY6.toMember());
+        participants[6] = memberRepository.save(DUMMY7.toMember());
+
         study = studyRepository.save(SPRING.toOnlineStudy(host));
+        beParticipation();
 
         attendanceRepository.save(Attendance.recordAttendance(study, host, 1, NON_ATTENDANCE));
     }
@@ -52,29 +66,61 @@ public class AttendanceRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("참여자의 출석 상태를 업데이트한다")
-    void applyParticipantAttendanceStatus() {
-        /* 미출결 */
-        Attendance nonAttendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(nonAttendance.getStatus()).isEqualTo(NON_ATTENDANCE);
+    @DisplayName("해당 스터디의 해당 주차의 참여자들의 상태를 수정한다 [Bulk Update]")
+    void updateParticipantStatus() {
+        // given
+        applyNonAttendanceToAllParticipants();
 
-        /* to 출석 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, ATTENDANCE);
-        Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
+        // when: [0, 1, 2, 3] to ATTENDANCE
+        attendanceRepository.updateParticipantStatus(
+                study.getId(),
+                1,
+                Set.of(participants[0].getId(), participants[1].getId(), participants[2].getId(), participants[3].getId()),
+                ATTENDANCE
+        );
 
-        /* to 지각 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, LATE);
-        Attendance late = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(late.getStatus()).isEqualTo(LATE);
+        // then
+        List<Attendance> attendances = attendanceRepository.findAll();
+        assertAll(
+                () -> assertThat(attendances).hasSize(8),
+                () -> assertThat(attendances)
+                        .map(Attendance::getParticipant)
+                        .map(Member::getId)
+                        .containsExactly(
+                                host.getId(),
+                                participants[0].getId(),
+                                participants[1].getId(),
+                                participants[2].getId(),
+                                participants[3].getId(),
+                                participants[4].getId(),
+                                participants[5].getId(),
+                                participants[6].getId()
+                        ),
+                () -> assertThat(attendances)
+                        .map(Attendance::getStatus)
+                        .containsExactly(
+                                NON_ATTENDANCE,
+                                ATTENDANCE,
+                                ATTENDANCE,
+                                ATTENDANCE,
+                                ATTENDANCE,
+                                NON_ATTENDANCE,
+                                NON_ATTENDANCE,
+                                NON_ATTENDANCE
+                        )
+        );
+    }
 
-        /* to 결석 */
-        attendanceRepository.applyParticipantAttendanceStatus(host.getId(), 1, ABSENCE);
-        Attendance absence = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), 1)
-                .orElseThrow();
-        assertThat(absence.getStatus()).isEqualTo(ABSENCE);
+    private void beParticipation() {
+        for (Member member : participants) {
+            study.applyParticipation(member);
+            study.approveParticipation(member);
+        }
+    }
+
+    private void applyNonAttendanceToAllParticipants() {
+        for (Member participant : participants) {
+            attendanceRepository.save(Attendance.recordAttendance(study, participant, 1, NON_ATTENDANCE));
+        }
     }
 }

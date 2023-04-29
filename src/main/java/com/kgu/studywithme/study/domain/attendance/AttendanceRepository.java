@@ -6,16 +6,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     // @Query
-    @Modifying(clearAutomatically = true)
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Attendance a" +
             " SET a.status = :status" +
-            " WHERE a.participant.id = :participantId AND a.week = :week")
-    void applyParticipantAttendanceStatus(@Param("participantId") Long participantId,
-                                          @Param("week") int week,
-                                          @Param("status") AttendanceStatus status);
+            " WHERE a.study.id = :studyId AND a.week = :week AND a.participant.id IN :participantIds")
+    void updateParticipantStatus(@Param("studyId") Long studyId,
+                                 @Param("week") int week,
+                                 @Param("participantIds") Set<Long> participantIds,
+                                 @Param("status") AttendanceStatus status);
 
     // Query Method
     Optional<Attendance> findByStudyIdAndParticipantIdAndWeek(Long studyId, Long participantId, int week);

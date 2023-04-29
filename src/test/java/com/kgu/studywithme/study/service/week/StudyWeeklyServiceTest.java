@@ -109,10 +109,12 @@ class StudyWeeklyServiceTest extends ServiceTest {
             assertThatAttachmentsMatch(weeks1.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances1 = findStudy1.getAttendances();
-            List<Integer> expectWeeks1 = List.of(1, 1, 1, 1, 1);
-            List<Member> expectParticipants1 = List.of(host, members[0], members[1], members[2], members[3]);
-            List<AttendanceStatus> expectStatus1 = List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE);
-            assertThatAttendancesMatch(attendances1, expectWeeks1, expectParticipants1, expectStatus1);
+            assertThatAttendancesMatch(
+                    attendances1,
+                    List.of(1, 1, 1, 1, 1),
+                    List.of(host, members[0], members[1], members[2], members[3]),
+                    List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE)
+            );
 
             /* given - 2주차 */
             beParticipation(study, members[4]);
@@ -132,19 +134,21 @@ class StudyWeeklyServiceTest extends ServiceTest {
             assertThatAttachmentsMatch(weeks2.get(1).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances2 = findStudy2.getAttendances();
-            List<Integer> expectWeeks2 = List.of(
-                    1, 1, 1, 1, 1,
-                    2, 2, 2, 2, 2, 2
+            assertThatAttendancesMatch(
+                    attendances2,
+                    List.of(
+                            1, 1, 1, 1, 1,
+                            2, 2, 2, 2, 2, 2
+                    ),
+                    List.of(
+                            host, members[0], members[1], members[2], members[3],
+                            host, members[0], members[1], members[2], members[3], members[4]
+                    ),
+                    List.of(
+                            NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE,
+                            NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE
+                    )
             );
-            List<Member> expectParticipants2 = List.of(
-                    host, members[0], members[1], members[2], members[3],
-                    host, members[0], members[1], members[2], members[3], members[4]
-            );
-            List<AttendanceStatus> expectStatus2 = List.of(
-                    NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE,
-                    NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE
-            );
-            assertThatAttendancesMatch(attendances2, expectWeeks2, expectParticipants2, expectStatus2);
         }
 
         @Test
@@ -166,10 +170,12 @@ class StudyWeeklyServiceTest extends ServiceTest {
             assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances = findStudy.getAttendances();
-            List<Integer> expectWeeks = List.of(1, 1, 1, 1, 1);
-            List<Member> expectParticipants = List.of(host, members[0], members[1], members[2], members[3]);
-            List<AttendanceStatus> expectStatus = List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE);
-            assertThatAttendancesMatch(attendances, expectWeeks, expectParticipants, expectStatus);
+            assertThatAttendancesMatch(
+                    attendances,
+                    List.of(1, 1, 1, 1, 1),
+                    List.of(host, members[0], members[1], members[2], members[3]),
+                    List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE)
+            );
         }
 
         @Test
@@ -191,16 +197,25 @@ class StudyWeeklyServiceTest extends ServiceTest {
             assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances = findStudy.getAttendances();
-            List<Integer> expectWeeks = List.of(1, 1, 1, 1, 1);
-            List<Member> expectParticipants = List.of(host, members[0], members[1], members[2], members[3]);
-            List<AttendanceStatus> expectStatus = List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE);
-            assertThatAttendancesMatch(attendances, expectWeeks, expectParticipants, expectStatus);
+            assertThatAttendancesMatch(
+                    attendances,
+                    List.of(1, 1, 1, 1, 1),
+                    List.of(host, members[0], members[1], members[2], members[3]),
+                    List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE)
+            );
         }
     }
 
     @Nested
     @DisplayName("스터디 주차별 과제 제출")
     class submitAssignment {
+        @BeforeEach
+        void setUp() {
+            for (int i = 0; i < 5; i++) {
+                host.applyScoreByAttendanceStatus(ABSENCE);
+            } // 75
+        }
+        
         @AfterEach
         void restore() {
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
@@ -237,6 +252,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
+            assertThat(host.getScore()).isEqualTo(75);
+
             // when
             final String submitLink = "https://notion.so";
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
@@ -256,11 +273,14 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 + 1) // 출석 반영
+            );
         }
 
         @Test
-        @DisplayName("과제를 제출한다 [링크 + 자동 출석 O -> 지각]")
+        @DisplayName("과제를 제출한다 [링크 + 자동 출석 O -> 스케줄러에 의한 결석 => 지각]")
         void submitLinkWithAutoAttendance2() {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
@@ -269,6 +289,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
+            applyAbsenceStatusByScheduler();
+            assertThat(host.getScore()).isEqualTo(75 - 5);
+
             // when
             final String submitLink = "https://notion.so";
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
@@ -288,7 +311,47 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(LATE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 - 5 + 5 - 1) // 결석 -> 지각 반영
+            );
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [링크 + 자동 출석 O -> 지각]")
+        void submitLinkWithAutoAttendance3() {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            assertThat(host.getScore()).isEqualTo(75);
+
+            // when
+            final String submitLink = "https://notion.so";
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 - 1) // 지각 반영
+            );
         }
 
         @Test
@@ -297,6 +360,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            assertThat(host.getScore()).isEqualTo(75);
 
             // when
             final String submitLink = "https://notion.so";
@@ -317,7 +382,10 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE),
+                    () -> assertThat(host.getScore()).isEqualTo(75)
+            );
         }
 
         @Test
@@ -330,6 +398,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
+            assertThat(host.getScore()).isEqualTo(75);
+
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
             final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
@@ -352,11 +422,14 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 + 1)
+            );
         }
 
         @Test
-        @DisplayName("과제를 제출한다 [파일 + 자동 출석 O -> 지각]")
+        @DisplayName("과제를 제출한다 [파일 + 자동 출석 O -> 스케줄러에 의한 결석 => 지각]")
         void submitFileWithAutoAttendance2() throws IOException {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
@@ -365,6 +438,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
+            applyAbsenceStatusByScheduler();
+            assertThat(host.getScore()).isEqualTo(75 - 5);
+
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
             final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
@@ -387,7 +463,50 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(LATE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 - 5 + 5 - 1)
+            );
+        }
+
+        @Test
+        @DisplayName("과제를 제출한다 [파일 + 자동 출석 O -> 지각]")
+        void submitFileWithAutoAttendance3() throws IOException {
+            // given
+            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            mockingAttachmentsUpload(files);
+            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            assertThat(host.getScore()).isEqualTo(75);
+
+            // when
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
+
+            studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
+
+            // then
+            Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findWeek.isAutoAttendance()).isTrue(),
+                    () -> assertThat(findWeek.getSubmits()).hasSize(1)
+            );
+
+            Submit submit = findWeek.getSubmits().get(0);
+            assertAll(
+                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
+            );
+
+            Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
+                    () -> assertThat(host.getScore()).isEqualTo(75 - 1)
+            );
         }
 
         @Test
@@ -397,6 +516,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+
+            assertThat(host.getScore()).isEqualTo(75);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
@@ -420,12 +541,22 @@ class StudyWeeklyServiceTest extends ServiceTest {
             );
 
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
-            assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE);
+            assertAll(
+                    () -> assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE),
+                    () -> assertThat(host.getScore()).isEqualTo(75)
+            );
         }
 
         private void reflectionWeekPeriod(WeekFixture fixture, LocalDateTime startDate, LocalDateTime endDate) {
             ReflectionTestUtils.setField(fixture.getPeriod(), "startDate", startDate);
             ReflectionTestUtils.setField(fixture.getPeriod(), "endDate", endDate);
+        }
+
+        private void applyAbsenceStatusByScheduler() {
+            attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek())
+                    .orElseThrow()
+                    .updateAttendanceStatus(ABSENCE);
+            host.applyScoreByAttendanceStatus(ABSENCE);
         }
     }
 

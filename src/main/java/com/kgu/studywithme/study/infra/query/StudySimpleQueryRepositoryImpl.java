@@ -2,19 +2,20 @@ package com.kgu.studywithme.study.infra.query;
 
 import com.kgu.studywithme.member.domain.QMember;
 import com.kgu.studywithme.study.domain.participant.ParticipantStatus;
-import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
-import com.kgu.studywithme.study.infra.query.dto.response.QBasicHashtag;
-import com.kgu.studywithme.study.infra.query.dto.response.QSimpleStudy;
-import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
+import com.kgu.studywithme.study.domain.week.QWeek;
+import com.kgu.studywithme.study.infra.query.dto.response.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kgu.studywithme.favorite.domain.QFavorite.favorite;
 import static com.kgu.studywithme.study.domain.QStudy.study;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
+import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
 import static com.kgu.studywithme.study.domain.hashtag.QHashtag.hashtag;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
@@ -76,6 +77,32 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .innerJoin(favorite).on(favorite.studyId.eq(study.id))
                 .where(favorite.memberId.eq(memberId))
                 .orderBy(study.id.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<BasicWeekly> findAutoAttendanceAndPeriodEndWeek() {
+        final LocalDateTime now = LocalDateTime.now();
+        QWeek weekly = new QWeek("week");
+
+        return query
+                .select(new QBasicWeekly(weekly.study.id, weekly.week))
+                .from(weekly)
+                .where(
+                        weekly.autoAttendance.eq(true),
+                        weekly.period.endDate.before(now)
+                )
+                .orderBy(weekly.study.id.asc(), weekly.week.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<BasicAttendance> findBasicAttendanceInformation() {
+        return query
+                .select(new QBasicAttendance(attendance.study.id, attendance.week, attendance.participant.id))
+                .from(attendance)
+                .where(attendance.status.eq(NON_ATTENDANCE))
+                .orderBy(attendance.study.id.asc())
                 .fetch();
     }
 

@@ -35,6 +35,16 @@ include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case3/request-fields
 HTTP Response
 include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case3/response-body.adoc[]
 
+=== 4. 미출석 상태로 출석 체크를 진행할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case4/path-parameters.adoc[]
+include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case4/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Attendance/ManualCheck/Failure/Case4/response-body.adoc[]
+
 === 5. 수동 출석 체크에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Attendance/ManualCheck/Success/http-request.adoc[]

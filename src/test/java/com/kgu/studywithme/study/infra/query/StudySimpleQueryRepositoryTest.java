@@ -7,19 +7,26 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.domain.attendance.Attendance;
+import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
+import com.kgu.studywithme.study.domain.week.Period;
+import com.kgu.studywithme.study.infra.query.dto.response.BasicAttendance;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
+import com.kgu.studywithme.study.infra.query.dto.response.BasicWeekly;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -33,6 +40,9 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
 
     @Autowired
     private FavoriteRepository favoriteRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     private Member host;
     private Member member;
@@ -51,7 +61,7 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         programming[5] = studyRepository.save(EFFECTIVE_JAVA.toOnlineStudy(host));
         programming[6] = studyRepository.save(AWS.toOfflineStudy(host));
     }
-    
+
     @Test
     @DisplayName("전체 스터디의 ID + Hashtag를 조회한다")
     void findHashtags() {
@@ -64,7 +74,7 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
                 .sum();
         assertThat(result).hasSize(totalSize);
     }
-    
+
     @Test
     @DisplayName("신청한 스터디에 대한 정보를 조회한다")
     void findApplyStudyByMemberId() {
@@ -168,6 +178,102 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         );
     }
 
+    @Test
+    @DisplayName("자동 출석이 적용된 주차 중 Period EndDate 이후인 주차를 조회한다 [For Scheduling]")
+    void findAutoAttendanceAndPeriodEndWeek() {
+        // given
+        applyWeekly(
+                programming[0],
+                List.of(true, true, true),
+                List.of(
+                        Period.of(LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(2)), // get
+                        Period.of(LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1)), // get
+                        Period.of(LocalDateTime.now().plusDays(0), LocalDateTime.now().plusDays(1))
+                )
+        );
+        applyWeekly(
+                programming[1],
+                List.of(true, false, true, false, true, true),
+                List.of(
+                        Period.of(LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(4)), // get
+                        Period.of(LocalDateTime.now().minusDays(4), LocalDateTime.now().minusDays(3)),
+                        Period.of(LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(2)), // get
+                        Period.of(LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1)),
+                        Period.of(LocalDateTime.now().plusDays(0), LocalDateTime.now().plusDays(1)),
+                        Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2))
+                )
+        );
+        applyWeekly(
+                programming[2],
+                List.of(true, true, true, true, false, false, true, true),
+                List.of(
+                        Period.of(LocalDateTime.now().minusDays(7), LocalDateTime.now().minusDays(6)), // get
+                        Period.of(LocalDateTime.now().minusDays(6), LocalDateTime.now().minusDays(5)), // get
+                        Period.of(LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(4)), // get
+                        Period.of(LocalDateTime.now().minusDays(4), LocalDateTime.now().minusDays(3)), // get
+                        Period.of(LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(2)),
+                        Period.of(LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1)),
+                        Period.of(LocalDateTime.now().plusDays(0), LocalDateTime.now().plusDays(1)),
+                        Period.of(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2))
+                )
+        );
+
+        // when
+        List<BasicWeekly> result = studyRepository.findAutoAttendanceAndPeriodEndWeek();
+
+        // then
+        assertAll(
+                () -> assertThat(result).hasSize(8),
+                () -> assertThat(result)
+                        .map(BasicWeekly::studyId)
+                        .containsExactly(
+                                programming[0].getId(), programming[0].getId(),
+                                programming[1].getId(), programming[1].getId(),
+                                programming[2].getId(), programming[2].getId(), programming[2].getId(), programming[2].getId()
+                        ),
+                () -> assertThat(result)
+                        .map(BasicWeekly::week)
+                        .containsExactly(
+                                1, 2,
+                                1, 3,
+                                1, 2, 3, 4
+                        )
+        );
+    }
+
+    @Test
+    @DisplayName("전체 미출결 출석 정보에 대해서 조회한다 [For Scheduling]")
+    void findBasicAttendanceInformation() {
+        // given
+        applyAndParticipateStudy(member, programming[0], programming[1], programming[2]);
+
+        applyAttendance(programming[0], 1, host);
+        applyAttendance(programming[0], 2, host);
+        applyAttendance(programming[0], 3, host, member);
+        applyAttendance(programming[0], 4, host, member);
+        applyAttendance(programming[0], 5, host, member);
+        applyAttendance(programming[0], 6, host, member);
+
+        applyAttendance(programming[1], 1, host);
+        applyAttendance(programming[1], 2, host);
+        applyAttendance(programming[1], 3, host, member);
+        applyAttendance(programming[1], 4, host, member);
+        applyAttendance(programming[1], 5, host, member);
+        applyAttendance(programming[1], 6, host, member);
+        applyAttendance(programming[1], 7, host, member);
+        applyAttendance(programming[1], 8, host, member);
+
+        applyAttendance(programming[2], 1, host);
+        applyAttendance(programming[2], 2, host);
+        applyAttendance(programming[2], 3, host, member);
+
+        // when
+        List<BasicAttendance> attendances = studyRepository.findBasicAttendanceInformation();
+
+        // then
+        assertThat(attendances).hasSize(28);
+    }
+
     private void applyStudy(Member member, Study... studies) {
         for (Study study : studies) {
             study.applyParticipation(member);
@@ -204,6 +310,25 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
     private void favoriteStudy(Member member, Study... studies) {
         for (Study study : studies) {
             favoriteRepository.save(Favorite.favoriteMarking(study.getId(), member.getId()));
+        }
+    }
+
+    private void applyWeekly(Study study, List<Boolean> autoAttendances, List<Period> periods) {
+        for (int index = 1; index <= autoAttendances.size(); index++) {
+            study.createWeekWithAssignment(
+                    "Week " + index,
+                    "Week " + index + "'s Content",
+                    index,
+                    periods.get(index - 1),
+                    autoAttendances.get(index - 1),
+                    List.of()
+            );
+        }
+    }
+
+    private void applyAttendance(Study study, int week, Member... members) {
+        for (Member member : members) {
+            attendanceRepository.save(Attendance.recordAttendance(study, member, week, NON_ATTENDANCE));
         }
     }
 

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,6 +33,7 @@ class MemberTest {
                 () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
                 () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
+                () -> assertThat(member.getScore()).isEqualTo(100),
                 () -> assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(JIWON.getInterests())
         );
     }
@@ -145,6 +147,125 @@ class MemberTest {
                             .map(PeerReview::getContent)
                             .containsExactlyInAnyOrder("열심히 안해요.", "열심히 안해요.")
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 점수 업데이트")
+    class updateScore{
+        private Member member;
+
+        @BeforeEach
+        void setUp() {
+            member = JIWON.toMember();
+        }
+
+        @Nested
+        @DisplayName("단순 출석에 대한 점수 업데이트")
+        class applySimpleAttendance {
+            @Test
+            @DisplayName("출석에 대한 점수를 적용한다")
+            void applyAttendance() {
+                // given
+                member.applyScoreByAttendanceStatus(ABSENCE); // 100 - 5 = 95
+
+                // when
+                member.applyScoreByAttendanceStatus(ATTENDANCE); // 95 + 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(96);
+            }
+
+            @Test
+            @DisplayName("지각에 대한 점수를 적용한다")
+            void applyLate() {
+                // when
+                member.applyScoreByAttendanceStatus(LATE); // 100 - 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(99);
+            }
+
+            @Test
+            @DisplayName("결석에 대한 점수를 적용한다")
+            void applyAbsence() {
+                // when
+                member.applyScoreByAttendanceStatus(ABSENCE); // 100 - 5
+
+                // then
+                assertThat(member.getScore()).isEqualTo(95);
+            }
+        }
+
+        @Nested
+        @DisplayName("이전 출석 정보 수정에 따른 점수 업데이트")
+        class applyComplexAttendance {
+            @BeforeEach
+            void setUp() {
+                for (int i = 0; i < 5; i++) {
+                    member.applyScoreByAttendanceStatus(ABSENCE);
+                } // 75
+            }
+
+            @Test
+            @DisplayName("출석 -> 지각으로 수정함에 따라 점수를 업데이트한다")
+            void updateAttendanceToLate() {
+                // when
+                member.applyScoreByAttendanceStatus(ATTENDANCE, LATE); // 75 - 1 - 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(73);
+            }
+
+            @Test
+            @DisplayName("출석 -> 결석으로 수정함에 따라 점수를 업데이트한다")
+            void updateAttendanceToAbsence() {
+                // when
+                member.applyScoreByAttendanceStatus(ATTENDANCE, ABSENCE); // 75 - 1 - 5
+
+                // then
+                assertThat(member.getScore()).isEqualTo(69);
+            }
+
+            @Test
+            @DisplayName("지각 -> 출석으로 수정함에 따라 점수를 업데이트한다")
+            void updateLateToAttendance() {
+                // when
+                member.applyScoreByAttendanceStatus(LATE, ATTENDANCE); // 75 + 1 + 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(77);
+            }
+
+            @Test
+            @DisplayName("지각 -> 결석으로 수정함에 따라 점수를 업데이트한다")
+            void updateLateToAbsence() {
+                // when
+                member.applyScoreByAttendanceStatus(LATE, ABSENCE); // 75 + 1 - 5
+
+                // then
+                assertThat(member.getScore()).isEqualTo(71);
+            }
+
+            @Test
+            @DisplayName("결석 -> 출석으로 수정함에 따라 점수를 업데이트한다")
+            void updateAbsenceToAttendance() {
+                // when
+                member.applyScoreByAttendanceStatus(ABSENCE, ATTENDANCE); // 75 + 5 + 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(81);
+            }
+
+            @Test
+            @DisplayName("결석 -> 지각으로 수정함에 따라 점수를 업데이트한다")
+            void updateAbsenceToLate() {
+                // when
+                member.applyScoreByAttendanceStatus(ABSENCE, LATE); // 75 + 5 - 1
+
+                // then
+                assertThat(member.getScore()).isEqualTo(79);
+            }
         }
     }
 }
