@@ -5,7 +5,9 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
@@ -76,7 +78,7 @@ public class StudyWeeklyService {
         Member participant = memberFindService.findById(participantId);
 
         handleAssignmentSubmission(specificWeek, participant, type, file, link);
-        processAttendanceBasedOnAutoAttendanceFlag(specificWeek, participant);
+        processAttendanceBasedOnAutoAttendanceFlag(specificWeek, participant, studyId);
     }
 
     private void validateAssignmentSubmissionExists(MultipartFile file, String link) {
@@ -102,17 +104,39 @@ public class StudyWeeklyService {
         week.submitAssignment(participant, upload);
     }
 
-    private void processAttendanceBasedOnAutoAttendanceFlag(Week week, Member participant) {
-        final LocalDateTime now = LocalDateTime.now();
-
+    private void processAttendanceBasedOnAutoAttendanceFlag(Week week, Member participant, Long studyId) {
         if (week.isAutoAttendance()) {
-            Period period = week.getPeriod();
+            final LocalDateTime now = LocalDateTime.now();
+            final Period period = week.getPeriod();
 
             if (period.isDateWithInRange(now)) {
-                attendanceRepository.applyParticipantAttendanceStatus(participant.getId(), week.getWeek(), ATTENDANCE);
+                applyAttendanceStatusAndMemberScore(participant, week.getWeek(), studyId);
             } else {
-                attendanceRepository.applyParticipantAttendanceStatus(participant.getId(), week.getWeek(), LATE);
+                applyLateStatusAndMemberScore(participant, week.getWeek(), studyId);
             }
         }
+    }
+
+    private void applyAttendanceStatusAndMemberScore(Member participant, int week, Long studyId) {
+        Attendance attendance = getParticipantAttendance(studyId, participant.getId(), week);
+        attendance.updateAttendanceStatus(ATTENDANCE);
+        participant.applyScoreByAttendanceStatus(ATTENDANCE);
+    }
+
+    private void applyLateStatusAndMemberScore(Member participant, int week, Long studyId) {
+        Attendance attendance = getParticipantAttendance(studyId, participant.getId(), week);
+        final AttendanceStatus previousStatus = attendance.getStatus();
+
+        attendance.updateAttendanceStatus(LATE);
+        if (previousStatus == ABSENCE) { // 스케줄러에 의한 결석 처리
+            participant.applyScoreByAttendanceStatus(ABSENCE, LATE);
+        } else { // 미출결 상태
+            participant.applyScoreByAttendanceStatus(LATE);
+        }
+    }
+
+    private Attendance getParticipantAttendance(Long studyId, Long memberId, Integer week) {
+        return attendanceRepository.findByStudyIdAndParticipantIdAndWeek(studyId, memberId, week)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND));
     }
 }

@@ -44,7 +44,7 @@ class AttendanceTest {
         Attendance attendance = Attendance.recordAttendance(STUDY, HOST, 1, ATTENDANCE);
 
         // when
-        attendance.updateAttendanceStatus(LATE.getDescription());
+        attendance.updateAttendanceStatus(LATE);
 
         // then
         assertThat(attendance.getStatus()).isEqualTo(LATE);

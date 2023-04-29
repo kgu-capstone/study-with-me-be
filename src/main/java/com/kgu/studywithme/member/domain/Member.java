@@ -5,6 +5,7 @@ import com.kgu.studywithme.global.BaseEntity;
 import com.kgu.studywithme.member.domain.interest.Interest;
 import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.domain.review.PeerReviews;
+import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,9 @@ public class Member extends BaseEntity {
     private Region region;
 
     @Embedded
+    private Score score;
+
+    @Embedded
     private PeerReviews peerReviews;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
@@ -63,6 +67,7 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.gender = gender;
         this.region = region;
+        this.score = Score.initScore();
         this.peerReviews = PeerReviews.createPeerReviewsPage();
         applyInterests(interests);
     }
@@ -93,6 +98,43 @@ public class Member extends BaseEntity {
         peerReviews.writeReview(PeerReview.doReview(this, reviewer, content));
     }
 
+    public void applyScoreByAttendanceStatus(AttendanceStatus status) {
+        switch (status) {
+            case ATTENDANCE -> this.score = this.score.applyAttendance();
+            case LATE -> this.score = this.score.applyLate();
+            default -> this.score = this.score.applyAbsence();
+        }
+    }
+
+    public void applyScoreByAttendanceStatus(AttendanceStatus previous, AttendanceStatus current) {
+        switch (previous) {
+            case ATTENDANCE -> updateAttenceToCurrent(current);
+            case LATE -> updateLateToCurrent(current);
+            default -> updateAbsenceToCurrent(current);
+        }
+    }
+
+    private void updateAttenceToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case LATE -> this.score = this.score.updateAttendanceToLate();
+            case ABSENCE -> this.score = this.score.updateAttendanceToAbsence();
+        }
+    }
+
+    private void updateLateToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case ATTENDANCE -> this.score = this.score.updateLateToAttendance();
+            case ABSENCE -> this.score = this.score.updateLateToAbsence();
+        }
+    }
+
+    private void updateAbsenceToCurrent(AttendanceStatus current) {
+        switch (current) {
+            case ATTENDANCE -> this.score = this.score.updateAbsenceToAttendance();
+            case LATE -> this.score = this.score.updateAbsenceToLate();
+        }
+    }
+
     // Add Getter
     public String getNicknameValue() {
         return nickname.getValue();
@@ -110,13 +152,17 @@ public class Member extends BaseEntity {
         return region.getCity();
     }
 
-    public List<Category> getInterests() {
-        return interests.stream()
-                .map(Interest::getCategory)
-                .toList();
+    public int getScore() {
+        return score.getValue();
     }
 
     public List<PeerReview> getPeerReviews() {
         return peerReviews.getPeerReviews();
+    }
+
+    public List<Category> getInterests() {
+        return interests.stream()
+                .map(Interest::getCategory)
+                .toList();
     }
 }

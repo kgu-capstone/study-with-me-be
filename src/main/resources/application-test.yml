@@ -3,6 +3,22 @@ spring:
     import:
       - application-logging.yml
 
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MYSQL;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        default_batch_fetch_size: 50
+
   thymeleaf:
     cache: false
 
@@ -25,22 +41,6 @@ spring:
             enable: true
           ssl:
             enable: true
-
-  datasource:
-    url: jdbc:h2:mem:test;MODE=MYSQL;
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: true
-        default_batch_fetch_size: 50
 
 jwt:
   secret-key: abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
