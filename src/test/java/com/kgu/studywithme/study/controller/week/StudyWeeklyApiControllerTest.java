@@ -243,7 +243,6 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
     @Nested
     @DisplayName("스터디 주차별 과제 제출 API [POST /api/studies/{studyId}/weeks/{week}/assignment]")
     class submitAssignment {
-
         private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/assignment";
         private static final Integer WEEK = 1;
         private static final Long STUDY_ID = 1L;
@@ -530,6 +529,270 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                                     pathParameters(
                                             parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("week").description("과제를 제출할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("file").description("제출할 파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("type").description("과제 제출 타입")
+                                                    .attributes(constraint("file=파일 / link=링크")),
+                                            parameterWithName("link").description("제출할 링크")
+                                                    .optional()
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 주차별 제출한 과제 수정 API [PATCH /api/studies/{studyId}/weeks/{week}/assignment/edit]")
+    class editSubmittedAssignment {
+        private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/assignment/edit";
+        private static final Integer WEEK = 1;
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+        private MultipartFile file;
+
+        @BeforeEach
+        void setUp() throws IOException {
+            Study study = createSpringStudy(HOST_ID, STUDY_ID);
+            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+
+            file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+        }
+
+        @Test
+        @DisplayName("Authorization Header에 AccessToken이 없으면 제출한 과제를 수정할 수 없다")
+        void withoutAccessToken() throws Exception {
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .param("type", "link")
+                    .param("link", "https://notion.so");
+
+            // then
+            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isForbidden(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("file").description("제출할 파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("type").description("과제 제출 타입")
+                                                    .attributes(constraint("file=파일 / link=링크")),
+                                            parameterWithName("link").description("제출할 링크")
+                                                    .optional()
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 참여자가 아니라면 제출한 과제를 수정할 수 없다")
+        void throwExceptionByMemberIsNotHost() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("type", "link")
+                    .param("link", "https://notion.so");
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("file").description("제출할 파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("type").description("과제 제출 타입")
+                                                    .attributes(constraint("file=파일 / link=링크")),
+                                            parameterWithName("link").description("제출할 링크")
+                                                    .optional()
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("과제 제출물을 업로드 하지 않으면 예외가 발생한다")
+        void throwExceptionByMissingSubmission() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MISSING_SUBMISSION))
+                    .when(studyWeeklyService)
+                    .editSubmittedAssignment(any(), any(), any(), any(), any());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("type", "file");
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MISSING_SUBMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("file").description("제출할 파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("type").description("과제 제출 타입")
+                                                    .attributes(constraint("file=파일 / link=링크")),
+                                            parameterWithName("link").description("제출할 링크")
+                                                    .optional()
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("링크 + 파일을 둘다 업로드하면 예외가 발생한다")
+        void throwExceptionByDuplicateSubmission() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_SUBMISSION))
+                    .when(studyWeeklyService)
+                    .editSubmittedAssignment(any(), any(), any(), any(), any());
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .file((MockMultipartFile) file)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("type", "file")
+                    .param("link", "https://notion.so");
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.DUPLICATE_SUBMISSION;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("file").description("제출할 파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("type").description("과제 제출 타입")
+                                                    .attributes(constraint("file=파일 / link=링크")),
+                                            parameterWithName("link").description("제출할 링크")
+                                                    .optional()
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("제출한 과제를 수정한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("type", "link")
+                    .param("link", "https://notion.so");
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
                                     ),
                                     requestParts(
                                             partWithName("file").description("제출할 파일")

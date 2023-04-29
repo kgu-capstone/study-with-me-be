@@ -103,3 +103,58 @@ include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/request-param
 
 HTTP Response
 include::{snippets}/StudyApi/Weekly/SubmitAssignment/Success/Case2/http-response.adoc[]
+
+== 스터디 주차별 제출한 과제 수정
+=== 1. Authorization Header에 AccessToken이 없으면 제출한 과제를 수정할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1/response-body.adoc[]
+
+=== 2. 스터디 참여자가 아니라면 제출한 과제를 수정할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2/response-body.adoc[]
+
+=== 3. 과제 제출물을 업로드 하지 않으면 예외가 발생한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3/response-body.adoc[]
+
+=== 4. 링크 + 파일을 둘다 업로드하면 예외가 발생한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4/response-body.adoc[]
+
+=== 5. 제출한 과제를 수정한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/EditSubmittedAssignment/Success/http-response.adoc[]

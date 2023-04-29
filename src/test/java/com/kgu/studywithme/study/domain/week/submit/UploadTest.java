@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Study-Week-Submit 도메인 {Upload VO} 테스트")
 class UploadTest {
     @Test
-    @DisplayName("Notion, Blog 등 링크를 통해서 과제물을 제출한다")
+    @DisplayName("Notion, Blog 등 링크를 통해서 과제를 제출한다")
     void constructWithLink() {
         Upload upload = Upload.withLink("https://notion.com");
 
@@ -22,7 +22,7 @@ class UploadTest {
     }
 
     @Test
-    @DisplayName("파일 업로드를 통해서 과제물을 제출한다")
+    @DisplayName("파일 업로드를 통해서 과제를 제출한다")
     void constructWithFile() {
         Upload upload = Upload.withFile("file_upload_link");
 

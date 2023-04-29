@@ -23,7 +23,7 @@ class ValidStudyTypeValidatorTest {
 
     @Test
     @DisplayName("허용하지 않는 스터디 타입이 들어오면 validator를 통과하지 못한다")
-    void notAllowedGender() {
+    void notAllowedStudyType() {
         // given
         final String unknown = "unknown";
 
@@ -36,7 +36,7 @@ class ValidStudyTypeValidatorTest {
 
     @Test
     @DisplayName("허용하는 스터디 타입이 들어오면 validator를 통과한다")
-    void allowedGender() {
+    void allowedStudyType() {
         // given
         final String on1 = "on";
         final String on2 = "ON";
