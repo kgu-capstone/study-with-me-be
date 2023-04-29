@@ -29,7 +29,6 @@ class SubmitTest {
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload()).isEqualTo(upload),
                 () -> assertThat(submit.getUpload().getLink()).isEqualTo("https://notion.com"),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK)
         );
@@ -44,9 +43,28 @@ class SubmitTest {
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload()).isEqualTo(upload),
                 () -> assertThat(submit.getUpload().getLink()).isEqualTo("file_upload_link"),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE)
+        );
+    }
+
+    @Test
+    @DisplayName("업로드한 과제를 수정한다")
+    void editUpload() {
+        // given
+        final Upload upload = Upload.withFile("file_upload_link");
+        Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
+
+        // when
+        final Upload newUpload = Upload.withLink("https://notion.so");
+        submit.editUpload(newUpload);
+
+        // then
+        assertAll(
+                () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
+                () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
+                () -> assertThat(submit.getUpload().getLink()).isEqualTo(newUpload.getLink()),
+                () -> assertThat(submit.getUpload().getType()).isEqualTo(newUpload.getType())
         );
     }
 }

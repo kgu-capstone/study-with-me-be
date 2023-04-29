@@ -11,6 +11,8 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
+import com.kgu.studywithme.study.domain.week.submit.Submit;
+import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.StudyFindService;
@@ -33,6 +35,7 @@ public class StudyWeeklyService {
     private final MemberFindService memberFindService;
     private final WeekRepository weekRepository;
     private final AttendanceRepository attendanceRepository;
+    private final SubmitRepository submitRepository;
     private final FileUploader uploader;
 
     @Transactional
@@ -97,11 +100,14 @@ public class StudyWeeklyService {
     }
 
     private void handleAssignmentSubmission(Week week, Member participant, String type, MultipartFile file, String link) {
-        Upload upload = type.equals("file")
+        Upload upload = createUpload(type, file, link);
+        week.submitAssignment(participant, upload);
+    }
+
+    private Upload createUpload(String type, MultipartFile file, String link) {
+        return type.equals("file")
                 ? Upload.withFile(uploader.uploadWeeklySubmit(file))
                 : Upload.withLink(link);
-
-        week.submitAssignment(participant, upload);
     }
 
     private void processAttendanceBasedOnAutoAttendanceFlag(Week week, Member participant, Long studyId) {
@@ -138,5 +144,19 @@ public class StudyWeeklyService {
     private Attendance getParticipantAttendance(Long studyId, Long memberId, Integer week) {
         return attendanceRepository.findByStudyIdAndParticipantIdAndWeek(studyId, memberId, week)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.ATTENDANCE_NOT_FOUND));
+    }
+
+    @Transactional
+    public void editSubmittedAssignment(Long participantId, Integer week, String type, MultipartFile file, String link) {
+        validateAssignmentSubmissionExists(file, link);
+
+        Submit submit = getParticipantSubmit(participantId, week);
+        Upload newUpload = createUpload(type, file, link);
+        submit.editUpload(newUpload);
+    }
+
+    private Submit getParticipantSubmit(Long participantId, Integer week) {
+        return submitRepository.findByParticipantIdAndWeek(participantId, week)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.SUBMIT_NOT_FOUND));
     }
 }
