@@ -14,6 +14,8 @@ import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
+import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
+import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.*;
@@ -53,6 +55,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private SubmitRepository submitRepository;
 
     private Member host;
     private final Member[] members = new Member[5];
@@ -557,6 +562,78 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     .orElseThrow()
                     .updateAttendanceStatus(ABSENCE);
             host.applyScoreByAttendanceStatus(ABSENCE);
+        }
+    }
+
+    @Nested
+    @DisplayName("제출한 과제 수정")
+    class editSubmittedAssignment {
+        @Test
+        @DisplayName("과제 제출물을 업로드 하지 않으면 예외가 발생한다")
+        void throwExceptionByMissingSubmission() {
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, null))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.MISSING_SUBMISSION.getMessage());
+        }
+
+        @Test
+        @DisplayName("과제 제출물로 링크 + 파일 둘다 업로드하면 예외가 발생한다")
+        void throwExceptionByDuplicateSubmission() throws IOException {
+            // given
+            final String submitLink = "https://notion.so";
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
+
+            // when - then
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", file, submitLink))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.DUPLICATE_SUBMISSION.getMessage());
+        }
+
+        @Test
+        @DisplayName("제출한 과제가 존재하지 않는다면 과제를 수정할 수 없다")
+        void throwExceptionBySubmitNotFound() {
+            // given
+            final String submitLink = "https://notion.so";
+
+            // when - then
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, submitLink))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.SUBMIT_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        @DisplayName("제출한 과제를 수정한다")
+        void success() {
+            // given
+            Week week = weekRepository.save(WEEK_1.toWeekWithAssignment(study));
+
+            /* Case 1) File 제출 */
+            // when
+            final Upload previous = Upload.withFile(LINK3);
+            week.submitAssignment(host, previous);
+
+            // then
+            Submit previousSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(previousSubmit.getUpload().getLink()).isEqualTo(LINK3),
+                    () -> assertThat(previousSubmit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(previousSubmit.getWeek()).isEqualTo(week),
+                    () -> assertThat(previousSubmit.getParticipant()).isEqualTo(host)
+            );
+
+            /* Case 2) 링크 제출로 수정 */
+            // when
+            final String uploadLink = "https://notion.so";
+            studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, uploadLink);
+
+            // then
+            Submit currentSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(currentSubmit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(currentSubmit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(currentSubmit.getWeek()).isEqualTo(week),
+                    () -> assertThat(currentSubmit.getParticipant()).isEqualTo(host)
+            );
         }
     }
 

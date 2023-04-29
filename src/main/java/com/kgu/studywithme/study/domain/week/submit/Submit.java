@@ -38,4 +38,8 @@ public class Submit extends BaseEntity {
     public static Submit submitAssignment(Week week, Member participant, Upload upload) {
         return new Submit(week, participant, upload);
     }
+
+    public void editUpload(Upload upload) {
+        this.upload = upload;
+    }
 }

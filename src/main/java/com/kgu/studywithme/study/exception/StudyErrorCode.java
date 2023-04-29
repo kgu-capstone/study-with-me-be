@@ -41,6 +41,7 @@ public enum StudyErrorCode implements ErrorCode {
     GRADUATION_REQUIREMENTS_NOT_FULFILLED(HttpStatus.CONFLICT, "STUDY_031", "졸업 요건을 채우지 못하였습니다."),
     STUDY_THUMBNAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_032", "제공해주지 않는 썸네일입니다."),
     CANNOT_UPDATE_TO_NON_ATTENDANCE(HttpStatus.CONFLICT, "STUDY_033", "미출결 상태로 출석을 수정할 수 없습니다."),
+    SUBMIT_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_034", "제출한 과제가 존재하지 않습니다."),
     ;
 
     private final HttpStatus status;
