@@ -4,6 +4,7 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.Nickname;
+import com.kgu.studywithme.member.domain.Score;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
@@ -373,11 +374,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             StudyApplicant response = new StudyApplicant(List.of(
-                    new StudyApplicantInformation(1L, Nickname.from("닉네임1"), LocalDateTime.now().minusDays(1)),
-                    new StudyApplicantInformation(2L, Nickname.from("닉네임2"), LocalDateTime.now().minusDays(2)),
-                    new StudyApplicantInformation(3L, Nickname.from("닉네임3"), LocalDateTime.now().minusDays(3)),
-                    new StudyApplicantInformation(4L, Nickname.from("닉네임4"), LocalDateTime.now().minusDays(4)),
-                    new StudyApplicantInformation(5L, Nickname.from("닉네임5"), LocalDateTime.now().minusDays(5))
+                    new StudyApplicantInformation(1L, Nickname.from("닉네임1"), Score.from(100), LocalDateTime.now().minusDays(1)),
+                    new StudyApplicantInformation(2L, Nickname.from("닉네임2"), Score.from(92), LocalDateTime.now().minusDays(2)),
+                    new StudyApplicantInformation(3L, Nickname.from("닉네임3"), Score.from(93), LocalDateTime.now().minusDays(3)),
+                    new StudyApplicantInformation(4L, Nickname.from("닉네임4"), Score.from(98), LocalDateTime.now().minusDays(4)),
+                    new StudyApplicantInformation(5L, Nickname.from("닉네임5"), Score.from(95), LocalDateTime.now().minusDays(5))
             ));
             given(studyInformationService.getApplicants(STUDY_ID)).willReturn(response);
 
@@ -401,6 +402,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("applicants[].id").description("신청자 ID(PK)"),
                                             fieldWithPath("applicants[].nickname").description("신청자 닉네임"),
+                                            fieldWithPath("applicants[].score").description("신청자 점수"),
                                             fieldWithPath("applicants[].applyDate").description("신청 날짜")
                                     )
                             )

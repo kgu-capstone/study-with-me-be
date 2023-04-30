@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,9 +34,8 @@ class ScoreTest {
     @DisplayName("Minimum보다 낮은 Score를 설정할 경우 Minimum으로 변경된다")
     void minimum() {
         // given
-        Score score = Score.initScore(); // 100
-        ReflectionTestUtils.setField(score, "value", 0); // 0
-        
+        Score score = Score.from(0); // 100
+
         // when
         Score updateScore = score.applyLate(); // 0 - 1
         
@@ -52,8 +50,7 @@ class ScoreTest {
 
         @BeforeEach
         void setUp() {
-            score = Score.initScore(); // 100
-            ReflectionTestUtils.setField(score, "value", 75); // 75
+            score = Score.from(75); // 75
         }
 
         @Test
@@ -94,8 +91,7 @@ class ScoreTest {
 
         @BeforeEach
         void setUp() {
-            score = Score.initScore(); // 100
-            ReflectionTestUtils.setField(score, "value", 75); // 75
+            score = Score.from(75); // 75
         }
 
         @Test
