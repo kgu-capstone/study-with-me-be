@@ -214,13 +214,6 @@ class StudyWeeklyServiceTest extends ServiceTest {
     @Nested
     @DisplayName("스터디 주차별 과제 제출")
     class submitAssignment {
-        @BeforeEach
-        void setUp() {
-            for (int i = 0; i < 5; i++) {
-                host.applyScoreByAttendanceStatus(ABSENCE);
-            } // 75
-        }
-        
         @AfterEach
         void restore() {
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
@@ -257,7 +250,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final String submitLink = "https://notion.so";
@@ -280,7 +273,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 + 1) // 출석 반영
+                    () -> assertThat(host.getScore()).isEqualTo(80 + 1) // 출석 반영
             );
         }
 
@@ -295,7 +288,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
             applyAbsenceStatusByScheduler();
-            assertThat(host.getScore()).isEqualTo(75 - 5);
+            assertThat(host.getScore()).isEqualTo(80 - 5);
 
             // when
             final String submitLink = "https://notion.so";
@@ -318,7 +311,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 - 5 + 5 - 1) // 결석 -> 지각 반영
+                    () -> assertThat(host.getScore()).isEqualTo(80 - 5 + 5 - 1) // 결석 -> 지각 반영
             );
         }
 
@@ -332,7 +325,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final String submitLink = "https://notion.so";
@@ -355,7 +348,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 - 1) // 지각 반영
+                    () -> assertThat(host.getScore()).isEqualTo(80 - 1) // 지각 반영
             );
         }
 
@@ -366,7 +359,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final String submitLink = "https://notion.so";
@@ -389,7 +382,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE),
-                    () -> assertThat(host.getScore()).isEqualTo(75)
+                    () -> assertThat(host.getScore()).isEqualTo(80)
             );
         }
 
@@ -403,7 +396,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
@@ -429,7 +422,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(ATTENDANCE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 + 1)
+                    () -> assertThat(host.getScore()).isEqualTo(80 + 1)
             );
         }
 
@@ -444,7 +437,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
             applyAbsenceStatusByScheduler();
-            assertThat(host.getScore()).isEqualTo(75 - 5);
+            assertThat(host.getScore()).isEqualTo(80 - 5);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
@@ -470,7 +463,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 - 5 + 5 - 1)
+                    () -> assertThat(host.getScore()).isEqualTo(80 - 5 + 5 - 1)
             );
         }
 
@@ -484,7 +477,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
@@ -510,7 +503,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(host.getScore()).isEqualTo(75 - 1)
+                    () -> assertThat(host.getScore()).isEqualTo(80 - 1)
             );
         }
 
@@ -522,7 +515,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
 
-            assertThat(host.getScore()).isEqualTo(75);
+            assertThat(host.getScore()).isEqualTo(80);
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
@@ -548,7 +541,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Attendance attendance = attendanceRepository.findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
                     () -> assertThat(attendance.getStatus()).isEqualTo(NON_ATTENDANCE),
-                    () -> assertThat(host.getScore()).isEqualTo(75)
+                    () -> assertThat(host.getScore()).isEqualTo(80)
             );
         }
 
