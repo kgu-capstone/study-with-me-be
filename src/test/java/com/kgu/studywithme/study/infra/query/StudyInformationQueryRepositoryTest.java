@@ -390,7 +390,8 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
 
             assertAll(
                     () -> assertThat(information.getId()).isEqualTo(member.getId()),
-                    () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue())
+                    () -> assertThat(information.getNickname()).isEqualTo(member.getNicknameValue()),
+                    () -> assertThat(information.getScore()).isEqualTo(member.getScore())
             );
         }
     }

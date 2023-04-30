@@ -28,6 +28,10 @@ public class Score {
         this.value = value < MINIMUM ? MINIMUM : Math.min(value, MAXIMUM);
     }
 
+    public static Score from(int value) {
+        return new Score(value);
+    }
+
     public static Score initScore() {
         return new Score(DEFAULT_INIT_VALUE);
     }

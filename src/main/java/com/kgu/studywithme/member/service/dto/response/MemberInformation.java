@@ -9,7 +9,7 @@ import java.util.List;
 
 public record MemberInformation(
         Long id, String name, String nickname, String email, LocalDate birth,
-        String phone, String gender, Region region, List<String> interests
+        String phone, String gender, Region region, int score, List<String> interests
 ) {
     public MemberInformation(Member member) {
         this(
@@ -21,6 +21,7 @@ public record MemberInformation(
                 member.getPhone(),
                 member.getGender().getValue(),
                 member.getRegion(),
+                member.getScore(),
                 translateInterests(member)
         );
     }
