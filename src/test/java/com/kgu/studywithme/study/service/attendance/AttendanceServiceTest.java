@@ -79,12 +79,12 @@ class AttendanceServiceTest extends ServiceTest {
                     () -> assertThat(findHostAttendance.getParticipant()).isEqualTo(host),
                     () -> assertThat(findHostAttendance.getWeek()).isEqualTo(1),
                     () -> assertThat(findHostAttendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(host.getScore()).isEqualTo(100 - 1),
+                    () -> assertThat(host.getScore()).isEqualTo(80 - 1),
 
                     () -> assertThat(findMemberAttendance.getParticipant()).isEqualTo(member),
                     () -> assertThat(findMemberAttendance.getWeek()).isEqualTo(1),
                     () -> assertThat(findMemberAttendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(member.getScore()).isEqualTo(100 - 1)
+                    () -> assertThat(member.getScore()).isEqualTo(80 - 1)
             );
         }
 
@@ -92,8 +92,8 @@ class AttendanceServiceTest extends ServiceTest {
         @DisplayName("수동 출석 체크에 성공한다 [이전 출석 = 결석]")
         void successWithBeforeAbsence() {
             // given
-            member.applyScoreByAttendanceStatus(ABSENCE); // score = 95
-            attendanceService.manualCheckAttendance(study.getId(), member.getId(), 1, ABSENCE); // score = 90
+            member.applyScoreByAttendanceStatus(ABSENCE); // score = 75
+            attendanceService.manualCheckAttendance(study.getId(), member.getId(), 1, ABSENCE); // score = 70
 
             // when
             attendanceService.manualCheckAttendance(study.getId(), member.getId(), 1, LATE);
@@ -106,7 +106,7 @@ class AttendanceServiceTest extends ServiceTest {
                     () -> assertThat(findMemberAttendance.getParticipant()).isEqualTo(member),
                     () -> assertThat(findMemberAttendance.getWeek()).isEqualTo(1),
                     () -> assertThat(findMemberAttendance.getStatus()).isEqualTo(LATE),
-                    () -> assertThat(member.getScore()).isEqualTo(90 + 5 - 1)
+                    () -> assertThat(member.getScore()).isEqualTo(70 + 5 - 1)
             );
         }
     }

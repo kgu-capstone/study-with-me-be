@@ -129,12 +129,12 @@ class MemberRepositoryTest extends RepositoryTest {
 
         // then
         List<Integer> expectScores = List.of(
-                100,
-                100,
-                100,
-                100 - 5,
-                100 - 5,
-                100
+                80,
+                80,
+                80,
+                80 - 5,
+                80 - 5,
+                80
         );
         List<Member> members = memberRepository.findAll();
 

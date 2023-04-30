@@ -14,14 +14,14 @@ class ScoreTest {
     void construct() {
         Score score = Score.initScore();
         
-        assertThat(score.getValue()).isEqualTo(100);
+        assertThat(score.getValue()).isEqualTo(80);
     }
     
     @Test
     @DisplayName("Maximum을 넘어선 Score를 설정할 경우 Maximum으로 변경된다")
     void maximum() {
         // given
-        Score score = Score.initScore(); // 100
+        Score score = Score.from(100); // 100
         
         // when
         Score updateScore = score.applyAttendance();// 100 + 1
@@ -34,7 +34,7 @@ class ScoreTest {
     @DisplayName("Minimum보다 낮은 Score를 설정할 경우 Minimum으로 변경된다")
     void minimum() {
         // given
-        Score score = Score.from(0); // 100
+        Score score = Score.from(0); // 0
 
         // when
         Score updateScore = score.applyLate(); // 0 - 1
@@ -50,37 +50,37 @@ class ScoreTest {
 
         @BeforeEach
         void setUp() {
-            score = Score.from(75); // 75
+            score = Score.initScore(); // 80
         }
 
         @Test
         @DisplayName("출석에 대한 Score를 업데이트한다")
         void attendance() {
             // when
-            Score updateScore = score.applyAttendance(); // 75 + 1
+            Score updateScore = score.applyAttendance(); // 80 + 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(76);
+            assertThat(updateScore.getValue()).isEqualTo(81);
         }
 
         @Test
         @DisplayName("지각에 대한 Score를 업데이트한다")
         void late() {
             // when
-            Score updateScore = score.applyLate(); // 75 - 1
+            Score updateScore = score.applyLate(); // 80 - 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(74);
+            assertThat(updateScore.getValue()).isEqualTo(79);
         }
 
         @Test
         @DisplayName("결석에 대한 Score를 업데이트한다")
         void absence() {
             // when
-            Score updateScore = score.applyAbsence(); // 75 - 5
+            Score updateScore = score.applyAbsence(); // 80 - 5
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(70);
+            assertThat(updateScore.getValue()).isEqualTo(75);
         }
     }
 
@@ -91,67 +91,67 @@ class ScoreTest {
 
         @BeforeEach
         void setUp() {
-            score = Score.from(75); // 75
+            score = Score.initScore(); // 80
         }
 
         @Test
         @DisplayName("출석 -> 지각으로 수정함에 따라 Score를 업데이트한다")
         void updateAttendanceToLate() {
             // when
-            Score updateScore = score.updateAttendanceToLate(); // 75 - 1 - 1
+            Score updateScore = score.updateAttendanceToLate(); // 80 - 1 - 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(73);
+            assertThat(updateScore.getValue()).isEqualTo(78);
         }
 
         @Test
         @DisplayName("출석 -> 결석으로 수정함에 따라 Score를 업데이트한다")
         void updateAttendanceToAbsence() {
             // when
-            Score updateScore = score.updateAttendanceToAbsence(); // 75 - 1 - 5
+            Score updateScore = score.updateAttendanceToAbsence(); // 80 - 1 - 5
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(69);
+            assertThat(updateScore.getValue()).isEqualTo(74);
         }
 
         @Test
         @DisplayName("지각 -> 출석으로 수정함에 따라 Score를 업데이트한다")
         void updateLateToAttendance() {
             // when
-            Score updateScore = score.updateLateToAttendance(); // 75 + 1 + 1
+            Score updateScore = score.updateLateToAttendance(); // 80 + 1 + 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(77);
+            assertThat(updateScore.getValue()).isEqualTo(82);
         }
 
         @Test
         @DisplayName("지각 -> 결석으로 수정함에 따라 Score를 업데이트한다")
         void updateLateToAbsence() {
             // when
-            Score updateScore = score.updateLateToAbsence(); // 75 + 1 - 5
+            Score updateScore = score.updateLateToAbsence(); // 80 + 1 - 5
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(71);
+            assertThat(updateScore.getValue()).isEqualTo(76);
         }
 
         @Test
         @DisplayName("결석 -> 출석으로 수정함에 따라 Score를 업데이트한다")
         void updateAbsenceToAttendance() {
             // when
-            Score updateScore = score.updateAbsenceToAttendance(); // 75 + 5 + 1
+            Score updateScore = score.updateAbsenceToAttendance(); // 80 + 5 + 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(81);
+            assertThat(updateScore.getValue()).isEqualTo(86);
         }
 
         @Test
         @DisplayName("결석 -> 지각으로 수정함에 따라 Score를 업데이트한다")
         void updateAbsenceToLate() {
             // when
-            Score updateScore = score.updateAbsenceToLate(); // 75 + 5 - 1
+            Score updateScore = score.updateAbsenceToLate(); // 80 + 5 - 1
 
             // then
-            assertThat(updateScore.getValue()).isEqualTo(79);
+            assertThat(updateScore.getValue()).isEqualTo(84);
         }
     }
 }
