@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Score {
     // 초기 세팅값
-    private static final int DEFAULT_INIT_VALUE = 100;
+    private static final int DEFAULT_INIT_VALUE = 80;
     private static final int MINIMUM = 0;
     private static final int MAXIMUM = 100;
 
