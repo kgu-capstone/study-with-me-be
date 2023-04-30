@@ -152,6 +152,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("gender").description("사용자 성별"),
                                             fieldWithPath("region.province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("region.city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("score").description("사용자 점수"),
                                             fieldWithPath("interests[]").description("사용자 관심사 목록")
                                     )
                             )

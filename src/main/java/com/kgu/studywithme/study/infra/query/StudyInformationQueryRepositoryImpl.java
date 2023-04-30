@@ -78,7 +78,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
     @Override
     public List<StudyApplicantInformation> findApplicantByStudyId(Long studyId) {
         return query
-                .select(new QStudyApplicantInformation(member.id, member.nickname, participant.createdAt))
+                .select(new QStudyApplicantInformation(member.id, member.nickname, member.score, participant.createdAt))
                 .from(participant)
                 .innerJoin(participant.member, member)
                 .where(studyIdEq(studyId), applyStatus())
