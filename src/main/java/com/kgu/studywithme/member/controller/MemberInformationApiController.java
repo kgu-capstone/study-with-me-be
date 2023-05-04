@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberInformationApiController {
     private final MemberInformationService memberInformationService;
 
-    @CheckMemberIdentity
     @GetMapping
     public ResponseEntity<MemberInformation> getInformation(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         MemberInformation response = memberInformationService.getInformation(memberId);
@@ -42,16 +41,15 @@ public class MemberInformationApiController {
     }
 
     @CheckMemberIdentity
-    @GetMapping("/studies/graduated")
-    public ResponseEntity<RelatedStudy> getGraduatedStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
-        RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
-        return ResponseEntity.ok(response);
-    }
-
-    @CheckMemberIdentity
     @GetMapping("/studies/favorite")
     public ResponseEntity<RelatedStudy> getFavoriteStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
         RelatedStudy response = memberInformationService.getFavoriteStudy(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/studies/graduated")
+    public ResponseEntity<RelatedStudy> getGraduatedStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
+        RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
         return ResponseEntity.ok(response);
     }
 
