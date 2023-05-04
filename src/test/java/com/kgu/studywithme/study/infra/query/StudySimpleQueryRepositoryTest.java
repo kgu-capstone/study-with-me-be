@@ -11,7 +11,6 @@ import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicAttendance;
-import com.kgu.studywithme.study.infra.query.dto.response.BasicHashtag;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicWeekly;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
@@ -60,19 +58,6 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         programming[4] = studyRepository.save(NETWORK.toOnlineStudy(host));
         programming[5] = studyRepository.save(EFFECTIVE_JAVA.toOnlineStudy(host));
         programming[6] = studyRepository.save(AWS.toOfflineStudy(host));
-    }
-
-    @Test
-    @DisplayName("전체 스터디의 ID + Hashtag를 조회한다")
-    void findHashtags() {
-        // when
-        List<BasicHashtag> result = studyRepository.findHashtags();
-
-        // then
-        int totalSize = Arrays.stream(programming)
-                .mapToInt(study -> study.getHashtags().size())
-                .sum();
-        assertThat(result).hasSize(totalSize);
     }
 
     @Test
@@ -135,28 +120,6 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("졸업한 스터디에 대한 정보를 조회한다")
-    void findGraduatedStudyByMemberId() {
-        // Case 1
-        graduateStudy(member, programming[0], programming[1], programming[2], programming[3]);
-
-        List<SimpleStudy> result1 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        assertThatStudiesMatch(
-                result1,
-                List.of(programming[3], programming[2], programming[1], programming[0])
-        );
-
-        // Case 2
-        graduateStudy(member, programming[4], programming[5], programming[6]);
-
-        List<SimpleStudy> result2 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        assertThatStudiesMatch(
-                result2,
-                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
-        );
-    }
-
-    @Test
     @DisplayName("찜 등록한 스터디에 대한 정보를 조회한다")
     void findFavoriteStudyByMemberId() {
         // Case 1
@@ -172,6 +135,28 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         favoriteStudy(member, programming[4], programming[5], programming[6]);
 
         List<SimpleStudy> result2 = studyRepository.findFavoriteStudyByMemberId(member.getId());
+        assertThatStudiesMatch(
+                result2,
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+        );
+    }
+
+    @Test
+    @DisplayName("졸업한 스터디에 대한 정보를 조회한다")
+    void findGraduatedStudyByMemberId() {
+        // Case 1
+        graduateStudy(member, programming[0], programming[1], programming[2], programming[3]);
+
+        List<SimpleStudy> result1 = studyRepository.findGraduatedStudyByMemberId(member.getId());
+        assertThatStudiesMatch(
+                result1,
+                List.of(programming[3], programming[2], programming[1], programming[0])
+        );
+
+        // Case 2
+        graduateStudy(member, programming[4], programming[5], programming[6]);
+
+        List<SimpleStudy> result2 = studyRepository.findGraduatedStudyByMemberId(member.getId());
         assertThatStudiesMatch(
                 result2,
                 List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])

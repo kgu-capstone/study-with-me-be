@@ -40,14 +40,14 @@ public class MemberInformationService {
         return new RelatedStudy(participateStudy);
     }
 
-    public RelatedStudy getGraduatedStudy(Long memberId) {
-        List<SimpleStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
-        return new RelatedStudy(graduatedStudy);
-    }
-
     public RelatedStudy getFavoriteStudy(Long memberId) {
         List<SimpleStudy> favoriteStudy = studyRepository.findFavoriteStudyByMemberId(memberId);
         return new RelatedStudy(favoriteStudy);
+    }
+
+    public RelatedStudy getGraduatedStudy(Long memberId) {
+        List<SimpleStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
+        return new RelatedStudy(graduatedStudy);
     }
 
     public PeerReviewAssembler getPeerReviews(Long memberId) {
