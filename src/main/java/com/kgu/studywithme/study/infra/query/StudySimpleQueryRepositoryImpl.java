@@ -16,7 +16,6 @@ import static com.kgu.studywithme.favorite.domain.QFavorite.favorite;
 import static com.kgu.studywithme.study.domain.QStudy.study;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
-import static com.kgu.studywithme.study.domain.hashtag.QHashtag.hashtag;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 
@@ -25,15 +24,6 @@ import static com.kgu.studywithme.study.domain.participant.QParticipant.particip
 public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepository {
     private final JPAQueryFactory query;
     private static final QMember host = new QMember("host");
-
-    @Override
-    public List<BasicHashtag> findHashtags() {
-        return query
-                .select(new QBasicHashtag(study.id, hashtag.name))
-                .from(study)
-                .innerJoin(study.hashtags, hashtag)
-                .fetch();
-    }
 
     @Override
     public List<SimpleStudy> findApplyStudyByMemberId(Long memberId) {
@@ -59,23 +49,23 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
-    public List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId) {
-        return query
-                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
-                .from(study)
-                .innerJoin(participant).on(participant.study.id.eq(study.id))
-                .where(memberIdEq(memberId), participateStatusEq(GRADUATED))
-                .orderBy(study.id.desc())
-                .fetch();
-    }
-
-    @Override
     public List<SimpleStudy> findFavoriteStudyByMemberId(Long memberId) {
         return query
                 .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(favorite).on(favorite.studyId.eq(study.id))
                 .where(favorite.memberId.eq(memberId))
+                .orderBy(study.id.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId) {
+        return query
+                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .from(study)
+                .innerJoin(participant).on(participant.study.id.eq(study.id))
+                .where(memberIdEq(memberId), participateStatusEq(GRADUATED))
                 .orderBy(study.id.desc())
                 .fetch();
     }

@@ -65,6 +65,7 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.phone()).isEqualTo(member.getPhone()),
                 () -> assertThat(information.gender()).isEqualTo(member.getGender().getValue()),
                 () -> assertThat(information.region()).isEqualTo(member.getRegion()),
+                () -> assertThat(information.score()).isEqualTo(member.getScore()),
                 () -> assertThat(information.interests()).containsExactlyInAnyOrder(
                         LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()
                 )
@@ -106,6 +107,22 @@ class MemberInformationServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("사용자가 찜한 스터디 리스트를 조회한다")
+    void getFavoriteStudy() {
+        // given
+        favoriteStudy(member, programming[0], programming[1], programming[3], programming[4], programming[6]);
+
+        // when
+        RelatedStudy relatedStudy = memberInformationService.getFavoriteStudy(member.getId());
+
+        // then
+        assertThatStudiesMatch(
+                relatedStudy.result(),
+                List.of(programming[6], programming[4], programming[3], programming[1], programming[0])
+        );
+    }
+
+    @Test
     @DisplayName("사용자가 졸업한 스터디 리스트를 조회한다")
     void getGraduatedStudy() {
         // given
@@ -119,22 +136,6 @@ class MemberInformationServiceTest extends ServiceTest {
         assertThatStudiesMatch(
                 relatedStudy.result(),
                 List.of(programming[6], programming[3], programming[1])
-        );
-    }
-
-    @Test
-    @DisplayName("사용자가 찜한 스터디 리스트를 조회한다")
-    void getFavoriteStudy() {
-        // given
-        favoriteStudy(member, programming[0], programming[1], programming[3], programming[4], programming[6]);
-
-        // when
-        RelatedStudy relatedStudy = memberInformationService.getFavoriteStudy(member.getId());
-
-        // then
-        assertThatStudiesMatch(
-                relatedStudy.result(),
-                List.of(programming[6], programming[4], programming[3], programming[1], programming[0])
         );
     }
 
