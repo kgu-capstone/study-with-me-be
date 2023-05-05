@@ -13,13 +13,10 @@ import com.kgu.studywithme.category.service.CategoryService;
 import com.kgu.studywithme.common.config.TestAopConfiguration;
 import com.kgu.studywithme.favorite.controller.FavoriteApiController;
 import com.kgu.studywithme.favorite.service.FavoriteManageService;
-import com.kgu.studywithme.fixture.MemberFixture;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.controller.MemberApiController;
 import com.kgu.studywithme.member.controller.MemberInformationApiController;
 import com.kgu.studywithme.member.controller.MemberReviewApiController;
-import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.MemberReviewService;
 import com.kgu.studywithme.member.service.MemberService;
@@ -28,7 +25,6 @@ import com.kgu.studywithme.study.controller.attendance.AttendanceApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeApiController;
 import com.kgu.studywithme.study.controller.notice.StudyNoticeCommentApiController;
 import com.kgu.studywithme.study.controller.week.StudyWeeklyApiController;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.*;
 import com.kgu.studywithme.study.service.attendance.AttendanceService;
@@ -51,15 +47,11 @@ import org.springframework.restdocs.operation.preprocess.OperationRequestPreproc
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.restdocs.snippet.Snippet;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
-import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -104,12 +96,6 @@ public abstract class ControllerTest {
     // common & internal
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    private MemberFindService memberFindService;
-
-    @MockBean
-    private StudyFindService studyFindService;
 
     @MockBean
     private StudyValidator studyValidator;
@@ -219,12 +205,15 @@ public abstract class ControllerTest {
         return objectMapper.writeValueAsString(data);
     }
 
-    protected void mockingForStudyParticipant(Study study, MemberFixture fixture, Long memberId, boolean isValid) {
-        Member member = createMember(fixture, memberId);
-
+    protected void mockingForStudyParticipant(Long studyId, Long memberId, boolean isValid) {
         if (isValid) {
-            study.applyParticipation(member);
-            study.approveParticipation(member);
+            doNothing()
+                    .when(studyValidator)
+                    .validateStudyParticipant(studyId, memberId);
+        } else {
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT))
+                    .when(studyValidator)
+                    .validateStudyParticipant(studyId, memberId);
         }
     }
 
@@ -238,22 +227,5 @@ public abstract class ControllerTest {
                     .when(studyValidator)
                     .validateHost(studyId, memberId);
         }
-    }
-
-    protected Study createSpringStudy(Long hostId, Long studyId) {
-        Member host = createMember(JIWON, hostId);
-        Study study = SPRING.toOnlineStudy(host);
-        ReflectionTestUtils.setField(study, "id", studyId);
-
-        given(studyFindService.findById(studyId)).willReturn(study);
-        return study;
-    }
-
-    private Member createMember(MemberFixture fixture, Long memberId) {
-        Member member = fixture.toMember();
-        ReflectionTestUtils.setField(member, "id", memberId);
-
-        given(memberFindService.findById(memberId)).willReturn(member);
-        return member;
     }
 }

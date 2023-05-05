@@ -4,7 +4,6 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,6 @@ import static com.kgu.studywithme.common.utils.FileMockingUtils.createMultipleMo
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.DUMMY1;
 import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
 import static com.kgu.studywithme.study.controller.utils.StudyWeeklyRequestUtils.createWeekWithAssignmentRequest;
 import static org.mockito.ArgumentMatchers.any;
@@ -252,8 +250,8 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() throws IOException {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
 
             file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
         }
@@ -557,8 +555,8 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() throws IOException {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
 
             file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
         }

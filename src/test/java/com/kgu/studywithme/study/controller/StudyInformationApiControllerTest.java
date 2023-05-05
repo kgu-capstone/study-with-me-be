@@ -28,7 +28,8 @@ import java.util.Map;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.*;
+import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
+import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
@@ -162,8 +163,8 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
         }
 
         @Test
@@ -420,8 +421,8 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
         }
 
         @Test
@@ -542,8 +543,8 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
         }
 
         @Test
