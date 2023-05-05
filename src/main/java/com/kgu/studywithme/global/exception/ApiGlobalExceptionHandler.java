@@ -197,7 +197,7 @@ public class ApiGlobalExceptionHandler {
                         List.of(
                                 generateSlackField(TITLE_REQUEST_IP, (xffHeader == null) ? request.getRemoteAddr() : xffHeader),
                                 generateSlackField(TITLE_REQUEST_URL, request.getMethod() + " " + request.getRequestURL()),
-                                generateSlackField(TITLE_ERROR_MESSAGE, e.getMessage())
+                                generateSlackField(TITLE_ERROR_MESSAGE, e.toString())
                         )
                 )
                 .build();
