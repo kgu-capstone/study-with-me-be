@@ -39,6 +39,12 @@ public class StudyValidator {
         }
     }
 
+    public void validateStudyParticipant(Long studyId, Long memberId) {
+        if (!studyRepository.isStudyParticipant(studyId, memberId)) {
+            throw StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT);
+        }
+    }
+
     public void validateNoticeWriter(Long noticeId, Long memberId) {
         if (!noticeRepository.existsByIdAndWriterId(noticeId, memberId)) {
             throw StudyWithMeException.type(MemberErrorCode.MEMBER_IS_NOT_WRITER);

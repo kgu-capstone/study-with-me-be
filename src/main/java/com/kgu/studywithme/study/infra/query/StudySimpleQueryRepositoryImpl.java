@@ -5,9 +5,11 @@ import com.kgu.studywithme.study.domain.participant.ParticipantStatus;
 import com.kgu.studywithme.study.domain.week.QWeek;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,6 +98,26 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .fetch();
     }
 
+    @Override
+    public boolean isStudyParticipant(Long studyId, Long memberId) {
+        List<Long> participantIds = query
+                .select(participant.member.id)
+                .from(participant)
+                .where(
+                        participant.study.id.eq(studyId),
+                        participateStatusEq(APPROVE)
+                )
+                .fetch();
+
+        Long count = query
+                .select(study.count())
+                .from(study)
+                .where(hostIdEq(memberId).or(isMemberInParticipant(memberId, participantIds)))
+                .fetchOne();
+
+        return count > 0;
+    }
+
     private BooleanExpression participateStatusEq(ParticipantStatus status) {
         return (status != null) ? participant.status.eq(status) : null;
     }
@@ -106,5 +128,13 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
 
     private BooleanExpression memberIdEq(Long memberId) {
         return (memberId != null) ? participant.member.id.eq(memberId) : null;
+    }
+
+    private BooleanExpression hostIdEq(Long memberId) {
+        return (memberId != null) ?study.participants.host.id.eq(memberId) : null;
+    }
+
+    private BooleanExpression isMemberInParticipant(Long memberId, List<Long> participantIds) {
+        return !CollectionUtils.isEmpty(participantIds) ? Expressions.asNumber(memberId).in(participantIds) : null;
     }
 }
