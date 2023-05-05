@@ -5,7 +5,6 @@ import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.ParticipationRejectRequest;
-import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +15,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.MemberFixture.DUMMY1;
-import static com.kgu.studywithme.fixture.MemberFixture.DUMMY2;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -922,9 +919,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, PARTICIPANT_ID, true);
-            mockingForStudyParticipant(study, DUMMY2, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, PARTICIPANT_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
         }
 
         @Test
@@ -1326,9 +1323,9 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
         @BeforeEach
         void setUp() {
-            Study study = createSpringStudy(HOST_ID, STUDY_ID);
-            mockingForStudyParticipant(study, DUMMY1, PARTICIPANT_ID, true);
-            mockingForStudyParticipant(study, DUMMY2, ANONYMOUS_ID, false);
+            mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
+            mockingForStudyParticipant(STUDY_ID, PARTICIPANT_ID, true);
+            mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
         }
 
         @Test

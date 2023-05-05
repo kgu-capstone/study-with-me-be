@@ -1,9 +1,6 @@
 package com.kgu.studywithme.global.annotation.aop;
 
-import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.service.MemberFindService;
-import com.kgu.studywithme.study.domain.Study;
-import com.kgu.studywithme.study.service.StudyFindService;
+import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -13,14 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CheckStudyParticipantAspect {
-    private final StudyFindService studyFindService;
-    private final MemberFindService memberFindService;
+    private final StudyValidator studyValidator;
 
     @Before("@annotation(com.kgu.studywithme.global.annotation.aop.CheckStudyParticipant) && args(memberId, studyId, ..)")
     public void checkParticipant(Long studyId, Long memberId) {
-        Study study = studyFindService.findById(studyId);
-        Member member = memberFindService.findById(memberId);
-
-        study.validateMemberIsParticipant(member);
+        studyValidator.validateStudyParticipant(studyId, memberId);
     }
 }

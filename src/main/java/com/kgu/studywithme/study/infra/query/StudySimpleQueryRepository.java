@@ -13,4 +13,5 @@ public interface StudySimpleQueryRepository {
     List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId);
     List<BasicWeekly> findAutoAttendanceAndPeriodEndWeek();
     List<BasicAttendance> findBasicAttendanceInformation();
+    boolean isStudyParticipant(Long studyId, Long memberId);
 }
