@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.member.utils.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValidUploadTypeValidator.class)
-public @interface ValidUploadType {
+@Constraint(validatedBy = ValidGenderValidator.class)
+public @interface ValidGender {
     String message() default "잘못된 요청입니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

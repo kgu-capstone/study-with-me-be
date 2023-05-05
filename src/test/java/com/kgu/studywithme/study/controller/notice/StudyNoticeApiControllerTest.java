@@ -520,9 +520,9 @@ class StudyNoticeApiControllerTest extends ControllerTest {
     }
 
     private NoticeRequest createNoticeRequest() {
-        return NoticeRequest.builder()
-                .title("4/3 공지사항입니다.")
-                .content("4/7 사당역 스터디룸에서 5시까지 모여주세요.")
-                .build();
+        return new NoticeRequest(
+                "4/3 공지사항입니다.",
+                "4/7 사당역 스터디룸에서 5시까지 모여주세요."
+        );
     }
 }

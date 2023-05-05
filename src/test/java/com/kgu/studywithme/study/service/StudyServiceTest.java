@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Set;
+
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
@@ -42,7 +44,7 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("이미 사용하고 있는 스터디 이름이면 생성에 실패한다")
         void throwExceptionByDuplicateName() {
             // given
-            StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+            StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
             studyService.register(host.getId(), request);
 
             // when - then
@@ -55,8 +57,8 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("스터디 생성에 성공한다")
         void success() {
             // given
-            StudyRegisterRequest onlineRequest = createOnlineStudyRegisterRequest();
-            StudyRegisterRequest offlineRequest = createOfflineStudyRegisterRequest();
+            StudyRegisterRequest onlineRequest = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
+            StudyRegisterRequest offlineRequest = createOfflineStudyRegisterRequest(Set.of("A", "B", "C"));
 
             // when
             Long onlineStudyId = studyService.register(host.getId(), onlineRequest);
@@ -96,9 +98,7 @@ class StudyServiceTest extends ServiceTest {
         @Test
         @DisplayName("다른 스터디가 사용하고 있는 스터디명으로 수정할 수 없다")
         void throwExceptionByDuplicateName() {
-            StudyUpdateRequest request = StudyUpdateRequest.builder()
-                    .name(offlineStudy.getNameValue())
-                    .build();
+            StudyUpdateRequest request = createDuplicateStudy(offlineStudy.getNameValue());
 
             assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
@@ -108,7 +108,7 @@ class StudyServiceTest extends ServiceTest {
         @Test
         @DisplayName("최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다")
         void throwExceptionByCapacityCannotBeLessThanParticipants() {
-            StudyUpdateRequest request = createOnlineStudyUpdateRequest(2);
+            StudyUpdateRequest request = createOnlineStudyUpdateRequest(2, Set.of("A", "B", "C"));
 
             assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
                     .isInstanceOf(StudyWithMeException.class)
@@ -119,7 +119,7 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("스터디 정보 수정에 성공한다 - 온라인")
         void successOnlineStudyUpdate() {
             // given
-            StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
 
             // when
             studyService.update(onlineStudy.getId(), host.getId(), request);
@@ -135,7 +135,6 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getLocation()).isNull(),
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
-                    () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
                     () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
@@ -144,7 +143,7 @@ class StudyServiceTest extends ServiceTest {
         @DisplayName("스터디 정보 수정에 성공한다 - 오프라인")
         void successOfflineStudyUpdate() {
             // given
-            StudyUpdateRequest request = createOfflineStudyUpdateRequest(5);
+            StudyUpdateRequest request = createOfflineStudyUpdateRequest(5, Set.of("A", "B", "C"));
 
             // when
             studyService.update(offlineStudy.getId(), host.getId(), request);
@@ -161,7 +160,6 @@ class StudyServiceTest extends ServiceTest {
                     () -> assertThat(findStudy.getLocation().getCity()).isEqualTo(request.city()),
                     () -> assertThat(findStudy.isRecruitmentComplete()).isFalse(),
                     () -> assertThat(findStudy.getCapacity().getValue()).isEqualTo(request.capacity()),
-                    () -> assertThat(findStudy.getHashtags()).hasSize(request.hashtags().size()),
                     () -> assertThat(findStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(request.hashtags())
             );
         }
@@ -186,5 +184,20 @@ class StudyServiceTest extends ServiceTest {
             study.applyParticipation(member);
             study.approveParticipation(member);
         }
+    }
+
+    private StudyUpdateRequest createDuplicateStudy(String nameValue) {
+        return new StudyUpdateRequest(
+                nameValue,
+                TOSS_INTERVIEW.getDescription(),
+                TOSS_INTERVIEW.getCapacity(),
+                TOSS_INTERVIEW.getCategory().getId(),
+                TOSS_INTERVIEW.getThumbnail().getImageName(),
+                TOSS_INTERVIEW.getType().getBrief(),
+                TOSS_INTERVIEW.getLocation().getProvince(),
+                TOSS_INTERVIEW.getLocation().getCity(),
+                true,
+                TOSS_INTERVIEW.getHashtags()
+        );
     }
 }

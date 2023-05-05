@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.aop;
+package com.kgu.studywithme.global.aop;
 
 import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class CheckStudyHostAspect {
+public class CheckStudyParticipantAspect {
     private final StudyValidator studyValidator;
 
-    @Before("@annotation(com.kgu.studywithme.global.annotation.aop.CheckStudyHost) && args(hostId, studyId, ..)")
-    public void checkParticipant(Long hostId, Long studyId) {
-        studyValidator.validateHost(studyId, hostId);
+    @Before("@annotation(com.kgu.studywithme.global.aop.CheckStudyParticipant) && args(memberId, studyId, ..)")
+    public void checkParticipant(Long studyId, Long memberId) {
+        studyValidator.validateStudyParticipant(studyId, memberId);
     }
 }

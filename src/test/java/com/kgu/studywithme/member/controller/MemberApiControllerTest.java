@@ -256,17 +256,17 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     private SignUpRequest createSignUpRequest() {
-        return SignUpRequest.builder()
-                .name(JIWON.getName())
-                .nickname(JIWON.getNickname())
-                .email(JIWON.getEmail())
-                .birth(JIWON.getBirth())
-                .phone("01012345678")
-                .gender("M")
-                .province(JIWON.getProvince())
-                .city(JIWON.getCity())
-                .categories(List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId()))
-                .build();
+        return new SignUpRequest(
+                JIWON.getName(),
+                JIWON.getNickname(),
+                JIWON.getEmail(),
+                JIWON.getBirth(),
+                "01012345678",
+                "M",
+                JIWON.getProvince(),
+                JIWON.getCity(),
+                List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId())
+        );
     }
 
     private MemberReportRequest createReportRequest() {

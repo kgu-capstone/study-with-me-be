@@ -22,7 +22,7 @@ import static com.kgu.studywithme.study.domain.week.submit.QSubmit.submit;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class StudyInformationQueryRepositoryImpl implements StudyInformationQueryRepository{
+public class StudyInformationQueryRepositoryImpl implements StudyInformationQueryRepository {
     private final JPAQueryFactory query;
 
     @Override

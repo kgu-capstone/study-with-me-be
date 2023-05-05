@@ -1,8 +1,8 @@
 package com.kgu.studywithme.study.controller;
 
 import com.kgu.studywithme.auth.utils.ExtractPayload;
-import com.kgu.studywithme.global.annotation.aop.CheckStudyHost;
-import com.kgu.studywithme.global.annotation.aop.CheckStudyParticipant;
+import com.kgu.studywithme.global.aop.CheckStudyHost;
+import com.kgu.studywithme.global.aop.CheckStudyParticipant;
 import com.kgu.studywithme.study.controller.dto.request.ParticipationRejectRequest;
 import com.kgu.studywithme.study.service.ParticipationService;
 import lombok.RequiredArgsConstructor;

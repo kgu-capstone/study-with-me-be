@@ -19,8 +19,6 @@ import java.util.Set;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
-import static com.kgu.studywithme.fixture.StudyFixture.TOEFL;
-import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOfflineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyRegisterRequestUtils.createOnlineStudyRegisterRequest;
 import static com.kgu.studywithme.study.controller.utils.StudyUpdateRequestUtils.createOfflineStudyUpdateRequest;
@@ -52,7 +50,7 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
@@ -106,16 +104,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequest.builder()
-                    .name(TOEIC.getName())
-                    .description(TOEIC.getDescription())
-                    .category(TOEIC.getCategory().getId())
-                    .thumbnail(TOEIC.getThumbnail().getImageName())
-                    .capacity(TOEIC.getCapacity())
-                    .type(TOEIC.getType().getBrief())
-                    .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
-                    .hashtags(Set.of())
-                    .build();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of());
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -172,16 +161,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             // when
-            final StudyRegisterRequest request = StudyRegisterRequest.builder()
-                    .name(TOEIC.getName())
-                    .description(TOEIC.getDescription())
-                    .category(TOEIC.getCategory().getId())
-                    .thumbnail(TOEIC.getThumbnail().getImageName())
-                    .capacity(TOEIC.getCapacity())
-                    .type(TOEIC.getType().getBrief())
-                    .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
-                    .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
-                    .build();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C", "D", "E", "F"));
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -241,7 +221,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .register(any(), any());
 
             // when
-            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -298,7 +278,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = createOnlineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -348,7 +328,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(studyService.register(any(), any())).willReturn(1L);
 
             // when
-            final StudyRegisterRequest request = createOfflineStudyRegisterRequest();
+            final StudyRegisterRequest request = createOfflineStudyRegisterRequest(Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -408,7 +388,7 @@ class StudyApiControllerTest extends ControllerTest {
         @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
         void withoutAccessToken() throws Exception {
             // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .contentType(APPLICATION_JSON)
@@ -466,7 +446,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -526,16 +506,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             // when
-            final StudyUpdateRequest request = StudyUpdateRequest.builder()
-                    .name(TOEFL.name())
-                    .description(TOEFL.getDescription())
-                    .capacity(TOEFL.getCapacity())
-                    .category(TOEFL.getCategory().getId())
-                    .thumbnail(TOEFL.getThumbnail().getImageName())
-                    .type(TOEFL.getType().getBrief())
-                    .recruitmentStatus(true)
-                    .hashtags(Set.of())
-                    .build();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of());
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -596,16 +567,7 @@ class StudyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             // when
-            final StudyUpdateRequest request = StudyUpdateRequest.builder()
-                    .name(TOEFL.name())
-                    .description(TOEFL.getDescription())
-                    .capacity(TOEFL.getCapacity())
-                    .category(TOEFL.getCategory().getId())
-                    .thumbnail(TOEFL.getThumbnail().getImageName())
-                    .type(TOEFL.getType().getBrief())
-                    .recruitmentStatus(true)
-                    .hashtags(Set.of("A", "B", "C", "D", "E", "F"))
-                    .build();
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C", "D", "E", "F"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -669,7 +631,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -732,7 +694,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -795,7 +757,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -848,7 +810,7 @@ class StudyApiControllerTest extends ControllerTest {
                     .update(any(), any(), any());
 
             // when
-            final StudyUpdateRequest request = createOfflineStudyUpdateRequest(5);
+            final StudyUpdateRequest request = createOfflineStudyUpdateRequest(5, Set.of("A", "B", "C"));
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -892,7 +854,7 @@ class StudyApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 정보 수정 API [DELETE /api/studies/{studyId}]")
+    @DisplayName("스터디 삭제 API [DELETE /api/studies/{studyId}]")
     class close {
         private static final String BASE_URL = "/api/studies/{studyId}";
         private static final Long STUDY_ID = 1L;

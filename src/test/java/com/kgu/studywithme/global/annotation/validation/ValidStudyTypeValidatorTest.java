@@ -1,5 +1,6 @@
 package com.kgu.studywithme.global.annotation.validation;
 
+import com.kgu.studywithme.study.utils.validator.ValidStudyTypeValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

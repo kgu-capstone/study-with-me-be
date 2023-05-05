@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WeekRepository extends JpaRepository<Week, Long> {
+    // @Query
     @Query("SELECT w" +
             " FROM Week w" +
             " WHERE w.study.id = :studyId AND w.week = :week")

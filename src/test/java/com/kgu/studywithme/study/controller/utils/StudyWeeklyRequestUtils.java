@@ -8,26 +8,26 @@ import java.util.List;
 
 public class StudyWeeklyRequestUtils {
     public static StudyWeeklyRequest createWeekWithAssignmentRequest(WeekFixture fixture, List<MultipartFile> files, boolean autoAttendance) {
-        return StudyWeeklyRequest.builder()
-                .title(fixture.getTitle())
-                .content("지정된 기간까지 과제 제출해주세요.")
-                .startDate(fixture.getPeriod().getStartDate())
-                .endDate(fixture.getPeriod().getEndDate())
-                .assignmentExists(true)
-                .autoAttendance(autoAttendance)
-                .files(files)
-                .build();
+        return new StudyWeeklyRequest(
+                fixture.getTitle(),
+                "지정된 기간까지 과제 제출해주세요.",
+                fixture.getPeriod().getStartDate(),
+                fixture.getPeriod().getEndDate(),
+                true,
+                autoAttendance,
+                files
+        );
     }
 
     public static StudyWeeklyRequest createWeekRequest(WeekFixture fixture, List<MultipartFile> files) {
-        return StudyWeeklyRequest.builder()
-                .title(fixture.getTitle())
-                .content("지정된 시간까지 다들 줌에 접속해주세요.")
-                .startDate(fixture.getPeriod().getStartDate())
-                .endDate(fixture.getPeriod().getEndDate())
-                .assignmentExists(false)
-                .autoAttendance(false)
-                .files(files)
-                .build();
+        return new StudyWeeklyRequest(
+                fixture.getTitle(),
+                "지정된 시간까지 다들 줌에 접속해주세요.",
+                fixture.getPeriod().getStartDate(),
+                fixture.getPeriod().getEndDate(),
+                false,
+                false,
+                files
+        );
     }
 }

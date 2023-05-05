@@ -1,5 +1,7 @@
 package com.kgu.studywithme.global.annotation.validation;
 
+import com.kgu.studywithme.study.utils.validator.ValidHashtagCount;
+import com.kgu.studywithme.study.utils.validator.ValidHashtagCountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

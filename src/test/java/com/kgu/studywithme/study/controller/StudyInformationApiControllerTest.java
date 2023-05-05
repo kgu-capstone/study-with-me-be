@@ -3,8 +3,6 @@ package com.kgu.studywithme.study.controller;
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.member.domain.Nickname;
-import com.kgu.studywithme.member.domain.Score;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
@@ -116,11 +114,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
             ReviewAssembler response = new ReviewAssembler(
                     9,
                     List.of(
-                            new ReviewInformation(1L, Nickname.from("닉네임1"), "리뷰1", LocalDateTime.now().minusDays(1)),
-                            new ReviewInformation(2L, Nickname.from("닉네임2"), "리뷰2", LocalDateTime.now().minusDays(2)),
-                            new ReviewInformation(3L, Nickname.from("닉네임3"), "리뷰3", LocalDateTime.now().minusDays(3)),
-                            new ReviewInformation(4L, Nickname.from("닉네임4"), "리뷰4", LocalDateTime.now().minusDays(4)),
-                            new ReviewInformation(5L, Nickname.from("닉네임5"), "리뷰5", LocalDateTime.now().minusDays(5))
+                            new ReviewInformation(new StudyMember(1L, "닉네임1"), "리뷰1", LocalDateTime.now().minusDays(1)),
+                            new ReviewInformation(new StudyMember(2L, "닉네임2"), "리뷰2", LocalDateTime.now().minusDays(2)),
+                            new ReviewInformation(new StudyMember(3L, "닉네임3"), "리뷰3", LocalDateTime.now().minusDays(3)),
+                            new ReviewInformation(new StudyMember(4L, "닉네임4"), "리뷰4", LocalDateTime.now().minusDays(4)),
+                            new ReviewInformation(new StudyMember(5L, "닉네임5"), "리뷰5", LocalDateTime.now().minusDays(5))
                     )
             );
             given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
@@ -375,11 +373,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
             StudyApplicant response = new StudyApplicant(List.of(
-                    new StudyApplicantInformation(1L, Nickname.from("닉네임1"), Score.from(100), LocalDateTime.now().minusDays(1)),
-                    new StudyApplicantInformation(2L, Nickname.from("닉네임2"), Score.from(92), LocalDateTime.now().minusDays(2)),
-                    new StudyApplicantInformation(3L, Nickname.from("닉네임3"), Score.from(93), LocalDateTime.now().minusDays(3)),
-                    new StudyApplicantInformation(4L, Nickname.from("닉네임4"), Score.from(98), LocalDateTime.now().minusDays(4)),
-                    new StudyApplicantInformation(5L, Nickname.from("닉네임5"), Score.from(95), LocalDateTime.now().minusDays(5))
+                    new StudyApplicantInformation(1L, "닉네임1", 100, LocalDateTime.now().minusDays(1)),
+                    new StudyApplicantInformation(2L, "닉네임2", 92, LocalDateTime.now().minusDays(2)),
+                    new StudyApplicantInformation(3L, "닉네임3", 93, LocalDateTime.now().minusDays(3)),
+                    new StudyApplicantInformation(4L, "닉네임4", 98, LocalDateTime.now().minusDays(4)),
+                    new StudyApplicantInformation(5L, "닉네임5", 95, LocalDateTime.now().minusDays(5))
             ));
             given(studyInformationService.getApplicants(STUDY_ID)).willReturn(response);
 
@@ -713,30 +711,25 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private NoticeInformation buildNotice(long id) {
-        NoticeInformation notice = NoticeInformation.builder()
-                .id(id)
-                .title("제목")
-                .content("내용")
-                .createdAt(LocalDateTime.now().minusDays(id))
-                .modifiedAt(LocalDateTime.now().minusDays(id))
-                .writerId(generateRandomId())
-                .writerNickname(Nickname.from("공지사항작성자"))
-                .build();
-
         List<CommentInformation> comments = new ArrayList<>();
         for (long index = 1; index <= 3; index++) {
-            CommentInformation comment = CommentInformation.builder()
-                    .id(index)
-                    .noticeId(id)
-                    .content("댓글")
-                    .writerId(generateRandomId())
-                    .writerNickname(Nickname.from("댓글작성자"))
-                    .build();
-            comments.add(comment);
+            comments.add(new CommentInformation(
+                    index,
+                    id,
+                    "댓글",
+                    new StudyMember(generateRandomId(), "댓글작성자")
+            ));
         }
-        notice.applyComments(comments);
 
-        return notice;
+        return new NoticeInformation(
+                id,
+                "제목",
+                "내용",
+                LocalDateTime.now().minusDays(id),
+                LocalDateTime.now().minusDays(id),
+                new StudyMember(generateRandomId(), "공지사항작성자"),
+                comments
+        );
     }
 
     private Long generateRandomId() {

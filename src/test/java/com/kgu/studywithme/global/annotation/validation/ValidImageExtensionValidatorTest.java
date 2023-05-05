@@ -1,5 +1,6 @@
 package com.kgu.studywithme.global.annotation.validation;
 
+import com.kgu.studywithme.upload.utils.validator.ValidImageExtensionValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
