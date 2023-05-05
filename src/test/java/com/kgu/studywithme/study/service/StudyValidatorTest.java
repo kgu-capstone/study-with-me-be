@@ -74,6 +74,15 @@ class StudyValidatorTest extends ServiceTest {
                 .hasMessage(StudyErrorCode.MEMBER_IS_NOT_HOST.getMessage());
         assertDoesNotThrow(() -> studyValidator.validateHost(study.getId(), host.getId()));
     }
+
+    @Test
+    @DisplayName("스터디 참여자에 대한 검증을 진행한다")
+    void validateStudyParticipant() {
+        assertThatThrownBy(() -> studyValidator.validateStudyParticipant(study.getId(), host.getId() + 100L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
+        assertDoesNotThrow(() -> studyValidator.validateStudyParticipant(study.getId(), host.getId()));
+    }
     
     @Test
     @DisplayName("스터디 공지사항 작성자에 대한 검증을 진행한다")

@@ -259,6 +259,37 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         assertThat(attendances).hasSize(28);
     }
 
+    @Test
+    @DisplayName("스터디 참여자인지 확인한다")
+    void isStudyParticipant() {
+        // 1. 미참여
+        assertAll(
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), host.getId())).isTrue(),
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isFalse()
+        );
+
+        // 2. 참여 신청
+        applyStudy(member, programming[0]);
+        assertAll(
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), host.getId())).isTrue(),
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isFalse()
+        );
+
+        // 3. 참여 승인
+        participateStudy(member, programming[0]);
+        assertAll(
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), host.getId())).isTrue(),
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isTrue()
+        );
+
+        // 4. 졸업
+        graduateStudy(member, programming[0]);
+        assertAll(
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), host.getId())).isTrue(),
+                () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isFalse()
+        );
+    }
+
     private void applyStudy(Member member, Study... studies) {
         for (Study study : studies) {
             study.applyParticipation(member);
@@ -275,6 +306,10 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         for (Study study : studies) {
             study.rejectParticipation(member);
         }
+    }
+
+    private void graduateStudy(Member member, Study study) {
+        study.graduateParticipant(member);
     }
 
     private void applyAndParticipateStudy(Member member, Study... studies) {
