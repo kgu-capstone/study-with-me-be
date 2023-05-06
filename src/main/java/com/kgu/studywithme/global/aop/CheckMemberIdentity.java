@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.aop;
+package com.kgu.studywithme.global.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckStudyParticipant {
+public @interface CheckMemberIdentity {
 }

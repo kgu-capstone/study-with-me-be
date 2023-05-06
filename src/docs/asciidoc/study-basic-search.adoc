@@ -14,21 +14,12 @@ HTTP Response
 include::{snippets}/StudyApi/Search/Category/response-body.adoc[]
 include::{snippets}/StudyApi/Search/Category/response-fields.adoc[]
 
-== 사용자 관심사에 따른 스터디 리스트 조회
-=== 1. Authorization Header에 AccessToken이 없으면 추천에 따른 스터디 리스트 조회에 실패한다
+== 사용자 관심사에 따른 스터디 리스트 조회 [AccessToken 필수]
 HTTP Request
-include::{snippets}/StudyApi/Search/Recommend/Failure/http-request.adoc[]
-include::{snippets}/StudyApi/Search/Recommend/Failure/request-parameters.adoc[]
+include::{snippets}/StudyApi/Search/Recommend/http-request.adoc[]
+include::{snippets}/StudyApi/Search/Recommend/request-headers.adoc[]
+include::{snippets}/StudyApi/Search/Recommend/request-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Search/Recommend/Failure/response-body.adoc[]
-
-=== 2. 사용자의 관심사에 따른 스터디 리스트를 조회한다 [언어 / 면접 / 프로그래밍]
-HTTP Request
-include::{snippets}/StudyApi/Search/Recommend/Success/http-request.adoc[]
-include::{snippets}/StudyApi/Search/Recommend/Success/request-headers.adoc[]
-include::{snippets}/StudyApi/Search/Recommend/Success/request-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Search/Recommend/Success/response-body.adoc[]
-include::{snippets}/StudyApi/Search/Recommend/Success/response-fields.adoc[]
+include::{snippets}/StudyApi/Search/Recommend/response-body.adoc[]
+include::{snippets}/StudyApi/Search/Recommend/response-fields.adoc[]

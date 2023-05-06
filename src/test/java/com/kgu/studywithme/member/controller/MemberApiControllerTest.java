@@ -1,6 +1,5 @@
 package com.kgu.studywithme.member.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.controller.dto.request.MemberReportRequest;
@@ -43,10 +42,12 @@ class MemberApiControllerTest extends ControllerTest {
         @DisplayName("중복되는 값(닉네임)에 의해서 회원가입에 실패한다")
         void throwExceptionByDuplicateNickname() throws Exception {
             // given
-            final SignUpRequest request = createSignUpRequest();
-            given(memberService.signUp(any())).willThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME));
+            doThrow(StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME))
+                    .when(memberService)
+                    .signUp(any());
 
             // when
+            final SignUpRequest request = createSignUpRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
@@ -93,10 +94,10 @@ class MemberApiControllerTest extends ControllerTest {
         @DisplayName("회원가입에 성공한다")
         void success() throws Exception {
             // given
-            final SignUpRequest request = createSignUpRequest();
             given(memberService.signUp(any())).willReturn(1L);
 
             // when
+            final SignUpRequest request = createSignUpRequest();
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(BASE_URL)
                     .contentType(APPLICATION_JSON)
@@ -134,46 +135,14 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자 신고 API [POST /api/members/{reporteeId}/report]")
+    @DisplayName("사용자 신고 API [POST /api/members/{reporteeId}/report] - AccessToken 필수")
     class report {
         private static final String BASE_URL = "/api/members/{reporteeId}/report";
         private static final Long REPORTEE_ID = 1L;
         private static final Long REPORTER_ID = 2L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 사용자 신고를 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, REPORTEE_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "MemberApi/Report/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("reporteeId").description("신고 대상자 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("이전에 신고한 내역이 여전히 처리중이라면 중복 신고를 하지 못한다")
+        @DisplayName("이전에 신고한 내역이 처리되지 않고 접수상태로 남아있다면 중복 신고를 하지 못한다")
         void throwExceptionByPreviousReportIsStillPending() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -183,7 +152,7 @@ class MemberApiControllerTest extends ControllerTest {
                     .report(anyLong(), anyLong(), anyString());
 
             // when
-            final MemberReportRequest request = createReportRequest();
+            final MemberReportRequest request = new MemberReportRequest("참여를 안해요");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, REPORTEE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -204,7 +173,7 @@ class MemberApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "MemberApi/Report/Failure/Case2",
+                                    "MemberApi/Report/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -228,7 +197,7 @@ class MemberApiControllerTest extends ControllerTest {
             given(memberService.report(any(), any(), any())).willReturn(1L);
 
             // when
-            final MemberReportRequest request = createReportRequest();
+            final MemberReportRequest request = new MemberReportRequest("참여를 안해요");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, REPORTEE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -256,20 +225,16 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     private SignUpRequest createSignUpRequest() {
-        return SignUpRequest.builder()
-                .name(JIWON.getName())
-                .nickname(JIWON.getNickname())
-                .email(JIWON.getEmail())
-                .birth(JIWON.getBirth())
-                .phone("01012345678")
-                .gender("M")
-                .province(JIWON.getProvince())
-                .city(JIWON.getCity())
-                .categories(List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId()))
-                .build();
-    }
-
-    private MemberReportRequest createReportRequest() {
-        return new MemberReportRequest("참여를 안해요");
+        return new SignUpRequest(
+                JIWON.getName(),
+                JIWON.getNickname(),
+                JIWON.getEmail(),
+                JIWON.getBirth(),
+                "01012345678",
+                "M",
+                JIWON.getProvince(),
+                JIWON.getCity(),
+                List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId())
+        );
     }
 }

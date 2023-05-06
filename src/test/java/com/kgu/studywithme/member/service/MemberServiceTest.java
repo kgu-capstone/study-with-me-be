@@ -143,15 +143,15 @@ class MemberServiceTest extends ServiceTest {
     }
 
     private Member createDuplicateMember(String email, String nickname, String phone) {
-        return Member.builder()
-                .name(JIWON.getName())
-                .nickname(Nickname.from(nickname))
-                .email(Email.from(email))
-                .birth(JIWON.getBirth())
-                .phone(phone)
-                .gender(JIWON.getGender())
-                .region(Region.of(JIWON.getProvince(), JIWON.getCity()))
-                .interests(JIWON.getInterests())
-                .build();
+        return Member.createMember(
+                JIWON.getName(),
+                Nickname.from(nickname),
+                Email.from(email),
+                JIWON.getBirth(),
+                phone,
+                JIWON.getGender(),
+                Region.of(JIWON.getProvince(), JIWON.getCity()),
+                JIWON.getInterests()
+        );
     }
 }

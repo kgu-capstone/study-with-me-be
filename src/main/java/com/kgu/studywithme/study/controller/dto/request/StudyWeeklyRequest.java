@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
-import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +31,4 @@ public record StudyWeeklyRequest(
 
         List<MultipartFile> files
 ) {
-    @Builder
-    public StudyWeeklyRequest {
-    }
 }

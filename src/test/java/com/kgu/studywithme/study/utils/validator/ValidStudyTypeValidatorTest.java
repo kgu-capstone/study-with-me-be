@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.study.utils.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,44 +10,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 
-@DisplayName("Annotation ConstraintValidator -> ValidGenderValidator 테스트")
-class ValidGenderValidatorTest {
-    private ValidGenderValidator validator;
+@DisplayName("Study [Validator] -> ValidStudyTypeValidator 테스트")
+class ValidStudyTypeValidatorTest {
+    private ValidStudyTypeValidator validator;
     private ConstraintValidatorContext context;
 
     @BeforeEach
     void setUp() {
-        validator = new ValidGenderValidator();
+        validator = new ValidStudyTypeValidator();
         context = mock(ConstraintValidatorContext.class);
     }
-    
+
     @Test
-    @DisplayName("허용하지 않는 성별이 들어오면 validator를 통과하지 못한다")
-    void notAllowedGender() {
+    @DisplayName("허용하지 않는 스터디 타입이 들어오면 validator를 통과하지 못한다")
+    void notAllowedStudyType() {
         // given
         final String unknown = "unknown";
-        
+
         // when
         boolean actual = validator.isValid(unknown, context);
 
         // then
         assertThat(actual).isFalse();
     }
-    
+
     @Test
-    @DisplayName("허용하는 성별이 들어오면 validator를 통과한다")
-    void allowedGender() {
+    @DisplayName("허용하는 스터디 타입이 들어오면 validator를 통과한다")
+    void allowedStudyType() {
         // given
-        final String male1 = "m";
-        final String male2 = "M";
-        final String female1 = "f";
-        final String female2 = "F";
+        final String on1 = "on";
+        final String on2 = "ON";
+        final String off1 = "off";
+        final String off2 = "OFF";
 
         // when
-        boolean actual1 = validator.isValid(male1, context);
-        boolean actual2 = validator.isValid(male2, context);
-        boolean actual3 = validator.isValid(female1, context);
-        boolean actual4 = validator.isValid(female2, context);
+        boolean actual1 = validator.isValid(on1, context);
+        boolean actual2 = validator.isValid(on2, context);
+        boolean actual3 = validator.isValid(off1, context);
+        boolean actual4 = validator.isValid(off2, context);
 
         // then
         assertAll(

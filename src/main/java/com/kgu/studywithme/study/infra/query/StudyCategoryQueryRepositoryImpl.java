@@ -71,7 +71,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 )
                 .fetchOne();
 
-        return new SliceImpl<>(result, pageable, validateHasNext(pageable,  result.size(), totalCount));
+        return new SliceImpl<>(result, pageable, validateHasNext(pageable, result.size(), totalCount));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
                 )
                 .fetchOne();
 
-        return new SliceImpl<>(result, pageable, validateHasNext(pageable,  result.size(), totalCount));
+        return new SliceImpl<>(result, pageable, validateHasNext(pageable, result.size(), totalCount));
     }
 
     public static ConstructorExpression<BasicStudy> assembleStudyProjections() {

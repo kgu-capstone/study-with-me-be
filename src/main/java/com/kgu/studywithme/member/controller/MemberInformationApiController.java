@@ -1,7 +1,7 @@
 package com.kgu.studywithme.member.controller;
 
 import com.kgu.studywithme.auth.utils.ExtractPayload;
-import com.kgu.studywithme.global.annotation.aop.CheckMemberIdentity;
+import com.kgu.studywithme.global.aop.CheckMemberIdentity;
 import com.kgu.studywithme.member.service.MemberInformationService;
 import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;

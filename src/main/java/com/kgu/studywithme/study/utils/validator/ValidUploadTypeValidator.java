@@ -1,11 +1,11 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.study.utils.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
-public class ValidStudyTypeValidator implements ConstraintValidator<ValidStudyType, String> {
-    private static final List<String> ALLOWED_TYPE = List.of("on", "ON", "off", "OFF");
+public class ValidUploadTypeValidator implements ConstraintValidator<ValidUploadType, String> {
+    private static final List<String> ALLOWED_TYPE = List.of("link", "file");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

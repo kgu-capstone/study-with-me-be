@@ -7,7 +7,6 @@ import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.domain.review.PeerReviews;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -57,7 +56,6 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Interest> interests = new ArrayList<>();
 
-    @Builder
     private Member(String name, Nickname nickname, Email email, LocalDate birth, String phone,
                    Gender gender, Region region, Set<Category> interests) {
         this.name = name;

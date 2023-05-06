@@ -42,7 +42,7 @@ public class StudyReviewService {
     }
 
     private void validateReviewWriter(Long reviewId, Long memberId) {
-        studyValidator.validateReviewWriter(reviewId,memberId);
+        studyValidator.validateReviewWriter(reviewId, memberId);
     }
 
     private Review findById(Long reviewId) {

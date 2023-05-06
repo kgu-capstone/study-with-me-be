@@ -1,8 +1,7 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
-import com.kgu.studywithme.global.annotation.validation.ValidHashtagCount;
-import com.kgu.studywithme.global.annotation.validation.ValidStudyType;
-import lombok.Builder;
+import com.kgu.studywithme.study.utils.validator.ValidHashtagCount;
+import com.kgu.studywithme.study.utils.validator.ValidStudyType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -38,6 +37,4 @@ public record StudyRegisterRequest(
         @ValidHashtagCount
         Set<String> hashtags
 ) {
-    @Builder
-    public StudyRegisterRequest {}
 }

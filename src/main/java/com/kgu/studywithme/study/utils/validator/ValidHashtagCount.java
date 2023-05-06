@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.study.utils.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,8 +9,10 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValidImageExtensionValidator.class)
-public @interface ValidImageExtension {
+@Constraint(validatedBy = ValidHashtagCountValidator.class)
+public @interface ValidHashtagCount {
+    int min() default 1;
+    int max() default 5;
     String message() default "";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

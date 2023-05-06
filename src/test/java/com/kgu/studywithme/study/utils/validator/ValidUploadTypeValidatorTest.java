@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.study.utils.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 
-@DisplayName("Annotation ConstraintValidator -> ValidUploadTypeValidator 테스트")
+@DisplayName("Study [Validator] -> ValidUploadTypeValidator 테스트")
 class ValidUploadTypeValidatorTest {
     private ValidUploadTypeValidator validator;
     private ConstraintValidatorContext context;

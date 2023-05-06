@@ -5,16 +5,18 @@
 :toc: left
 :toclevels: 2
 
-== 사용자 피어리뷰 등록
-=== 1. Authorization Header에 AccessToken이 없으면 피어리뷰 등록을 실패한다
+== 사용자 피어리뷰 등록 [AccessToken 필수]
+=== 1. 해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/request-headers.adoc[]
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/request-fields.adoc[]
 
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case1/response-body.adoc[]
 
-=== 2. 해당 사용자에 대해 두 번이상 피어리뷰를 남길 수 없다
+=== 2. 본인에게 피어리뷰를 남길 수 없다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/request-headers.adoc[]
@@ -24,7 +26,7 @@ include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/request-fields.adoc
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case2/response-body.adoc[]
 
-=== 3. 본인에게 피어리뷰를 남길 수 없다
+=== 3. 함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/request-headers.adoc[]
@@ -34,17 +36,7 @@ include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/request-fields.adoc
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Write/Failure/Case3/response-body.adoc[]
 
-=== 4. 함께 스터디를 진행한 기록이 없다면 피어리뷰를 남길 수 없다
-HTTP Request
-include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/http-request.adoc[]
-include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/request-headers.adoc[]
-include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/path-parameters.adoc[]
-include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/MemberApi/PeerReview/Write/Failure/Case4/response-body.adoc[]
-
-=== 5. 피어리뷰 등록을 성공한다
+=== 4. 피어리뷰 등록을 성공한다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Write/Success/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Write/Success/request-headers.adoc[]
@@ -54,26 +46,18 @@ include::{snippets}/MemberApi/PeerReview/Write/Success/request-fields.adoc[]
 HTTP Response
 include::{snippets}/MemberApi/PeerReview/Write/Success/http-response.adoc[]
 
-== 사용자 피어리뷰 수정
-=== 1. Authorization Header에 AccessToken이 없으면 피어리뷰 수정을 실패한다
+== 사용자 피어리뷰 수정 [AccessToken 필수]
+=== 1. 피어리뷰 기록이 존재하지 않는다면 수정을 할 수 없다
 HTTP Request
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/http-request.adoc[]
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/http-request.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/request-headers.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/path-parameters.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case1/response-body.adoc[]
+include::{snippets}/MemberApi/PeerReview/Update/Failure/response-body.adoc[]
 
-=== 2. 피어리뷰 기록이 존재하지 않는다면 수정에 실패한다
-HTTP Request
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/http-request.adoc[]
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-headers.adoc[]
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/MemberApi/PeerReview/Update/Failure/Case2/response-body.adoc[]
-
-=== 3. 피어리뷰 수정에 성공한다
+=== 2. 피어리뷰 수정에 성공한다
 HTTP Request
 include::{snippets}/MemberApi/PeerReview/Update/Success/http-request.adoc[]
 include::{snippets}/MemberApi/PeerReview/Update/Success/request-headers.adoc[]

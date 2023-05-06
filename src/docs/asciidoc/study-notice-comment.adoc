@@ -5,27 +5,18 @@
 :toc: left
 :toclevels: 2
 
-== 공지사항 댓글 생성
-=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 등록을 실패한다
+== 공지사항 댓글 생성 [AccessToken 필수]
+=== 1. 스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/path-parameters.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/request-fields.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Register/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Register/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Register/Failure/path-parameters.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Register/Failure/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Register/Failure/http-response.adoc[]
 
-=== 2. 스터디 참여자가 아니면 공지사항에 댓글을 등록할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Register/Failure/Case2/http-response.adoc[]
-
-=== 3. 공지사항에 대한 댓글 등록에 성공한다
+=== 2. 공지사항에 대한 댓글 등록에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/NoticeComment/Register/Success/http-request.adoc[]
 include::{snippets}/StudyApi/NoticeComment/Register/Success/request-headers.adoc[]
@@ -35,25 +26,17 @@ include::{snippets}/StudyApi/NoticeComment/Register/Success/request-fields.adoc[
 HTTP Response
 include::{snippets}/StudyApi/NoticeComment/Register/Success/http-response.adoc[]
 
-== 공지사항 댓글 삭제
-=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 삭제을 실패한다
+== 공지사항 댓글 삭제 [AccessToken 필수]
+=== 1. 작성자가 아니면 댓글을 삭제할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Remove/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Remove/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Remove/Failure/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Remove/Failure/response-body.adoc[]
 
-=== 2. 작성자가 아니면 댓글을 삭제할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case2/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Remove/Failure/Case2/response-body.adoc[]
-
-=== 3. 공지사항에 대한 댓글 삭제에 성공한다
+=== 2. 공지사항에 대한 댓글 삭제에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/NoticeComment/Remove/Success/http-request.adoc[]
 include::{snippets}/StudyApi/NoticeComment/Remove/Success/request-headers.adoc[]
@@ -62,27 +45,18 @@ include::{snippets}/StudyApi/NoticeComment/Remove/Success/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/NoticeComment/Remove/Success/http-response.adoc[]
 
-== 공지사항 댓글 수정
-=== 1. Authorization Header에 AccessToken이 없으면 공지사항에 대한 댓글 수정을 실패한다
+== 공지사항 댓글 수정 [AccessToken 필수]
+=== 1. 작성자가 아니면 댓글을 수정할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case1/path-parameters.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case1/request-fields.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Update/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Update/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Update/Failure/path-parameters.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Update/Failure/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/NoticeComment/Update/Failure/response-body.adoc[]
 
-=== 2. 작성자가 아니면 댓글을 수정할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/NoticeComment/Update/Failure/Case2/response-body.adoc[]
-
-=== 3. 공지사항에 대한 댓글 수정에 성공한다
+=== 2. 공지사항에 대한 댓글 수정에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/NoticeComment/Update/Success/http-request.adoc[]
 include::{snippets}/StudyApi/NoticeComment/Update/Success/request-headers.adoc[]

@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.aop;
+package com.kgu.studywithme.global.aop;
 
 import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class CheckMemberIdentityAspect {
-    @Before("@annotation(com.kgu.studywithme.global.annotation.aop.CheckMemberIdentity) && args(payloadId, memberId, ..)")
+    @Before("@annotation(com.kgu.studywithme.global.aop.CheckMemberIdentity) && args(payloadId, memberId, ..)")
     public void checkPayloadId(Long payloadId, Long memberId) {
         if (isAnonymousMember(payloadId, memberId)) {
             throw StudyWithMeException.type(AuthErrorCode.INVALID_PERMISSION);

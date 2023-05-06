@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller.week;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyWeeklyApiController 테스트")
 class StudyWeeklyApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("스터디 주차 생성 API [POST /api/studies/{studyId}/weeks/{week}]")
+    @DisplayName("스터디 주차 생성 API [POST /api/studies/{studyId}/weeks/{week}] - AccessToken 필수")
     class createWeek {
         private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}";
         private static final Integer WEEK = 1;
@@ -62,63 +61,6 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
             files3 = createMultipleMockMultipartFile("hello3.pdf", "application/pdf");
             files4 = createMultipleMockMultipartFile("hello4.png", "image/png");
             files = List.of(files1, files2, files3, files4);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 주차를 생성할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final StudyWeeklyRequest request = createWeekWithAssignmentRequest(STUDY_WEEKLY_1, files, true);
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
-                    .file((MockMultipartFile) files1)
-                    .file((MockMultipartFile) files2)
-                    .file((MockMultipartFile) files3)
-                    .file((MockMultipartFile) files4)
-                    .param("title", request.title())
-                    .param("content", request.content())
-                    .param("startDate", request.startDate().format(DATE_TIME_FORMATTER))
-                    .param("endDate", request.endDate().format(DATE_TIME_FORMATTER))
-                    .param("assignmentExists", String.valueOf(request.assignmentExists()))
-                    .param("autoAttendance", String.valueOf(request.autoAttendance()));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Weekly/Create/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("생성할 주차")
-                                    ),
-                                    requestParts(
-                                            partWithName("files").description("스터디 해당 주차에 대한 첨부파일")
-                                                    .optional()
-                                    ),
-                                    requestParameters(
-                                            parameterWithName("title").description("스터디 주차 제목"),
-                                            parameterWithName("content").description("스터디 주차 내용"),
-                                            parameterWithName("startDate").description("스터디 주차 시작 날짜"),
-                                            parameterWithName("endDate").description("스터디 주차 종료 날짜"),
-                                            parameterWithName("assignmentExists").description("스터디 주차 과제 존재 여부"),
-                                            parameterWithName("autoAttendance").description("스터디 주차 자동 출석 여부")
-                                                    .attributes(constraint("과제 존재 여부가 false면 자동 출석은 무조건 false"))
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -158,7 +100,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/Create/Failure/Case2",
+                                    "StudyApi/Weekly/Create/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -239,7 +181,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 주차별 과제 제출 API [POST /api/studies/{studyId}/weeks/{week}/assignment]")
+    @DisplayName("스터디 주차별 과제 제출 API [POST /api/studies/{studyId}/weeks/{week}/assignment] - AccessToken 필수")
     class submitAssignment {
         private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/assignment";
         private static final Integer WEEK = 1;
@@ -254,51 +196,6 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
 
             file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 주차별 과제를 제출할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
-                    .file((MockMultipartFile) file)
-                    .param("type", "file");
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("과제를 제출할 주차")
-                                    ),
-                                    requestParts(
-                                            partWithName("file").description("제출할 파일")
-                                                    .optional()
-                                    ),
-                                    requestParameters(
-                                            parameterWithName("type").description("과제 제출 타입")
-                                                    .attributes(constraint("file=파일 / link=링크")),
-                                            parameterWithName("link").description("제출할 링크")
-                                                    .optional()
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -329,7 +226,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case2",
+                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -382,7 +279,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case3",
+                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -437,7 +334,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case4",
+                                    "StudyApi/Weekly/SubmitAssignment/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -544,7 +441,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 주차별 제출한 과제 수정 API [PATCH /api/studies/{studyId}/weeks/{week}/assignment/edit]")
+    @DisplayName("스터디 주차별 제출한 과제 수정 API [PATCH /api/studies/{studyId}/weeks/{week}/assignment/edit] - AccessToken 필수")
     class editSubmittedAssignment {
         private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/assignment/edit";
         private static final Integer WEEK = 1;
@@ -559,51 +456,6 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
 
             file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 제출한 과제를 수정할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL, STUDY_ID, WEEK)
-                    .param("type", "link")
-                    .param("link", "https://notion.so");
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("week").description("제출한 과제를 수정할 주차")
-                                    ),
-                                    requestParts(
-                                            partWithName("file").description("제출할 파일")
-                                                    .optional()
-                                    ),
-                                    requestParameters(
-                                            parameterWithName("type").description("과제 제출 타입")
-                                                    .attributes(constraint("file=파일 / link=링크")),
-                                            parameterWithName("link").description("제출할 링크")
-                                                    .optional()
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -634,7 +486,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2",
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -687,7 +539,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3",
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -742,7 +594,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case4",
+                                    "StudyApi/Weekly/EditSubmittedAssignment/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

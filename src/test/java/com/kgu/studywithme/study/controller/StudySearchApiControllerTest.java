@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.category.domain.Category;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.fixture.StudyFixture;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,7 +33,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Study [Controller Layer] -> StudySearchApiController 테스트")
@@ -76,7 +73,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     requestParameters(
-                                            parameterWithName("category").description("선택한 카테고리의 ID"),
+                                            parameterWithName("category").description("카테고리 ID"),
                                             parameterWithName("sort").description("정렬 기준")
                                                     .attributes(constraint("date=최신순 / favorite=찜 / review=리뷰")),
                                             parameterWithName("page").description("현재 페이지")
@@ -114,56 +111,10 @@ class StudySearchApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자의 관심사에 따른 스터디 조회 API [GET /api/studies/recommend]")
+    @DisplayName("사용자의 관심사에 따른 스터디 조회 API [GET /api/studies/recommend] - AccessToken 필수")
     class findStudyByRecommend {
         private static final String BASE_URL = "/api/studies/recommend";
         private static final Long MEMBER_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 추천에 따른 스터디 리스트 조회에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .get(BASE_URL)
-                    .param("sort", sort)
-                    .param("page", String.valueOf(0))
-                    .param("type", type);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Search/Recommend/Failure",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestParameters(
-                                            parameterWithName("sort").description("정렬 기준")
-                                                    .attributes(constraint("date=최신순 / favorite=찜 / review=리뷰")),
-                                            parameterWithName("page").description("현재 페이지")
-                                                    .attributes(constraint("시작 페이지 = 0")),
-                                            parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / on / off")),
-                                            parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("type이 오프라인일 경우 활성화")),
-                                            parameterWithName("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("type이 오프라인일 경우 활성화"))
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("사용자의 관심사에 따른 스터디 리스트를 조회한다 [언어 / 면접 / 프로그래밍]")
@@ -189,7 +140,7 @@ class StudySearchApiControllerTest extends ControllerTest {
                     .andExpect(status().isOk())
                     .andDo(
                             document(
-                                    "StudyApi/Search/Recommend/Success",
+                                    "StudyApi/Search/Recommend",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

@@ -5,27 +5,18 @@
 :toc: left
 :toclevels: 2
 
-== 스터디 리뷰 작성
-=== 1. Authorization Header에 AccessToken이 없으면 리뷰 작성을 실패한다
+== 스터디 리뷰 작성 [AccessToken 필수]
+=== 1. 졸업자가 아니면 리뷰를 작성할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Review/Write/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Write/Failure/Case1/path-parameters.adoc[]
-include::{snippets}/StudyApi/Review/Write/Failure/Case1/request-fields.adoc[]
+include::{snippets}/StudyApi/Review/Write/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Review/Write/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Review/Write/Failure/path-parameters.adoc[]
+include::{snippets}/StudyApi/Review/Write/Failure/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Review/Write/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/Review/Write/Failure/response-body.adoc[]
 
-=== 2. 졸업자가 아니면 리뷰를 작성할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/Review/Write/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Write/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Review/Write/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/StudyApi/Review/Write/Failure/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Review/Write/Failure/Case2/response-body.adoc[]
-
-=== 3. 리뷰 작성에 성공한다
+=== 2. 리뷰 작성에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Review/Write/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Review/Write/Success/request-headers.adoc[]
@@ -35,25 +26,17 @@ include::{snippets}/StudyApi/Review/Write/Success/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Review/Write/Success/http-response.adoc[]
 
-== 스터디 리뷰 삭제
-=== 1. Authorization Header에 AccessToken이 없으면 리뷰 삭제를 실패한다
+== 스터디 리뷰 삭제 [AccessToken 필수]
+=== 1. 작성자가 아니면 리뷰를 삭제할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Review/Remove/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Remove/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Review/Remove/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Review/Remove/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Review/Remove/Failure/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Review/Remove/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/Review/Remove/Failure/response-body.adoc[]
 
-=== 2. 작성자가 아니면 리뷰를 삭제할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/Review/Remove/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Remove/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Review/Remove/Failure/Case2/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Review/Remove/Failure/Case2/response-body.adoc[]
-
-=== 3. 리뷰 삭제에 성공한다
+=== 2. 리뷰 삭제에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Review/Remove/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Review/Remove/Success/request-headers.adoc[]
@@ -62,26 +45,18 @@ include::{snippets}/StudyApi/Review/Remove/Success/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Review/Remove/Success/http-response.adoc[]
 
-== 리뷰 수정
-=== 1. Authorization Header에 AccessToken이 없으면 리뷰 수정에 실패한다
+== 리뷰 수정 [AccessToken 필수]
+=== 1. 작성자가 아니면 리뷰를 수정할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Review/Update/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Update/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Review/Update/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Review/Update/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Review/Update/Failure/path-parameters.adoc[]
+include::{snippets}/StudyApi/Review/Update/Failure/request-fields.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Review/Update/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/Review/Update/Failure/response-body.adoc[]
 
-=== 2. 작성자가 아니면 리뷰를 수정할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/Review/Update/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Review/Update/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Review/Update/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/StudyApi/Review/Update/Failure/Case2/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Review/Update/Failure/Case2/response-body.adoc[]
-
-=== 3. 리뷰 수정에 성공한다
+=== 2. 리뷰 수정에 성공한다
 HTTP Request
 include::{snippets}/StudyApi/Review/Update/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Review/Update/Success/request-headers.adoc[]

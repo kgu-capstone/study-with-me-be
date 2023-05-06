@@ -1,7 +1,6 @@
 package com.kgu.studywithme.auth.domain;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +21,6 @@ public class Token {
     @Column(name = "refresh_token", nullable = false, unique = true)
     private String refreshToken;
 
-    @Builder
     private Token(Long memberId, String refreshToken) {
         this.memberId = memberId;
         this.refreshToken = refreshToken;

@@ -12,19 +12,16 @@ public class TokenUtils {
     public static final int EXPIRES_IN = 3000;
 
     public static TokenResponse createTokenResponse() {
-        return TokenResponse.builder()
-                .accessToken(ACCESS_TOKEN)
-                .refreshToken(REFRESH_TOKEN)
-                .build();
+        return new TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN);
     }
 
     public static GoogleTokenResponse createGoogleTokenResponse() {
-        return GoogleTokenResponse.builder()
-                .tokenType(BEARER_TOKEN)
-                .idToken(ID_TOKEN)
-                .accessToken(ACCESS_TOKEN)
-                .scope(SCOPE)
-                .expiresIn(EXPIRES_IN)
-                .build();
+        return new GoogleTokenResponse(
+                BEARER_TOKEN,
+                ID_TOKEN,
+                ACCESS_TOKEN,
+                SCOPE,
+                EXPIRES_IN
+        );
     }
 }

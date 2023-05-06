@@ -2,35 +2,39 @@ package com.kgu.studywithme.study.controller.utils;
 
 import com.kgu.studywithme.study.controller.dto.request.StudyRegisterRequest;
 
+import java.util.Set;
+
 import static com.kgu.studywithme.fixture.StudyFixture.TOEIC;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 
 public class StudyRegisterRequestUtils {
-    public static StudyRegisterRequest createOnlineStudyRegisterRequest() {
-        return StudyRegisterRequest.builder()
-                .name(TOEIC.getName())
-                .description(TOEIC.getDescription())
-                .category(TOEIC.getCategory().getId())
-                .capacity(TOEIC.getCapacity())
-                .thumbnail(TOEIC.getThumbnail().getImageName())
-                .type(TOEIC.getType().getBrief())
-                .minimumAttendanceForGraduation(TOEIC.getMinimumAttendanceForGraduation())
-                .hashtags(TOEIC.getHashtags())
-                .build();
+    public static StudyRegisterRequest createOnlineStudyRegisterRequest(Set<String> hashtags) {
+        return new StudyRegisterRequest(
+                TOEIC.getName(),
+                TOEIC.getDescription(),
+                TOEIC.getCapacity(),
+                TOEIC.getCategory().getId(),
+                TOEIC.getThumbnail().getImageName(),
+                TOEIC.getType().getBrief(),
+                null,
+                null,
+                TOEIC.getMinimumAttendanceForGraduation(),
+                hashtags
+        );
     }
 
-    public static StudyRegisterRequest createOfflineStudyRegisterRequest() {
-        return StudyRegisterRequest.builder()
-                .name(TOSS_INTERVIEW.getName())
-                .description(TOSS_INTERVIEW.getDescription())
-                .category(TOSS_INTERVIEW.getCategory().getId())
-                .capacity(TOSS_INTERVIEW.getCapacity())
-                .thumbnail(TOSS_INTERVIEW.getThumbnail().getImageName())
-                .type(TOSS_INTERVIEW.getType().getBrief())
-                .province(TOSS_INTERVIEW.getLocation().getProvince())
-                .city(TOSS_INTERVIEW.getLocation().getCity())
-                .minimumAttendanceForGraduation(TOSS_INTERVIEW.getMinimumAttendanceForGraduation())
-                .hashtags(TOSS_INTERVIEW.getHashtags())
-                .build();
+    public static StudyRegisterRequest createOfflineStudyRegisterRequest(Set<String> hashtags) {
+        return new StudyRegisterRequest(
+                TOSS_INTERVIEW.getName(),
+                TOSS_INTERVIEW.getDescription(),
+                TOSS_INTERVIEW.getCapacity(),
+                TOSS_INTERVIEW.getCategory().getId(),
+                TOSS_INTERVIEW.getThumbnail().getImageName(),
+                TOSS_INTERVIEW.getType().getBrief(),
+                TOSS_INTERVIEW.getLocation().getProvince(),
+                TOSS_INTERVIEW.getLocation().getCity(),
+                TOSS_INTERVIEW.getMinimumAttendanceForGraduation(),
+                hashtags
+        );
     }
 }
