@@ -28,7 +28,10 @@ public class MemberSimpleQueryRepositoryImpl implements MemberSimpleQueryReposit
         ReportStatus status = query
                 .select(report.status)
                 .from(report)
-                .where(report.reporteeId.eq(reporteeId).and(report.reporterId.eq(reporterId)))
+                .where(
+                        report.reporteeId.eq(reporteeId),
+                        report.reporterId.eq(reporterId)
+                )
                 .fetchOne();
 
         return status == RECEIVE;

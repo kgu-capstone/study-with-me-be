@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 import static com.kgu.studywithme.study.utils.PagingConstants.getDefaultPageRequest;
 
 @RestController
@@ -23,7 +25,7 @@ public class StudySearchApiController {
     private final StudySearchService studySearchService;
 
     @GetMapping
-    public ResponseEntity<DefaultStudyResponse> findStudyByCategory(@ModelAttribute StudyCategorySearchRequest request) {
+    public ResponseEntity<DefaultStudyResponse> findStudyByCategory(@ModelAttribute @Valid StudyCategorySearchRequest request) {
         StudyCategoryCondition condition = new StudyCategoryCondition(request);
         DefaultStudyResponse result = studySearchService.findStudyByCategory(condition, getDefaultPageRequest(request.page()));
         return ResponseEntity.ok(result);
@@ -31,7 +33,7 @@ public class StudySearchApiController {
 
     @GetMapping("/recommend")
     public ResponseEntity<DefaultStudyResponse> findStudyByRecommend(@ExtractPayload Long memberId,
-                                                                     @ModelAttribute StudyRecommendSearchRequest request) {
+                                                                     @ModelAttribute @Valid StudyRecommendSearchRequest request) {
         StudyRecommendCondition condition = new StudyRecommendCondition(memberId, request);
         DefaultStudyResponse result = studySearchService.findStudyByRecommend(condition, getDefaultPageRequest(request.page()));
         return ResponseEntity.ok(result);

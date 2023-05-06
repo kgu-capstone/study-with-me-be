@@ -37,9 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Study [Controller Layer] -> StudySearchApiController 테스트")
 class StudySearchApiControllerTest extends ControllerTest {
-    private static final String sort = SORT_DATE;
-    private static final Pageable page = getDefaultPageRequest(0);
-    private static final String type = "online";
+    private static final String SORT = SORT_DATE;
+    private static final Pageable PAGE = getDefaultPageRequest(0);
+    private static final String TYPE = "online";
 
     @Nested
     @DisplayName("각 카테고리별 스터디 조회 API [GET /api/studies]")
@@ -51,18 +51,18 @@ class StudySearchApiControllerTest extends ControllerTest {
         void success() throws Exception {
             // given
             final Category category = PROGRAMMING;
-            StudyCategoryCondition condition = new StudyCategoryCondition(category, sort, type, null, null);
+            StudyCategoryCondition condition = new StudyCategoryCondition(category, SORT, TYPE, null, null);
 
             DefaultStudyResponse response = new DefaultStudyResponse(generateCategoryResult(8), true);
-            given(studySearchService.findStudyByCategory(condition, page)).willReturn(response);
+            given(studySearchService.findStudyByCategory(condition, PAGE)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .get(BASE_URL)
                     .param("category", String.valueOf(category.getId()))
-                    .param("sort", sort)
+                    .param("sort", SORT)
                     .param("page", String.valueOf(0))
-                    .param("type", type);
+                    .param("type", TYPE);
 
             // then
             mockMvc.perform(requestBuilder)
@@ -122,18 +122,18 @@ class StudySearchApiControllerTest extends ControllerTest {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
-            StudyRecommendCondition condition = new StudyRecommendCondition(MEMBER_ID, sort, type, null, null);
+            StudyRecommendCondition condition = new StudyRecommendCondition(MEMBER_ID, SORT, TYPE, null, null);
 
             DefaultStudyResponse response = new DefaultStudyResponse(generateRecommendResult(8), true);
-            given(studySearchService.findStudyByRecommend(condition, page)).willReturn(response);
+            given(studySearchService.findStudyByRecommend(condition, PAGE)).willReturn(response);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .get(BASE_URL)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .param("sort", sort)
+                    .param("sort", SORT)
                     .param("page", String.valueOf(0))
-                    .param("type", type);
+                    .param("type", TYPE);
 
             // then
             mockMvc.perform(requestBuilder)
