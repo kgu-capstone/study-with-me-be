@@ -1,7 +1,5 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.study.utils.validator;
 
-import com.kgu.studywithme.study.utils.validator.ValidHashtagCount;
-import com.kgu.studywithme.study.utils.validator.ValidHashtagCountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("Annotation ConstraintValidator -> ValidHashtagCountValidator 테스트")
+@DisplayName("Study [Validator] -> ValidHashtagCountValidator 테스트")
 class ValidHashtagCountValidatorTest {
     private ValidHashtagCountValidator validator;
     private ConstraintValidatorContext context;

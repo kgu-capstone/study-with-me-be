@@ -1,6 +1,5 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.member.utils.validator;
 
-import com.kgu.studywithme.member.utils.validator.ValidGenderValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
 
-@DisplayName("Annotation ConstraintValidator -> ValidGenderValidator 테스트")
+@DisplayName("Member [Validator] -> ValidGenderValidator 테스트")
 class ValidGenderValidatorTest {
     private ValidGenderValidator validator;
     private ConstraintValidatorContext context;

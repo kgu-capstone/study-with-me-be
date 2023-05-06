@@ -1,6 +1,5 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.upload.utils.validator;
 
-import com.kgu.studywithme.upload.utils.validator.ValidImageExtensionValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("Annotation ConstraintValidator -> ValidImageExtensionValidator 테스트")
+@DisplayName("Upload [Validator] -> ValidImageExtensionValidator 테스트")
 class ValidImageExtensionValidatorTest {
     private ValidImageExtensionValidator validator;
     private ConstraintValidatorContext context;
