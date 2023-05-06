@@ -28,6 +28,7 @@ import java.util.Set;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.COMPLETE;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.IN_PROGRESS;
 import static com.kgu.studywithme.study.domain.StudyType.OFFLINE;
+import static com.kgu.studywithme.study.domain.StudyType.ONLINE;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -105,13 +106,13 @@ public class Study extends BaseEntity {
     }
 
     public static Study createOnlineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
-                                          StudyThumbnail thumbnail, StudyType type, int minimumAttendanceForGraduation, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, thumbnail, type, null, minimumAttendanceForGraduation, hashtags);
+                                          StudyThumbnail thumbnail, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, thumbnail, ONLINE, null, minimumAttendanceForGraduation, hashtags);
     }
 
     public static Study createOfflineStudy(Member host, StudyName name, Description description, Capacity capacity, Category category,
-                                           StudyThumbnail thumbnail, StudyType type, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
-        return new Study(host, name, description, capacity, category, thumbnail, type, location, minimumAttendanceForGraduation, hashtags);
+                                           StudyThumbnail thumbnail, StudyLocation location, int minimumAttendanceForGraduation, Set<String> hashtags) {
+        return new Study(host, name, description, capacity, category, thumbnail, OFFLINE, location, minimumAttendanceForGraduation, hashtags);
     }
 
     public void update(StudyName name, Description description, int capacity, Category category, StudyThumbnail thumbnail, StudyType type,
