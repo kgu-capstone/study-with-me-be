@@ -54,6 +54,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                         member.id, member.nickname))
                 .from(notice)
                 .innerJoin(notice.writer, member)
+                .where(notice.study.id.eq(studyId))
                 .orderBy(notice.id.desc())
                 .fetch();
 
