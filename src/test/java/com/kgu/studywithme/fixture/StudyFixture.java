@@ -88,7 +88,6 @@ public enum StudyFixture {
                 Capacity.from(capacity),
                 category,
                 thumbnail,
-                type,
                 minimumAttendanceForGraduation,
                 hashtags
         );
@@ -102,7 +101,6 @@ public enum StudyFixture {
                 Capacity.from(capacity),
                 category,
                 thumbnail,
-                type,
                 location,
                 minimumAttendanceForGraduation,
                 hashtags
