@@ -12,10 +12,7 @@ class TokenTest {
     @DisplayName("Token을 업데이트한다")
     void updateRefreshToken() {
         // given
-        Token token = Token.builder()
-                .memberId(1L)
-                .refreshToken(REFRESH_TOKEN)
-                .build();
+        Token token = Token.issueRefreshToken(1L, REFRESH_TOKEN);
 
         // when
         token.updateRefreshToken(REFRESH_TOKEN + "_update");

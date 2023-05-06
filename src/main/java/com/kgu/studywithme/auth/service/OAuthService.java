@@ -33,11 +33,11 @@ public class OAuthService {
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
         tokenManager.synchronizeRefreshToken(member.getId(), refreshToken); // sync RefreshToken
 
-        return LoginResponse.builder()
-                .member(MemberInfo.from(member))
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return new LoginResponse(
+                new MemberInfo(member),
+                accessToken,
+                refreshToken
+        );
     }
 
     private Member findMemberOrException(GoogleUserResponse userInfo) {

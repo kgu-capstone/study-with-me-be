@@ -1,6 +1,5 @@
 package com.kgu.studywithme.favorite.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.favorite.exception.FavoriteErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
@@ -27,43 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Favorite [Controller Layer] -> FavoriteApiController 테스트")
 class FavoriteApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("찜 등록 API [POST /api/studies/{studyId}/like]")
+    @DisplayName("찜 등록 API [POST /api/studies/{studyId}/like] - AccessToken 필수")
     class like {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
         private static final Long MEMBER_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 찜 등록을 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Favorite/Like/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("찜 등록 할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("이미 찜 등록된 스터디를 찜할 수 없다")
@@ -94,7 +61,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Favorite/Like/Failure/Case2",
+                                    "StudyApi/Favorite/Like/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -137,43 +104,11 @@ class FavoriteApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("찜 취소 API [DELETE /api/studies/{studyId}/like]")
+    @DisplayName("찜 취소 API [DELETE /api/studies/{studyId}/like] - AccessToken 필수")
     class cancel {
         private static final String BASE_URL = "/api/studies/{studyId}/like";
         private static final Long STUDY_ID = 1L;
         private static final Long MEMBER_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 찜 취소를 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Favorite/Cancel/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("찜 취소 할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("찜 등록이 되지 않은 스터디를 취소할 수 없다")
@@ -204,7 +139,7 @@ class FavoriteApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Favorite/Cancel/Failure/Case2",
+                                    "StudyApi/Favorite/Cancel/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

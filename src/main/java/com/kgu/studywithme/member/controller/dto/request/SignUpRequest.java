@@ -1,9 +1,8 @@
 package com.kgu.studywithme.member.controller.dto.request;
 
 import com.kgu.studywithme.category.domain.Category;
-import com.kgu.studywithme.global.annotation.validation.ValidGender;
 import com.kgu.studywithme.member.domain.*;
-import lombok.Builder;
+import com.kgu.studywithme.member.utils.validator.ValidGender;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
@@ -47,20 +46,17 @@ public record SignUpRequest(
         @NotEmpty(message = "관심사는 하나 이상 등록해야 합니다.")
         List<Long> categories
 ) {
-    @Builder
-    public SignUpRequest {}
-
     public Member toEntity() {
-        return Member.builder()
-                .name(name)
-                .nickname(Nickname.from(nickname))
-                .email(Email.from(email))
-                .birth(birth)
-                .phone(phone)
-                .gender(convertStringToGender())
-                .region(Region.of(province, city))
-                .interests(convertStringToCategory())
-                .build();
+        return Member.createMember(
+                name,
+                Nickname.from(nickname),
+                Email.from(email),
+                birth,
+                phone,
+                convertStringToGender(),
+                Region.of(province, city),
+                convertStringToCategory()
+        );
     }
 
     private Gender convertStringToGender() {

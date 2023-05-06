@@ -1,4 +1,4 @@
-package com.kgu.studywithme.global.annotation.validation;
+package com.kgu.studywithme.upload.utils.validator;
 
 import org.springframework.web.multipart.MultipartFile;
 

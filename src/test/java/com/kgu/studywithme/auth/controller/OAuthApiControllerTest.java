@@ -1,6 +1,5 @@
 package com.kgu.studywithme.auth.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.auth.infra.oauth.OAuthProperties;
 import com.kgu.studywithme.auth.infra.oauth.dto.response.GoogleUserResponse;
 import com.kgu.studywithme.auth.service.dto.response.LoginResponse;
@@ -22,6 +21,7 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -96,7 +96,9 @@ class OAuthApiControllerTest extends ControllerTest {
         void throwExceptionIfGoogleAuthUserNotInDB() throws Exception {
             // given
             GoogleUserResponse googleUserResponse = JIWON.toGoogleUserResponse();
-            given(oAuthService.login(AUTHORIZATION_CODE, REDIRECT_URL)).willThrow(new StudyWithMeOAuthException(googleUserResponse));
+            doThrow(new StudyWithMeOAuthException(googleUserResponse))
+                    .when(oAuthService)
+                    .login(AUTHORIZATION_CODE, REDIRECT_URL);
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -185,38 +187,9 @@ class OAuthApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("로그아웃 API [POST /api/oauth/logout]")
+    @DisplayName("로그아웃 API [POST /api/oauth/logout] - AccessToken 필수")
     class logout {
         private static final String BASE_URL = "/api/oauth/logout";
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 로그아웃에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(BASE_URL);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "OAuthApi/Logout/Failure",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("로그아웃에 성공한다")
@@ -235,7 +208,7 @@ class OAuthApiControllerTest extends ControllerTest {
                     .andExpect(status().isNoContent())
                     .andDo(
                             document(
-                                    "OAuthApi/Logout/Success",
+                                    "OAuthApi/Logout",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken()

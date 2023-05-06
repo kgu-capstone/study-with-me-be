@@ -5,7 +5,6 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +39,6 @@ public class Notice extends BaseEntity {
     @OneToMany(mappedBy = "notice", cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
-    @Builder
     private Notice(Study study, String title, String content) {
         this.study = study;
         this.writer = study.getHost();

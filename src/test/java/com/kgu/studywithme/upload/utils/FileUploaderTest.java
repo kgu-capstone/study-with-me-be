@@ -26,8 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @DisplayName("Upload [Utils] -> FileUploader 테스트")
 class FileUploaderTest extends InfraTest {
@@ -68,8 +67,6 @@ class FileUploaderTest extends InfraTest {
         @DisplayName("이미지 업로드를 성공한다")
         void success() throws Exception {
             // given
-            MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
-
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
@@ -77,6 +74,7 @@ class FileUploaderTest extends InfraTest {
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
+            final MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
             String uploadUrl = uploader.uploadWeeklyImage(file);
 
             // then
@@ -111,13 +109,6 @@ class FileUploaderTest extends InfraTest {
         @DisplayName("첨부파일 업로드를 성공한다")
         void success() throws Exception {
             // given
-            List<MultipartFile> files = List.of(
-                    createMultipleMockMultipartFile("hello1.txt", "text/plain"),
-                    createMultipleMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
-                    createMultipleMockMultipartFile("hello3.pdf", "application/pdf"),
-                    createMultipleMockMultipartFile("hello4.png", "image/png")
-            );
-
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
@@ -128,6 +119,12 @@ class FileUploaderTest extends InfraTest {
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl1, mockUrl2, mockUrl3, mockUrl4);
 
             // when
+            final List<MultipartFile> files = List.of(
+                    createMultipleMockMultipartFile("hello1.txt", "text/plain"),
+                    createMultipleMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
+                    createMultipleMockMultipartFile("hello3.pdf", "application/pdf"),
+                    createMultipleMockMultipartFile("hello4.png", "image/png")
+            );
             List<String> uploadUrls = uploader.uploadWeeklyAttachments(files);
 
             // then
@@ -162,8 +159,6 @@ class FileUploaderTest extends InfraTest {
         @DisplayName("과제 업로드를 성공한다")
         void success() throws Exception {
             // given
-            MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
@@ -171,6 +166,7 @@ class FileUploaderTest extends InfraTest {
             given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
+            final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
             String uploadUrl = uploader.uploadWeeklySubmit(file);
 
             // then
@@ -184,12 +180,12 @@ class FileUploaderTest extends InfraTest {
     @DisplayName("NCP Object Storage와의 통신 간 네트워크적인 오류가 발생한다")
     void throwExceptionByNCPCommunications() throws IOException {
         // given
-        MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-
-        given(amazonS3.putObject(any(PutObjectRequest.class)))
-                .willThrow(StudyWithMeException.type(UploadErrorCode.S3_UPLOAD_FAILURE));
+        doThrow(StudyWithMeException.type(UploadErrorCode.S3_UPLOAD_FAILURE))
+                .when(amazonS3)
+                .putObject(any(PutObjectRequest.class));
 
         // when
+        final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
         assertThatThrownBy(() -> uploader.uploadWeeklySubmit(file))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(UploadErrorCode.S3_UPLOAD_FAILURE.getMessage());

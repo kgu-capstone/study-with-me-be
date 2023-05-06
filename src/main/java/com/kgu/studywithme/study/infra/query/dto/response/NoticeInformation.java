@@ -3,13 +3,14 @@ package com.kgu.studywithme.study.infra.query.dto.response;
 import com.kgu.studywithme.member.domain.Nickname;
 import com.kgu.studywithme.study.service.dto.response.StudyMember;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
 public class NoticeInformation {
     private final Long id;
     private final String title;
@@ -19,7 +20,6 @@ public class NoticeInformation {
     private final StudyMember writer;
     private List<CommentInformation> comments;
 
-    @Builder
     @QueryProjection
     public NoticeInformation(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt,
                              Long writerId, Nickname writerNickname) {

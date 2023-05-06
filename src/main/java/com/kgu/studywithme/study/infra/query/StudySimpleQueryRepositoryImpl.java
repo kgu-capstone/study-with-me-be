@@ -131,7 +131,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     private BooleanExpression hostIdEq(Long memberId) {
-        return (memberId != null) ?study.participants.host.id.eq(memberId) : null;
+        return (memberId != null) ? study.participants.host.id.eq(memberId) : null;
     }
 
     private BooleanExpression isMemberInParticipant(Long memberId, List<Long> participantIds) {

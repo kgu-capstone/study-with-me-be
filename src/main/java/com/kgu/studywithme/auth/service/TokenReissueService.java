@@ -28,9 +28,6 @@ public class TokenReissueService {
         // RTR 정책에 의해 memberId에 해당하는 사용자가 보유하고 있는 Refresh Token 업데이트
         tokenManager.reissueRefreshTokenByRtrPolicy(memberId, newRefreshToken);
 
-        return TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
+        return new TokenResponse(newAccessToken, newRefreshToken);
     }
 }

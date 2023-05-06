@@ -24,11 +24,7 @@ public class NoticeService {
     @Transactional
     public Long register(Long studyId, String title, String content) {
         Study study = studyFindService.findByIdWithHost(studyId);
-        Notice notice = Notice.builder()
-                .title(title)
-                .content(content)
-                .study(study)
-                .build();
+        Notice notice = Notice.writeNotice(study, title, content);
 
         return noticeRepository.save(notice).getId();
     }

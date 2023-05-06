@@ -5,27 +5,18 @@
 :toc: left
 :toclevels: 2
 
-== 사용자 신고
-=== 1. Authorization Header에 AccessToken이 없으면 사용자 신고를 실패한다
+== 사용자 신고 [AccessToken 필수]
+=== 1. 이전에 신고한 내역이 처리되지 않고 접수상태로 남아있다면 중복 신고를 하지 못한다
 HTTP Request
-include::{snippets}/MemberApi/Report/Failure/Case1/http-request.adoc[]
-include::{snippets}/MemberApi/Report/Failure/Case1/path-parameters.adoc[]
-include::{snippets}/MemberApi/Report/Failure/Case1/request-body.adoc[]
+include::{snippets}/MemberApi/Report/Failure/http-request.adoc[]
+include::{snippets}/MemberApi/Report/Failure/request-headers.adoc[]
+include::{snippets}/MemberApi/Report/Failure/path-parameters.adoc[]
+include::{snippets}/MemberApi/Report/Failure/request-body.adoc[]
 
 HTTP Response
-include::{snippets}/MemberApi/Report/Failure/Case1/response-body.adoc[]
+include::{snippets}/MemberApi/Report/Failure//response-body.adoc[]
 
-=== 2. 이전에 신고한 내역이 여전히 처리중이라면 중복 신고를 하지 못한다
-HTTP Request
-include::{snippets}/MemberApi/Report/Failure/Case2/http-request.adoc[]
-include::{snippets}/MemberApi/Report/Failure/Case2/request-headers.adoc[]
-include::{snippets}/MemberApi/Report/Failure/Case2/path-parameters.adoc[]
-include::{snippets}/MemberApi/Report/Failure/Case2/request-body.adoc[]
-
-HTTP Response
-include::{snippets}/MemberApi/Report/Failure/Case2/response-body.adoc[]
-
-=== 3. 사용자 신고에 성공한다
+=== 2. 사용자 신고에 성공한다
 HTTP Request
 include::{snippets}/MemberApi/Report/Success/http-request.adoc[]
 include::{snippets}/MemberApi/Report/Success/request-headers.adoc[]

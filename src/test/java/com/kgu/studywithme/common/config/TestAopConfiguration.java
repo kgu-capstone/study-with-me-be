@@ -1,8 +1,8 @@
 package com.kgu.studywithme.common.config;
 
-import com.kgu.studywithme.global.annotation.aop.CheckMemberIdentityAspect;
-import com.kgu.studywithme.global.annotation.aop.CheckStudyHostAspect;
-import com.kgu.studywithme.global.annotation.aop.CheckStudyParticipantAspect;
+import com.kgu.studywithme.global.aop.CheckMemberIdentityAspect;
+import com.kgu.studywithme.global.aop.CheckStudyHostAspect;
+import com.kgu.studywithme.global.aop.CheckStudyParticipantAspect;
 import com.kgu.studywithme.study.service.StudyValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.test.context.TestConfiguration;

@@ -1,6 +1,6 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
-import com.kgu.studywithme.global.annotation.validation.ValidUploadType;
+import com.kgu.studywithme.study.utils.validator.ValidUploadType;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;

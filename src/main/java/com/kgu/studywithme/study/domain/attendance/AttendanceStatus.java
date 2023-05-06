@@ -12,7 +12,7 @@ public enum AttendanceStatus {
     ATTENDANCE("출석"),
     LATE("지각"),
     ABSENCE("결석"),
-    NON_ATTENDANCE("미출결")
+    NON_ATTENDANCE("미출결"),
     ;
 
     private final String description;

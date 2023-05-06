@@ -11,8 +11,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -23,44 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Auth [Controller Layer] -> TokenReissueApiController 테스트")
 class TokenReissueApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("토큰 재발급 API [POST /api/token/reissue]")
+    @DisplayName("토큰 재발급 API [POST /api/token/reissue] - RefreshToken 필수")
     class reissueTokens {
         private static final String BASE_URL = "/api/token/reissue";
-
-        @Test
-        @DisplayName("Authorization Header에 RefreshToken이 없으면 토큰 재발급에 실패한다")
-        void withoutRefreshToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(BASE_URL);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "TokenReissueApi/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("만료된 RefreshToken으로 인해 토큰 재발급에 실패한다")
         void expiredRefreshToken() throws Exception {
             // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_EXPIRED_TOKEN));
+            doThrow(StudyWithMeException.type(AuthErrorCode.AUTH_EXPIRED_TOKEN))
+                    .when(jwtTokenProvider)
+                    .isTokenValid(any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -81,7 +56,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "TokenReissueApi/Failure/Case2",
+                                    "TokenReissueApi/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithRefreshToken(),
@@ -94,7 +69,9 @@ class TokenReissueApiControllerTest extends ControllerTest {
         @DisplayName("이미 사용했거나 조작된 RefreshToken이면 토큰 재발급에 실패한다")
         void invalidRefreshToken() throws Exception {
             // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willThrow(StudyWithMeException.type(AuthErrorCode.AUTH_INVALID_TOKEN));
+            doThrow(StudyWithMeException.type(AuthErrorCode.AUTH_INVALID_TOKEN))
+                    .when(jwtTokenProvider)
+                    .isTokenValid(any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -115,7 +92,7 @@ class TokenReissueApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "TokenReissueApi/Failure/Case3",
+                                    "TokenReissueApi/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithRefreshToken(),

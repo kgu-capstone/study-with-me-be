@@ -3,11 +3,13 @@ package com.kgu.studywithme.study.infra.query.dto.response;
 import com.kgu.studywithme.member.domain.Nickname;
 import com.kgu.studywithme.member.domain.Score;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class StudyApplicantInformation {
     private final Long id;
     private final String nickname;

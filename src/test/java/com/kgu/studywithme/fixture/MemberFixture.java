@@ -58,16 +58,16 @@ public enum MemberFixture {
     private final Set<Category> interests;
 
     public Member toMember() {
-        return Member.builder()
-                .name(name)
-                .nickname(Nickname.from(nickname))
-                .email(Email.from(email))
-                .birth(birth)
-                .phone(generateRandomPhoneNumber())
-                .gender(gender)
-                .region(Region.of(province, city))
-                .interests(interests)
-                .build();
+        return Member.createMember(
+                name,
+                Nickname.from(nickname),
+                Email.from(email),
+                birth,
+                generateRandomPhoneNumber(),
+                gender,
+                Region.of(province, city),
+                interests
+        );
     }
 
     private static String generateRandomPhoneNumber() {
@@ -82,18 +82,14 @@ public enum MemberFixture {
         Member member = this.toMember();
         ReflectionTestUtils.setField(member, "id", 1L);
 
-        return LoginResponse.builder()
-                .member(MemberInfo.from(member))
-                .accessToken(ACCESS_TOKEN)
-                .refreshToken(REFRESH_TOKEN)
-                .build();
+        return new LoginResponse(
+                new MemberInfo(member),
+                ACCESS_TOKEN,
+                REFRESH_TOKEN
+        );
     }
 
     public GoogleUserResponse toGoogleUserResponse() {
-        return GoogleUserResponse.builder()
-                .name(name)
-                .email(email)
-                .picture("google_profile_url")
-                .build();
+        return new GoogleUserResponse(name, email, "google_profile_url");
     }
 }
