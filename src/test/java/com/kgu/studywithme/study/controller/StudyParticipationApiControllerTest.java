@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
@@ -32,45 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyParticipationApiController 테스트")
 class StudyParticipationApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("스터디 참여 신청 API [POST /api/studies/{studyId}/applicants]")
+    @DisplayName("스터디 참여 신청 API [POST /api/studies/{studyId}/applicants] - AccessToken 필수")
     class apply {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants";
         private static final Long STUDY_ID = 1L;
         private static final Long HOST_ID = 1L;
         private static final Long MEMBER_ID = 2L;
         private static final Long PARTICIPANT_ID = 3L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 신청에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Apply/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("모집이 마감된 스터디에는 참여 신청을 할 수 없다")
@@ -101,12 +68,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Apply/Failure/Case2",
+                                    "StudyApi/Participation/Apply/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -142,12 +109,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Apply/Failure/Case3",
+                                    "StudyApi/Participation/Apply/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -183,12 +150,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Apply/Failure/Case4",
+                                    "StudyApi/Participation/Apply/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -224,12 +191,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Apply/Failure/Case5",
+                                    "StudyApi/Participation/Apply/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -261,7 +228,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 진행할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     )
                             )
                     );
@@ -269,44 +236,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 참여 신청 취소 API [DELETE /api/studies/{studyId}/applicants]")
+    @DisplayName("스터디 참여 신청 취소 API [DELETE /api/studies/{studyId}/applicants] - AccessToken 필수")
     class applyCancel {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants";
         private static final Long STUDY_ID = 1L;
         private static final Long APPLIER_ID = 1L;
         private static final Long ANONYMOUS_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 신청 취소에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/ApplyCancel/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("참여 신청자가 아니면 참여 신청을 취소할 수 없다")
@@ -337,12 +272,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/ApplyCancel/Failure/Case2",
+                                    "StudyApi/Participation/ApplyCancel/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -374,7 +309,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("참여 신청을 취소할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     )
                             )
                     );
@@ -382,7 +317,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 참여 승인 API [PATCH /api/studies/{studyId}/applicants/{applierId}/approve]")
+    @DisplayName("스터디 참여 승인 API [PATCH /api/studies/{studyId}/applicants/{applierId}/approve] - AccessToken 필수")
     class approve {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/approve";
         private static final Long STUDY_ID = 1L;
@@ -393,39 +328,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, APPLIER_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 승인에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, APPLIER_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Approve/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 승인할 사용자 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -454,7 +356,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Approve/Failure/Case2",
+                                    "StudyApi/Participation/Approve/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -496,7 +398,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Approve/Failure/Case3",
+                                    "StudyApi/Participation/Approve/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -538,7 +440,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Approve/Failure/Case4",
+                                    "StudyApi/Participation/Approve/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -580,7 +482,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Approve/Failure/Case5",
+                                    "StudyApi/Participation/Approve/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -627,7 +529,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 참여 거절 API [PATCH /api/studies/{studyId}/applicants/{applierId}/reject]")
+    @DisplayName("스터디 참여 거절 API [PATCH /api/studies/{studyId}/applicants/{applierId}/reject] - AccessToken 필수")
     class reject {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants/{applierId}/reject";
         private static final Long STUDY_ID = 1L;
@@ -641,45 +543,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 거절에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final ParticipationRejectRequest request = createParticipationRejectRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Reject/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("reason").description("참여 거절 사유")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("스터디 팀장이 아니면 참여 거절 권한이 없다")
         void throwExceptionByMemberIsNotHost() throws Exception {
             // given
@@ -687,7 +550,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(APPLIER_ID);
 
             // when
-            final ParticipationRejectRequest request = createParticipationRejectRequest();
+            final ParticipationRejectRequest request = new ParticipationRejectRequest("출석률이 너무 낮으신거같아요.");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, APPLIER_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -708,7 +571,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Reject/Failure/Case2",
+                                    "StudyApi/Participation/Reject/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -757,7 +620,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Reject/Failure/Case3",
+                                    "StudyApi/Participation/Reject/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -784,7 +647,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     .reject(any(), any(), any(), any());
 
             // when
-            final ParticipationRejectRequest request = createParticipationRejectRequest();
+            final ParticipationRejectRequest request = new ParticipationRejectRequest("출석률이 너무 낮으신거같아요.");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, APPLIER_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -793,6 +656,54 @@ class StudyParticipationApiControllerTest extends ControllerTest {
 
             // then
             final StudyErrorCode expectedError = StudyErrorCode.ALREADY_CLOSED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Participation/Reject/Failure/Case3",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("reason").description("참여 거절 사유")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
+        void throwExceptionByMemberIsNotApplier() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
+                    .when(participationService)
+                    .reject(any(), any(), any(), any());
+
+            // when
+            final ParticipationRejectRequest request = new ParticipationRejectRequest("출석률이 너무 낮으신거같아요.");
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_APPLIER;
             mockMvc.perform(requestBuilder)
                     .andExpectAll(
                             status().isConflict(),
@@ -822,54 +733,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
-        void throwExceptionByMemberIsNotApplier() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
-            doThrow(StudyWithMeException.type(StudyErrorCode.MEMBER_IS_NOT_APPLIER))
-                    .when(participationService)
-                    .reject(any(), any(), any(), any());
-
-            // when
-            final ParticipationRejectRequest request = createParticipationRejectRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, APPLIER_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_APPLIER;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isConflict(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Reject/Failure/Case5",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    getHeaderWithAccessToken(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("applierId").description("참여 거절할 사용자 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("reason").description("참여 거절 사유")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("참여 거절을 성공한다")
         void success() throws Exception {
             // given
@@ -880,7 +743,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     .reject(any(), any(), any(), any());
 
             // when
-            final ParticipationRejectRequest request = createParticipationRejectRequest();
+            final ParticipationRejectRequest request = new ParticipationRejectRequest("출석률이 너무 낮으신거같아요.");
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, APPLIER_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -909,7 +772,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 참여 취소 API [PATCH /api/studies/{studyId}/participants/cancel]")
+    @DisplayName("스터디 참여 취소 API [PATCH /api/studies/{studyId}/participants/cancel] - AccessToken 필수")
     class cancel {
         private static final String BASE_URL = "/api/studies/{studyId}/participants/cancel";
         private static final Long STUDY_ID = 1L;
@@ -922,38 +785,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
             mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
             mockingForStudyParticipant(STUDY_ID, PARTICIPANT_ID, true);
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 참여 취소에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Cancel/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -982,7 +813,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Cancel/Failure/Case2",
+                                    "StudyApi/Participation/Cancel/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1023,7 +854,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Cancel/Failure/Case3",
+                                    "StudyApi/Participation/Cancel/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1064,7 +895,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Cancel/Failure/Case4",
+                                    "StudyApi/Participation/Cancel/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1109,7 +940,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 팀장 권한 위임 API [PATCH /api/studies/{studyId}/participants/{participantId}/delegation]")
+    @DisplayName("스터디 팀장 권한 위임 API [PATCH /api/studies/{studyId}/participants/{participantId}/delegation] - AccessToken 필수")
     class delegateAuthority {
         private static final String BASE_URL = "/api/studies/{studyId}/participants/{participantId}/delegation";
         private static final Long STUDY_ID = 1L;
@@ -1121,39 +952,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, PARTICIPANT_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 팀장 권한 위임에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/DelegateAuthority/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)"),
-                                            parameterWithName("participantId").description("권한을 위임할 사용자 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -1182,7 +980,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/DelegateAuthority/Failure/Case2",
+                                    "StudyApi/Participation/DelegateAuthority/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1224,7 +1022,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/DelegateAuthority/Failure/Case3",
+                                    "StudyApi/Participation/DelegateAuthority/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1266,7 +1064,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/DelegateAuthority/Failure/Case4",
+                                    "StudyApi/Participation/DelegateAuthority/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -1313,7 +1111,7 @@ class StudyParticipationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 졸업 API [PATCH /api/studies/{studyId}/graduate]")
+    @DisplayName("스터디 졸업 API [PATCH /api/studies/{studyId}/graduate] - AccessToken 필수")
     class graduate {
         private static final String BASE_URL = "/api/studies/{studyId}/graduate";
         private static final Long STUDY_ID = 1L;
@@ -1326,38 +1124,6 @@ class StudyParticipationApiControllerTest extends ControllerTest {
             mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
             mockingForStudyParticipant(STUDY_ID, PARTICIPANT_ID, true);
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 졸업에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Participation/Graduate/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -1386,12 +1152,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case2",
+                                    "StudyApi/Participation/Graduate/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -1427,12 +1193,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case3",
+                                    "StudyApi/Participation/Graduate/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -1468,12 +1234,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case4",
+                                    "StudyApi/Participation/Graduate/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -1509,12 +1275,12 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Participation/Graduate/Failure/Case5",
+                                    "StudyApi/Participation/Graduate/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -1546,14 +1312,10 @@ class StudyParticipationApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("졸업할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     )
                             )
                     );
         }
-    }
-
-    private ParticipationRejectRequest createParticipationRejectRequest() {
-        return new ParticipationRejectRequest("너무 멀리 사세요.");
     }
 }

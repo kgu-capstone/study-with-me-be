@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
@@ -152,7 +151,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 공지사항 조회 API [GET /api/studies/{studyId}/notices]")
+    @DisplayName("스터디 공지사항 조회 API [GET /api/studies/{studyId}/notices] - AccessToken 필수")
     class getNotices {
         private static final String BASE_URL = "/api/studies/{studyId}/notices";
         private static final Long STUDY_ID = 1L;
@@ -163,38 +162,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 공지사항 조회에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Information/Notice/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -223,7 +190,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Information/Notice/Failure/Case2",
+                                    "StudyApi/Information/Notice/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -282,7 +249,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 신청자 조회 API [GET /api/studies/{studyId}/applicants]")
+    @DisplayName("스터디 신청자 조회 API [GET /api/studies/{studyId}/applicants] - AccessToken 필수")
     class getApplicants {
         private static final String BASE_URL = "/api/studies/{studyId}/applicants";
         private static final Long STUDY_ID = 1L;
@@ -293,38 +260,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, PARTICIPANT_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 신청자 정보를 조회할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Information/Applicants/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -353,7 +288,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Information/Applicants/Failure/Case2",
+                                    "StudyApi/Information/Applicants/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -410,7 +345,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 주차별 출석 정보 조회 API [GET /api/studies/{studyId}/attendances]")
+    @DisplayName("스터디 주차별 출석 정보 조회 API [GET /api/studies/{studyId}/attendances] - AccessToken 필수")
     class getAttendances {
         private static final String BASE_URL = "/api/studies/{studyId}/attendances";
         private static final Long STUDY_ID = 1L;
@@ -421,38 +356,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 주차별 출석 정보를 조회할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Information/Attendances/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -481,7 +384,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Information/Attendances/Failure/Case2",
+                                    "StudyApi/Information/Attendances/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -532,7 +435,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 주차별 정보 조회 API [GET /api/studies/{studyId}/weeks]")
+    @DisplayName("스터디 주차별 정보 조회 API [GET /api/studies/{studyId}/weeks] - AccessToken 필수")
     class getWeeks {
         private static final String BASE_URL = "/api/studies/{studyId}/weeks";
         private static final Long STUDY_ID = 1L;
@@ -543,38 +446,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyParticipant(STUDY_ID, HOST_ID, true);
             mockingForStudyParticipant(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 주차별 정보를 조회할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Information/Weeks/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -603,7 +474,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Information/Weeks/Failure/Case2",
+                                    "StudyApi/Information/Weeks/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),

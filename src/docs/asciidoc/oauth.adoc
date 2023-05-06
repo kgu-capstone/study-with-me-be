@@ -5,8 +5,7 @@
 :toc: left
 :toclevels: 2
 
-== Authorization Code 요청을 위한 URI
-=== Authorization Code 요청을 위한 URI를 생성한다
+== Authorization Code 요청을 위한 URI 생성
 HTTP Request
 include::{snippets}/OAuthApi/Access/http-request.adoc[]
 include::{snippets}/OAuthApi/Access/request-parameters.adoc[]
@@ -34,18 +33,10 @@ HTTP Response
 include::{snippets}/OAuthApi/Login/Success/response-body.adoc[]
 include::{snippets}/OAuthApi/Login/Success/response-fields.adoc[]
 
-== 로그아웃
-=== 1. Authorization Header에 AccessToken이 없으면 로그아웃에 실패한다
+== 로그아웃 [AccessToken 필수]
 HTTP Request
-include::{snippets}/OAuthApi/Logout/Failure/http-request.adoc[]
+include::{snippets}/OAuthApi/Logout/http-request.adoc[]
+include::{snippets}/OAuthApi/Logout/request-headers.adoc[]
 
 HTTP Response
-include::{snippets}/OAuthApi/Logout/Failure/response-body.adoc[]
-
-=== 2. 로그아웃에 성공한다
-HTTP Request
-include::{snippets}/OAuthApi/Logout/Success/http-request.adoc[]
-include::{snippets}/OAuthApi/Logout/Success/request-headers.adoc[]
-
-HTTP Response
-include::{snippets}/OAuthApi/Logout/Success/http-response.adoc[]
+include::{snippets}/OAuthApi/Logout/http-response.adoc[]

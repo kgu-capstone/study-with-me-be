@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
@@ -41,60 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyApiController 테스트")
 class StudyApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("스터디 생성 API [POST /api/study]")
+    @DisplayName("스터디 생성 API [POST /api/study] - AccessToken 필수")
     class register {
         private static final String BASE_URL = "/api/study";
         private static final Long HOST_ID = 1L;
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 생성을 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final StudyRegisterRequest request = createOnlineStudyRegisterRequest(Set.of("A", "B", "C"));
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(BASE_URL)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Register/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestFields(
-                                            fieldWithPath("name").description("스터디명"),
-                                            fieldWithPath("description").description("스터디 설명"),
-                                            fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
-                                            fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("type").description("온/오프라인 유무")
-                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
-                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
-                                            fieldWithPath("hashtags").description("해시태그")
-                                                    .attributes(constraint("최소 1개 최대 5개"))
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
 
         @Test
         @DisplayName("스터디 해시태그 개수가 0개면 스터디를 생성할 수 없다 [최소 1개]")
@@ -126,7 +75,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure/Case2",
+                                    "StudyApi/Register/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -183,7 +132,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure/Case3",
+                                    "StudyApi/Register/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -211,7 +160,7 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("중복되는 값(스터디 이름)에 의해서 스터디 생성을 실패한다")
+        @DisplayName("다른 스터디가 사용하고 있는 스터디명으로 생성할 수 없다")
         void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -242,7 +191,7 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Register/Failure/Case4",
+                                    "StudyApi/Register/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -371,7 +320,7 @@ class StudyApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 정보 수정 API [PATCH /api/studies/{studyId}]")
+    @DisplayName("스터디 정보 수정 API [PATCH /api/studies/{studyId}] - AccessToken 필수")
     class update {
         private static final String BASE_URL = "/api/studies/{studyId}";
         private static final Long STUDY_ID = 1L;
@@ -382,60 +331,6 @@ class StudyApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Update/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("name").description("스터디명"),
-                                            fieldWithPath("description").description("스터디 설명"),
-                                            fieldWithPath("capacity").description("최대 수용 인원"),
-                                            fieldWithPath("category").description("카테고리 ID(PK)"),
-                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
-                                            fieldWithPath("type").description("온/오프라인 유무")
-                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
-                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
-                                                    .optional()
-                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
-                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
-                                                    .attributes(constraint("활성화=true / 비활성화=false")),
-                                            fieldWithPath("hashtags").description("해시태그")
-                                                    .attributes(constraint("최소 1개 최대 5개"))
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -467,12 +362,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case2",
+                                    "StudyApi/Update/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -528,12 +423,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case3",
+                                    "StudyApi/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -589,12 +484,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case4",
+                                    "StudyApi/Update/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -621,7 +516,7 @@ class StudyApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("다른 스터디가 사용하고 있는 스터디명이라면 정보를 수정할 수 없다")
+        @DisplayName("다른 스터디가 사용하고 있는 스터디명으로 정보를 수정할 수 없다")
         void throwExceptionByDuplicateName() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -652,12 +547,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case5",
+                                    "StudyApi/Update/Failure/Case4",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -715,12 +610,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Update/Failure/Case6",
+                                    "StudyApi/Update/Failure/Case5",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -774,7 +669,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -827,7 +722,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수정할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("name").description("스터디명"),
@@ -854,7 +749,7 @@ class StudyApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 삭제 API [DELETE /api/studies/{studyId}]")
+    @DisplayName("스터디 종료 API [DELETE /api/studies/{studyId}] - AccessToken 필수")
     class close {
         private static final String BASE_URL = "/api/studies/{studyId}";
         private static final Long STUDY_ID = 1L;
@@ -865,38 +760,6 @@ class StudyApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 스터디를 종료할 수 없다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, STUDY_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Close/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("종료할 스터디 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -925,12 +788,12 @@ class StudyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Close/Failure/Case2",
+                                    "StudyApi/Close/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("종료할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -959,7 +822,7 @@ class StudyApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("종료할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     )
                             )
                     );

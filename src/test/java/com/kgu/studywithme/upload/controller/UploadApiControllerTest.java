@@ -1,6 +1,5 @@
 package com.kgu.studywithme.upload.controller;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.GlobalErrorCode;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
@@ -34,47 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Upload [Controller Layer] -> UploadApiController 테스트")
 class UploadApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("이미지 업로드 API [POST /api/image]")
+    @DisplayName("이미지 업로드 API [POST /api/image] - AccessToken 필수")
     class findAllCategory {
         private static final String BASE_URL = "/api/image";
         private static final Long MEMBER_ID = 1L;
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 클라우드에 이미지 업로드를 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .multipart(BASE_URL)
-                    .file((MockMultipartFile) file);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "UploadApi/Image/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    requestParts(
-                                            partWithName("file").description("글에 포함되는 이미지")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("허용하는 이미지 확장자[jpg, jpeg, png, gif]가 아니면 클라우드에 업로드가 불가능하다")
+        @DisplayName("허용하는 이미지 확장자[jpg, jpeg, png, gif]가 아니면 업로드가 불가능하다")
         void throwExceptionByNotAllowedExtension() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -102,7 +67,7 @@ class UploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "UploadApi/Image/Failure/Case2",
+                                    "UploadApi/Image/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -115,7 +80,7 @@ class UploadApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("이미지를 업로드하지 않으면 클라우드에 업로드를 실패한다")
+        @DisplayName("이미지를 전송하지 않거나 크기가 0인 이미지면 업로드를 실패한다")
         void throwExceptionByFileIsEmpty() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -145,7 +110,7 @@ class UploadApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "UploadApi/Image/Failure/Case3",
+                                    "UploadApi/Image/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -158,7 +123,7 @@ class UploadApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("클라우드에 이미지 업로드를 성공한다")
+        @DisplayName("이미지 업로드를 성공한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);

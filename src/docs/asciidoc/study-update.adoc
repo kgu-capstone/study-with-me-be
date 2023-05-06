@@ -1,21 +1,22 @@
-= 스터디 정보 수정/종료 API
+= 스터디 정보 수정, 종료 API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 2
 
-== 스터디 정보 수정
-=== 1. Authorization Header에 AccessToken이 없으면 스터디 정보 수정을 실패한다
+== 스터디 정보 수정 [AccessToken 필수]
+=== 1. 스터디 팀장이 아니라면 정보를 수정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case1/request-headers.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case1/path-parameters.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case1/request-fields.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case1/response-body.adoc[]
 
-=== 2. 스터디 팀장이 아니라면 정보를 수정할 수 없다
+=== 2. 스터디 해시태그 개수가 0개면 스터디 정보를 수정할 수 없다 [최소 1개]
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case2/request-headers.adoc[]
@@ -25,7 +26,7 @@ include::{snippets}/StudyApi/Update/Failure/Case2/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case2/response-body.adoc[]
 
-=== 3. 스터디 해시태그 개수가 0개면 스터디 정보를 수정할 수 없다 [최소 1개]
+=== 3. 스터디 해시태그 개수가 5개를 초과하면 스터디 정보를 수정할 수 없다 [최대 5개]
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case3/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case3/request-headers.adoc[]
@@ -35,7 +36,7 @@ include::{snippets}/StudyApi/Update/Failure/Case3/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case3/response-body.adoc[]
 
-=== 4. 스터디 해시태그 개수가 5개를 초과하면 스터디 정보를 수정할 수 없다 [최대 5개]
+=== 4. 다른 스터디가 사용하고 있는 스터디명으로 정보를 수정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case4/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case4/request-headers.adoc[]
@@ -45,7 +46,7 @@ include::{snippets}/StudyApi/Update/Failure/Case4/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case4/response-body.adoc[]
 
-=== 5. 다른 스터디가 사용하고 있는 스터디명이라면 정보를 수정할 수 없다
+=== 5. 최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Update/Failure/Case5/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Failure/Case5/request-headers.adoc[]
@@ -55,17 +56,7 @@ include::{snippets}/StudyApi/Update/Failure/Case5/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case5/response-body.adoc[]
 
-=== 6. 최대 수용인원을 현재 스터디 인원보다 적게 설정할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/Update/Failure/Case6/http-request.adoc[]
-include::{snippets}/StudyApi/Update/Failure/Case6/request-headers.adoc[]
-include::{snippets}/StudyApi/Update/Failure/Case6/path-parameters.adoc[]
-include::{snippets}/StudyApi/Update/Failure/Case6/request-fields.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Update/Failure/Case6/response-body.adoc[]
-
-=== 7. 정보 수정에 성공한다 - 온라인
+=== 6. 정보 수정에 성공한다 - 온라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case1/request-headers.adoc[]
@@ -75,7 +66,7 @@ include::{snippets}/StudyApi/Update/Success/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Success/Case1/http-response.adoc[]
 
-=== 8. 정보 수정에 성공한다 - 오프라인
+=== 7. 정보 수정에 성공한다 - 오프라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case2/request-headers.adoc[]
@@ -85,25 +76,17 @@ include::{snippets}/StudyApi/Update/Success/Case2/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Success/Case2/http-response.adoc[]
 
-== 스터디 종료
-=== 1. Authorization Header에 AccessToken이 없으면 스터디를 종료할 수 없다
+== 스터디 종료 [AccessToken 필수]
+=== 1. 스터디 팀장이 아니라면 스터디를 종료할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Close/Failure/Case1/http-request.adoc[]
-include::{snippets}/StudyApi/Close/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Close/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Close/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Close/Failure/path-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Close/Failure/Case1/response-body.adoc[]
+include::{snippets}/StudyApi/Close/Failure/response-body.adoc[]
 
-=== 2. 스터디 팀장이 아니라면 스터디를 종료할 수 없다
-HTTP Request
-include::{snippets}/StudyApi/Close/Failure/Case2/http-request.adoc[]
-include::{snippets}/StudyApi/Close/Failure/Case2/request-headers.adoc[]
-include::{snippets}/StudyApi/Close/Failure/Case2/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Close/Failure/Case2/response-body.adoc[]
-
-=== 3. 스터디를 종료한다
+=== 2. 스터디를 종료한다
 HTTP Request
 include::{snippets}/StudyApi/Close/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Close/Success/request-headers.adoc[]

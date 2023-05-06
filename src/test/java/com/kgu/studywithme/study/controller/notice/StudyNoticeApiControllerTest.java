@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller.notice;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
@@ -33,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> StudyNoticeApiController 테스트")
 class StudyNoticeApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("공지사항 등록 API [POST /api/studies/{studyId}/notice]")
+    @DisplayName("공지사항 등록 API [POST /api/studies/{studyId}/notice] - AccessToken 필수")
     class register {
         private static final String BASE_URL = "/api/studies/{studyId}/notice";
         private static final Long STUDY_ID = 1L;
@@ -47,45 +46,6 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 등록을 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final NoticeRequest request = createNoticeRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .post(BASE_URL, STUDY_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Notice/Register/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("title").description("공지사항 제목"),
-                                            fieldWithPath("content").description("공지사항 내용")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("팀장이 아니라면 공지사항을 등록할 수 없다")
         void throwExceptionByMemberIsNotHost() throws Exception {
             // given
@@ -93,7 +53,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
-            final NoticeRequest request = createNoticeRequest();
+            final NoticeRequest request = new NoticeRequest(
+                    "공지사항 제목",
+                    "공지사항 내용~~"
+            );
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -114,12 +77,12 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Notice/Register/Failure/Case2",
+                                    "StudyApi/Notice/Register/Failure",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("title").description("공지사항 제목"),
@@ -139,7 +102,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(noticeService.register(any(), anyString(), anyString())).willReturn(1L);
 
             // when
-            final NoticeRequest request = createNoticeRequest();
+            final NoticeRequest request = new NoticeRequest(
+                    "공지사항 제목",
+                    "공지사항 내용~~"
+            );
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .post(BASE_URL, STUDY_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -156,7 +122,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 등록할 스터디 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("title").description("공지사항 제목"),
@@ -168,7 +134,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 삭제 API [DELETE /api/studies/{studyId}/notices/{noticeId}]")
+    @DisplayName("공지사항 삭제 API [DELETE /api/studies/{studyId}/notices/{noticeId}] - AccessToken 필수")
     class remove {
         private static final String BASE_URL = "/api/studies/{studyId}/notices/{noticeId}";
         private static final Long STUDY_ID = 1L;
@@ -180,39 +146,6 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         void setUp() {
             mockingForStudyHost(STUDY_ID, HOST_ID, true);
             mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
-        }
-
-        @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 삭제를 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .delete(BASE_URL, STUDY_ID, NOTICE_ID);
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Notice/Remove/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
         }
 
         @Test
@@ -241,13 +174,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Notice/Remove/Failure/Case2",
+                                    "StudyApi/Notice/Remove/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -283,13 +216,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Notice/Remove/Failure/Case3",
+                                    "StudyApi/Notice/Remove/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     ),
                                     getExceptionResponseFiels()
                             )
@@ -321,8 +254,8 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 삭제할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("삭제할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     )
                             )
                     );
@@ -330,7 +263,7 @@ class StudyNoticeApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("공지사항 수정 API [PATCH /api/studies/{studyId}/notices/{noticeId}]")
+    @DisplayName("공지사항 수정 API [PATCH /api/studies/{studyId}/notices/{noticeId}] - AccessToken 필수")
     class update {
         private static final String BASE_URL = "/api/studies/{studyId}/notices/{noticeId}";
         private static final Long STUDY_ID = 1L;
@@ -345,46 +278,6 @@ class StudyNoticeApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 공지사항 수정에 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final NoticeRequest request = createNoticeRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, NOTICE_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Notice/Update/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("title").description("수정할 공지사항 제목"),
-                                            fieldWithPath("content").description("수정할 공지사항 내용")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("팀장이 아니라면 공지사항을 수정할 수 없다")
         void throwExceptionByMemberIsNotHost() throws Exception {
             // given
@@ -392,7 +285,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
 
             // when
-            final NoticeRequest request = createNoticeRequest();
+            final NoticeRequest request = new NoticeRequest(
+                    "공지사항 제목",
+                    "공지사항 내용~~"
+            );
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, NOTICE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -413,13 +309,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Notice/Update/Failure/Case2",
+                                    "StudyApi/Notice/Update/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("title").description("수정할 공지사항 제목"),
@@ -441,7 +337,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     .update(any(), any(), any(), any());
 
             // when
-            final NoticeRequest request = createNoticeRequest();
+            final NoticeRequest request = new NoticeRequest(
+                    "공지사항 제목",
+                    "공지사항 내용~~"
+            );
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, NOTICE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -462,13 +361,13 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Notice/Update/Failure/Case3",
+                                    "StudyApi/Notice/Update/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("title").description("수정할 공지사항 제목"),
@@ -490,7 +389,10 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                     .update(any(), any(), any(), any());
 
             // when
-            final NoticeRequest request = createNoticeRequest();
+            final NoticeRequest request = new NoticeRequest(
+                    "공지사항 제목",
+                    "공지사항 내용~~"
+            );
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, NOTICE_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -507,8 +409,8 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("공지사항 수정할 스터디 ID(PK)"),
-                                            parameterWithName("noticeId").description("수정할 공지사항 ID(PK)")
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("noticeId").description("공지사항 ID(PK)")
                                     ),
                                     requestFields(
                                             fieldWithPath("title").description("수정할 공지사항 제목"),
@@ -517,12 +419,5 @@ class StudyNoticeApiControllerTest extends ControllerTest {
                             )
                     );
         }
-    }
-
-    private NoticeRequest createNoticeRequest() {
-        return new NoticeRequest(
-                "4/3 공지사항입니다.",
-                "4/7 사당역 스터디룸에서 5시까지 모여주세요."
-        );
     }
 }

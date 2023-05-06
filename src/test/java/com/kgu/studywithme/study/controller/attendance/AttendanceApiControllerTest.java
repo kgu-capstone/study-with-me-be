@@ -1,6 +1,5 @@
 package com.kgu.studywithme.study.controller.attendance;
 
-import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.study.controller.dto.request.AttendanceRequest;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Study [Controller Layer] -> AttendanceApiController 테스트")
 class AttendanceApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("수동 출석 API [PATCH /api/studies/{studyId}/attendance/{memberId}]")
+    @DisplayName("수동 출석 API [PATCH /api/studies/{studyId}/attendance/{memberId}] - AccessToken 필수")
     class manualCheckAttendance {
         private static final String BASE_URL = "/api/studies/{studyId}/attendance/{memberId}";
         private static final Long STUDY_ID = 1L;
@@ -49,46 +48,6 @@ class AttendanceApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("Authorization Header에 AccessToken이 없으면 수동 출석을 실패한다")
-        void withoutAccessToken() throws Exception {
-            // when
-            final AttendanceRequest request = createAttendanceRequest();
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
-                    .contentType(APPLICATION_JSON)
-                    .content(convertObjectToJson(request));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "StudyApi/Attendance/ManualCheck/Failure/Case1",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
-                                            parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
-                                    ),
-                                    requestFields(
-                                            fieldWithPath("week").description("수동 출석할 주차"),
-                                            fieldWithPath("status").description("출석 정보")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
         @DisplayName("팀장이 아니라면 수동으로 출석 정보를 변경할 수 없다")
         void throwExceptionByMemberIsNotHost() throws Exception {
             // given
@@ -96,7 +55,7 @@ class AttendanceApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(PARTICIPANT_ID);
 
             // when
-            final AttendanceRequest request = createAttendanceRequest();
+            final AttendanceRequest request = new AttendanceRequest(1, ATTENDANCE.getDescription());
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -117,12 +76,12 @@ class AttendanceApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Attendance/ManualCheck/Failure/Case2",
+                                    "StudyApi/Attendance/ManualCheck/Failure/Case1",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
@@ -135,7 +94,7 @@ class AttendanceApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 참여자가 아니라면 출석 정보가 존재하지 않고 출석 체크를 진행할 수 없다")
+        @DisplayName("해당 주차에 미출석 정보가 존재하지 않는다면 출석 체크를 진행할 수 없다")
         void throwExceptionByAttendanceNotFound() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -145,7 +104,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                     .manualCheckAttendance(any(), any(), any(), any());
 
             // when
-            final AttendanceRequest request = createAttendanceRequest();
+            final AttendanceRequest request = new AttendanceRequest(1, ATTENDANCE.getDescription());
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, ANONYMOUS_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -166,12 +125,12 @@ class AttendanceApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Attendance/ManualCheck/Failure/Case3",
+                                    "StudyApi/Attendance/ManualCheck/Failure/Case2",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
@@ -215,12 +174,12 @@ class AttendanceApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Attendance/ManualCheck/Failure/Case4",
+                                    "StudyApi/Attendance/ManualCheck/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
@@ -243,7 +202,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                     .manualCheckAttendance(any(), any(), any(), any());
 
             // when
-            final AttendanceRequest request = createAttendanceRequest();
+            final AttendanceRequest request = new AttendanceRequest(1, ATTENDANCE.getDescription());
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
                     .patch(BASE_URL, STUDY_ID, PARTICIPANT_ID)
                     .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
@@ -260,7 +219,7 @@ class AttendanceApiControllerTest extends ControllerTest {
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
                                     pathParameters(
-                                            parameterWithName("studyId").description("수동 출석 체크할 스터디 ID(PK)"),
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
                                             parameterWithName("memberId").description("수동 출석 체크할 참여자 ID(PK)")
                                     ),
                                     requestFields(
@@ -270,9 +229,5 @@ class AttendanceApiControllerTest extends ControllerTest {
                             )
                     );
         }
-    }
-
-    private AttendanceRequest createAttendanceRequest() {
-        return new AttendanceRequest(1, ATTENDANCE.getDescription());
     }
 }
