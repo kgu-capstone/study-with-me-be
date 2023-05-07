@@ -69,10 +69,23 @@ class StudyFindServiceTest extends ServiceTest {
         assertThatThrownBy(() -> studyFindService.findByIdAndHostId(study.getId() + 100L, host.getId() + 100L))
                 .isInstanceOf(StudyWithMeException.class)
                 .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> studyFindService.findByIdAndHostIdWithParticipants(study.getId() + 100L, host.getId()))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> studyFindService.findByIdAndHostIdWithParticipants(study.getId(), host.getId() + 100L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> studyFindService.findByIdAndHostIdWithParticipants(study.getId() + 100L, host.getId() + 100L))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.STUDY_NOT_FOUND.getMessage());
 
-        Study findStudy = studyFindService.findByIdAndHostId(study.getId(), host.getId());
+        Study findStudy1 = studyFindService.findByIdAndHostId(study.getId(), host.getId());
+        Study findStudy2 = studyFindService.findByIdAndHostIdWithParticipants(study.getId(), host.getId());
 
         // then
-        assertThat(findStudy).isEqualTo(study);
+        assertAll(
+                () -> assertThat(findStudy1).isEqualTo(study),
+                () -> assertThat(findStudy2).isEqualTo(study)
+        );
     }
 }

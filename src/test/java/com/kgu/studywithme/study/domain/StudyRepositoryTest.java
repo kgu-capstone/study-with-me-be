@@ -49,10 +49,14 @@ class StudyRepositoryTest extends RepositoryTest {
     @DisplayName("스터디 ID + 팀장 ID로 스터디를 조회한다")
     void findByIdAndHostId() {
         // when
-        Study findStudy = studyRepository.findByIdAndHostId(study.getId(), host.getId()).orElseThrow();
+        Study findStudy1 = studyRepository.findByIdAndHostId(study.getId(), host.getId()).orElseThrow();
+        Study findStudy2 = studyRepository.findByIdAndHostIdWithParticipants(study.getId(), host.getId()).orElseThrow();
 
         // then
-        assertThat(findStudy).isEqualTo(study);
+        assertAll(
+                () -> assertThat(findStudy1).isEqualTo(study),
+                () -> assertThat(findStudy2).isEqualTo(study)
+        );
     }
 
     @Test

@@ -33,4 +33,9 @@ public class StudyFindService {
         return studyRepository.findByIdAndHostId(studyId, hostId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
+
+    public Study findByIdAndHostIdWithParticipants(Long studyId, Long hostId) {
+        return studyRepository.findByIdAndHostIdWithParticipants(studyId, hostId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
+    }
 }
