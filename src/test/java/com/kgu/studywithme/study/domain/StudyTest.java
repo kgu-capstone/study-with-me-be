@@ -46,6 +46,7 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(SPRING.getCapacity()),
                 () -> assertThat(onlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(SPRING.getMinimumAttendanceForGraduation()),
+                () -> assertThat(onlineStudy.getRemainingOpportunityToUpdateGraduationPolicy()).isEqualTo(3),
                 () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(SPRING.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(onlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
@@ -59,6 +60,7 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getLocation()).isEqualTo(TOSS_INTERVIEW.getLocation()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(TOSS_INTERVIEW.getCapacity()),
                 () -> assertThat(offlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(TOSS_INTERVIEW.getMinimumAttendanceForGraduation()),
+                () -> assertThat(offlineStudy.getRemainingOpportunityToUpdateGraduationPolicy()).isEqualTo(3),
                 () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(TOSS_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
                 () -> assertThat(offlineStudy.getParticipants()).containsExactlyInAnyOrder(HOST),
@@ -81,6 +83,7 @@ class StudyTest {
                 CHINESE.getType(),
                 null, null,
                 IN_PROGRESS,
+                CHINESE.getMinimumAttendanceForGraduation(),
                 CHINESE.getHashtags()
         );
 
@@ -94,6 +97,7 @@ class StudyTest {
                 KAKAO_INTERVIEW.getLocation().getProvince(),
                 KAKAO_INTERVIEW.getLocation().getCity(),
                 IN_PROGRESS,
+                KAKAO_INTERVIEW.getMinimumAttendanceForGraduation(),
                 KAKAO_INTERVIEW.getHashtags()
         );
 
@@ -106,7 +110,8 @@ class StudyTest {
                 () -> assertThat(onlineStudy.getLocation()).isNull(),
                 () -> assertThat(onlineStudy.getMaxMembers()).isEqualTo(CHINESE.getCapacity()),
                 () -> assertThat(onlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
-                () -> assertThat(onlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(JAPANESE.getMinimumAttendanceForGraduation()),
+                () -> assertThat(onlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(CHINESE.getMinimumAttendanceForGraduation()),
+                () -> assertThat(onlineStudy.getRemainingOpportunityToUpdateGraduationPolicy()).isEqualTo(2),
                 () -> assertThat(onlineStudy.getHashtags()).hasSize(CHINESE.getHashtags().size()),
                 () -> assertThat(onlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(CHINESE.getHashtags()),
                 () -> assertThat(onlineStudy.getHost()).isEqualTo(HOST),
@@ -121,7 +126,8 @@ class StudyTest {
                 () -> assertThat(offlineStudy.getLocation().getCity()).isEqualTo(KAKAO_INTERVIEW.getLocation().getCity()),
                 () -> assertThat(offlineStudy.getMaxMembers()).isEqualTo(KAKAO_INTERVIEW.getCapacity()),
                 () -> assertThat(offlineStudy.getRecruitmentStatus()).isEqualTo(IN_PROGRESS),
-                () -> assertThat(offlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(TOSS_INTERVIEW.getMinimumAttendanceForGraduation()),
+                () -> assertThat(offlineStudy.getMinimumAttendanceForGraduation()).isEqualTo(KAKAO_INTERVIEW.getMinimumAttendanceForGraduation()),
+                () -> assertThat(offlineStudy.getRemainingOpportunityToUpdateGraduationPolicy()).isEqualTo(3), // minimum이 동일하기 때문에 update change 변화 X
                 () -> assertThat(offlineStudy.getHashtags()).hasSize(KAKAO_INTERVIEW.getHashtags().size()),
                 () -> assertThat(offlineStudy.getHashtags()).containsExactlyInAnyOrderElementsOf(KAKAO_INTERVIEW.getHashtags()),
                 () -> assertThat(offlineStudy.getHost()).isEqualTo(HOST),
@@ -386,12 +392,25 @@ class StudyTest {
         @DisplayName("팀장 권한 위임에 성공한다")
         void success() {
             // when
+            study.update(
+                    StudyName.from(JPA.name()),
+                    Description.from(JPA.getDescription()),
+                    JPA.getCapacity(),
+                    JPA.getCategory(),
+                    JPA.getThumbnail(),
+                    JPA.getType(),
+                    null, null,
+                    IN_PROGRESS,
+                    JPA.getMinimumAttendanceForGraduation(),
+                    JPA.getHashtags()
+            ); // updateChange = 2
             study.delegateStudyHostAuthority(participant);
 
             // then
             assertAll(
                     () -> assertThat(study.getHost()).isEqualTo(participant),
-                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(participant, HOST)
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(participant, HOST),
+                    () -> assertThat(study.getRemainingOpportunityToUpdateGraduationPolicy()).isEqualTo(3) // 팀장 위임 후 updateChance 초기화
             );
         }
     }
