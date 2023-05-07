@@ -81,6 +81,7 @@ public class StudyService {
                 request.province(),
                 request.city(),
                 request.recruitmentStatus() ? IN_PROGRESS : COMPLETE,
+                request.minimumAttendanceForGraduation(),
                 request.hashtags()
         );
     }

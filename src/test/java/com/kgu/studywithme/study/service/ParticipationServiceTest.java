@@ -8,7 +8,10 @@ import com.kgu.studywithme.study.event.StudyApprovedEvent;
 import com.kgu.studywithme.study.event.StudyGraduatedEvent;
 import com.kgu.studywithme.study.event.StudyRejectedEvent;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
@@ -173,11 +176,6 @@ class ParticipationServiceTest extends ServiceTest {
             host = memberRepository.save(JIWON.toMember());
             applier = memberRepository.save(GHOST.toMember());
             study = studyRepository.save(SPRING.toOnlineStudy(host));
-        }
-
-        @AfterEach
-        void restore() {
-            ReflectionTestUtils.setField(study.getCapacity(), "value", SPRING.getCapacity());
         }
 
         @Test
@@ -392,11 +390,6 @@ class ParticipationServiceTest extends ServiceTest {
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
-        @AfterEach
-        void restore() {
-            ReflectionTestUtils.setField(study, "minimumAttendanceForGraduation", SPRING.getMinimumAttendanceForGraduation());
-        }
-
         @Test
         @DisplayName("졸업 요건[최소 출석 횟수]를 만족하지 못했다면 졸업을 할 수 없다")
         void throwExceptionByGraduationRequirementsNotFulfilled() {
@@ -486,7 +479,7 @@ class ParticipationServiceTest extends ServiceTest {
 
 
         private void openGraduationByReflection() {
-            ReflectionTestUtils.setField(study, "minimumAttendanceForGraduation", 0);
+            ReflectionTestUtils.setField(study.getGraduationPolicy(), "minimumAttendance", 0);
         }
     }
 

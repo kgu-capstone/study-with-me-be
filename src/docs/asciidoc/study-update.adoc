@@ -56,7 +56,17 @@ include::{snippets}/StudyApi/Update/Failure/Case5/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Failure/Case5/response-body.adoc[]
 
-=== 6. 정보 수정에 성공한다 - 온라인
+=== 6. 졸업 요건 수정 기회가 남아있지 않음에 따라 스터디 정보를 수정할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Update/Failure/Case6/http-request.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case6/request-headers.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case6/path-parameters.adoc[]
+include::{snippets}/StudyApi/Update/Failure/Case6/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Update/Failure/Case6/response-body.adoc[]
+
+=== 7. 정보 수정에 성공한다 - 온라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case1/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case1/request-headers.adoc[]
@@ -66,7 +76,7 @@ include::{snippets}/StudyApi/Update/Success/Case1/request-fields.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Update/Success/Case1/http-response.adoc[]
 
-=== 7. 정보 수정에 성공한다 - 오프라인
+=== 8. 정보 수정에 성공한다 - 오프라인
 HTTP Request
 include::{snippets}/StudyApi/Update/Success/Case2/http-request.adoc[]
 include::{snippets}/StudyApi/Update/Success/Case2/request-headers.adoc[]

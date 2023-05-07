@@ -19,6 +19,7 @@ public class StudyUpdateRequestUtils {
                 null,
                 null,
                 true,
+                20,
                 hashtags
         );
     }
@@ -34,6 +35,7 @@ public class StudyUpdateRequestUtils {
                 TOSS_INTERVIEW.getLocation().getProvince(),
                 TOSS_INTERVIEW.getLocation().getCity(),
                 true,
+                20,
                 hashtags
         );
     }

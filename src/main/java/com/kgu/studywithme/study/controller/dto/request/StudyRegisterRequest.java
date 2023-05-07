@@ -5,6 +5,7 @@ import com.kgu.studywithme.study.utils.validator.ValidStudyType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Set;
 
 public record StudyRegisterRequest(
@@ -32,6 +33,7 @@ public record StudyRegisterRequest(
         String city,
 
         @NotNull(message = "스터디 졸업요건은 필수입니다. [최소 출석 횟수]")
+        @Positive(message = "졸업 요건은 양수여야 합니다.")
         Integer minimumAttendanceForGraduation,
 
         @ValidHashtagCount

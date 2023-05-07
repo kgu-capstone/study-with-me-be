@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Set;
 
@@ -116,6 +117,19 @@ class StudyServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("졸업 요건 수정 기회가 남아있지 않음에 따라 스터디 정보를 수정할 수 없다")
+        void throwExceptionByNoChangeToUpdateGraduationPolicy() {
+            // given
+            ReflectionTestUtils.setField(onlineStudy.getGraduationPolicy(), "updateChance", 0);
+
+            // when - then
+            StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
+            assertThatThrownBy(() -> studyService.update(onlineStudy.getId(), host.getId(), request))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.NO_CHANGE_TO_UPDATE_GRADUATION_POLICY.getMessage());
+        }
+
+        @Test
         @DisplayName("스터디 정보 수정에 성공한다 - 온라인")
         void successOnlineStudyUpdate() {
             // given
@@ -197,6 +211,7 @@ class StudyServiceTest extends ServiceTest {
                 TOSS_INTERVIEW.getLocation().getProvince(),
                 TOSS_INTERVIEW.getLocation().getCity(),
                 true,
+                20,
                 TOSS_INTERVIEW.getHashtags()
         );
     }
