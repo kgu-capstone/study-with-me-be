@@ -19,8 +19,8 @@ public class StudyFindService {
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
-    public Study findByIdWithHashtags(Long studyId) {
-        return studyRepository.findByIdWithHashtags(studyId)
+    public Study findByIdWithParticipants(Long studyId) {
+        return studyRepository.findByIdWithParticipants(studyId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
@@ -31,6 +31,11 @@ public class StudyFindService {
 
     public Study findByIdAndHostId(Long studyId, Long hostId) {
         return studyRepository.findByIdAndHostId(studyId, hostId)
+                .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
+    }
+
+    public Study findByIdAndHostIdWithParticipants(Long studyId, Long hostId) {
+        return studyRepository.findByIdAndHostIdWithParticipants(studyId, hostId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 }

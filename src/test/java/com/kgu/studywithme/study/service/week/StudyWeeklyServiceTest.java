@@ -18,7 +18,10 @@ import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -214,11 +217,6 @@ class StudyWeeklyServiceTest extends ServiceTest {
     @Nested
     @DisplayName("스터디 주차별 과제 제출")
     class submitAssignment {
-        @AfterEach
-        void restore() {
-            reflectionWeekPeriod(WEEK_1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(7));
-        }
-
         @Test
         @DisplayName("과제 제출물을 업로드 하지 않으면 예외가 발생한다")
         void throwExceptionByMissingSubmission() {

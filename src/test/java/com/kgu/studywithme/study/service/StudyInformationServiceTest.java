@@ -58,6 +58,7 @@ class StudyInformationServiceTest extends ServiceTest {
         StudyInformation information = studyInformationService.getInformation(study.getId());
 
         // then
+
         assertAll(
                 // Study
                 () -> assertThat(information.id()).isEqualTo(study.getId()),
@@ -71,22 +72,29 @@ class StudyInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.recruitmentStatus()).isEqualTo(study.getRecruitmentStatus().getDescription()),
                 () -> assertThat(information.currentMembers()).isEqualTo(study.getApproveParticipants().size()),
                 () -> assertThat(information.maxMembers()).isEqualTo(study.getMaxMembers()),
-                () -> assertThat(information.averageAge()).isEqualTo(study.getParticipantsAverageAge()),
-                () -> assertThat(information.participantsAges()).containsExactlyInAnyOrderElementsOf(study.getParticipantsAges()),
                 () -> assertThat(information.hashtags()).containsExactlyInAnyOrderElementsOf(study.getHashtags()),
+                () -> assertThat(information.minimumAttendanceForGraduation()).isEqualTo(study.getMinimumAttendanceForGraduation()),
+                () -> assertThat(information.remainingOpportunityToUpdateGraduationPolicy()).isEqualTo(study.getRemainingOpportunityToUpdateGraduationPolicy()),
+                () -> assertThat(information.participants())
+                        .containsExactlyInAnyOrderElementsOf(
+                                study.getApproveParticipants()
+                                        .stream()
+                                        .map(ParticipantInformation::new)
+                                        .toList()
+                        ),
                 // Host
                 () -> assertThat(information.host().id()).isEqualTo(host.getId()),
                 () -> assertThat(information.host().nickname()).isEqualTo(host.getNicknameValue())
         );
     }
-    
+
     @Test
     @DisplayName("스터디 졸업자들의 리뷰를 조회한다")
     void getReviews() {
         // given
         applyAndApproveMembers(members[0], members[1], members[2], members[3]);
         graduateAllParticipant();
-        
+
         // when
         ReviewAssembler result = studyInformationService.getReviews(study.getId());
 

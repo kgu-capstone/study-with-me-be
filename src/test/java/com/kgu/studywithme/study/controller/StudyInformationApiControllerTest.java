@@ -89,9 +89,14 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 여부"),
                                             fieldWithPath("currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("maxMembers").description("스터디 최대 인원"),
-                                            fieldWithPath("averageAge").description("스터디 참여자 평균 나이"),
-                                            fieldWithPath("participantsAges[]").description("스터디 참여자 나이 목록"),
                                             fieldWithPath("hashtags[]").description("스터디 해시태그"),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("스터디 졸업 요건 [최소 출석 횟수]"),
+                                            fieldWithPath("remainingOpportunityToUpdateGraduationPolicy").description("남은 졸업 요건 변경 횟수"),
+                                            fieldWithPath("participants[].id").description("스터디 참여자 ID(PK)"),
+                                            fieldWithPath("participants[].nickname").description("스터디 참여자 닉네임"),
+                                            fieldWithPath("participants[].gender").description("스터디 참여자 성별"),
+                                            fieldWithPath("participants[].score").description("스터디 참여자 점수"),
+                                            fieldWithPath("participants[].age").description("스터디 참여자 나이"),
                                             fieldWithPath("host.id").description("스터디 팀장 ID(PK)"),
                                             fieldWithPath("host.nickname").description("스터디 팀장 닉네임")
                                     )
@@ -560,7 +565,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
 
     private Member generateParticipant() {
         Member member = GHOST.toMember();
-        ReflectionTestUtils.setField(member, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 2L);
         return member;
     }
 
