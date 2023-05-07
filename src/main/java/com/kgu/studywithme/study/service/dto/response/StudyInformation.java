@@ -8,6 +8,7 @@ import java.util.List;
 public record StudyInformation(
         Long id, String name, String description, String category, String thumbnail, String thumbnailBackground, String type,
         StudyLocation location, String recruitmentStatus, int currentMembers, int maxMembers, double averageAge,
+        int minimumAttendanceForGraduation, int remainingOpportunityToUpdateGraduationPolicy,
         List<Integer> participantsAges, List<String> hashtags, StudyMember host
 ) {
     public StudyInformation(Study study) {
@@ -24,6 +25,8 @@ public record StudyInformation(
                 study.getApproveParticipants().size(),
                 study.getMaxMembers(),
                 study.getParticipantsAverageAge(),
+                study.getMinimumAttendanceForGraduation(),
+                study.getRemainingOpportunityToUpdateGraduationPolicy(),
                 study.getParticipantsAges(),
                 study.getHashtags(),
                 new StudyMember(study.getHost())

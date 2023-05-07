@@ -90,6 +90,8 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("currentMembers").description("스터디 참여 인원"),
                                             fieldWithPath("maxMembers").description("스터디 최대 인원"),
                                             fieldWithPath("averageAge").description("스터디 참여자 평균 나이"),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("스터디 졸업 요건 [최소 출석 횟수]"),
+                                            fieldWithPath("remainingOpportunityToUpdateGraduationPolicy").description("남은 졸업 요건 변경 횟수"),
                                             fieldWithPath("participantsAges[]").description("스터디 참여자 나이 목록"),
                                             fieldWithPath("hashtags[]").description("스터디 해시태그"),
                                             fieldWithPath("host.id").description("스터디 팀장 ID(PK)"),
