@@ -14,9 +14,10 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
     // @Query
     @Query("SELECT s" +
             " FROM Study s" +
-            " JOIN FETCH s.hashtags" +
+            " JOIN FETCH s.participants.host" +
+            " LEFT JOIN FETCH s.participants.participants" +
             " WHERE s.id = :studyId")
-    Optional<Study> findByIdWithHashtags(@Param("studyId") Long studyId);
+    Optional<Study> findByIdWithParticipants(@Param("studyId") Long studyId);
 
     @Query("SELECT s" +
             " FROM Study s" +
@@ -28,6 +29,13 @@ public interface StudyRepository extends JpaRepository<Study, Long>,
             " FROM Study s" +
             " WHERE s.id = :studyId AND s.participants.host.id = :hostId")
     Optional<Study> findByIdAndHostId(@Param("studyId") Long studyId, @Param("hostId") Long hostId);
+
+    @Query("SELECT s" +
+            " FROM Study s" +
+            " JOIN FETCH s.participants.host" +
+            " LEFT JOIN FETCH s.participants.participants" +
+            " WHERE s.id = :studyId AND s.participants.host.id = :hostId")
+    Optional<Study> findByIdAndHostIdWithParticipants(@Param("studyId") Long studyId, @Param("hostId") Long hostId);
 
     // Query Method
     boolean existsByName(StudyName name);

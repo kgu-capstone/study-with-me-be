@@ -76,8 +76,8 @@ public class Study extends BaseEntity {
     @Column(name = "is_closed", nullable = false)
     private boolean closed;
 
-    @Column(name = "min_attendance_for_graduation", nullable = false)
-    private int minimumAttendanceForGraduation;
+    @Embedded
+    private GraduationPolicy graduationPolicy;
 
     @OneToMany(mappedBy = "study", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>();
@@ -99,7 +99,7 @@ public class Study extends BaseEntity {
         this.recruitmentStatus = IN_PROGRESS;
         this.participants = Participants.of(host, capacity);
         this.closed = false;
-        this.minimumAttendanceForGraduation = minimumAttendanceForGraduation;
+        this.graduationPolicy = GraduationPolicy.initPolicy(minimumAttendanceForGraduation);
         this.weekly = Weekly.createWeeklyPage();
         this.reviews = Reviews.createReviewsPage();
         applyHashtags(hashtags);
@@ -116,7 +116,7 @@ public class Study extends BaseEntity {
     }
 
     public void update(StudyName name, Description description, int capacity, Category category, StudyThumbnail thumbnail, StudyType type,
-                       String province, String city, RecruitmentStatus recruitmentStatus, Set<String> hashtags) {
+                       String province, String city, RecruitmentStatus recruitmentStatus, int minimumAttendanceForGraduation, Set<String> hashtags) {
         this.name = name;
         this.description = description;
         this.participants.updateCapacity(capacity);
@@ -125,6 +125,7 @@ public class Study extends BaseEntity {
         this.type = type;
         this.location = (type == OFFLINE) ? StudyLocation.of(province, city) : null;
         this.recruitmentStatus = recruitmentStatus;
+        this.graduationPolicy = this.graduationPolicy.update(minimumAttendanceForGraduation);
         applyHashtags(hashtags);
     }
 
@@ -179,6 +180,7 @@ public class Study extends BaseEntity {
     public void delegateStudyHostAuthority(Member newHost) {
         validateStudyIsProceeding();
         participants.delegateStudyHostAuthority(this, newHost);
+        graduationPolicy = graduationPolicy.resetUpdateChanceForDelegatingStudyHost();
     }
 
     public void applyParticipation(Member member) {
@@ -232,7 +234,7 @@ public class Study extends BaseEntity {
     }
 
     public boolean isGraduationRequirementsFulfilled(int value) {
-        return minimumAttendanceForGraduation <= value;
+        return graduationPolicy.isGraduationRequirementsFulfilled(value);
     }
 
     // Add Getter
@@ -292,5 +294,13 @@ public class Study extends BaseEntity {
 
     public double getParticipantsAverageAge() {
         return participants.getParticipantsAverageAge();
+    }
+
+    public int getMinimumAttendanceForGraduation() {
+        return graduationPolicy.getMinimumAttendance();
+    }
+
+    public int getRemainingOpportunityToUpdateGraduationPolicy() {
+        return graduationPolicy.getUpdateChance();
     }
 }

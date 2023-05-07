@@ -22,8 +22,9 @@ public class StudyReviewService {
 
     @Transactional
     public void write(Long studyId, Long memberId, String content) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithParticipants(studyId);
         Member member = memberFindService.findById(memberId);
+
         study.writeReview(member, content);
     }
 

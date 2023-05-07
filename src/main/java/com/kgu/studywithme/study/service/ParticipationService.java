@@ -29,7 +29,7 @@ public class ParticipationService {
 
     @Transactional
     public void apply(Long studyId, Long memberId) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithParticipants(studyId);
         Member member = memberFindService.findById(memberId);
 
         study.applyParticipation(member);
@@ -37,7 +37,7 @@ public class ParticipationService {
 
     @Transactional
     public void applyCancel(Long studyId, Long applierId) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithParticipants(studyId);
         Member applier = memberFindService.findById(applierId);
         study.validateMemberIsApplier(applier);
 
@@ -46,7 +46,7 @@ public class ParticipationService {
 
     @Transactional
     public void approve(Long studyId, Long applierId, Long hostId) {
-        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Study study = studyFindService.findByIdAndHostIdWithParticipants(studyId, hostId);
         Member applier = memberFindService.findById(applierId);
 
         study.approveParticipation(applier);
@@ -61,7 +61,7 @@ public class ParticipationService {
 
     @Transactional
     public void reject(Long studyId, Long applierId, Long hostId, String reason) {
-        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Study study = studyFindService.findByIdAndHostIdWithParticipants(studyId, hostId);
         Member applier = memberFindService.findById(applierId);
 
         study.rejectParticipation(applier);
@@ -77,7 +77,7 @@ public class ParticipationService {
 
     @Transactional
     public void cancel(Long studyId, Long participantId) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithParticipants(studyId);
         Member participant = memberFindService.findById(participantId);
 
         study.cancelParticipation(participant);
@@ -85,7 +85,7 @@ public class ParticipationService {
 
     @Transactional
     public void delegateAuthority(Long studyId, Long participantId, Long hostId) {
-        Study study = studyFindService.findByIdAndHostId(studyId, hostId);
+        Study study = studyFindService.findByIdAndHostIdWithParticipants(studyId, hostId);
         Member newHost = memberFindService.findById(participantId);
 
         study.delegateStudyHostAuthority(newHost);
@@ -93,7 +93,7 @@ public class ParticipationService {
 
     @Transactional
     public void graduate(Long studyId, Long participantId) {
-        Study study = studyFindService.findById(studyId);
+        Study study = studyFindService.findByIdWithParticipants(studyId);
         Member participant = memberFindService.findById(participantId);
         validateGraduationRequirements(study, participantId);
 

@@ -385,6 +385,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     ),
@@ -446,6 +447,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     ),
@@ -507,6 +509,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     ),
@@ -570,6 +573,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     ),
@@ -633,6 +637,71 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
+                                            fieldWithPath("hashtags").description("해시태그")
+                                                    .attributes(constraint("최소 1개 최대 5개"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("졸업 요건 수정 기회가 남아있지 않음에 따라 스터디 정보를 수정할 수 없다")
+        void throwExceptionByNoChangeToUpdateGraduationPolicy() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.NO_CHANGE_TO_UPDATE_GRADUATION_POLICY))
+                    .when(studyService)
+                    .update(any(), any(), any());
+
+            // when
+            final StudyUpdateRequest request = createOnlineStudyUpdateRequest(5, Set.of("A", "B", "C"));
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .patch(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.NO_CHANGE_TO_UPDATE_GRADUATION_POLICY;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Update/Failure/Case6",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    requestFields(
+                                            fieldWithPath("name").description("스터디명"),
+                                            fieldWithPath("description").description("스터디 설명"),
+                                            fieldWithPath("capacity").description("최대 수용 인원"),
+                                            fieldWithPath("category").description("카테고리 ID(PK)"),
+                                            fieldWithPath("thumbnail").description("스터디 썸네일"),
+                                            fieldWithPath("type").description("온/오프라인 유무")
+                                                    .attributes(constraint("온라인 = on or ON / 오프라인 = off or OFF")),
+                                            fieldWithPath("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("city").description("오프라인 스터디 지역 [안양시, 수원시, ...]")
+                                                    .optional()
+                                                    .attributes(constraint("오프라인 스터디의 경우 필수")),
+                                            fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
+                                                    .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     ),
@@ -687,6 +756,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     )
@@ -740,6 +810,7 @@ class StudyApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("오프라인 스터디의 경우 필수")),
                                             fieldWithPath("recruitmentStatus").description("스터디 모집 활성화 여부")
                                                     .attributes(constraint("활성화=true / 비활성화=false")),
+                                            fieldWithPath("minimumAttendanceForGraduation").description("졸업 요건 [최소 출석 횟수]"),
                                             fieldWithPath("hashtags").description("해시태그")
                                                     .attributes(constraint("최소 1개 최대 5개"))
                                     )
