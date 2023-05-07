@@ -19,8 +19,8 @@ public class StudyFindService {
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 
-    public Study findByIdWithHashtags(Long studyId) {
-        return studyRepository.findByIdWithHashtags(studyId)
+    public Study findByIdWithParticipants(Long studyId) {
+        return studyRepository.findByIdWithParticipants(studyId)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.STUDY_NOT_FOUND));
     }
 

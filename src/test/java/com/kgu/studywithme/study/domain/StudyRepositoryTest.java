@@ -35,7 +35,7 @@ class StudyRepositoryTest extends RepositoryTest {
     @DisplayName("ID(PK)로 스터디를 조회한다")
     void findByIdWithHost() {
         // when
-        Study findStudy1 = studyRepository.findByIdWithHashtags(study.getId()).orElseThrow();
+        Study findStudy1 = studyRepository.findByIdWithParticipants(study.getId()).orElseThrow();
         Study findStudy2 = studyRepository.findByIdWithHost(study.getId()).orElseThrow();
 
         // then
