@@ -35,6 +35,21 @@ class WeeklyTest {
     }
 
     @Test
+    @DisplayName("주차를 건너뛰어서 등록할 수 없다 [1주차 -> 3주차]")
+    void throwExceptionByWeeklyMustBeSequential() {
+        // given
+        final Week week = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
+        Weekly weekly = Weekly.createWeeklyPage();
+        weekly.registerWeek(week);
+
+        // when - then
+        final Week week3 = STUDY_WEEKLY_3.toWeekWithAssignment(STUDY);
+        assertThatThrownBy(() -> weekly.registerWeek(week3))
+                .isInstanceOf(StudyWithMeException.class)
+                .hasMessage(StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL.getMessage());
+    }
+
+    @Test
     @DisplayName("스터디 주차를 등록한다")
     void success() {
         final Week week1 = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
