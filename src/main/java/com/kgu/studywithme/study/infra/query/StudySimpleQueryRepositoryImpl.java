@@ -45,7 +45,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
-                .where(hostOrParticipant(memberId), participateStatusEq(APPROVE))
+                .where(hostIdEq(memberId).or(participantIdEqAndApproveStatus(memberId)))
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -122,8 +122,8 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
         return (status != null) ? participant.status.eq(status) : null;
     }
 
-    private BooleanExpression hostOrParticipant(Long memberId) {
-        return (memberId != null) ? host.id.eq(memberId).or(participant.member.id.eq(memberId)) : null;
+    private BooleanExpression participantIdEqAndApproveStatus(Long memberId) {
+        return (memberId != null) ? participant.member.id.eq(memberId).and(participateStatusEq(APPROVE)) : null;
     }
 
     private BooleanExpression memberIdEq(Long memberId) {
