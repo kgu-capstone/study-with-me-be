@@ -3,6 +3,7 @@ package com.kgu.studywithme.member.domain;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -48,6 +49,22 @@ class RegionTest {
                 Arguments.of("경기도", "안양시"),
                 Arguments.of("경기도", "수원시"),
                 Arguments.of("경기도", "성남시")
+        );
+    }
+
+    @Test
+    @DisplayName("Region을 수정한다")
+    void update() {
+        // given
+        Region region = Region.of("경기도", "안양시");
+
+        // when
+        Region updateRegion = region.update("경기도", "수원시");
+
+        // then
+        assertAll(
+                () -> assertThat(updateRegion.getProvince()).isEqualTo("경기도"),
+                () -> assertThat(updateRegion.getCity()).isEqualTo("수원시")
         );
     }
 }

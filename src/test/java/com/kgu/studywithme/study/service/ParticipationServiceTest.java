@@ -17,8 +17,7 @@ import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
-import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -168,13 +167,15 @@ class ParticipationServiceTest extends ServiceTest {
     @DisplayName("스터디 참여 승인")
     class approve {
         private Member host;
-        private Member applier;
+        private Member applierWithEmailOptIn;
+        private Member applierWithEmailOptOut;
         private Study study;
 
         @BeforeEach
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
-            applier = memberRepository.save(GHOST.toMember());
+            applierWithEmailOptIn = memberRepository.save(GHOST.toMember());
+            applierWithEmailOptOut = memberRepository.save(ANONYMOUS.toMember());
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
@@ -185,7 +186,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.close();
 
             // when - then
-            assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.approve(study.getId(), applierWithEmailOptIn.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
 
@@ -196,7 +197,7 @@ class ParticipationServiceTest extends ServiceTest {
         @Test
         @DisplayName("참여 신청자가 아니면 참여 승인을 할 수 없다")
         void throwExceptionByMemberIsNotApplier() {
-            assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.approve(study.getId(), applierWithEmailOptIn.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
 
@@ -208,11 +209,11 @@ class ParticipationServiceTest extends ServiceTest {
         @DisplayName("참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다")
         void throwExceptionByStudyCapacityIsFull() {
             // given
-            study.applyParticipation(applier);
+            study.applyParticipation(applierWithEmailOptIn);
             makeCapacityFull();
             
             // when - then
-            assertThatThrownBy(() -> participationService.approve(study.getId(), applier.getId(), host.getId()))
+            assertThatThrownBy(() -> participationService.approve(study.getId(), applierWithEmailOptIn.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.STUDY_CAPACITY_IS_FULL.getMessage());
 
@@ -225,25 +226,47 @@ class ParticipationServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("참여 승인에 성공한다")
-        void success() {
+        @DisplayName("참여 승인에 성공한다 [이메일 수신 동의에 따른 이메일 발송 이벤트 발행]")
+        void successWithEmailOptIn() {
             // given
-            study.applyParticipation(applier);
+            study.applyParticipation(applierWithEmailOptIn);
 
             // when
-            participationService.approve(study.getId(), applier.getId(), host.getId());
+            participationService.approve(study.getId(), applierWithEmailOptIn.getId(), host.getId());
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants()).hasSize(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptIn),
                     () -> assertThat(findStudy.getApproveParticipants()).hasSize(2),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applier)
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptIn)
             );
 
             int count = (int) events.stream(StudyApprovedEvent.class).count();
             assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("참여 승인에 성공한다 [이메일 수신 비동의에 따른 이메일 발송 X]")
+        void successWithEmailOptOut() {
+            // given
+            study.applyParticipation(applierWithEmailOptOut);
+
+            // when
+            participationService.approve(study.getId(), applierWithEmailOptOut.getId(), host.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptOut),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(2),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptOut)
+            );
+
+            int count = (int) events.stream(StudyApprovedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
     }
 
@@ -251,14 +274,16 @@ class ParticipationServiceTest extends ServiceTest {
     @DisplayName("스터디 참여 거절")
     class reject {
         private Member host;
-        private Member applier;
+        private Member applierWithEmailOptIn;
+        private Member applierWithEmailOptOut;
         private Study study;
         private static final String REASON = "너무 멀리 사세요.";
 
         @BeforeEach
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
-            applier = memberRepository.save(GHOST.toMember());
+            applierWithEmailOptIn = memberRepository.save(GHOST.toMember());
+            applierWithEmailOptOut = memberRepository.save(ANONYMOUS.toMember());
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
@@ -269,7 +294,7 @@ class ParticipationServiceTest extends ServiceTest {
             study.close();
 
             // when - then
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applierWithEmailOptIn.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
 
@@ -280,7 +305,7 @@ class ParticipationServiceTest extends ServiceTest {
         @Test
         @DisplayName("참여 신청자가 아니면 참여 거절을 할 수 없다")
         void throwExceptionByMemberIsNotApplier() {
-            assertThatThrownBy(() -> participationService.reject(study.getId(), applier.getId(), host.getId(), REASON))
+            assertThatThrownBy(() -> participationService.reject(study.getId(), applierWithEmailOptIn.getId(), host.getId(), REASON))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_APPLIER.getMessage());
 
@@ -289,25 +314,47 @@ class ParticipationServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("참여 거절에 성공한다")
-        void success() {
+        @DisplayName("참여 거절에 성공한다 [이메일 수신 동의에 따른 이메일 발송 이벤트 발행]")
+        void successWithEmailOptIn() {
             // given
-            study.applyParticipation(applier);
+            study.applyParticipation(applierWithEmailOptIn);
 
             // when
-            participationService.reject(study.getId(), applier.getId(), host.getId(), REASON);
+            participationService.reject(study.getId(), applierWithEmailOptIn.getId(), host.getId(), REASON);
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants()).hasSize(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applier),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptIn),
                     () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
             );
 
             int count = (int) events.stream(StudyRejectedEvent.class).count();
             assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("참여 거절에 성공한다 [이메일 수신 비동의에 따른 이메일 발송 X]")
+        void successWithEmailOptOut() {
+            // given
+            study.applyParticipation(applierWithEmailOptOut);
+
+            // when
+            participationService.reject(study.getId(), applierWithEmailOptOut.getId(), host.getId(), REASON);
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, applierWithEmailOptOut),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host)
+            );
+
+            int count = (int) events.stream(StudyRejectedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
     }
 
@@ -380,20 +427,22 @@ class ParticipationServiceTest extends ServiceTest {
     @DisplayName("스터디 졸업")
     class graduate {
         private Member host;
-        private Member participant;
+        private Member participantWithEmailOptIn;
+        private Member participantWithEmailOptOut;
         private Study study;
 
         @BeforeEach
         void setUp() {
             host = memberRepository.save(JIWON.toMember());
-            participant = memberRepository.save(GHOST.toMember());
+            participantWithEmailOptIn = memberRepository.save(GHOST.toMember());
+            participantWithEmailOptOut = memberRepository.save(ANONYMOUS.toMember());
             study = studyRepository.save(SPRING.toOnlineStudy(host));
         }
 
         @Test
         @DisplayName("졸업 요건[최소 출석 횟수]를 만족하지 못했다면 졸업을 할 수 없다")
         void throwExceptionByGraduationRequirementsNotFulfilled() {
-            assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
+            assertThatThrownBy(() -> participationService.graduate(study.getId(), participantWithEmailOptIn.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.GRADUATION_REQUIREMENTS_NOT_FULFILLED.getMessage());
 
@@ -407,12 +456,12 @@ class ParticipationServiceTest extends ServiceTest {
             // given
             openGraduationByReflection();
 
-            study.applyParticipation(participant);
-            study.approveParticipation(participant);
+            study.applyParticipation(participantWithEmailOptIn);
+            study.approveParticipation(participantWithEmailOptIn);
             study.close();
 
             // when - then
-            assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
+            assertThatThrownBy(() -> participationService.graduate(study.getId(), participantWithEmailOptIn.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_CLOSED.getMessage());
 
@@ -442,7 +491,7 @@ class ParticipationServiceTest extends ServiceTest {
             openGraduationByReflection();
 
             // when - then
-            assertThatThrownBy(() -> participationService.graduate(study.getId(), participant.getId()))
+            assertThatThrownBy(() -> participationService.graduate(study.getId(), participantWithEmailOptIn.getId()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MEMBER_IS_NOT_PARTICIPANT.getMessage());
 
@@ -451,30 +500,57 @@ class ParticipationServiceTest extends ServiceTest {
         }
 
         @Test
-        @DisplayName("졸업에 성공한다")
-        void success() {
+        @DisplayName("졸업에 성공한다 [이메일 수신 동의에 따른 이메일 발송 이벤트 발행]")
+        void successWithEmailOptIn() {
             // given
             openGraduationByReflection();
 
-            study.applyParticipation(participant);
-            study.approveParticipation(participant);
+            study.applyParticipation(participantWithEmailOptIn);
+            study.approveParticipation(participantWithEmailOptIn);
 
             // when
-            participationService.graduate(study.getId(), participant.getId());
+            participationService.graduate(study.getId(), participantWithEmailOptIn.getId());
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
                     () -> assertThat(findStudy.getParticipants()).hasSize(2),
-                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participant),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participantWithEmailOptIn),
                     () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
                     () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host),
                     () -> assertThat(findStudy.getGraduatedParticipants()).hasSize(1),
-                    () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participant)
+                    () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participantWithEmailOptIn)
             );
 
             int count = (int) events.stream(StudyGraduatedEvent.class).count();
             assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("졸업에 성공한다 [이메일 수신 비동의에 따른 이메일 발송 X]")
+        void successWithEmailOptOut() {
+            // given
+            openGraduationByReflection();
+
+            study.applyParticipation(participantWithEmailOptOut);
+            study.approveParticipation(participantWithEmailOptOut);
+
+            // when
+            participationService.graduate(study.getId(), participantWithEmailOptOut.getId());
+
+            // then
+            Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(findStudy.getParticipants()).hasSize(2),
+                    () -> assertThat(findStudy.getParticipants()).containsExactlyInAnyOrder(host, participantWithEmailOptOut),
+                    () -> assertThat(findStudy.getApproveParticipants()).hasSize(1),
+                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host),
+                    () -> assertThat(findStudy.getGraduatedParticipants()).hasSize(1),
+                    () -> assertThat(findStudy.getGraduatedParticipants()).containsExactlyInAnyOrder(participantWithEmailOptOut)
+            );
+
+            int count = (int) events.stream(StudyGraduatedEvent.class).count();
+            assertThat(count).isEqualTo(0);
         }
 
 

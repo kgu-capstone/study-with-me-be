@@ -3,6 +3,7 @@ package com.kgu.studywithme.member.controller;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.controller.dto.request.MemberReportRequest;
+import com.kgu.studywithme.member.controller.dto.request.MemberUpdateRequest;
 import com.kgu.studywithme.member.controller.dto.request.SignUpRequest;
 import com.kgu.studywithme.member.exception.MemberErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +13,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.kgu.studywithme.category.domain.Category.*;
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
@@ -20,6 +21,7 @@ import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -82,6 +84,7 @@ class MemberApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("emailOptIn").description("이메일 수신 동의 여부"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     ),
@@ -126,6 +129,61 @@ class MemberApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("emailOptIn").description("이메일 수신 동의 여부"),
+                                            fieldWithPath("categories").description("관심사 Enum ID")
+                                                    .attributes(constraint("스터디 카테고리 ID 한정"))
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 정보 수정 [PATCH /api/members/{memberId}]")
+    class update {
+        private static final String BASE_URL = "/api/members/{memberId}";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("사용자 정보를 수정한다")
+        void update() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+            doNothing()
+                    .when(memberService)
+                    .update(any(), any());
+
+            // when
+            final MemberUpdateRequest request = new MemberUpdateRequest(
+                    "updateNick",
+                    "01012300593",
+                    "경기도",
+                    "성남시",
+                    false,
+                    Set.of(INTERVIEW.getId(), PROGRAMMING.getId())
+            );
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .patch(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .contentType(APPLICATION_JSON)
+                    .content(convertObjectToJson(request));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "MemberApi/Update",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    requestFields(
+                                            fieldWithPath("nickname").description("닉네임"),
+                                            fieldWithPath("phone").description("전화번호"),
+                                            fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
+                                            fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("emailOptIn").description("이메일 수신 동의 여부"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     )
@@ -234,7 +292,8 @@ class MemberApiControllerTest extends ControllerTest {
                 "M",
                 JIWON.getProvince(),
                 JIWON.getCity(),
-                List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId())
+                JIWON.isEmailOptIn(),
+                Set.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId())
         );
     }
 }

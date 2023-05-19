@@ -27,8 +27,20 @@ public class MemberValidator {
         }
     }
 
+    public void validateNicknameForModify(Long memberId, Nickname nickname) {
+        if (memberRepository.existsByIdNotAndNickname(memberId, nickname)) {
+            throw StudyWithMeException.type(MemberErrorCode.DUPLICATE_NICKNAME);
+        }
+    }
+
     public void validatePhone(String phone) {
         if (memberRepository.existsByPhone(phone)) {
+            throw StudyWithMeException.type(MemberErrorCode.DUPLICATE_PHONE);
+        }
+    }
+
+    public void validatePhoneForModify(Long memberId, String phone) {
+        if (memberRepository.existsByIdNotAndPhone(memberId, phone)) {
             throw StudyWithMeException.type(MemberErrorCode.DUPLICATE_PHONE);
         }
     }
