@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>여기서 구해볼래?</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 30px;
-            text-align: left;
+            text-align: center;
         }
 
         .container {
-            padding: 20px;
-            max-width: 600px;
+            max-width: 750px;
             margin: 0 auto;
+            border: 3px solid orangered;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
         }
 
         h1 {
@@ -27,15 +30,29 @@
             color: #555;
             line-height: 1.5;
         }
+
+        .logo-size {
+            margin-top: 20px;
+            width: 170px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
+    <img src="cid:image" class="logo-size" alt=""/>
     <h1><strong th:text="${studyName}"></strong> 참여 승인 메일</h1>
-    <p>축하드립니다! <strong th:text="${nickname}"></strong>님은 <strong th:text="${studyName}"></strong>에 참여하게 되셨습니다.</p>
+    <p>
+        축하드립니다! <strong th:text="${nickname}"></strong>님은
+        <strong th:text="${studyName}"></strong>에 참여하게 되셨습니다.
+    </p>
     <p>이 스터디에서 많은 도움과 지식을 얻으실 수 있기를 바랍니다.</p>
     <p>스터디 관련 자세한 정보는 저희 사이트를 참고해주세요.</p>
-    <p>감사합니다.</p>
+</div>
+<br><br><hr>
+<div style="text-align: center">
+    <p style="font-size: 12px;">본 메일은 회원님께서 (주) 여기서 구해볼래 메일 수신에 동의여부에 따라 발송된 메일입니다.</p>
+    <p style="font-size: 12px;">메일 수신을 원치 않으시면 <a href="#">[수신거부]</a>를 클릭하십시오.</p>
+    <p style="font-size: 12px;">감사합니다.</p>
 </div>
 </body>
 </html>
