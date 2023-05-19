@@ -25,10 +25,10 @@ public class StudyAttendanceScheduler {
     private final AttendanceRepository attendanceRepository;
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void testPrint() {
+    public void processAbsenceCheckScheduler() {
         Set<Long> absenceParticipantIds = new HashSet<>();
         List<BasicWeekly> weeks = studyRepository.findAutoAttendanceAndPeriodEndWeek();
-        List<BasicAttendance> attendances = studyRepository.findBasicAttendanceInformation();
+        List<BasicAttendance> attendances = studyRepository.findNonAttendanceInformation();
 
         weeks.forEach(week -> {
             Long studyId = week.studyId();

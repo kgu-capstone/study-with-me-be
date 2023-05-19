@@ -1,6 +1,7 @@
 package com.kgu.studywithme.study.service.week;
 
 import com.kgu.studywithme.common.ServiceTest;
+import com.kgu.studywithme.fixture.PeriodFixture;
 import com.kgu.studywithme.fixture.WeekFixture;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
@@ -212,6 +213,31 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE)
             );
         }
+    }
+
+    @Test
+    @DisplayName("특정 주차를 삭제한다")
+    void deleteWeek() {
+        // given
+        study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+        study.createWeek("Week 2", "Week 2", 2, PeriodFixture.WEEK_2.toPeriod(), List.of());
+        study.createWeek("Week 3", "Week 3", 3, PeriodFixture.WEEK_3.toPeriod(), List.of());
+        study.createWeek("Week 4", "Week 4", 4, PeriodFixture.WEEK_4.toPeriod(), List.of());
+        study.createWeek("Week 5", "Week 5", 5, PeriodFixture.WEEK_5.toPeriod(), List.of());
+
+        // when
+        studyWeeklyService.deleteWeek(study.getId(), 1);
+        studyWeeklyService.deleteWeek(study.getId(), 2);
+        studyWeeklyService.deleteWeek(study.getId(), 3);
+
+        // then
+        assertAll(
+                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 1)).isEmpty(),
+                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 2)).isEmpty(),
+                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 3)).isEmpty(),
+                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 4)).isPresent(),
+                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 5)).isPresent()
+        );
     }
 
     @Nested

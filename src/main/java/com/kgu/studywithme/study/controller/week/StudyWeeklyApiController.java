@@ -30,6 +30,15 @@ public class StudyWeeklyApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @CheckStudyHost
+    @DeleteMapping
+    public ResponseEntity<Void> deleteWeek(@ExtractPayload Long hostId,
+                                           @PathVariable Long studyId,
+                                           @PathVariable Integer week) {
+        studyWeeklyService.deleteWeek(studyId, week);
+        return ResponseEntity.noContent().build();
+    }
+
     @CheckStudyParticipant
     @PostMapping(value = "/assignment", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> submitAssignment(@ExtractPayload Long memberId,

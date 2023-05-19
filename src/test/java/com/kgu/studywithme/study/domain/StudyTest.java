@@ -514,8 +514,8 @@ class StudyTest {
         @BeforeEach
         void setUp() {
             study = SPRING.toOnlineStudy(HOST);
-            week1 = STUDY_WEEKLY_5.toWeek(study);
-            week2 = STUDY_WEEKLY_6.toWeek(study);
+            week1 = STUDY_WEEKLY_1.toWeek(study);
+            week2 = STUDY_WEEKLY_2.toWeek(study);
         }
 
         @Test
@@ -525,9 +525,25 @@ class StudyTest {
             study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments());
 
             // when - then
-            assertThatThrownBy(() -> study.createWeek(week2.getTitle(), week2.getContent(), week1.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments()))
+            assertThatThrownBy(() -> study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_WEEK_CREATED.getMessage());
+        }
+
+        @Test
+        @DisplayName("주차를 건너뛰어서 등록할 수 없다 [2주차 -> 4주차]")
+        void throwExceptionByWeeklyMustBeSequential() {
+            // given
+            /* 1주차는 검증 제외 */
+            assertDoesNotThrow(() -> study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments()));
+            study.createWeek(week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments());
+
+            // when - then
+            final Week week4 = STUDY_WEEKLY_4.toWeek(study);
+
+            assertThatThrownBy(() -> study.createWeek(week4.getTitle(), week2.getContent(), week4.getWeek(), week4.getPeriod(), STUDY_WEEKLY_4.getAttachments()))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL.getMessage());
         }
 
         @Test

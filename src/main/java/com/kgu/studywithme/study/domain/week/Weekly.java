@@ -25,6 +25,7 @@ public class Weekly {
 
     public void registerWeek(Week week) {
         validateUniqueWeek(week.getWeek());
+        validatePreviousWeeklyExistence(week.getWeek());
         weeks.add(week);
     }
 
@@ -37,6 +38,17 @@ public class Weekly {
     private boolean isAlreadyExistsPerWeek(int week) {
         return weeks.stream()
                 .anyMatch(weekInfo -> weekInfo.getWeek() == week);
+    }
+
+    private void validatePreviousWeeklyExistence(int week) {
+        if (week != 1 && isPreviousWeeklyNotExists(week)) {
+            throw StudyWithMeException.type(StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL);
+        }
+    }
+
+    private boolean isPreviousWeeklyNotExists(int week) {
+        return weeks.stream()
+                .noneMatch(weekInfo -> weekInfo.getWeek() == week - 1);
     }
 
     public int getCount() {

@@ -100,7 +100,139 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                     )
                     .andDo(
                             document(
-                                    "StudyApi/Weekly/Create/Failure",
+                                    "StudyApi/Weekly/Create/Failure/Case1",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("생성할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("files").description("스터디 해당 주차에 대한 첨부파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("title").description("스터디 주차 제목"),
+                                            parameterWithName("content").description("스터디 주차 내용"),
+                                            parameterWithName("startDate").description("스터디 주차 시작 날짜"),
+                                            parameterWithName("endDate").description("스터디 주차 종료 날짜"),
+                                            parameterWithName("assignmentExists").description("스터디 주차 과제 존재 여부"),
+                                            parameterWithName("autoAttendance").description("스터디 주차 자동 출석 여부")
+                                                    .attributes(constraint("과제 존재 여부가 false면 자동 출석은 무조건 false"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다")
+        void throwExceptionByAlreadyWeekCreated() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.ALREADY_WEEK_CREATED))
+                    .when(studyWeeklyService)
+                    .createWeek(any(), any(), any());
+
+            // when
+            final StudyWeeklyRequest request = createWeekWithAssignmentRequest(STUDY_WEEKLY_1, files, true);
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .file((MockMultipartFile) files1)
+                    .file((MockMultipartFile) files2)
+                    .file((MockMultipartFile) files3)
+                    .file((MockMultipartFile) files4)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("title", request.title())
+                    .param("content", request.content())
+                    .param("startDate", request.startDate().format(DATE_TIME_FORMATTER))
+                    .param("endDate", request.endDate().format(DATE_TIME_FORMATTER))
+                    .param("assignmentExists", String.valueOf(request.assignmentExists()))
+                    .param("autoAttendance", String.valueOf(request.autoAttendance()));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.ALREADY_WEEK_CREATED;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Create/Failure/Case2",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("생성할 주차")
+                                    ),
+                                    requestParts(
+                                            partWithName("files").description("스터디 해당 주차에 대한 첨부파일")
+                                                    .optional()
+                                    ),
+                                    requestParameters(
+                                            parameterWithName("title").description("스터디 주차 제목"),
+                                            parameterWithName("content").description("스터디 주차 내용"),
+                                            parameterWithName("startDate").description("스터디 주차 시작 날짜"),
+                                            parameterWithName("endDate").description("스터디 주차 종료 날짜"),
+                                            parameterWithName("assignmentExists").description("스터디 주차 과제 존재 여부"),
+                                            parameterWithName("autoAttendance").description("스터디 주차 자동 출석 여부")
+                                                    .attributes(constraint("과제 존재 여부가 false면 자동 출석은 무조건 false"))
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("주차를 건너뛰어서 등록할 수 없다 [2주차 -> 4주차] - 1주차는 검증 제외")
+        void throwExceptionByWeeklyMustBeSequential() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+            doThrow(StudyWithMeException.type(StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL))
+                    .when(studyWeeklyService)
+                    .createWeek(any(), any(), any());
+
+            // when
+            final StudyWeeklyRequest request = createWeekWithAssignmentRequest(STUDY_WEEKLY_1, files, true);
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .multipart(BASE_URL, STUDY_ID, WEEK)
+                    .file((MockMultipartFile) files1)
+                    .file((MockMultipartFile) files2)
+                    .file((MockMultipartFile) files3)
+                    .file((MockMultipartFile) files4)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN))
+                    .param("title", request.title())
+                    .param("content", request.content())
+                    .param("startDate", request.startDate().format(DATE_TIME_FORMATTER))
+                    .param("endDate", request.endDate().format(DATE_TIME_FORMATTER))
+                    .param("assignmentExists", String.valueOf(request.assignmentExists()))
+                    .param("autoAttendance", String.valueOf(request.autoAttendance()));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Create/Failure/Case3",
                                     getDocumentRequest(),
                                     getDocumentResponse(),
                                     getHeaderWithAccessToken(),
@@ -174,6 +306,90 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
                                             parameterWithName("assignmentExists").description("스터디 주차 과제 존재 여부"),
                                             parameterWithName("autoAttendance").description("스터디 주차 자동 출석 여부")
                                                     .attributes(constraint("과제 존재 여부가 false면 자동 출석은 무조건 false"))
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 주차 삭제 API [DELETE /api/studies/{studyId}/weeks/{week}] - AccessToken 필수")
+    class deleteWeek {
+        private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}";
+        private static final Integer WEEK = 1;
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
+
+        @Test
+        @DisplayName("팀장이 아니라면 스터디 주차를 삭제할 수 없다")
+        void throwExceptionByMemberIsNotHost() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Delete/Failure",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("삭제할 주차")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 주차를 삭제한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Delete/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("삭제할 주차")
                                     )
                             )
                     );
