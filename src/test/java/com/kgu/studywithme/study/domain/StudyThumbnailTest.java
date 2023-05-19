@@ -16,11 +16,11 @@ class StudyThumbnailTest {
     @DisplayName("특정 스터디 썸네일을 조회한다")
     void findSpecificStudyImage() {
         // given
-        final String language = "language_001.png";
-        final String interview = "interview_001.png";
-        final String programming = "programming_001.png";
+        final String language = "language_IELTS.png";
+        final String interview = "interview_samsung.png";
+        final String programming = "programming_C.png";
         final String aptituteAndNcs = "aptitude_ncs_001.png";
-        final String certification = "certification_001.png";
+        final String certification = "certification_CIP.png";
         final String etc = "etc_001.png";
 
         // when - then
