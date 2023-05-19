@@ -5,6 +5,7 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
 import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
@@ -32,6 +33,7 @@ import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 @RequiredArgsConstructor
 public class StudyWeeklyService {
     private final StudyFindService studyFindService;
+    private final StudyRepository studyRepository;
     private final MemberFindService memberFindService;
     private final WeekRepository weekRepository;
     private final AttendanceRepository attendanceRepository;
@@ -71,6 +73,11 @@ public class StudyWeeklyService {
     private void processAttendance(Study study, Integer week) {
         study.getApproveParticipants()
                 .forEach(participant -> study.recordAttendance(participant, week, NON_ATTENDANCE));
+    }
+
+    @Transactional
+    public void deleteWeek(Long studyId, Integer week) {
+        studyRepository.deleteSpecificWeek(studyId, week);
     }
 
     @Transactional

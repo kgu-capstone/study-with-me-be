@@ -8,16 +8,38 @@
 == 스터디 주차 생성 [AccessToken 필수]
 === 1. 팀장이 아니라면 스터디 주차를 생성할 수 없다
 HTTP Request
-include::{snippets}/StudyApi/Weekly/Create/Failure/http-request.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/request-headers.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/path-parameters.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/request-parts.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/request-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/request-parameters.adoc[]
 
 HTTP Response
-include::{snippets}/StudyApi/Weekly/Create/Failure/response-body.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case1/response-body.adoc[]
 
-=== 2. 스터디 주차를 생성한다
+=== 2. 이미 해당 주차가 등록되었다면 중복으로 등록할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/response-body.adoc[]
+
+=== 3. 주차를 건너뛰어서 등록할 수 없다 [2주차 -> 4주차] - 1주차는 검증 제외
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/response-body.adoc[]
+
+=== 4. 스터디 주차를 생성한다
 HTTP Request
 include::{snippets}/StudyApi/Weekly/Create/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Weekly/Create/Success/request-headers.adoc[]
@@ -27,6 +49,25 @@ include::{snippets}/StudyApi/Weekly/Create/Success/request-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Create/Success/http-response.adoc[]
+
+== 스터디 주차 삭제 [AccessToken 필수]
+=== 1. 팀장이 아니라면 스터디 주차를 삭제할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Delete/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Failure/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Delete/Failure/response-body.adoc[]
+
+=== 2. 스터디 주차를 삭제한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Delete/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Delete/Success/response-body.adoc[]
 
 == 스터디 주차별 과제 제출 [AccessToken 필수]
 === 1. 스터디 참여자가 아니라면 스터디 주차별 과제를 제출할 수 없다

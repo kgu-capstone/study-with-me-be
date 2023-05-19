@@ -10,6 +10,8 @@ import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.week.Period;
+import com.kgu.studywithme.study.domain.week.Week;
+import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicAttendance;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicWeekly;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
@@ -24,6 +26,7 @@ import java.util.List;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_ATTENDANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -41,6 +44,9 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
 
     @Autowired
     private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private WeekRepository weekRepository;
 
     private Member host;
     private Member member;
@@ -253,7 +259,7 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         applyAttendance(programming[2], 3, host, member);
 
         // when
-        List<BasicAttendance> attendances = studyRepository.findBasicAttendanceInformation();
+        List<BasicAttendance> attendances = studyRepository.findNonAttendanceInformation();
 
         // then
         assertThat(attendances).hasSize(28);
@@ -287,6 +293,33 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         assertAll(
                 () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), host.getId())).isTrue(),
                 () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("특정 주차를 삭제한다")
+    void deleteSpecificWeek() {
+        // given
+        Study study = studyRepository.save(GOOGLE_INTERVIEW.toOfflineStudy(host));
+        Week week1 = weekRepository.save(STUDY_WEEKLY_1.toWeekWithAssignment(study));
+        Week week2 = weekRepository.save(STUDY_WEEKLY_2.toWeekWithAssignment(study));
+        Week week3 = weekRepository.save(STUDY_WEEKLY_3.toWeekWithAssignment(study));
+        Week week4 = weekRepository.save(STUDY_WEEKLY_4.toWeekWithAssignment(study));
+        Week week5 = weekRepository.save(STUDY_WEEKLY_5.toWeekWithAssignment(study));
+        Week week6 = weekRepository.save(STUDY_WEEKLY_6.toWeekWithAssignment(study));
+
+        // when
+        studyRepository.deleteSpecificWeek(study.getId(), week5.getWeek());
+        studyRepository.deleteSpecificWeek(study.getId(), week6.getWeek());
+
+        // then
+        assertAll(
+                () -> assertThat(weekRepository.existsById(week1.getId())).isTrue(),
+                () -> assertThat(weekRepository.existsById(week2.getId())).isTrue(),
+                () -> assertThat(weekRepository.existsById(week3.getId())).isTrue(),
+                () -> assertThat(weekRepository.existsById(week4.getId())).isTrue(),
+                () -> assertThat(weekRepository.existsById(week5.getId())).isFalse(),
+                () -> assertThat(weekRepository.existsById(week6.getId())).isFalse()
         );
     }
 

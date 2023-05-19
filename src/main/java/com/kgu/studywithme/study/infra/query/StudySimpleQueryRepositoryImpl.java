@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +21,8 @@ import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_A
 import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
+import static com.kgu.studywithme.study.domain.week.attachment.QAttachment.attachment;
+import static com.kgu.studywithme.study.domain.week.submit.QSubmit.submit;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -45,7 +48,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
-                .where(hostOrParticipant(memberId), participateStatusEq(APPROVE))
+                .where(hostIdEq(memberId).or(participantIdEqAndApproveStatus(memberId)))
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -89,7 +92,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
-    public List<BasicAttendance> findBasicAttendanceInformation() {
+    public List<BasicAttendance> findNonAttendanceInformation() {
         return query
                 .select(new QBasicAttendance(attendance.study.id, attendance.week, attendance.participant.id))
                 .from(attendance)
@@ -118,12 +121,39 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
         return count > 0;
     }
 
+    @Override
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    public void deleteSpecificWeek(Long studyId, Integer week) {
+        QWeek weekly = new QWeek("week");
+
+        Long weekId = query
+                .select(weekly.id)
+                .from(weekly)
+                .where(
+                        weekly.study.id.eq(studyId),
+                        weekly.week.eq(week)
+                )
+                .fetchOne();
+
+        query.delete(submit)
+                .where(submit.week.id.eq(weekId))
+                .execute();
+
+        query.delete(attachment)
+                .where(attachment.week.id.eq(weekId))
+                .execute();
+
+        query.delete(weekly)
+                .where(weekly.id.eq(weekId))
+                .execute();
+    }
+
     private BooleanExpression participateStatusEq(ParticipantStatus status) {
         return (status != null) ? participant.status.eq(status) : null;
     }
 
-    private BooleanExpression hostOrParticipant(Long memberId) {
-        return (memberId != null) ? host.id.eq(memberId).or(participant.member.id.eq(memberId)) : null;
+    private BooleanExpression participantIdEqAndApproveStatus(Long memberId) {
+        return (memberId != null) ? participant.member.id.eq(memberId).and(participateStatusEq(APPROVE)) : null;
     }
 
     private BooleanExpression memberIdEq(Long memberId) {
