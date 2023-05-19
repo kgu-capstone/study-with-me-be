@@ -82,6 +82,7 @@ class MemberApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("emailOptIn").description("이메일 수신 동의 여부"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     ),
@@ -126,6 +127,7 @@ class MemberApiControllerTest extends ControllerTest {
                                                     .attributes(constraint("남성 = m or M / 여성 = f or F")),
                                             fieldWithPath("province").description("거주지 [경기도, 강원도, ...]"),
                                             fieldWithPath("city").description("거주지 [안양시, 수원시, ...]"),
+                                            fieldWithPath("emailOptIn").description("이메일 수신 동의 여부"),
                                             fieldWithPath("categories").description("관심사 Enum ID")
                                                     .attributes(constraint("스터디 카테고리 ID 한정"))
                                     )
@@ -234,6 +236,7 @@ class MemberApiControllerTest extends ControllerTest {
                 "M",
                 JIWON.getProvince(),
                 JIWON.getCity(),
+                JIWON.isEmailOptIn(),
                 List.of(LANGUAGE.getId(), INTERVIEW.getId(), PROGRAMMING.getId())
         );
     }

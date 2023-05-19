@@ -21,31 +21,31 @@ import static com.kgu.studywithme.common.utils.TokenUtils.REFRESH_TOKEN;
 @RequiredArgsConstructor
 public enum MemberFixture {
     JIWON("서지원", "서지원", "sjiwon4491@gmail.com", LocalDate.of(2000, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     GHOST("고스트", "고스트", "ghost@gmail.com", LocalDate.of(2002, 11, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ANONYMOUS("익명", "익명", "anonymous@gmail.com", LocalDate.of(1970, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+            Gender.MALE, "경기도", "안양시", false, new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
 
 
     DUMMY1("더미1", "더미1", "dummy1@gmail.com", LocalDate.of(1971, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY2("더미2", "더미2", "dummy2@gmail.com", LocalDate.of(1972, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY3("더미3", "더미3", "dummy3@gmail.com", LocalDate.of(1983, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY4("더미4", "더미4", "dummy4@gmail.com", LocalDate.of(2004, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY5("더미5", "더미5", "dummy5@gmail.com", LocalDate.of(1993, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY6("더미6", "더미6", "dummy6@gmail.com", LocalDate.of(1997, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY7("더미7", "더미7", "dummy7@gmail.com", LocalDate.of(1996, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY8("더미8", "더미8", "dummy8@gmail.com", LocalDate.of(1996, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     DUMMY9("더미9", "더미9", "dummy9@gmail.com", LocalDate.of(1999, 1, 18),
-            Gender.MALE, "경기도", "안양시", new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
+            Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(LANGUAGE, INTERVIEW, PROGRAMMING))),
     ;
 
     private final String name;
@@ -55,6 +55,7 @@ public enum MemberFixture {
     private final Gender gender;
     private final String province;
     private final String city;
+    private final boolean emailOptIn;
     private final Set<Category> interests;
 
     public Member toMember() {
@@ -66,6 +67,7 @@ public enum MemberFixture {
                 generateRandomPhoneNumber(),
                 gender,
                 Region.of(province, city),
+                emailOptIn,
                 interests
         );
     }

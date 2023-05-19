@@ -151,6 +151,7 @@ class MemberServiceTest extends ServiceTest {
                 phone,
                 JIWON.getGender(),
                 Region.of(JIWON.getProvince(), JIWON.getCity()),
+                JIWON.isEmailOptIn(),
                 JIWON.getInterests()
         );
     }

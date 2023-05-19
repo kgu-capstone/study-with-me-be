@@ -50,13 +50,16 @@ public class ParticipationService {
         Member applier = memberFindService.findById(applierId);
 
         study.approveParticipation(applier);
-        eventPublisher.publishEvent(
-                new StudyApprovedEvent(
-                        applier.getEmailValue(),
-                        applier.getNicknameValue(),
-                        study.getNameValue()
-                )
-        );
+
+        if (applier.isEmailOptIn()) {
+            eventPublisher.publishEvent(
+                    new StudyApprovedEvent(
+                            applier.getEmailValue(),
+                            applier.getNicknameValue(),
+                            study.getNameValue()
+                    )
+            );
+        }
     }
 
     @Transactional
@@ -65,14 +68,17 @@ public class ParticipationService {
         Member applier = memberFindService.findById(applierId);
 
         study.rejectParticipation(applier);
-        eventPublisher.publishEvent(
-                new StudyRejectedEvent(
-                        applier.getEmailValue(),
-                        applier.getNicknameValue(),
-                        study.getNameValue(),
-                        reason
-                )
-        );
+
+        if (applier.isEmailOptIn()) {
+            eventPublisher.publishEvent(
+                    new StudyRejectedEvent(
+                            applier.getEmailValue(),
+                            applier.getNicknameValue(),
+                            study.getNameValue(),
+                            reason
+                    )
+            );
+        }
     }
 
     @Transactional
@@ -98,13 +104,16 @@ public class ParticipationService {
         validateGraduationRequirements(study, participantId);
 
         study.graduateParticipant(participant);
-        eventPublisher.publishEvent(
-                new StudyGraduatedEvent(
-                        participant.getEmailValue(),
-                        participant.getNicknameValue(),
-                        study.getNameValue()
-                )
-        );
+
+        if (participant.isEmailOptIn()) {
+            eventPublisher.publishEvent(
+                    new StudyGraduatedEvent(
+                            participant.getEmailValue(),
+                            participant.getNicknameValue(),
+                            study.getNameValue()
+                    )
+            );
+        }
     }
 
     private void validateGraduationRequirements(Study study, Long memberId) {

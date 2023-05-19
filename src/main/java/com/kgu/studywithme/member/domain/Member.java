@@ -50,6 +50,9 @@ public class Member extends BaseEntity {
     @Embedded
     private Score score;
 
+    @Column(name = "is_email_opt_in", nullable = false)
+    private boolean emailOptIn;
+
     @Embedded
     private PeerReviews peerReviews;
 
@@ -57,7 +60,7 @@ public class Member extends BaseEntity {
     private List<Interest> interests = new ArrayList<>();
 
     private Member(String name, Nickname nickname, Email email, LocalDate birth, String phone,
-                   Gender gender, Region region, Set<Category> interests) {
+                   Gender gender, Region region, boolean emailOptIn, Set<Category> interests) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
@@ -66,13 +69,14 @@ public class Member extends BaseEntity {
         this.gender = gender;
         this.region = region;
         this.score = Score.initScore();
+        this.emailOptIn = emailOptIn;
         this.peerReviews = PeerReviews.createPeerReviewsPage();
         applyInterests(interests);
     }
 
     public static Member createMember(String name, Nickname nickname, Email email, LocalDate birth, String phone,
-                                      Gender gender, Region region, Set<Category> interests) {
-        return new Member(name, nickname, email, birth, phone, gender, region, interests);
+                                      Gender gender, Region region, boolean emailOptIn, Set<Category> interests) {
+        return new Member(name, nickname, email, birth, phone, gender, region, emailOptIn, interests);
     }
 
     public void changeNickname(String changeNickname) {

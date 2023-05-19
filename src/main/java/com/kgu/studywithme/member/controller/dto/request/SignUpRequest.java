@@ -43,6 +43,9 @@ public record SignUpRequest(
         @NotBlank(message = "거주지는 필수입니다.")
         String city,
 
+        @NotNull(message = "이메일 수신 동의 여부는 필수입니다.")
+        Boolean emailOptIn,
+
         @NotEmpty(message = "관심사는 하나 이상 등록해야 합니다.")
         List<Long> categories
 ) {
@@ -55,6 +58,7 @@ public record SignUpRequest(
                 phone,
                 convertStringToGender(),
                 Region.of(province, city),
+                emailOptIn,
                 convertStringToCategory()
         );
     }
