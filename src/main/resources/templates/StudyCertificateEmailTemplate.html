@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>여기서 구해볼래? - 수료증</title>
+    <meta charset="UTF-8"/>
+    <title>여기서 구해볼래?</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 30px;
-            margin: 0;
+            text-align: center;
         }
 
         .container {
-            padding: 20px;
-            max-width: 600px;
+            max-width: 750px;
             margin: 0 auto;
+            border: 3px solid orangered;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
         }
 
         h1 {
@@ -44,22 +47,51 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .certificate_title {
+            color: #ff5037;
+        }
+
+        .certificate_contents {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .hr_setting {
+            border: 2px solid #ff5037;
+        }
+
+        .stamp_size {
+            width: 50px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>CERTIFICATE OF COMPLETION</h1>
-    <h2>스터디 수료인증서</h2>
-    <p>
-        <span>NAME</span><br>
-        <strong th:text="${nickname}" style="font-size: 30px;"></strong>
-    </p>
-    <p>
-        <span>STUDY</span><br>
-        <strong th:text="${studyName}" style="font-size: 30px;"></strong>
-    </p>
-    <p>위의 스터디를 성공적으로 수료하였음을 인정하여 이 수료증을 수여합니다.</p>
-    <p class="completion-date" th:text="|수료일: ${completionDate}|"></p>
+    <h1 class="certificate_title">CERTIFICATE OF COMPLETION</h1>
+    <hr class="hr_setting"/>
+    <div class="certificate_contents">
+        <p>
+            <span>수료자</span><br/>
+            <strong th:text="${nickname}" style="font-size: 30px"></strong>
+        </p>
+        <p>
+            <span>스터디명</span><br/>
+            <strong th:text="${studyName}" style="font-size: 30px"></strong>
+        </p>
+
+        <p class="completion-date" th:text="|수료일: ${completionDate}|"></p>
+
+        <hr class="hr_setting"/>
+        <p>상기인은 위의 스터디를 성공적으로 수료하였음을 인정하여 이 수료증을 수여합니다.</p>
+        <img src="cid:image" class="stamp_size" alt=""/>
+    </div>
+</div>
+<br><br><hr>
+<div style="text-align: center">
+    <p style="font-size: 12px;">본 메일은 회원님께서 (주) 여기서 구해볼래 메일 수신에 동의여부에 따라 발송된 메일입니다.</p>
+    <p style="font-size: 12px;">메일 수신을 원치 않으시면 <a href="#">[수신거부]</a>를 클릭하십시오.</p>
+    <p style="font-size: 12px;">감사합니다.</p>
 </div>
 </body>
 </html>
