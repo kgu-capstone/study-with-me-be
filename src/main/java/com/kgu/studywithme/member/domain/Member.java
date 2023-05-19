@@ -79,8 +79,12 @@ public class Member extends BaseEntity {
         return new Member(name, nickname, email, birth, phone, gender, region, emailOptIn, interests);
     }
 
-    public void changeNickname(String changeNickname) {
-        this.nickname = this.nickname.update(changeNickname);
+    public void update(String nickname, String phone, String province, String city, boolean emailOptIn, Set<Category> interests) {
+        this.nickname = this.nickname.update(nickname);
+        this.phone = phone;
+        this.region = this.region.update(province, city);
+        this.emailOptIn = emailOptIn;
+        applyInterests(interests);
     }
 
     public void applyInterests(Set<Category> interests) {

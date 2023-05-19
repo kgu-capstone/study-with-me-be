@@ -25,7 +25,7 @@ public enum MemberFixture {
     GHOST("고스트", "고스트", "ghost@gmail.com", LocalDate.of(2002, 11, 18),
             Gender.MALE, "경기도", "안양시", true, new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
     ANONYMOUS("익명", "익명", "anonymous@gmail.com", LocalDate.of(1970, 1, 18),
-            Gender.MALE, "경기도", "안양시", false, new HashSet<>(Set.of(APTITUDE_NCS, CERTIFICATION, ETC))),
+            Gender.MALE, "경기도", "수원시", false, new HashSet<>(Set.of(APTITUDE_NCS, ETC))),
 
 
     DUMMY1("더미1", "더미1", "dummy1@gmail.com", LocalDate.of(1971, 1, 18),

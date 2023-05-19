@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,7 @@ public record SignUpRequest(
         Boolean emailOptIn,
 
         @NotEmpty(message = "관심사는 하나 이상 등록해야 합니다.")
-        List<Long> categories
+        Set<Long> categories
 ) {
     public Member toEntity() {
         return Member.createMember(

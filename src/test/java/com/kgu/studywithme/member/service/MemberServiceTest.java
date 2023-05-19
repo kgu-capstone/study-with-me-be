@@ -2,6 +2,7 @@ package com.kgu.studywithme.member.service;
 
 import com.kgu.studywithme.common.ServiceTest;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
+import com.kgu.studywithme.member.controller.dto.request.MemberUpdateRequest;
 import com.kgu.studywithme.member.domain.Email;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.Nickname;
@@ -14,6 +15,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Set;
+
+import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
+import static com.kgu.studywithme.category.domain.Category.PROGRAMMING;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.member.domain.report.ReportStatus.RECEIVE;
@@ -94,6 +99,80 @@ class MemberServiceTest extends ServiceTest {
             assertAll(
                     () -> assertThat(findMember.getId()).isEqualTo(savedMemberId),
                     () -> assertThat(findMember.getInterests()).containsExactlyInAnyOrderElementsOf(JIWON.getInterests())
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 정보 수정")
+    class update {
+        private Member member;
+        private Member compare;
+
+        @BeforeEach
+        void setUp() {
+            member = memberRepository.save(JIWON.toMember());
+            compare = memberRepository.save(GHOST.toMember());
+        }
+
+        @Test
+        @DisplayName("다른 사람이 사용하고 있는 닉네임으로 수정할 수 없다")
+        void throwExceptionByDuplicateNickname() {
+            final MemberUpdateRequest request = new MemberUpdateRequest(
+                    compare.getNicknameValue(),
+                    member.getPhone(),
+                    member.getRegionProvince(),
+                    member.getRegionCity(),
+                    member.isEmailOptIn(),
+                    Set.of(INTERVIEW.getId(), PROGRAMMING.getId())
+            );
+
+            assertThatThrownBy(() -> memberService.update(member.getId(), request))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.DUPLICATE_NICKNAME.getMessage());
+        }
+
+        @Test
+        @DisplayName("다른 사람이 사용하고 있는 전화번호로 수정할 수 없다")
+        void throwExceptionByDuplicatePhone() {
+            final MemberUpdateRequest request = new MemberUpdateRequest(
+                    member.getNicknameValue(),
+                    compare.getPhone(),
+                    member.getRegionProvince(),
+                    member.getRegionCity(),
+                    member.isEmailOptIn(),
+                    Set.of(INTERVIEW.getId(), PROGRAMMING.getId())
+            );
+
+            assertThatThrownBy(() -> memberService.update(member.getId(), request))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(MemberErrorCode.DUPLICATE_PHONE.getMessage());
+        }
+
+        @Test
+        @DisplayName("사용자 정보를 수정한다")
+        void success() {
+            // given
+            final MemberUpdateRequest request = new MemberUpdateRequest(
+                    "updateNick",
+                    "01012300593",
+                    "경기도",
+                    "성남시",
+                    false,
+                    Set.of(INTERVIEW.getId(), PROGRAMMING.getId())
+            );
+
+            // when
+            memberService.update(member.getId(), request);
+
+            // then
+            assertAll(
+                    () -> assertThat(member.getNicknameValue()).isEqualTo("updateNick"),
+                    () -> assertThat(member.getPhone()).isEqualTo("01012300593"),
+                    () -> assertThat(member.getRegionProvince()).isEqualTo("경기도"),
+                    () -> assertThat(member.getRegionCity()).isEqualTo("성남시"),
+                    () -> assertThat(member.isEmailOptIn()).isFalse(),
+                    () -> assertThat(member.getInterests()).containsExactlyInAnyOrder(INTERVIEW, PROGRAMMING)
             );
         }
     }

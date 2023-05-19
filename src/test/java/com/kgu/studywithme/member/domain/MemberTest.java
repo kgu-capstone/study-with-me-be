@@ -34,7 +34,40 @@ class MemberTest {
                 () -> assertThat(member.getRegionProvince()).isEqualTo(JIWON.getProvince()),
                 () -> assertThat(member.getRegionCity()).isEqualTo(JIWON.getCity()),
                 () -> assertThat(member.getScore()).isEqualTo(80),
+                () -> assertThat(member.isEmailOptIn()).isEqualTo(JIWON.isEmailOptIn()),
                 () -> assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(JIWON.getInterests())
+        );
+    }
+
+    @Test
+    @DisplayName("사용자 정보를 수정한다")
+    void update() {
+        // given
+        Member member = JIWON.toMember();
+
+        // when
+        member.update(
+                ANONYMOUS.getNickname(),
+                "01013249583",
+                ANONYMOUS.getProvince(),
+                ANONYMOUS.getCity(),
+                ANONYMOUS.isEmailOptIn(),
+                ANONYMOUS.getInterests()
+        );
+
+        // then
+        assertAll(
+                () -> assertThat(member.getName()).isEqualTo(JIWON.getName()),
+                () -> assertThat(member.getNicknameValue()).isEqualTo(ANONYMOUS.getNickname()),
+                () -> assertThat(member.getEmailValue()).isEqualTo(JIWON.getEmail()),
+                () -> assertThat(member.getBirth()).isEqualTo(JIWON.getBirth()),
+                () -> assertThat(member.getPhone()).isEqualTo("01013249583"),
+                () -> assertThat(member.getGender()).isEqualTo(JIWON.getGender()),
+                () -> assertThat(member.getRegionProvince()).isEqualTo(ANONYMOUS.getProvince()),
+                () -> assertThat(member.getRegionCity()).isEqualTo(ANONYMOUS.getCity()),
+                () -> assertThat(member.getScore()).isEqualTo(80),
+                () -> assertThat(member.isEmailOptIn()).isEqualTo(ANONYMOUS.isEmailOptIn()),
+                () -> assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(ANONYMOUS.getInterests())
         );
     }
 
@@ -50,20 +83,6 @@ class MemberTest {
 
         // then
         assertThat(member.getInterests()).containsExactlyInAnyOrderElementsOf(interests);
-    }
-
-    @Test
-    @DisplayName("닉네임을 변경한다")
-    void changeNickname() {
-        // given
-        Member member = JIWON.toMember();
-
-        // when
-        final String change = JIWON.getNickname() + "diff";
-        member.changeNickname(change);
-
-        // then
-        assertThat(member.getNicknameValue()).isEqualTo(change);
     }
 
     @Test
