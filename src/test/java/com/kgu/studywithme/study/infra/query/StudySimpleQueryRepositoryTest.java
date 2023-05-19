@@ -253,7 +253,7 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         applyAttendance(programming[2], 3, host, member);
 
         // when
-        List<BasicAttendance> attendances = studyRepository.findBasicAttendanceInformation();
+        List<BasicAttendance> attendances = studyRepository.findNonAttendanceInformation();
 
         // then
         assertThat(attendances).hasSize(28);

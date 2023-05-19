@@ -89,7 +89,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
-    public List<BasicAttendance> findBasicAttendanceInformation() {
+    public List<BasicAttendance> findNonAttendanceInformation() {
         return query
                 .select(new QBasicAttendance(attendance.study.id, attendance.week, attendance.participant.id))
                 .from(attendance)
