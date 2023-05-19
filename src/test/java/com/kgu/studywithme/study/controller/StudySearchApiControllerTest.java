@@ -79,7 +79,8 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / on / off")),
+                                                    .optional()
+                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),
@@ -150,7 +151,8 @@ class StudySearchApiControllerTest extends ControllerTest {
                                             parameterWithName("page").description("현재 페이지")
                                                     .attributes(constraint("시작 페이지 = 0")),
                                             parameterWithName("type").description("온라인/오프라인 유무")
-                                                    .attributes(constraint("null(온 + 오프) / on / off")),
+                                                    .optional()
+                                                    .attributes(constraint("null(온 + 오프) / online / offline")),
                                             parameterWithName("province").description("오프라인 스터디 지역 [경기도, 강원도, ...]")
                                                     .optional()
                                                     .attributes(constraint("type이 오프라인일 경우 활성화")),

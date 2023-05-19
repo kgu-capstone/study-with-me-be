@@ -220,7 +220,7 @@ public class StudyCategoryQueryRepositoryImpl implements StudyCategoryQueryRepos
             return null;
         }
 
-        return ONLINE.getBrief().equalsIgnoreCase(type) ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
+        return "online".equals(type) ? study.type.eq(ONLINE) : study.type.eq(OFFLINE);
     }
 
     private BooleanExpression studyCategoryIn(List<Category> memberInterests) {
