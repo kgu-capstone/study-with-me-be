@@ -50,6 +50,25 @@ include::{snippets}/StudyApi/Weekly/Create/Success/request-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Create/Success/http-response.adoc[]
 
+== 스터디 주차 삭제 [AccessToken 필수]
+=== 1. 팀장이 아니라면 스터디 주차를 삭제할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Delete/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Failure/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Delete/Failure/response-body.adoc[]
+
+=== 2. 스터디 주차를 삭제한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Delete/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Delete/Success/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Delete/Success/response-body.adoc[]
+
 == 스터디 주차별 과제 제출 [AccessToken 필수]
 === 1. 스터디 참여자가 아니라면 스터디 주차별 과제를 제출할 수 없다
 HTTP Request

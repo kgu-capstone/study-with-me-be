@@ -313,6 +313,90 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
     }
 
     @Nested
+    @DisplayName("스터디 주차 삭제 API [DELETE /api/studies/{studyId}/weeks/{week}] - AccessToken 필수")
+    class deleteWeek {
+        private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}";
+        private static final Integer WEEK = 1;
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+        private static final Long ANONYMOUS_ID = 2L;
+
+        @BeforeEach
+        void setUp() {
+            mockingForStudyHost(STUDY_ID, HOST_ID, true);
+            mockingForStudyHost(STUDY_ID, ANONYMOUS_ID, false);
+        }
+
+        @Test
+        @DisplayName("팀장이 아니라면 스터디 주차를 삭제할 수 없다")
+        void throwExceptionByMemberIsNotHost() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(ANONYMOUS_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            final StudyErrorCode expectedError = StudyErrorCode.MEMBER_IS_NOT_HOST;
+            mockMvc.perform(requestBuilder)
+                    .andExpectAll(
+                            status().isConflict(),
+                            jsonPath("$.status").exists(),
+                            jsonPath("$.status").value(expectedError.getStatus().value()),
+                            jsonPath("$.errorCode").exists(),
+                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
+                            jsonPath("$.message").exists(),
+                            jsonPath("$.message").value(expectedError.getMessage())
+                    )
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Delete/Failure",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("삭제할 주차")
+                                    ),
+                                    getExceptionResponseFiels()
+                            )
+                    );
+        }
+
+        @Test
+        @DisplayName("스터디 주차를 삭제한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .delete(BASE_URL, STUDY_ID, WEEK)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isNoContent())
+                    .andDo(
+                            document(
+                                    "StudyApi/Weekly/Delete/Success",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)"),
+                                            parameterWithName("week").description("삭제할 주차")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
     @DisplayName("스터디 주차별 과제 제출 API [POST /api/studies/{studyId}/weeks/{week}/assignment] - AccessToken 필수")
     class submitAssignment {
         private static final String BASE_URL = "/api/studies/{studyId}/weeks/{week}/assignment";
