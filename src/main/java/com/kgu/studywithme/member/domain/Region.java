@@ -30,6 +30,11 @@ public class Region {
         return new Region(province, city);
     }
 
+    public Region update(String province, String city) {
+        validateProvinceAndCityIsNotEmpty(province, city);
+        return new Region(province, city);
+    }
+
     private static void validateProvinceAndCityIsNotEmpty(String province, String city) {
         if (isEmptyText(province) || isEmptyText(city)) {
             throw StudyWithMeException.type(MemberErrorCode.REGION_IS_BLANK);

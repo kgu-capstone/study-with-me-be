@@ -79,6 +79,23 @@ class MemberRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("다른 사람이 해당 닉네임을 사용하고 있는지 확인한다")
+    void existsByIdNotAndNickname() {
+        // given
+        final Nickname nickname = member.getNickname();
+
+        // when
+        boolean actual1 = memberRepository.existsByIdNotAndNickname(member.getId(), nickname);
+        boolean actual2 = memberRepository.existsByIdNotAndNickname(participants[0].getId(), nickname);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isFalse(),
+                () -> assertThat(actual2).isTrue()
+        );
+    }
+
+    @Test
     @DisplayName("전화번호에 해당하는 사용자가 존재하는지 확인한다")
     void existsByPhone() {
         // given
@@ -93,6 +110,23 @@ class MemberRepositoryTest extends RepositoryTest {
         assertAll(
                 () -> assertThat(actual1).isTrue(),
                 () -> assertThat(actual2).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("다른 사람이 해당 전화번호를 사용하고 있는지 확인한다")
+    void existsByIdNotAndPhone() {
+        // given
+        final String phone = member.getPhone();
+
+        // when
+        boolean actual1 = memberRepository.existsByIdNotAndPhone(member.getId(), phone);
+        boolean actual2 = memberRepository.existsByIdNotAndPhone(participants[0].getId(), phone);
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isFalse(),
+                () -> assertThat(actual2).isTrue()
         );
     }
 

@@ -1,4 +1,4 @@
-= 회원가입 API
+= 사용자 회원가입/정보 수정 API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -22,3 +22,12 @@ include::{snippets}/MemberApi/SignUp/Success/request-fields.adoc[]
 
 HTTP Response
 include::{snippets}/MemberApi/SignUp/Success/http-response.adoc[]
+
+== 정보 수정 [AccessToken 필수]
+HTTP Request
+include::{snippets}/MemberApi/Update/http-request.adoc[]
+include::{snippets}/MemberApi/Update/request-headers.adoc[]
+include::{snippets}/MemberApi/Update/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Update/http-response.adoc[]
