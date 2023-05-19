@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum StudyType {
-    ONLINE("온라인", "ON"),
-    OFFLINE("오프라인", "OFF")
+    ONLINE("온라인", "online"),
+    OFFLINE("오프라인", "offline")
     ;
 
     private final String description;

@@ -40,7 +40,7 @@ public class StudyService {
     }
 
     private Study buildStudy(StudyRegisterRequest request, Member host) {
-        if (request.type().equalsIgnoreCase(ONLINE.getBrief())) {
+        if (request.type().equals(ONLINE.getBrief())) {
             return Study.createOnlineStudy(
                     host,
                     StudyName.from(request.name()),
@@ -77,7 +77,7 @@ public class StudyService {
                 request.capacity(),
                 Category.from(request.category()),
                 StudyThumbnail.from(request.thumbnail()),
-                request.type().equalsIgnoreCase(ONLINE.getBrief()) ? ONLINE : OFFLINE,
+                request.type().equals(ONLINE.getBrief()) ? ONLINE : OFFLINE,
                 request.province(),
                 request.city(),
                 request.recruitmentStatus() ? IN_PROGRESS : COMPLETE,
