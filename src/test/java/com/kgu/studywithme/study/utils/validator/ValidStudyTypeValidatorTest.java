@@ -38,23 +38,17 @@ class ValidStudyTypeValidatorTest {
     @DisplayName("허용하는 스터디 타입이 들어오면 validator를 통과한다")
     void allowedStudyType() {
         // given
-        final String on1 = "on";
-        final String on2 = "ON";
-        final String off1 = "off";
-        final String off2 = "OFF";
+        final String on = "online";
+        final String off = "offline";
 
         // when
-        boolean actual1 = validator.isValid(on1, context);
-        boolean actual2 = validator.isValid(on2, context);
-        boolean actual3 = validator.isValid(off1, context);
-        boolean actual4 = validator.isValid(off2, context);
+        boolean actual1 = validator.isValid(on, context);
+        boolean actual2 = validator.isValid(off, context);
 
         // then
         assertAll(
                 () -> assertThat(actual1).isTrue(),
-                () -> assertThat(actual2).isTrue(),
-                () -> assertThat(actual3).isTrue(),
-                () -> assertThat(actual4).isTrue()
+                () -> assertThat(actual2).isTrue()
         );
     }
 }
