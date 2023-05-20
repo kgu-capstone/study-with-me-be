@@ -16,6 +16,7 @@ class UploadTest {
         Upload upload = Upload.withLink("https://notion.com");
 
         assertAll(
+                () -> assertThat(upload.getUploadFileName()).isNull(),
                 () -> assertThat(upload.getLink()).isEqualTo("https://notion.com"),
                 () -> assertThat(upload.getType()).isEqualTo(LINK)
         );
@@ -24,10 +25,11 @@ class UploadTest {
     @Test
     @DisplayName("파일 업로드를 통해서 과제를 제출한다")
     void constructWithFile() {
-        Upload upload = Upload.withFile("file_upload_link");
+        Upload upload = Upload.withFile("hello.pdf", "uuid.pdf");
 
         assertAll(
-                () -> assertThat(upload.getLink()).isEqualTo("file_upload_link"),
+                () -> assertThat(upload.getUploadFileName()).isEqualTo("hello.pdf"),
+                () -> assertThat(upload.getLink()).isEqualTo("uuid.pdf"),
                 () -> assertThat(upload.getType()).isEqualTo(FILE)
         );
     }

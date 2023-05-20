@@ -120,7 +120,7 @@ public class StudyWeeklyService {
 
     private Upload createUpload(String type, MultipartFile file, String link) {
         return type.equals("file")
-                ? Upload.withFile(uploader.uploadWeeklySubmit(file))
+                ? Upload.withFile(file.getOriginalFilename(), uploader.uploadWeeklySubmit(file))
                 : Upload.withLink(link);
     }
 

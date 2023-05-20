@@ -19,7 +19,6 @@ import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -300,6 +299,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -338,6 +338,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -375,6 +376,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -409,6 +411,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -449,6 +452,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -490,6 +494,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -530,6 +535,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -568,6 +574,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
                     () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
@@ -636,12 +643,13 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             /* Case 1) File 제출 */
             // when
-            final Upload previous = Upload.withFile(LINK3);
+            final Upload previous = Upload.withFile("hello3.pdf", LINK3);
             week.submitAssignment(host, previous);
 
             // then
             Submit previousSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
+                    () -> assertThat(previousSubmit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(previousSubmit.getUpload().getLink()).isEqualTo(LINK3),
                     () -> assertThat(previousSubmit.getUpload().getType()).isEqualTo(FILE),
                     () -> assertThat(previousSubmit.getWeek()).isEqualTo(week),
@@ -656,6 +664,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // then
             Submit currentSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
+                    () -> assertThat(currentSubmit.getUpload().getUploadFileName()).isNull(),
                     () -> assertThat(currentSubmit.getUpload().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(currentSubmit.getUpload().getType()).isEqualTo(LINK),
                     () -> assertThat(currentSubmit.getWeek()).isEqualTo(week),
