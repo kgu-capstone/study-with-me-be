@@ -19,6 +19,7 @@ import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -215,29 +216,38 @@ class StudyWeeklyServiceTest extends ServiceTest {
         }
     }
 
-    @Test
-    @DisplayName("특정 주차를 삭제한다")
-    void deleteWeek() {
-        // given
-        study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
-        study.createWeek("Week 2", "Week 2", 2, PeriodFixture.WEEK_2.toPeriod(), List.of());
-        study.createWeek("Week 3", "Week 3", 3, PeriodFixture.WEEK_3.toPeriod(), List.of());
-        study.createWeek("Week 4", "Week 4", 4, PeriodFixture.WEEK_4.toPeriod(), List.of());
-        study.createWeek("Week 5", "Week 5", 5, PeriodFixture.WEEK_5.toPeriod(), List.of());
+    @Nested
+    @DisplayName("특정 주차 삭제")
+    class deleteWeek {
+        @Test
+        @DisplayName("가장 최신 주차가 아님에 따라 주차를 삭제할 수 없다")
+        void throwExceptionByWeekIsNotLatest() {
+            // given
+            study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+            study.createWeek("Week 2", "Week 2", 2, PeriodFixture.WEEK_2.toPeriod(), List.of());
 
-        // when
-        studyWeeklyService.deleteWeek(study.getId(), 1);
-        studyWeeklyService.deleteWeek(study.getId(), 2);
-        studyWeeklyService.deleteWeek(study.getId(), 3);
+            // when - then
+            assertThatThrownBy(() -> studyWeeklyService.deleteWeek(study.getId(), 1))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(StudyErrorCode.WEEK_IS_NOT_LATEST.getMessage());
+        }
 
-        // then
-        assertAll(
-                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 1)).isEmpty(),
-                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 2)).isEmpty(),
-                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 3)).isEmpty(),
-                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 4)).isPresent(),
-                () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 5)).isPresent()
-        );
+        @Test
+        @DisplayName("특정 주차를 삭제한다")
+        void success() {
+            // given
+            study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+            study.createWeek("Week 2", "Week 2", 2, PeriodFixture.WEEK_2.toPeriod(), List.of());
+
+            // when
+            studyWeeklyService.deleteWeek(study.getId(), 2);
+
+            // then
+            assertAll(
+                    () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 1)).isPresent(),
+                    () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 2)).isEmpty()
+            );
+        }
     }
 
     @Nested

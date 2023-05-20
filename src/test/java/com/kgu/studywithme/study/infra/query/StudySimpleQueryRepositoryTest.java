@@ -297,6 +297,25 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("최신 주차인지 확인한다")
+    void isLatestWeek() {
+        // given
+        Study study = studyRepository.save(GOOGLE_INTERVIEW.toOfflineStudy(host));
+        Week week1 = weekRepository.save(STUDY_WEEKLY_1.toWeekWithAssignment(study));
+        Week week2 = weekRepository.save(STUDY_WEEKLY_2.toWeekWithAssignment(study));
+
+        // when
+        boolean actual1 = studyRepository.isLatestWeek(study.getId(), week1.getWeek());
+        boolean actual2 = studyRepository.isLatestWeek(study.getId(), week2.getWeek());
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isFalse(),
+                () -> assertThat(actual2).isTrue()
+        );
+    }
+
+    @Test
     @DisplayName("특정 주차를 삭제한다")
     void deleteSpecificWeek() {
         // given

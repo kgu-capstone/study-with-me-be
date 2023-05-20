@@ -14,5 +14,6 @@ public interface StudySimpleQueryRepository {
     List<BasicWeekly> findAutoAttendanceAndPeriodEndWeek();
     List<BasicAttendance> findNonAttendanceInformation();
     boolean isStudyParticipant(Long studyId, Long memberId);
+    boolean isLatestWeek(Long studyId, Integer week);
     void deleteSpecificWeek(Long studyId, Integer week);
 }

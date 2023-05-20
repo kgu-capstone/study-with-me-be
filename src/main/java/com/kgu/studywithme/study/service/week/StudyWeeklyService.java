@@ -77,7 +77,14 @@ public class StudyWeeklyService {
 
     @Transactional
     public void deleteWeek(Long studyId, Integer week) {
+        validateLatestWeek(studyId, week);
         studyRepository.deleteSpecificWeek(studyId, week);
+    }
+
+    private void validateLatestWeek(Long studyId, Integer week) {
+        if (!studyRepository.isLatestWeek(studyId, week)) {
+            throw StudyWithMeException.type(StudyErrorCode.WEEK_IS_NOT_LATEST);
+        }
     }
 
     @Transactional
