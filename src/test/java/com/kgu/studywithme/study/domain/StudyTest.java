@@ -18,7 +18,8 @@ import java.util.List;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.*;
-import static com.kgu.studywithme.fixture.WeekFixture.*;
+import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
+import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_2;
 import static com.kgu.studywithme.study.domain.RecruitmentStatus.IN_PROGRESS;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.LATE;
@@ -528,22 +529,6 @@ class StudyTest {
             assertThatThrownBy(() -> study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments()))
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.ALREADY_WEEK_CREATED.getMessage());
-        }
-
-        @Test
-        @DisplayName("주차를 건너뛰어서 등록할 수 없다 [2주차 -> 4주차]")
-        void throwExceptionByWeeklyMustBeSequential() {
-            // given
-            /* 1주차는 검증 제외 */
-            assertDoesNotThrow(() -> study.createWeek(week1.getTitle(), week1.getContent(), week1.getWeek(), week1.getPeriod(), STUDY_WEEKLY_1.getAttachments()));
-            study.createWeek(week2.getTitle(), week2.getContent(), week2.getWeek(), week2.getPeriod(), STUDY_WEEKLY_2.getAttachments());
-
-            // when - then
-            final Week week4 = STUDY_WEEKLY_4.toWeek(study);
-
-            assertThatThrownBy(() -> study.createWeek(week4.getTitle(), week2.getContent(), week4.getWeek(), week4.getPeriod(), STUDY_WEEKLY_4.getAttachments()))
-                    .isInstanceOf(StudyWithMeException.class)
-                    .hasMessage(StudyErrorCode.WEEKLY_MUST_BE_SEQUENTIAL.getMessage());
         }
 
         @Test

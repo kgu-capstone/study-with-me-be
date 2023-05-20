@@ -16,22 +16,21 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/studies/{studyId}/weeks/{week}")
+@RequestMapping("/api/studies/{studyId}")
 public class StudyWeeklyApiController {
     private final StudyWeeklyService studyWeeklyService;
 
     @CheckStudyHost
-    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/week", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createWeek(@ExtractPayload Long hostId,
                                            @PathVariable Long studyId,
-                                           @PathVariable Integer week,
                                            @ModelAttribute @Valid StudyWeeklyRequest request) {
-        studyWeeklyService.createWeek(studyId, week, request);
+        studyWeeklyService.createWeek(studyId, request);
         return ResponseEntity.noContent().build();
     }
 
     @CheckStudyHost
-    @DeleteMapping
+    @DeleteMapping("/weeks/{week}")
     public ResponseEntity<Void> deleteWeek(@ExtractPayload Long hostId,
                                            @PathVariable Long studyId,
                                            @PathVariable Integer week) {
@@ -40,7 +39,7 @@ public class StudyWeeklyApiController {
     }
 
     @CheckStudyParticipant
-    @PostMapping(value = "/assignment", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/weeks/{week}/assignment", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> submitAssignment(@ExtractPayload Long memberId,
                                                  @PathVariable Long studyId,
                                                  @PathVariable Integer week,
@@ -50,7 +49,7 @@ public class StudyWeeklyApiController {
     }
 
     @CheckStudyParticipant
-    @PostMapping(value = "/assignment/edit", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/weeks/{week}/assignment/edit", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> editSubmittedAssignment(@ExtractPayload Long memberId,
                                                         @PathVariable Long studyId,
                                                         @PathVariable Integer week,

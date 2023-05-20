@@ -295,6 +295,20 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
                 () -> assertThat(studyRepository.isStudyParticipant(programming[0].getId(), member.getId())).isFalse()
         );
     }
+    
+    @Test
+    @DisplayName("다음 주차를 조회한다")
+    void getNextWeek() {
+        // given
+        Study study = studyRepository.save(GOOGLE_INTERVIEW.toOfflineStudy(host));
+        
+        /* 1주차 */
+        assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(1);
+        
+        /* 2주차 */
+        weekRepository.save(STUDY_WEEKLY_1.toWeekWithAssignment(study));
+        assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(2);
+    }
 
     @Test
     @DisplayName("최신 주차인지 확인한다")

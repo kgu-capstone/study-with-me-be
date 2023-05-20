@@ -107,14 +107,14 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
 
             /* when - 1주차 */
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request1);
+            studyWeeklyService.createWeek(study.getId(), request1);
 
             /* then - 1주차 */
             Study findStudy1 = studyRepository.findById(study.getId()).orElseThrow();
 
             List<Week> weeks1 = findStudy1.getWeeks();
             assertThat(weeks1).hasSize(1);
-            assertThatStudyWeekMatch(weeks1.get(0), WEEK_1.getWeek(), request1, true, true);
+            assertThatStudyWeekMatch(weeks1.get(0), 1, request1, true, true);
             assertThatAttachmentsMatch(weeks1.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances1 = findStudy1.getAttendances();
@@ -130,15 +130,15 @@ class StudyWeeklyServiceTest extends ServiceTest {
             StudyWeeklyRequest request2 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_2, files, true);
 
             /* when - 2주차 */
-            studyWeeklyService.createWeek(study.getId(), WEEK_2.getWeek(), request2);
+            studyWeeklyService.createWeek(study.getId(), request2);
 
             /* then - 2주차 */
             Study findStudy2 = studyRepository.findById(study.getId()).orElseThrow();
 
             List<Week> weeks2 = findStudy2.getWeeks();
             assertThat(weeks2).hasSize(2);
-            assertThatStudyWeekMatch(weeks2.get(0), WEEK_1.getWeek(), request1, true, true);
-            assertThatStudyWeekMatch(weeks2.get(1), WEEK_2.getWeek(), request2, true, true);
+            assertThatStudyWeekMatch(weeks2.get(0), 1, request1, true, true);
+            assertThatStudyWeekMatch(weeks2.get(1), 2, request2, true, true);
             assertThatAttachmentsMatch(weeks2.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
             assertThatAttachmentsMatch(weeks2.get(1).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
@@ -168,14 +168,14 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
 
             // when
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
 
             List<Week> weeks = findStudy.getWeeks();
             assertThat(weeks).hasSize(1);
-            assertThatStudyWeekMatch(weeks.get(0), WEEK_1.getWeek(), request, true, false);
+            assertThatStudyWeekMatch(weeks.get(0), 1, request, true, false);
             assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances = findStudy.getAttendances();
@@ -195,14 +195,14 @@ class StudyWeeklyServiceTest extends ServiceTest {
             mockingAttachmentsUpload(files);
 
             // when
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
 
             List<Week> weeks = findStudy.getWeeks();
             assertThat(weeks).hasSize(1);
-            assertThatStudyWeekMatch(weeks.get(0), WEEK_1.getWeek(), request, false, false);
+            assertThatStudyWeekMatch(weeks.get(0), 1, request, false, false);
             assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
 
             List<Attendance> attendances = findStudy.getAttendances();
@@ -281,7 +281,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 
@@ -319,7 +319,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             applyAbsenceStatusByScheduler();
             assertThat(host.getScore()).isEqualTo(80 - 5);
@@ -358,7 +358,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 
@@ -393,7 +393,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitLinkWithNonAutoAttendance() {
             // given
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 
@@ -431,7 +431,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 
@@ -472,7 +472,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             applyAbsenceStatusByScheduler();
             assertThat(host.getScore()).isEqualTo(80 - 5);
@@ -514,7 +514,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 
@@ -553,7 +553,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             mockingAttachmentsUpload(files);
-            studyWeeklyService.createWeek(study.getId(), WEEK_1.getWeek(), request);
+            studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
 

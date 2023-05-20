@@ -28,18 +28,7 @@ include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/request-parameters.adoc
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Create/Failure/Case2/response-body.adoc[]
 
-=== 3. 주차를 건너뛰어서 등록할 수 없다 [2주차 -> 4주차] - 1주차는 검증 제외
-HTTP Request
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/http-request.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-headers.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/path-parameters.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-parts.adoc[]
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/request-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/StudyApi/Weekly/Create/Failure/Case3/response-body.adoc[]
-
-=== 4. 스터디 주차를 생성한다
+=== 3. 스터디 주차를 생성한다
 HTTP Request
 include::{snippets}/StudyApi/Weekly/Create/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Weekly/Create/Success/request-headers.adoc[]

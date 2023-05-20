@@ -41,12 +41,13 @@ public class StudyWeeklyService {
     private final FileUploader uploader;
 
     @Transactional
-    public void createWeek(Long studyId, Integer week, StudyWeeklyRequest request) {
+    public void createWeek(Long studyId, StudyWeeklyRequest request) {
         Study study = studyFindService.findById(studyId);
         List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
+        int nextWeek = studyRepository.getNextWeek(study.getId());
 
-        createWeekBasedOnAssignmentExistence(study, week, attachments, request);
-        processAttendance(study, week);
+        createWeekBasedOnAssignmentExistence(study, nextWeek, attachments, request);
+        processAttendance(study, nextWeek);
     }
 
     private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<String> attachments, StudyWeeklyRequest request) {
