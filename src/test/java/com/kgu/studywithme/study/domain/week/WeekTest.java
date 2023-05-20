@@ -2,11 +2,15 @@ package com.kgu.studywithme.study.domain.week;
 
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
+import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.Upload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static com.kgu.studywithme.fixture.AttachmentFixture.*;
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.PeriodFixture.WEEK_6;
@@ -38,6 +42,9 @@ class WeekTest {
                 () -> assertThat(week.getPeriod().getEndDate()).isEqualTo(STUDY_WEEKLY_5.getPeriod().getEndDate()),
                 () -> assertThat(week.isAssignmentExists()).isFalse(),
                 () -> assertThat(week.isAutoAttendance()).isFalse(),
+                () -> assertThat(week.getAttachments())
+                        .map(Attachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(STUDY_WEEKLY_5.getAttachments()),
 
                 () -> assertThat(weekWithAssignment.getStudy()).isEqualTo(STUDY),
                 () -> assertThat(weekWithAssignment.getCreator()).isEqualTo(HOST),
@@ -47,7 +54,10 @@ class WeekTest {
                 () -> assertThat(weekWithAssignment.getPeriod().getStartDate()).isEqualTo(STUDY_WEEKLY_1.getPeriod().getStartDate()),
                 () -> assertThat(weekWithAssignment.getPeriod().getEndDate()).isEqualTo(STUDY_WEEKLY_1.getPeriod().getEndDate()),
                 () -> assertThat(weekWithAssignment.isAssignmentExists()).isTrue(),
-                () -> assertThat(weekWithAssignment.isAutoAttendance()).isTrue()
+                () -> assertThat(weekWithAssignment.isAutoAttendance()).isTrue(),
+                () -> assertThat(weekWithAssignment.getAttachments())
+                        .map(Attachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(STUDY_WEEKLY_1.getAttachments())
         );
     }
 
@@ -58,25 +68,35 @@ class WeekTest {
         Week week = STUDY_WEEKLY_5.toWeek(STUDY);
 
         // when
+        List<String> attachments = List.of(
+                PDF_FILE.getLink(),
+                TXT_FILE.getLink(),
+                HWP_FILE.getLink(),
+                IMG_FILE.getLink()
+        );
         week.update(
                 "title",
                 "content",
                 WEEK_6.toPeriod(),
                 true,
-                true
+                true,
+                attachments
         );
 
         // then
         assertAll(
                 () -> assertThat(week.getStudy()).isEqualTo(STUDY),
                 () -> assertThat(week.getCreator()).isEqualTo(HOST),
-                () -> assertThat(week.getTitle()).isEqualTo("title"), // update
-                () -> assertThat(week.getContent()).isEqualTo("content"), // update
+                () -> assertThat(week.getTitle()).isEqualTo("title"),
+                () -> assertThat(week.getContent()).isEqualTo("content"),
                 () -> assertThat(week.getWeek()).isEqualTo(STUDY_WEEKLY_5.getWeek()),
-                () -> assertThat(week.getPeriod().getStartDate()).isEqualTo(WEEK_6.getStartDate()), // update
-                () -> assertThat(week.getPeriod().getEndDate()).isEqualTo(WEEK_6.getEndDate()), // update
-                () -> assertThat(week.isAssignmentExists()).isTrue(), // update
-                () -> assertThat(week.isAutoAttendance()).isTrue() // update
+                () -> assertThat(week.getPeriod().getStartDate()).isEqualTo(WEEK_6.getStartDate()),
+                () -> assertThat(week.getPeriod().getEndDate()).isEqualTo(WEEK_6.getEndDate()),
+                () -> assertThat(week.isAssignmentExists()).isTrue(),
+                () -> assertThat(week.isAutoAttendance()).isTrue(),
+                () -> assertThat(week.getAttachments())
+                        .map(Attachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(attachments)
         );
     }
 

@@ -79,23 +79,26 @@ public class Week extends BaseEntity {
         return new Week(study, title, content, week, period, true, autoAttendance, attachments);
     }
 
+    public void update(String title, String content, Period period,
+                       boolean assignmentExists, boolean autoAttendance, List<String> attachments) {
+        this.title = title;
+        this.content = content;
+        this.period = period;
+        this.assignmentExists = assignmentExists;
+        this.autoAttendance = autoAttendance;
+        applyAttachments(attachments);
+    }
+
     private void applyAttachments(List<String> attachments) {
+        this.attachments.clear();
+
         if (!CollectionUtils.isEmpty(attachments)) {
-            this.attachments.clear();
             this.attachments.addAll(
                     attachments.stream()
                             .map(link -> Attachment.addAttachmentFile(this, link))
                             .toList()
             );
         }
-    }
-
-    public void update(String title, String content, Period period, boolean assignmentExists, boolean autoAttendance) {
-        this.title = title;
-        this.content = content;
-        this.period = period;
-        this.assignmentExists = assignmentExists;
-        this.autoAttendance = autoAttendance;
     }
 
     public void submitAssignment(Member participant, Upload upload) {

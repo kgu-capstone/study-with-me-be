@@ -5,8 +5,7 @@ import com.kgu.studywithme.fixture.PeriodFixture;
 import com.kgu.studywithme.fixture.WeekFixture;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
-import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyCreateRequest;
-import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyUpdateRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
 import com.kgu.studywithme.study.controller.utils.StudyWeeklyRequestUtils;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
@@ -104,7 +103,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("스터디 주차를 생성한다 [과제 O - 자동 출석 O]")
         void createWeekWithAssignmentAndAutoAttendance() {
             /* given - 1주차 */
-            StudyWeeklyCreateRequest request1 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request1 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
 
             /* when - 1주차 */
@@ -128,7 +127,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             /* given - 2주차 */
             beParticipation(study, members[4]);
-            StudyWeeklyCreateRequest request2 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_2, files, true);
+            StudyWeeklyRequest request2 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_2, files, true);
 
             /* when - 2주차 */
             studyWeeklyService.createWeek(study.getId(), request2);
@@ -165,7 +164,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("스터디 주차를 생성한다 [과제 O - 자동 출석 X]")
         void createWeekWithAssignmentAndManualAttendance() {
             // given
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             mockingAttachmentsUpload(files);
 
             // when
@@ -192,7 +191,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("스터디 주차를 생성한다 [과제 X]")
         void createWeek() {
             // given
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_1, files);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_1, files);
             mockingAttachmentsUpload(files);
 
             // when
@@ -214,6 +213,36 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     List.of(NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE)
             );
         }
+    }
+
+    @Test
+    @DisplayName("주차를 수정한다")
+    void updateWeek() {
+        // given
+        study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+
+        // when
+        StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_2, files);
+        mockingAttachmentsUpload(files);
+
+        studyWeeklyService.updateWeek(study.getId(), 1, request);
+
+        // then
+        Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), 1).orElseThrow();
+        assertAll(
+                () -> assertThat(findWeek.getStudy()).isEqualTo(study),
+                () -> assertThat(findWeek.getCreator()).isEqualTo(host),
+                () -> assertThat(findWeek.getTitle()).isEqualTo(request.title()),
+                () -> assertThat(findWeek.getContent()).isEqualTo(request.content()),
+                () -> assertThat(findWeek.getWeek()).isEqualTo(1),
+                () -> assertThat(findWeek.getPeriod().getStartDate()).isEqualTo(request.startDate()),
+                () -> assertThat(findWeek.getPeriod().getEndDate()).isEqualTo(request.endDate()),
+                () -> assertThat(findWeek.isAssignmentExists()).isFalse(),
+                () -> assertThat(findWeek.isAutoAttendance()).isFalse(),
+                () -> assertThat(findWeek.getAttachments())
+                        .map(Attachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(uploadUrls)
+        );
     }
 
     @Nested
@@ -250,38 +279,6 @@ class StudyWeeklyServiceTest extends ServiceTest {
         }
     }
 
-    @Test
-    @DisplayName("주차를 수정한다")
-    void updateWeek() {
-        // given
-        study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
-
-        // when
-        final StudyWeeklyUpdateRequest request = new StudyWeeklyUpdateRequest(
-                "title",
-                "content",
-                PeriodFixture.WEEK_2.getStartDate(),
-                PeriodFixture.WEEK_2.getEndDate(),
-                true,
-                false
-        );
-        studyWeeklyService.updateWeek(study.getId(), 1, request);
-
-        // then
-        Week findWeek = weekRepository.findByStudyIdAndWeek(study.getId(), 1).orElseThrow();
-        assertAll(
-                () -> assertThat(findWeek.getStudy()).isEqualTo(study),
-                () -> assertThat(findWeek.getCreator()).isEqualTo(host),
-                () -> assertThat(findWeek.getTitle()).isEqualTo("title"),
-                () -> assertThat(findWeek.getContent()).isEqualTo("content"),
-                () -> assertThat(findWeek.getWeek()).isEqualTo(1),
-                () -> assertThat(findWeek.getPeriod().getStartDate()).isEqualTo(PeriodFixture.WEEK_2.getStartDate()),
-                () -> assertThat(findWeek.getPeriod().getEndDate()).isEqualTo(PeriodFixture.WEEK_2.getEndDate()),
-                () -> assertThat(findWeek.isAssignmentExists()).isTrue(),
-                () -> assertThat(findWeek.isAutoAttendance()).isFalse()
-        );
-    }
-
     @Nested
     @DisplayName("스터디 주차별 과제 제출")
     class submitAssignment {
@@ -312,7 +309,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -350,7 +347,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -389,7 +386,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -425,7 +422,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("과제를 제출한다 [링크 + 자동 출석 X]")
         void submitLinkWithNonAutoAttendance() {
             // given
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -462,7 +459,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -503,7 +500,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -545,7 +542,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
 
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -584,7 +581,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("과제를 제출한다 [파일 + 자동 출석 X]")
         void submitFileWithNonAutoAttendance() throws IOException {
             // given
-            StudyWeeklyCreateRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
+            StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -717,7 +714,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         }
     }
 
-    private void assertThatStudyWeekMatch(Week week, int currentWeek, StudyWeeklyCreateRequest request,
+    private void assertThatStudyWeekMatch(Week week, int currentWeek, StudyWeeklyRequest request,
                                           boolean isAssignmentExists, boolean isAutoAttendance) {
         assertAll(
                 () -> assertThat(week.getTitle()).isEqualTo(request.title()),

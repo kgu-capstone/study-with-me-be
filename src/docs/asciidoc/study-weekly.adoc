@@ -45,7 +45,8 @@ HTTP Request
 include::{snippets}/StudyApi/Weekly/Update/Failure/http-request.adoc[]
 include::{snippets}/StudyApi/Weekly/Update/Failure/request-headers.adoc[]
 include::{snippets}/StudyApi/Weekly/Update/Failure/path-parameters.adoc[]
-include::{snippets}/StudyApi/Weekly/Update/Failure/request-fields.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Failure/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Failure/request-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Update/Failure/response-body.adoc[]
@@ -55,7 +56,8 @@ HTTP Request
 include::{snippets}/StudyApi/Weekly/Update/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Weekly/Update/Success/request-headers.adoc[]
 include::{snippets}/StudyApi/Weekly/Update/Success/path-parameters.adoc[]
-include::{snippets}/StudyApi/Weekly/Update/Success/request-fields.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Success/request-parts.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Success/request-parameters.adoc[]
 
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Update/Success/http-response.adoc[]
