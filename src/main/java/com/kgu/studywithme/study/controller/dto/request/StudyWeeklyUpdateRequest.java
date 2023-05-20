@@ -1,14 +1,12 @@
 package com.kgu.studywithme.study.controller.dto.request;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
-public record StudyWeeklyRequest(
+public record StudyWeeklyUpdateRequest(
         @NotBlank(message = "제목은 필수입니다.")
         String title,
 
@@ -27,8 +25,6 @@ public record StudyWeeklyRequest(
         Boolean assignmentExists,
 
         @NotNull(message = "자동 출석 여부는 필수입니다.")
-        Boolean autoAttendance,
-
-        List<MultipartFile> files
+        Boolean autoAttendance
 ) {
 }

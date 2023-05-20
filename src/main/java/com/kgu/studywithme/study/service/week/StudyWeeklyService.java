@@ -3,7 +3,8 @@ package com.kgu.studywithme.study.service.week;
 import com.kgu.studywithme.global.exception.StudyWithMeException;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.service.MemberFindService;
-import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyCreateRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyUpdateRequest;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.StudyRepository;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
@@ -41,7 +42,7 @@ public class StudyWeeklyService {
     private final FileUploader uploader;
 
     @Transactional
-    public void createWeek(Long studyId, StudyWeeklyRequest request) {
+    public void createWeek(Long studyId, StudyWeeklyCreateRequest request) {
         Study study = studyFindService.findById(studyId);
         List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
         int nextWeek = studyRepository.getNextWeek(study.getId());
@@ -50,7 +51,7 @@ public class StudyWeeklyService {
         processAttendance(study, nextWeek);
     }
 
-    private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<String> attachments, StudyWeeklyRequest request) {
+    private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<String> attachments, StudyWeeklyCreateRequest request) {
         if (request.assignmentExists()) {
             study.createWeekWithAssignment(
                     request.title(),
@@ -74,6 +75,19 @@ public class StudyWeeklyService {
     private void processAttendance(Study study, Integer week) {
         study.getApproveParticipants()
                 .forEach(participant -> study.recordAttendance(participant, week, NON_ATTENDANCE));
+    }
+
+    @Transactional
+    public void updateWeek(Long studyId, Integer week, StudyWeeklyUpdateRequest request) {
+        Week specificWeek = getSpecificWeek(studyId, week);
+
+        specificWeek.update(
+                request.title(),
+                request.content(),
+                Period.of(request.startDate(), request.endDate()),
+                request.assignmentExists(),
+                request.autoAttendance()
+        );
     }
 
     @Transactional

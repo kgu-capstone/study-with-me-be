@@ -39,6 +39,27 @@ include::{snippets}/StudyApi/Weekly/Create/Success/request-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Weekly/Create/Success/http-response.adoc[]
 
+== 스터디 주차 수정 [AccessToken 필수]
+=== 1. 팀장이 아니라면 스터디 주차를 수정할 수 없다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Update/Failure/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Failure/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Failure/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Failure/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Update/Failure/response-body.adoc[]
+
+=== 2. 스터디 주차를 수정한다
+HTTP Request
+include::{snippets}/StudyApi/Weekly/Update/Success/http-request.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Success/request-headers.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Success/path-parameters.adoc[]
+include::{snippets}/StudyApi/Weekly/Update/Success/request-fields.adoc[]
+
+HTTP Response
+include::{snippets}/StudyApi/Weekly/Update/Success/http-response.adoc[]
+
 == 스터디 주차 삭제 [AccessToken 필수]
 === 1. 팀장이 아니라면 스터디 주차를 삭제할 수 없다
 HTTP Request

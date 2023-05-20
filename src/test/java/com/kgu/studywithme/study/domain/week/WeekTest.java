@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.kgu.studywithme.fixture.MemberFixture.GHOST;
 import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
+import static com.kgu.studywithme.fixture.PeriodFixture.WEEK_6;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
 import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_5;
@@ -47,6 +48,35 @@ class WeekTest {
                 () -> assertThat(weekWithAssignment.getPeriod().getEndDate()).isEqualTo(STUDY_WEEKLY_1.getPeriod().getEndDate()),
                 () -> assertThat(weekWithAssignment.isAssignmentExists()).isTrue(),
                 () -> assertThat(weekWithAssignment.isAutoAttendance()).isTrue()
+        );
+    }
+
+    @Test
+    @DisplayName("Week을 수정한다")
+    void update() {
+        // given
+        Week week = STUDY_WEEKLY_5.toWeek(STUDY);
+
+        // when
+        week.update(
+                "title",
+                "content",
+                WEEK_6.toPeriod(),
+                true,
+                true
+        );
+
+        // then
+        assertAll(
+                () -> assertThat(week.getStudy()).isEqualTo(STUDY),
+                () -> assertThat(week.getCreator()).isEqualTo(HOST),
+                () -> assertThat(week.getTitle()).isEqualTo("title"), // update
+                () -> assertThat(week.getContent()).isEqualTo("content"), // update
+                () -> assertThat(week.getWeek()).isEqualTo(STUDY_WEEKLY_5.getWeek()),
+                () -> assertThat(week.getPeriod().getStartDate()).isEqualTo(WEEK_6.getStartDate()), // update
+                () -> assertThat(week.getPeriod().getEndDate()).isEqualTo(WEEK_6.getEndDate()), // update
+                () -> assertThat(week.isAssignmentExists()).isTrue(), // update
+                () -> assertThat(week.isAutoAttendance()).isTrue() // update
         );
     }
 

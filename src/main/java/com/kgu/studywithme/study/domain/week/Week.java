@@ -90,6 +90,14 @@ public class Week extends BaseEntity {
         }
     }
 
+    public void update(String title, String content, Period period, boolean assignmentExists, boolean autoAttendance) {
+        this.title = title;
+        this.content = content;
+        this.period = period;
+        this.assignmentExists = assignmentExists;
+        this.autoAttendance = autoAttendance;
+    }
+
     public void submitAssignment(Member participant, Upload upload) {
         submits.add(Submit.submitAssignment(this, participant, upload));
     }

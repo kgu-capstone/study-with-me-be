@@ -1,14 +1,14 @@
 package com.kgu.studywithme.study.controller.utils;
 
 import com.kgu.studywithme.fixture.WeekFixture;
-import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyCreateRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public class StudyWeeklyRequestUtils {
-    public static StudyWeeklyRequest createWeekWithAssignmentRequest(WeekFixture fixture, List<MultipartFile> files, boolean autoAttendance) {
-        return new StudyWeeklyRequest(
+    public static StudyWeeklyCreateRequest createWeekWithAssignmentRequest(WeekFixture fixture, List<MultipartFile> files, boolean autoAttendance) {
+        return new StudyWeeklyCreateRequest(
                 fixture.getTitle(),
                 "지정된 기간까지 과제 제출해주세요.",
                 fixture.getPeriod().getStartDate(),
@@ -19,8 +19,8 @@ public class StudyWeeklyRequestUtils {
         );
     }
 
-    public static StudyWeeklyRequest createWeekRequest(WeekFixture fixture, List<MultipartFile> files) {
-        return new StudyWeeklyRequest(
+    public static StudyWeeklyCreateRequest createWeekRequest(WeekFixture fixture, List<MultipartFile> files) {
+        return new StudyWeeklyCreateRequest(
                 fixture.getTitle(),
                 "지정된 시간까지 다들 줌에 접속해주세요.",
                 fixture.getPeriod().getStartDate(),

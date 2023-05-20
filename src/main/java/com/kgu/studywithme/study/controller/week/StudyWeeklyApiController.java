@@ -3,7 +3,8 @@ package com.kgu.studywithme.study.controller.week;
 import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.global.aop.CheckStudyHost;
 import com.kgu.studywithme.global.aop.CheckStudyParticipant;
-import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyCreateRequest;
+import com.kgu.studywithme.study.controller.dto.request.StudyWeeklyUpdateRequest;
 import com.kgu.studywithme.study.controller.dto.request.WeeklyAssignmentSubmitRequest;
 import com.kgu.studywithme.study.service.week.StudyWeeklyService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,18 @@ public class StudyWeeklyApiController {
     @PostMapping(value = "/week", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createWeek(@ExtractPayload Long hostId,
                                            @PathVariable Long studyId,
-                                           @ModelAttribute @Valid StudyWeeklyRequest request) {
+                                           @ModelAttribute @Valid StudyWeeklyCreateRequest request) {
         studyWeeklyService.createWeek(studyId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @CheckStudyHost
+    @PatchMapping(value = "/weeks/{week}")
+    public ResponseEntity<Void> updateWeek(@ExtractPayload Long hostId,
+                                           @PathVariable Long studyId,
+                                           @PathVariable Integer week,
+                                           @RequestBody @Valid StudyWeeklyUpdateRequest request) {
+        studyWeeklyService.updateWeek(studyId, week, request);
         return ResponseEntity.noContent().build();
     }
 
