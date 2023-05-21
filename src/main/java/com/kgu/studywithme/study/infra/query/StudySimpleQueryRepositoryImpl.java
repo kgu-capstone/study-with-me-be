@@ -122,6 +122,42 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
+    public int getNextWeek(Long studyId) {
+        QWeek weekly = new QWeek("week");
+
+        List<Integer> weeks = query
+                .select(weekly.week)
+                .from(weekly)
+                .where(weekly.study.id.eq(studyId))
+                .orderBy(weekly.week.desc())
+                .fetch();
+
+        if (weeks.size() == 0) {
+            return 1;
+        }
+
+        return weeks.get(0) + 1;
+    }
+
+    @Override
+    public boolean isLatestWeek(Long studyId, Integer week) {
+        QWeek weekly = new QWeek("week");
+
+        List<Integer> weeks = query
+                .select(weekly.week)
+                .from(weekly)
+                .where(weekly.study.id.eq(studyId))
+                .orderBy(weekly.week.desc())
+                .fetch();
+
+        if (weeks.size() == 0) {
+            return true;
+        }
+
+        return weeks.get(0).equals(week);
+    }
+
+    @Override
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     public void deleteSpecificWeek(Long studyId, Integer week) {
         QWeek weekly = new QWeek("week");

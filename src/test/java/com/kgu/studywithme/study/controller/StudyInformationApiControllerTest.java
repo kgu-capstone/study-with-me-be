@@ -539,6 +539,9 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                                     .optional(),
                                             fieldWithPath("weeks[].submits[].submitType").description("스터디 주차 과제 제출 타입")
                                                     .optional(),
+                                            fieldWithPath("weeks[].submits[].submitFileName").description("스터디 주차 과제 제출 파일명")
+                                                    .optional()
+                                                    .attributes(constraint("링크 제출 = null / 파일 제출 = 원본 파일명")),
                                             fieldWithPath("weeks[].submits[].submitLink").description("스터디 주차 과제 제출 링크")
                                                     .optional()
                                     )
@@ -703,11 +706,13 @@ class StudyInformationApiControllerTest extends ControllerTest {
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
+                                "hello3.pdf",
                                 "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
                         )
                 )
@@ -726,6 +731,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         )
                 )
@@ -744,16 +750,19 @@ class StudyInformationApiControllerTest extends ControllerTest {
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
+                                "hello3.pdf",
                                 "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         )
                 )
@@ -772,16 +781,19 @@ class StudyInformationApiControllerTest extends ControllerTest {
                         new WeeklySubmitSummary(
                                 new StudyMember(1L, "닉네임1"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
+                                "hello3.pdf",
                                 "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
                                 LINK.name(),
+                                null,
                                 "https://notion.so"
                         )
                 )
