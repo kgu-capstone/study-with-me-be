@@ -37,13 +37,14 @@ class SubmitTest {
     @Test
     @DisplayName("Submit[With File]을 생성한다")
     void constructWithFile() {
-        final Upload upload = Upload.withFile("file_upload_link");
+        Upload upload = Upload.withFile("hello.pdf", "uuid.pdf");
         Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
 
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload().getLink()).isEqualTo("file_upload_link"),
+                () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello.pdf"),
+                () -> assertThat(submit.getUpload().getLink()).isEqualTo("uuid.pdf"),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE)
         );
     }
@@ -52,7 +53,7 @@ class SubmitTest {
     @DisplayName("업로드한 과제를 수정한다")
     void editUpload() {
         // given
-        final Upload upload = Upload.withFile("file_upload_link");
+        Upload upload = Upload.withFile("hello.pdf", "uuid.pdf");
         Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
 
         // when
@@ -63,6 +64,7 @@ class SubmitTest {
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
+                () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
                 () -> assertThat(submit.getUpload().getLink()).isEqualTo(newUpload.getLink()),
                 () -> assertThat(submit.getUpload().getType()).isEqualTo(newUpload.getType())
         );

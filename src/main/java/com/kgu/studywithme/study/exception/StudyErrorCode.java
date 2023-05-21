@@ -42,8 +42,8 @@ public enum StudyErrorCode implements ErrorCode {
     STUDY_THUMBNAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_032", "제공해주지 않는 썸네일입니다."),
     CANNOT_UPDATE_TO_NON_ATTENDANCE(HttpStatus.CONFLICT, "STUDY_033", "미출결 상태로 출석을 수정할 수 없습니다."),
     SUBMIT_NOT_FOUND(HttpStatus.NOT_FOUND, "STUDY_034", "제출한 과제가 존재하지 않습니다."),
-    NO_CHANGE_TO_UPDATE_GRADUATION_POLICY(HttpStatus.CONFLICT, "STUDY_35", "졸업 요건을 수정할 기회가 남아있지 않습니다."),
-    WEEKLY_MUST_BE_SEQUENTIAL(HttpStatus.CONFLICT, "STUDY_36", "각 주차는 순차적으로 생성되어야 하고 이전 주차가 없으면 해당 주차를 생성할 수 없습니다"),
+    NO_CHANGE_TO_UPDATE_GRADUATION_POLICY(HttpStatus.CONFLICT, "STUDY_035", "졸업 요건을 수정할 기회가 남아있지 않습니다."),
+    WEEK_IS_NOT_LATEST(HttpStatus.CONFLICT, "STUDY_036", "가장 최신 주차만 삭제할 수 있습니다."),
     ;
 
     private final HttpStatus status;

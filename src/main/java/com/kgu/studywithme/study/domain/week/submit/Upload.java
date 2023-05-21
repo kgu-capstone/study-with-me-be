@@ -16,6 +16,9 @@ import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Upload {
+    @Column(name = "update_file_name")
+    private String uploadFileName;
+
     @Column(name = "link", nullable = false)
     private String link;
 
@@ -23,16 +26,17 @@ public class Upload {
     @Column(name = "upload_type", nullable = false)
     private UploadType type;
 
-    private Upload(String link, UploadType type) {
+    private Upload(String uploadFileName, String link, UploadType type) {
+        this.uploadFileName = uploadFileName;
         this.link = link;
         this.type = type;
     }
 
     public static Upload withLink(String link) {
-        return new Upload(link, LINK);
+        return new Upload(null, link, LINK);
     }
 
-    public static Upload withFile(String link) {
-        return new Upload(link, FILE);
+    public static Upload withFile(String uploadFileName, String link) {
+        return new Upload(uploadFileName, link, FILE);
     }
 }

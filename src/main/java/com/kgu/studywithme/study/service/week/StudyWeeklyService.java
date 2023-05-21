@@ -41,12 +41,13 @@ public class StudyWeeklyService {
     private final FileUploader uploader;
 
     @Transactional
-    public void createWeek(Long studyId, Integer week, StudyWeeklyRequest request) {
+    public void createWeek(Long studyId, StudyWeeklyRequest request) {
         Study study = studyFindService.findById(studyId);
         List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
+        int nextWeek = studyRepository.getNextWeek(study.getId());
 
-        createWeekBasedOnAssignmentExistence(study, week, attachments, request);
-        processAttendance(study, week);
+        createWeekBasedOnAssignmentExistence(study, nextWeek, attachments, request);
+        processAttendance(study, nextWeek);
     }
 
     private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<String> attachments, StudyWeeklyRequest request) {
@@ -76,8 +77,30 @@ public class StudyWeeklyService {
     }
 
     @Transactional
+    public void updateWeek(Long studyId, Integer week, StudyWeeklyRequest request) {
+        Week specificWeek = getSpecificWeek(studyId, week);
+        List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
+
+        specificWeek.update(
+                request.title(),
+                request.content(),
+                Period.of(request.startDate(), request.endDate()),
+                request.assignmentExists(),
+                request.autoAttendance(),
+                attachments
+        );
+    }
+
+    @Transactional
     public void deleteWeek(Long studyId, Integer week) {
+        validateLatestWeek(studyId, week);
         studyRepository.deleteSpecificWeek(studyId, week);
+    }
+
+    private void validateLatestWeek(Long studyId, Integer week) {
+        if (!studyRepository.isLatestWeek(studyId, week)) {
+            throw StudyWithMeException.type(StudyErrorCode.WEEK_IS_NOT_LATEST);
+        }
     }
 
     @Transactional
@@ -113,7 +136,7 @@ public class StudyWeeklyService {
 
     private Upload createUpload(String type, MultipartFile file, String link) {
         return type.equals("file")
-                ? Upload.withFile(uploader.uploadWeeklySubmit(file))
+                ? Upload.withFile(file.getOriginalFilename(), uploader.uploadWeeklySubmit(file))
                 : Upload.withLink(link);
     }
 
