@@ -22,6 +22,7 @@ import static com.kgu.studywithme.upload.utils.BucketMetadata.*;
 @Slf4j
 @Component
 public class FileUploader {
+    private static final String DESCRIPTION = "description";
     private static final String IMAGE = "image";
     private static final String ATTACHMENT = "attachment";
     private static final String SUBMIT = "submit";
@@ -33,6 +34,12 @@ public class FileUploader {
                         @Value("${cloud.ncp.storage.bucket}") String bucket) {
         this.amazonS3 = amazonS3;
         this.bucket = bucket;
+    }
+
+    // 스터디 생성 시 설명 내부 이미지 업로드
+    public String uploadStudyDescriptionImage(MultipartFile file) {
+        validateFileExists(file);
+        return uploadFile(DESCRIPTION, file);
     }
 
     // Weekly 글 내부 이미지 업로드
@@ -85,12 +92,17 @@ public class FileUploader {
     }
 
     private String createFileNameByType(String type, String originalFileName) {
-        String fileName = UUID.randomUUID() + "-" + originalFileName;
+        String fileName = UUID.randomUUID() + extractFileExtension(originalFileName);
 
         return switch (type) {
+            case DESCRIPTION -> String.format(STUDY_DESCRIPTIONS, fileName);
             case IMAGE -> String.format(WEEKLY_IMAGES, fileName);
             case ATTACHMENT -> String.format(WEEKLY_ATTACHMENTS, fileName);
             default -> String.format(WEEKLY_SUBMITS, fileName);
         };
+    }
+
+    private String extractFileExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."));
     }
 }
