@@ -69,10 +69,10 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
     private static final WeekFixture WEEK_1 = STUDY_WEEKLY_1;
     private static final WeekFixture WEEK_2 = STUDY_WEEKLY_2;
-    private static final String LINK1 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid1-hello1.txt";
-    private static final String LINK2 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid2-hello2.hwpx";
-    private static final String LINK3 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid3-hello3.pdf";
-    private static final String LINK4 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid4-hello4.png";
+    private static final String LINK1 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.txt";
+    private static final String LINK2 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.hwpx";
+    private static final String LINK3 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.pdf";
+    private static final String LINK4 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.png";
     private static final List<String> uploadUrls = List.of(LINK1, LINK2, LINK3, LINK4);
     private List<MultipartFile> files;
 
@@ -467,7 +467,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf";
             given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
 
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
@@ -509,7 +509,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf";
             given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
 
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
@@ -550,7 +550,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf";
             given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
 
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);
@@ -589,7 +589,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             // when
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
-            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid3-hello3.pdf";
+            final String uploadLink = "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf";
             given(fileUploader.uploadWeeklySubmit(file)).willReturn(uploadLink);
 
             studyWeeklyService.submitAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "file", file, null);

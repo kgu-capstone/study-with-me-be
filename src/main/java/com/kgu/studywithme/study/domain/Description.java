@@ -14,8 +14,6 @@ import javax.persistence.Lob;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Description {
-    private static final int MAXIMUM_LENGTH = 1000;
-
     @Lob
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String value;
@@ -26,7 +24,6 @@ public class Description {
 
     public static Description from(String value) {
         validateDescriptionIsNotBlank(value);
-        validateLengthIsInRange(value);
         return new Description(value);
     }
 
@@ -34,15 +31,5 @@ public class Description {
         if (value.isBlank()) {
             throw StudyWithMeException.type(StudyErrorCode.DESCRIPTION_IS_BLANK);
         }
-    }
-
-    private static void validateLengthIsInRange(String value) {
-        if (isLengthOutOfRange(value)) {
-            throw StudyWithMeException.type(StudyErrorCode.DESCRIPTION_LENGTH_OUT_OF_RANGE);
-        }
-    }
-
-    private static boolean isLengthOutOfRange(String name) {
-        return MAXIMUM_LENGTH < name.length();
     }
 }

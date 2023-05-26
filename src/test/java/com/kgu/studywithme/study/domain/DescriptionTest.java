@@ -19,16 +19,6 @@ class DescriptionTest {
     }
 
     @Test
-    @DisplayName("Description이 1000자가 넘어갈 경우 생성에 실패한다")
-    void throwExceptionByDescriptionLengthOutOfRange() {
-        final String value = "a".repeat(1001);
-
-        assertThatThrownBy(() -> Description.from(value))
-                .isInstanceOf(StudyWithMeException.class)
-                .hasMessage(StudyErrorCode.DESCRIPTION_LENGTH_OUT_OF_RANGE.getMessage());
-    }
-
-    @Test
     @DisplayName("Description을 생성한다")
     void construct() {
         final String value = "a".repeat(999);

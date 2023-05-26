@@ -45,6 +45,46 @@ class FileUploaderTest extends InfraTest {
     }
 
     @Nested
+    @DisplayName("스터디 생성 시 설명 내부 이미지 업로드")
+    class uploadDescriptionImage {
+        @Test
+        @DisplayName("파일을 전송하지 않았거나 파일의 사이즈가 0이면 업로드가 불가능하다")
+        void throwExceptionByFileIsEmpty() {
+            // given
+            MultipartFile nullFile = null;
+            MultipartFile emptyFile = new MockMultipartFile("file", "hello.png", "image/png", new byte[]{});
+
+            // when - then
+            assertThatThrownBy(() -> uploader.uploadStudyDescriptionImage(nullFile))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
+            assertThatThrownBy(() -> uploader.uploadStudyDescriptionImage(emptyFile))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
+        }
+
+        @Test
+        @DisplayName("이미지 업로드를 성공한다")
+        void success() throws Exception {
+            // given
+            PutObjectResult putObjectResult = new PutObjectResult();
+            given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
+
+            URL mockUrl = new URL(createUploadLink(IMAGE, "hello4.png"));
+            given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
+
+            // when
+            final MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
+            String uploadUrl = uploader.uploadStudyDescriptionImage(file);
+
+            // then
+            verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
+            verify(amazonS3, times(1)).getUrl(eq(BUCKET), anyString());
+            assertThat(uploadUrl).isEqualTo(mockUrl.toString());
+        }
+    }
+
+    @Nested
     @DisplayName("Weekly 글 내부 이미지 업로드")
     class uploadWeeklyImage {
         @Test
@@ -197,11 +237,14 @@ class FileUploaderTest extends InfraTest {
 
     private String createUploadLink(String type, String originalFileName) {
         return String.format(
-                "https://kr.object.ncloudstorage.com/%s/%s/%s-%s",
+                "https://kr.object.ncloudstorage.com/%s/%s/%s",
                 BUCKET,
                 type,
-                UUID.randomUUID(),
-                originalFileName
+                UUID.randomUUID() + extractFileExtension(originalFileName)
         );
+    }
+
+    private String extractFileExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."));
     }
 }

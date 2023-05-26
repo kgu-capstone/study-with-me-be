@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AttachmentFixture {
-    PDF_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello.pdf"),
-    TXT_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello.txt"),
-    HWP_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello.hwp"),
-    IMG_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid-hello.png"),
+    PDF_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid.pdf"),
+    TXT_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid.txt"),
+    HWP_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid.hwp"),
+    IMG_FILE("https://kr.object.ncloudstorage.com/bucket/attachments/uuid.png"),
     ;
 
     private final String link;
