@@ -66,6 +66,7 @@ class MemberInformationServiceTest extends ServiceTest {
                 () -> assertThat(information.gender()).isEqualTo(member.getGender().getValue()),
                 () -> assertThat(information.region()).isEqualTo(member.getRegion()),
                 () -> assertThat(information.score()).isEqualTo(member.getScore()),
+                () -> assertThat(information.isEmailOptIn()).isEqualTo(member.isEmailOptIn()),
                 () -> assertThat(information.interests()).containsExactlyInAnyOrder(
                         LANGUAGE.getName(), INTERVIEW.getName(), PROGRAMMING.getName()
                 )
@@ -166,8 +167,8 @@ class MemberInformationServiceTest extends ServiceTest {
         programming[0].recordAttendance(host, 1, NON_ATTENDANCE);
         programming[1].recordAttendance(host, 1, ATTENDANCE);
         List<AttendanceRatio> result1 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertThat(result1).hasSize(4);
         assertAll(
-                () -> assertThat(result1).hasSize(4),
                 () -> assertThat(findCountByStatus(result1, NON_ATTENDANCE)).isEqualTo(1),
                 () -> assertThat(findCountByStatus(result1, ATTENDANCE)).isEqualTo(1),
                 () -> assertThat(findCountByStatus(result1, LATE)).isEqualTo(0),
@@ -178,8 +179,8 @@ class MemberInformationServiceTest extends ServiceTest {
         programming[0].recordAttendance(host, 2, ATTENDANCE);
         programming[1].recordAttendance(host, 2, LATE);
         List<AttendanceRatio> result2 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertThat(result2).hasSize(4);
         assertAll(
-                () -> assertThat(result2).hasSize(4),
                 () -> assertThat(findCountByStatus(result2, NON_ATTENDANCE)).isEqualTo(1),
                 () -> assertThat(findCountByStatus(result2, ATTENDANCE)).isEqualTo(2),
                 () -> assertThat(findCountByStatus(result2, LATE)).isEqualTo(1),
@@ -190,8 +191,8 @@ class MemberInformationServiceTest extends ServiceTest {
         programming[0].recordAttendance(host, 3, ATTENDANCE);
         programming[1].recordAttendance(host, 3, ATTENDANCE);
         List<AttendanceRatio> result3 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertThat(result3).hasSize(4);
         assertAll(
-                () -> assertThat(result3).hasSize(4),
                 () -> assertThat(findCountByStatus(result3, NON_ATTENDANCE)).isEqualTo(1),
                 () -> assertThat(findCountByStatus(result3, ATTENDANCE)).isEqualTo(4),
                 () -> assertThat(findCountByStatus(result3, LATE)).isEqualTo(1),
@@ -202,8 +203,8 @@ class MemberInformationServiceTest extends ServiceTest {
         programming[0].recordAttendance(host, 4, LATE);
         programming[1].recordAttendance(host, 4, ABSENCE);
         List<AttendanceRatio> result4 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertThat(result4).hasSize(4);
         assertAll(
-                () -> assertThat(result4).hasSize(4),
                 () -> assertThat(findCountByStatus(result4, NON_ATTENDANCE)).isEqualTo(1),
                 () -> assertThat(findCountByStatus(result4, ATTENDANCE)).isEqualTo(4),
                 () -> assertThat(findCountByStatus(result4, LATE)).isEqualTo(2),
@@ -214,8 +215,8 @@ class MemberInformationServiceTest extends ServiceTest {
         programming[0].recordAttendance(host, 5, ABSENCE);
         programming[1].recordAttendance(host, 5, NON_ATTENDANCE);
         List<AttendanceRatio> result5 = memberInformationService.getAttendanceRatio(host.getId()).result();
+        assertThat(result5).hasSize(4);
         assertAll(
-                () -> assertThat(result5).hasSize(4),
                 () -> assertThat(findCountByStatus(result5, NON_ATTENDANCE)).isEqualTo(2),
                 () -> assertThat(findCountByStatus(result5, ATTENDANCE)).isEqualTo(4),
                 () -> assertThat(findCountByStatus(result5, LATE)).isEqualTo(2),
