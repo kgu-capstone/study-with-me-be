@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record MemberInformation(
-        Long id, String name, String nickname, String email, LocalDate birth,
-        String phone, String gender, Region region, int score, List<String> interests
+        Long id, String name, String nickname, String email, LocalDate birth, String phone,
+        String gender, Region region, int score, boolean isEmailOptIn, List<String> interests
 ) {
     public MemberInformation(Member member) {
         this(
@@ -22,6 +22,7 @@ public record MemberInformation(
                 member.getGender().getValue(),
                 member.getRegion(),
                 member.getScore(),
+                member.isEmailOptIn(),
                 translateInterests(member)
         );
     }
