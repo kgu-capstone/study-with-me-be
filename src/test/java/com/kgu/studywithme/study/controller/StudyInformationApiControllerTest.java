@@ -713,7 +713,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
                                 "hello3.pdf",
-                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf"
                         )
                 )
         ));
@@ -757,7 +757,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
                                 "hello3.pdf",
-                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
@@ -788,7 +788,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                 new StudyMember(2L, "닉네임2"),
                                 FILE.name(),
                                 "hello3.pdf",
-                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid-hello3.pdf"
+                                "https://kr.object.ncloudstorage.com/bucket/submits/uuid.pdf"
                         ),
                         new WeeklySubmitSummary(
                                 new StudyMember(3L, "닉네임3"),
