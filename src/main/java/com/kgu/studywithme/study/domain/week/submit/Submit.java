@@ -22,7 +22,7 @@ public class Submit extends BaseEntity {
     private Upload upload;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "assignment_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "week_id", referencedColumnName = "id", nullable = false)
     private Week week;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

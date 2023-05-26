@@ -16,7 +16,7 @@ import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Upload {
-    @Column(name = "update_file_name")
+    @Column(name = "upload_file_name")
     private String uploadFileName;
 
     @Column(name = "link", nullable = false)
