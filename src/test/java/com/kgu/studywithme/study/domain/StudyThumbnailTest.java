@@ -21,7 +21,7 @@ class StudyThumbnailTest {
         final String programming = "programming_C.png";
         final String aptituteAndNcs = "aptitude_ncs_001.png";
         final String certification = "certification_CIP.png";
-        final String etc = "etc_001.png";
+        final String etc = "etc_teacherExam.png";
 
         // when - then
         assertAll(
