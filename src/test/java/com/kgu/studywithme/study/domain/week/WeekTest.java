@@ -3,8 +3,9 @@ package com.kgu.studywithme.study.domain.week;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
+import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
-import com.kgu.studywithme.study.domain.week.submit.Upload;
+import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ class WeekTest {
                 () -> assertThat(week.isAssignmentExists()).isFalse(),
                 () -> assertThat(week.isAutoAttendance()).isFalse(),
                 () -> assertThat(week.getAttachments())
-                        .map(Attachment::getLink)
+                        .map(Attachment::getUploadAttachment)
                         .containsExactlyInAnyOrderElementsOf(STUDY_WEEKLY_5.getAttachments()),
 
                 () -> assertThat(weekWithAssignment.getStudy()).isEqualTo(STUDY),
@@ -56,7 +57,7 @@ class WeekTest {
                 () -> assertThat(weekWithAssignment.isAssignmentExists()).isTrue(),
                 () -> assertThat(weekWithAssignment.isAutoAttendance()).isTrue(),
                 () -> assertThat(weekWithAssignment.getAttachments())
-                        .map(Attachment::getLink)
+                        .map(Attachment::getUploadAttachment)
                         .containsExactlyInAnyOrderElementsOf(STUDY_WEEKLY_1.getAttachments())
         );
     }
@@ -68,11 +69,11 @@ class WeekTest {
         Week week = STUDY_WEEKLY_5.toWeek(STUDY);
 
         // when
-        List<String> attachments = List.of(
-                PDF_FILE.getLink(),
-                TXT_FILE.getLink(),
-                HWP_FILE.getLink(),
-                IMG_FILE.getLink()
+        List<UploadAttachment> attachments = List.of(
+                UploadAttachment.of(PDF_FILE.getUploadFileName(), PDF_FILE.getLink()),
+                UploadAttachment.of(TXT_FILE.getUploadFileName(), TXT_FILE.getLink()),
+                UploadAttachment.of(HWP_FILE.getUploadFileName(), HWP_FILE.getLink()),
+                UploadAttachment.of(IMG_FILE.getUploadFileName(), IMG_FILE.getLink())
         );
         week.update(
                 "title",
@@ -95,7 +96,7 @@ class WeekTest {
                 () -> assertThat(week.isAssignmentExists()).isTrue(),
                 () -> assertThat(week.isAutoAttendance()).isTrue(),
                 () -> assertThat(week.getAttachments())
-                        .map(Attachment::getLink)
+                        .map(Attachment::getUploadAttachment)
                         .containsExactlyInAnyOrderElementsOf(attachments)
         );
     }
@@ -107,10 +108,10 @@ class WeekTest {
         Week week = STUDY_WEEKLY_1.toWeekWithAssignment(STUDY);
 
         // when
-        final Upload hostUpload = Upload.withLink("https://google.com");
-        final Upload participantUpload = Upload.withLink("https://naver.com");
-        week.submitAssignment(HOST, hostUpload);
-        week.submitAssignment(PARTICIPANT, participantUpload);
+        final UploadAssignment hostUploadAssignment = UploadAssignment.withLink("https://google.com");
+        final UploadAssignment participantUploadAssignment = UploadAssignment.withLink("https://naver.com");
+        week.submitAssignment(HOST, hostUploadAssignment);
+        week.submitAssignment(PARTICIPANT, participantUploadAssignment);
 
         // then
         assertAll(
@@ -119,8 +120,8 @@ class WeekTest {
                         .map(Submit::getParticipant)
                         .containsExactlyInAnyOrder(HOST, PARTICIPANT),
                 () -> assertThat(week.getSubmits())
-                        .map(Submit::getUpload)
-                        .containsExactlyInAnyOrder(hostUpload, participantUpload)
+                        .map(Submit::getUploadAssignment)
+                        .containsExactlyInAnyOrder(hostUploadAssignment, participantUploadAssignment)
         );
     }
 }

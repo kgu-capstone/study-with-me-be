@@ -11,9 +11,9 @@ public record WeeklySubmitSummary(
     public WeeklySubmitSummary(Submit submit) {
         this(
                 new StudyMember(submit.getParticipant()),
-                submit.getUpload().getType().getDescription(),
-                submit.getUpload().getUploadFileName(),
-                submit.getUpload().getLink()
+                submit.getUploadAssignment().getType().getDescription(),
+                submit.getUploadAssignment().getUploadFileName(),
+                submit.getUploadAssignment().getLink()
         );
     }
 }
