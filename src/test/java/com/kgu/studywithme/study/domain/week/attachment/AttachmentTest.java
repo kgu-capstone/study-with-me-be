@@ -21,11 +21,13 @@ class AttachmentTest {
     @Test
     @DisplayName("Attachment를 생성한다")
     void construct() {
-        final Attachment attachment = Attachment.addAttachmentFile(WEEK, "hello_world.txt");
+        final UploadAttachment uploadAttachment = UploadAttachment.of("hello.pdf", "uuid.pdf");
+        final Attachment attachment = Attachment.addAttachmentFile(WEEK, uploadAttachment);
 
         assertAll(
-                () -> assertThat(attachment.getLink()).isEqualTo("hello_world.txt"),
-                () -> assertThat(attachment.getWeek()).isEqualTo(WEEK)
+                () -> assertThat(attachment.getWeek()).isEqualTo(WEEK),
+                () -> assertThat(attachment.getUploadAttachment().getUploadFileName()).isEqualTo("hello.pdf"),
+                () -> assertThat(attachment.getUploadAttachment().getLink()).isEqualTo("uuid.pdf")
         );
     }
 }

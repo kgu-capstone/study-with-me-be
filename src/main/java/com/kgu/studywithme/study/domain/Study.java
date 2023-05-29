@@ -15,6 +15,7 @@ import com.kgu.studywithme.study.domain.review.Reviews;
 import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.Weekly;
+import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -155,12 +156,12 @@ public class Study extends BaseEntity {
         attendances.add(Attendance.recordAttendance(this, participant, week, status));
     }
 
-    public void createWeek(String title, String content, int week, Period period, List<String> attachments) {
+    public void createWeek(String title, String content, int week, Period period, List<UploadAttachment> attachments) {
         weekly.registerWeek(Week.createWeek(this, title, content, week, period, attachments));
     }
 
     public void createWeekWithAssignment(String title, String content, int week, Period period,
-                                         boolean autoAttendance, List<String> attachments) {
+                                         boolean autoAttendance, List<UploadAttachment> attachments) {
         weekly.registerWeek(Week.createWeekWithAssignment(this, title, content, week, period, autoAttendance, attachments));
     }
 

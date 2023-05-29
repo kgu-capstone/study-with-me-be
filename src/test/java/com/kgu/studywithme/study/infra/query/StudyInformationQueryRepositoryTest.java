@@ -14,8 +14,9 @@ import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
+import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
-import com.kgu.studywithme.study.domain.week.submit.Upload;
+import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -228,10 +229,10 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                                 STUDY_WEEKLY_1.getWeek()
                         ),
                 () -> {
-                    List<List<String>> attachmentLinks = weeks.stream()
+                    List<List<UploadAttachment>> attachmentLinks = weeks.stream()
                             .map(Week::getAttachments)
                             .map(attachments -> attachments.stream()
-                                    .map(Attachment::getLink)
+                                    .map(Attachment::getUploadAttachment)
                                     .toList())
                             .toList();
                     assertThat(attachmentLinks).containsExactlyInAnyOrder(
@@ -264,8 +265,8 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
 
                     List<List<String>> links = submits.stream()
                             .map(submit -> submit.stream()
-                                    .map(Submit::getUpload)
-                                    .map(Upload::getLink)
+                                    .map(Submit::getUploadAssignment)
+                                    .map(UploadAssignment::getLink)
                                     .toList())
                             .toList();
                     assertThat(links).containsExactlyInAnyOrder(
@@ -337,7 +338,7 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
 
     private void submitLinkAssignment(Week week, String link, Member... participants) {
         for (Member participant : participants) {
-            week.submitAssignment(participant, Upload.withLink(link + participant.getId()));
+            week.submitAssignment(participant, UploadAssignment.withLink(link + participant.getId()));
         }
     }
 

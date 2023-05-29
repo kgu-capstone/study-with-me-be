@@ -14,9 +14,10 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
+import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
-import com.kgu.studywithme.study.domain.week.submit.Upload;
+import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,11 +70,23 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
     private static final WeekFixture WEEK_1 = STUDY_WEEKLY_1;
     private static final WeekFixture WEEK_2 = STUDY_WEEKLY_2;
-    private static final String LINK1 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.txt";
-    private static final String LINK2 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.hwpx";
-    private static final String LINK3 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.pdf";
-    private static final String LINK4 = "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.png";
-    private static final List<String> uploadUrls = List.of(LINK1, LINK2, LINK3, LINK4);
+    private static final UploadAttachment UPLOAD1 = UploadAttachment.of(
+            "hello1.txt",
+            "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.txt"
+    );
+    private static final UploadAttachment UPLOAD2 = UploadAttachment.of(
+            "hello2.hwpx",
+            "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.hwpx"
+    );
+    private static final UploadAttachment UPLOAD3 = UploadAttachment.of(
+            "hello3.pdf",
+            "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.pdf"
+    );
+    private static final UploadAttachment UPLOAD4 = UploadAttachment.of(
+            "hello4.png",
+            "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.png"
+    );
+    private static final List<UploadAttachment> uploadAttachments = List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4);
     private List<MultipartFile> files;
 
     @BeforeEach
@@ -102,9 +115,10 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @Test
         @DisplayName("스터디 주차를 생성한다 [과제 O - 자동 출석 O]")
         void createWeekWithAssignmentAndAutoAttendance() {
+            mockingAttachmentsUpload();
+
             /* given - 1주차 */
             StudyWeeklyRequest request1 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
 
             /* when - 1주차 */
             studyWeeklyService.createWeek(study.getId(), request1);
@@ -115,7 +129,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             List<Week> weeks1 = findStudy1.getWeeks();
             assertThat(weeks1).hasSize(1);
             assertThatStudyWeekMatch(weeks1.get(0), 1, request1, true, true);
-            assertThatAttachmentsMatch(weeks1.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
+            assertThatAttachmentsMatch(weeks1.get(0).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
 
             List<Attendance> attendances1 = findStudy1.getAttendances();
             assertThatAttendancesMatch(
@@ -139,8 +153,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
             assertThat(weeks2).hasSize(2);
             assertThatStudyWeekMatch(weeks2.get(0), 1, request1, true, true);
             assertThatStudyWeekMatch(weeks2.get(1), 2, request2, true, true);
-            assertThatAttachmentsMatch(weeks2.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
-            assertThatAttachmentsMatch(weeks2.get(1).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
+            assertThatAttachmentsMatch(weeks2.get(0).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
+            assertThatAttachmentsMatch(weeks2.get(1).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
 
             List<Attendance> attendances2 = findStudy2.getAttendances();
             assertThatAttendancesMatch(
@@ -164,8 +178,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("스터디 주차를 생성한다 [과제 O - 자동 출석 X]")
         void createWeekWithAssignmentAndManualAttendance() {
             // given
+            mockingAttachmentsUpload();
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
-            mockingAttachmentsUpload(files);
 
             // when
             studyWeeklyService.createWeek(study.getId(), request);
@@ -176,7 +190,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             List<Week> weeks = findStudy.getWeeks();
             assertThat(weeks).hasSize(1);
             assertThatStudyWeekMatch(weeks.get(0), 1, request, true, false);
-            assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
+            assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
 
             List<Attendance> attendances = findStudy.getAttendances();
             assertThatAttendancesMatch(
@@ -191,8 +205,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("스터디 주차를 생성한다 [과제 X]")
         void createWeek() {
             // given
+            mockingAttachmentsUpload();
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_1, files);
-            mockingAttachmentsUpload(files);
 
             // when
             studyWeeklyService.createWeek(study.getId(), request);
@@ -203,7 +217,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             List<Week> weeks = findStudy.getWeeks();
             assertThat(weeks).hasSize(1);
             assertThatStudyWeekMatch(weeks.get(0), 1, request, false, false);
-            assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(LINK1, LINK2, LINK3, LINK4));
+            assertThatAttachmentsMatch(weeks.get(0).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
 
             List<Attendance> attendances = findStudy.getAttendances();
             assertThatAttendancesMatch(
@@ -222,9 +236,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
 
         // when
-        StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_2, files);
-        mockingAttachmentsUpload(files);
+        mockingAttachmentsUpload();
 
+        StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekRequest(WEEK_2, files);
         studyWeeklyService.updateWeek(study.getId(), 1, request);
 
         // then
@@ -240,8 +254,21 @@ class StudyWeeklyServiceTest extends ServiceTest {
                 () -> assertThat(findWeek.isAssignmentExists()).isFalse(),
                 () -> assertThat(findWeek.isAutoAttendance()).isFalse(),
                 () -> assertThat(findWeek.getAttachments())
-                        .map(Attachment::getLink)
-                        .containsExactlyInAnyOrderElementsOf(uploadUrls)
+                        .map(Attachment::getUploadAttachment)
+                        .map(UploadAttachment::getUploadFileName)
+                        .containsExactlyInAnyOrderElementsOf(
+                                uploadAttachments.stream()
+                                        .map(UploadAttachment::getUploadFileName)
+                                        .toList()
+                        ),
+                () -> assertThat(findWeek.getAttachments())
+                        .map(Attachment::getUploadAttachment)
+                        .map(UploadAttachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(
+                                uploadAttachments.stream()
+                                        .map(UploadAttachment::getLink)
+                                        .toList()
+                        )
         );
     }
 
@@ -308,9 +335,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitLinkWithAutoAttendance1() {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -328,9 +355,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -346,9 +373,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitLinkWithAutoAttendance2() {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             applyAbsenceStatusByScheduler();
@@ -367,9 +394,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -385,9 +412,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitLinkWithAutoAttendance3() {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -405,9 +432,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -422,6 +449,8 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("과제를 제출한다 [링크 + 자동 출석 X]")
         void submitLinkWithNonAutoAttendance() {
             // given
+            mockingAttachmentsUpload();
+
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
             studyWeeklyService.createWeek(study.getId(), request);
 
@@ -440,9 +469,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(submitLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(LINK),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(submitLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -458,9 +487,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitFileWithAutoAttendance1() throws IOException {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -481,9 +510,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -499,9 +528,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitFileWithAutoAttendance2() throws IOException {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             applyAbsenceStatusByScheduler();
@@ -523,9 +552,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -541,9 +570,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void submitFileWithAutoAttendance3() throws IOException {
             // given
             reflectionWeekPeriod(WEEK_1, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1));
+            mockingAttachmentsUpload();
 
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, true);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -564,9 +593,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -581,8 +610,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("과제를 제출한다 [파일 + 자동 출석 X]")
         void submitFileWithNonAutoAttendance() throws IOException {
             // given
+            mockingAttachmentsUpload();
+
             StudyWeeklyRequest request = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_1, files, false);
-            mockingAttachmentsUpload(files);
             studyWeeklyService.createWeek(study.getId(), request);
 
             assertThat(host.getScore()).isEqualTo(80);
@@ -603,9 +633,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             Submit submit = findWeek.getSubmits().get(0);
             assertAll(
-                    () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE),
-                    () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
-                    () -> assertThat(submit.getUpload().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(FILE),
+                    () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(submit.getParticipant().getId()).isEqualTo(host.getId())
             );
 
@@ -673,15 +703,15 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
             /* Case 1) File 제출 */
             // when
-            final Upload previous = Upload.withFile("hello3.pdf", LINK3);
+            final UploadAssignment previous = UploadAssignment.withFile("hello3.pdf", UPLOAD3.getLink());
             week.submitAssignment(host, previous);
 
             // then
             Submit previousSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
-                    () -> assertThat(previousSubmit.getUpload().getUploadFileName()).isEqualTo("hello3.pdf"),
-                    () -> assertThat(previousSubmit.getUpload().getLink()).isEqualTo(LINK3),
-                    () -> assertThat(previousSubmit.getUpload().getType()).isEqualTo(FILE),
+                    () -> assertThat(previousSubmit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(previousSubmit.getUploadAssignment().getLink()).isEqualTo(UPLOAD3.getLink()),
+                    () -> assertThat(previousSubmit.getUploadAssignment().getType()).isEqualTo(FILE),
                     () -> assertThat(previousSubmit.getWeek()).isEqualTo(week),
                     () -> assertThat(previousSubmit.getParticipant()).isEqualTo(host)
             );
@@ -694,17 +724,20 @@ class StudyWeeklyServiceTest extends ServiceTest {
             // then
             Submit currentSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
             assertAll(
-                    () -> assertThat(currentSubmit.getUpload().getUploadFileName()).isNull(),
-                    () -> assertThat(currentSubmit.getUpload().getLink()).isEqualTo(uploadLink),
-                    () -> assertThat(currentSubmit.getUpload().getType()).isEqualTo(LINK),
+                    () -> assertThat(currentSubmit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(currentSubmit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(currentSubmit.getUploadAssignment().getType()).isEqualTo(LINK),
                     () -> assertThat(currentSubmit.getWeek()).isEqualTo(week),
                     () -> assertThat(currentSubmit.getParticipant()).isEqualTo(host)
             );
         }
     }
 
-    private void mockingAttachmentsUpload(List<MultipartFile> files) {
-        given(fileUploader.uploadWeeklyAttachments(files)).willReturn(uploadUrls);
+    private void mockingAttachmentsUpload() {
+        given(fileUploader.uploadWeeklyAttachment(files.get(0))).willReturn(UPLOAD1.getLink());
+        given(fileUploader.uploadWeeklyAttachment(files.get(1))).willReturn(UPLOAD2.getLink());
+        given(fileUploader.uploadWeeklyAttachment(files.get(2))).willReturn(UPLOAD3.getLink());
+        given(fileUploader.uploadWeeklyAttachment(files.get(3))).willReturn(UPLOAD4.getLink());
     }
 
     private void beParticipation(Study study, Member... members) {
@@ -729,12 +762,25 @@ class StudyWeeklyServiceTest extends ServiceTest {
         );
     }
 
-    private static void assertThatAttachmentsMatch(List<Attachment> attachments, List<String> expectLinks) {
+    private static void assertThatAttachmentsMatch(List<Attachment> attachments, List<UploadAttachment> expectLinks) {
         assertAll(
                 () -> assertThat(attachments).hasSize(expectLinks.size()),
                 () -> assertThat(attachments)
-                        .map(Attachment::getLink)
-                        .containsExactlyInAnyOrderElementsOf(expectLinks)
+                        .map(Attachment::getUploadAttachment)
+                        .map(UploadAttachment::getUploadFileName)
+                        .containsExactlyInAnyOrderElementsOf(
+                                expectLinks.stream()
+                                        .map(UploadAttachment::getUploadFileName)
+                                        .toList()
+                        ),
+                () -> assertThat(attachments)
+                        .map(Attachment::getUploadAttachment)
+                        .map(UploadAttachment::getLink)
+                        .containsExactlyInAnyOrderElementsOf(
+                                expectLinks.stream()
+                                        .map(UploadAttachment::getLink)
+                                        .toList()
+                        )
         );
     }
 

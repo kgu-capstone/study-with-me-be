@@ -23,29 +23,29 @@ class SubmitTest {
     @Test
     @DisplayName("Submit[With Link]을 생성한다")
     void constructWithLink() {
-        final Upload upload = Upload.withLink("https://notion.com");
-        Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
+        final UploadAssignment uploadAssignment = UploadAssignment.withLink("https://notion.com");
+        Submit submit = Submit.submitAssignment(WEEK, HOST, uploadAssignment);
 
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload().getLink()).isEqualTo("https://notion.com"),
-                () -> assertThat(submit.getUpload().getType()).isEqualTo(LINK)
+                () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo("https://notion.com"),
+                () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(LINK)
         );
     }
 
     @Test
     @DisplayName("Submit[With File]을 생성한다")
     void constructWithFile() {
-        Upload upload = Upload.withFile("hello.pdf", "uuid.pdf");
-        Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
+        UploadAssignment uploadAssignment = UploadAssignment.withFile("hello.pdf", "uuid.pdf");
+        Submit submit = Submit.submitAssignment(WEEK, HOST, uploadAssignment);
 
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload().getUploadFileName()).isEqualTo("hello.pdf"),
-                () -> assertThat(submit.getUpload().getLink()).isEqualTo("uuid.pdf"),
-                () -> assertThat(submit.getUpload().getType()).isEqualTo(FILE)
+                () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isEqualTo("hello.pdf"),
+                () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo("uuid.pdf"),
+                () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(FILE)
         );
     }
 
@@ -53,20 +53,20 @@ class SubmitTest {
     @DisplayName("업로드한 과제를 수정한다")
     void editUpload() {
         // given
-        Upload upload = Upload.withFile("hello.pdf", "uuid.pdf");
-        Submit submit = Submit.submitAssignment(WEEK, HOST, upload);
+        UploadAssignment uploadAssignment = UploadAssignment.withFile("hello.pdf", "uuid.pdf");
+        Submit submit = Submit.submitAssignment(WEEK, HOST, uploadAssignment);
 
         // when
-        final Upload newUpload = Upload.withLink("https://notion.so");
-        submit.editUpload(newUpload);
+        final UploadAssignment newUploadAssignment = UploadAssignment.withLink("https://notion.so");
+        submit.editUpload(newUploadAssignment);
 
         // then
         assertAll(
                 () -> assertThat(submit.getWeek()).isEqualTo(WEEK),
                 () -> assertThat(submit.getParticipant()).isEqualTo(HOST),
-                () -> assertThat(submit.getUpload().getUploadFileName()).isNull(),
-                () -> assertThat(submit.getUpload().getLink()).isEqualTo(newUpload.getLink()),
-                () -> assertThat(submit.getUpload().getType()).isEqualTo(newUpload.getType())
+                () -> assertThat(submit.getUploadAssignment().getUploadFileName()).isNull(),
+                () -> assertThat(submit.getUploadAssignment().getLink()).isEqualTo(newUploadAssignment.getLink()),
+                () -> assertThat(submit.getUploadAssignment().getType()).isEqualTo(newUploadAssignment.getType())
         );
     }
 }
