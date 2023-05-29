@@ -8,7 +8,7 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.week.Week;
-import com.kgu.studywithme.study.domain.week.submit.Upload;
+import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.NoticeInformation;
 import com.kgu.studywithme.study.infra.query.dto.response.ReviewInformation;
@@ -446,7 +446,7 @@ class StudyInformationServiceTest extends ServiceTest {
 
     private void submitLinkAssignment(Week week, String link, Member... participants) {
         for (Member participant : participants) {
-            week.submitAssignment(participant, Upload.withLink(link + participant.getId()));
+            week.submitAssignment(participant, UploadAssignment.withLink(link + participant.getId()));
         }
     }
 

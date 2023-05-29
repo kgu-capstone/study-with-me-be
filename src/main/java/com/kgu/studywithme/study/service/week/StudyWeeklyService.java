@@ -12,9 +12,10 @@ import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
+import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
-import com.kgu.studywithme.study.domain.week.submit.Upload;
+import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.study.service.StudyFindService;
 import com.kgu.studywithme.upload.utils.FileUploader;
@@ -43,14 +44,20 @@ public class StudyWeeklyService {
     @Transactional
     public void createWeek(Long studyId, StudyWeeklyRequest request) {
         Study study = studyFindService.findById(studyId);
-        List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
+        List<UploadAttachment> attachments = createUploadAttachments(request.files());
         int nextWeek = studyRepository.getNextWeek(study.getId());
 
         createWeekBasedOnAssignmentExistence(study, nextWeek, attachments, request);
         processAttendance(study, nextWeek);
     }
 
-    private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<String> attachments, StudyWeeklyRequest request) {
+    private List<UploadAttachment> createUploadAttachments(List<MultipartFile> files) {
+        return files.stream()
+                .map(file -> UploadAttachment.of(file.getOriginalFilename(), uploader.uploadWeeklyAttachment(file)))
+                .toList();
+    }
+
+    private void createWeekBasedOnAssignmentExistence(Study study, Integer week, List<UploadAttachment> attachments, StudyWeeklyRequest request) {
         if (request.assignmentExists()) {
             study.createWeekWithAssignment(
                     request.title(),
@@ -79,7 +86,7 @@ public class StudyWeeklyService {
     @Transactional
     public void updateWeek(Long studyId, Integer week, StudyWeeklyRequest request) {
         Week specificWeek = getSpecificWeek(studyId, week);
-        List<String> attachments = uploader.uploadWeeklyAttachments(request.files());
+        List<UploadAttachment> attachments = createUploadAttachments(request.files());
 
         specificWeek.update(
                 request.title(),
@@ -130,14 +137,14 @@ public class StudyWeeklyService {
     }
 
     private void handleAssignmentSubmission(Week week, Member participant, String type, MultipartFile file, String link) {
-        Upload upload = createUpload(type, file, link);
-        week.submitAssignment(participant, upload);
+        UploadAssignment uploadAssignment = createUpload(type, file, link);
+        week.submitAssignment(participant, uploadAssignment);
     }
 
-    private Upload createUpload(String type, MultipartFile file, String link) {
+    private UploadAssignment createUpload(String type, MultipartFile file, String link) {
         return type.equals("file")
-                ? Upload.withFile(file.getOriginalFilename(), uploader.uploadWeeklySubmit(file))
-                : Upload.withLink(link);
+                ? UploadAssignment.withFile(file.getOriginalFilename(), uploader.uploadWeeklySubmit(file))
+                : UploadAssignment.withLink(link);
     }
 
     private void processAttendanceBasedOnAutoAttendanceFlag(Week week, Member participant, Long studyId) {
@@ -181,8 +188,8 @@ public class StudyWeeklyService {
         validateAssignmentSubmissionExists(file, link);
 
         Submit submit = getParticipantSubmit(participantId, week);
-        Upload newUpload = createUpload(type, file, link);
-        submit.editUpload(newUpload);
+        UploadAssignment newUploadAssignment = createUpload(type, file, link);
+        submit.editUpload(newUploadAssignment);
     }
 
     private Submit getParticipantSubmit(Long participantId, Integer week) {
