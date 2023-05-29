@@ -16,19 +16,19 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "link", nullable = false)
-    private String link;
+    @Embedded
+    private UploadAttachment uploadAttachment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "week_id", referencedColumnName = "id", nullable = false)
     private Week week;
 
-    private Attachment(Week week, String link) {
+    private Attachment(Week week, UploadAttachment uploadAttachment) {
         this.week = week;
-        this.link = link;
+        this.uploadAttachment = uploadAttachment;
     }
 
-    public static Attachment addAttachmentFile(Week week, String link) {
-        return new Attachment(week, link);
+    public static Attachment addAttachmentFile(Week week, UploadAttachment uploadAttachment) {
+        return new Attachment(week, uploadAttachment);
     }
 }

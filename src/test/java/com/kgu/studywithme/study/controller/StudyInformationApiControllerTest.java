@@ -531,6 +531,10 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("weeks[].autoAttendance").description("스터디 주차 자동 출석 여부"),
                                             fieldWithPath("weeks[].attachments[]").description("스터디 주차 첨부파일")
                                                     .optional(),
+                                            fieldWithPath("weeks[].attachments[].uploadFileName").description("스터디 주차 첨부파일 업로드 파일명")
+                                                    .optional(),
+                                            fieldWithPath("weeks[].attachments[].link").description("스터디 주차 첨부파일 S3 업로드명")
+                                                    .optional(),
                                             fieldWithPath("weeks[].submits[]").description("스터디 주차 과제 관련 정보")
                                                     .optional(),
                                             fieldWithPath("weeks[].submits[].participant.id").description("스터디 주차 과제 제출자 ID(PK)")

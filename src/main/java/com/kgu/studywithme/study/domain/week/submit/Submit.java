@@ -19,7 +19,7 @@ public class Submit extends BaseEntity {
     private Long id;
 
     @Embedded
-    private Upload upload;
+    private UploadAssignment uploadAssignment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "week_id", referencedColumnName = "id", nullable = false)
@@ -29,17 +29,17 @@ public class Submit extends BaseEntity {
     @JoinColumn(name = "participant_id", referencedColumnName = "id", nullable = false)
     private Member participant;
 
-    private Submit(Week week, Member participant, Upload upload) {
+    private Submit(Week week, Member participant, UploadAssignment uploadAssignment) {
         this.week = week;
         this.participant = participant;
-        this.upload = upload;
+        this.uploadAssignment = uploadAssignment;
     }
 
-    public static Submit submitAssignment(Week week, Member participant, Upload upload) {
-        return new Submit(week, participant, upload);
+    public static Submit submitAssignment(Week week, Member participant, UploadAssignment uploadAssignment) {
+        return new Submit(week, participant, uploadAssignment);
     }
 
-    public void editUpload(Upload upload) {
-        this.upload = upload;
+    public void editUpload(UploadAssignment uploadAssignment) {
+        this.uploadAssignment = uploadAssignment;
     }
 }
