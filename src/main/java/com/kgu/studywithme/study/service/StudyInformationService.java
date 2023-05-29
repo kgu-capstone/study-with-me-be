@@ -45,6 +45,17 @@ public class StudyInformationService {
         return new StudyApplicant(result);
     }
 
+    public StudyParticipant getApproveParticipants(Long studyId) {
+        Study study = studyFindService.findByIdWithParticipants(studyId);
+
+        StudyMember host = new StudyMember(study.getHost());
+        List<StudyMember> participants = study.getApproveParticipantsWithoutHost()
+                .stream()
+                .map(StudyMember::new)
+                .toList();
+        return new StudyParticipant(host, participants);
+    }
+
     public AttendanceAssmbler getAttendances(Long studyId) {
         List<AttendanceInformation> result = studyRepository.findAttendanceByStudyId(studyId);
 

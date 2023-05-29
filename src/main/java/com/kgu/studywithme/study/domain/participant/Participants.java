@@ -223,6 +223,13 @@ public class Participants {
                 .toList();
     }
 
+    public List<Member> getApproveParticipantsWithoutHost() {
+        return participants.stream()
+                .filter(participant -> participant.getStatus() == APPROVE)
+                .map(Participant::getMember)
+                .toList();
+    }
+
     private int getNumberOfApproveParticipants() {
         return getApproveParticipants().size();
     }

@@ -312,13 +312,15 @@ class StudyInformationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
-            StudyApplicant response = new StudyApplicant(List.of(
-                    new StudyApplicantInformation(1L, "닉네임1", 100, LocalDateTime.now().minusDays(1)),
-                    new StudyApplicantInformation(2L, "닉네임2", 92, LocalDateTime.now().minusDays(2)),
-                    new StudyApplicantInformation(3L, "닉네임3", 93, LocalDateTime.now().minusDays(3)),
-                    new StudyApplicantInformation(4L, "닉네임4", 98, LocalDateTime.now().minusDays(4)),
-                    new StudyApplicantInformation(5L, "닉네임5", 95, LocalDateTime.now().minusDays(5))
-            ));
+            StudyApplicant response = new StudyApplicant(
+                    List.of(
+                            new StudyApplicantInformation(1L, "닉네임1", 100, LocalDateTime.now().minusDays(1)),
+                            new StudyApplicantInformation(2L, "닉네임2", 92, LocalDateTime.now().minusDays(2)),
+                            new StudyApplicantInformation(3L, "닉네임3", 93, LocalDateTime.now().minusDays(3)),
+                            new StudyApplicantInformation(4L, "닉네임4", 98, LocalDateTime.now().minusDays(4)),
+                            new StudyApplicantInformation(5L, "닉네임5", 95, LocalDateTime.now().minusDays(5))
+                    )
+            );
             given(studyInformationService.getApplicants(STUDY_ID)).willReturn(response);
 
             // when
@@ -343,6 +345,59 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("applicants[].nickname").description("신청자 닉네임"),
                                             fieldWithPath("applicants[].score").description("신청자 점수"),
                                             fieldWithPath("applicants[].applyDate").description("신청 날짜")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 참여자 조회 API [GET /api/studies/{studyId}/participants] - AccessToken 필수")
+    class getApproveParticipants {
+        private static final String BASE_URL = "/api/studies/{studyId}/participants";
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+
+        @Test
+        @DisplayName("스터디 신청자 정보를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            StudyParticipant response = new StudyParticipant(
+                    new StudyMember(1L, "팀장"),
+                    List.of(
+                            new StudyMember(2L, "참여자1"),
+                            new StudyMember(3L, "참여자2"),
+                            new StudyMember(4L, "참여자3"),
+                            new StudyMember(5L, "참여자4")
+                    )
+            );
+            given(studyInformationService.getApproveParticipants(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Participants",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("host.id").description("팀장 ID(PK)"),
+                                            fieldWithPath("host.nickname").description("팀장 닉네임"),
+                                            fieldWithPath("participants[].id").description("참여자 ID(PK)"),
+                                            fieldWithPath("participants[].nickname").description("참여자 닉네임")
                                     )
                             )
                     );

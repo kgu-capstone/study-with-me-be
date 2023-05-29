@@ -166,6 +166,76 @@ class StudyInformationServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("스터디 참여자 정보를 조회한다")
+    void getApproveParticipants() {
+        StudyParticipant result1 = studyInformationService.getApproveParticipants(study.getId()); // host
+        assertAll(
+                () -> assertThat(result1.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result1.participants()).hasSize(0)
+        );
+
+        /* 신청자 3명 */
+        study.applyParticipation(members[0]);
+        study.applyParticipation(members[1]);
+        study.applyParticipation(members[2]);
+
+        StudyParticipant result2 = studyInformationService.getApproveParticipants(study.getId()); // host
+        assertAll(
+                () -> assertThat(result2.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result2.participants()).hasSize(0)
+        );
+
+        /* 추가 1명 신청 & 2명 승인 */
+        study.applyParticipation(members[3]);
+        study.approveParticipation(members[0]);
+        study.approveParticipation(members[2]);
+
+        StudyParticipant result3 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m2
+        assertAll(
+                () -> assertThat(result3.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result3.participants()).hasSize(2),
+                () -> assertThat(
+                        result3.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), members[2].getId())
+        );
+
+        /* 나머지 2명 승인 & 1명 졸업 */
+        study.approveParticipation(members[1]);
+        study.approveParticipation(members[3]);
+        study.graduateParticipant(members[2]);
+
+        StudyParticipant result4 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m1 + m3
+        assertAll(
+                () -> assertThat(result4.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result4.participants()).hasSize(3),
+                () -> assertThat(
+                        result4.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), members[1].getId(), members[3].getId())
+        );
+
+        /* host -> m1 팀장 교체 */
+        study.delegateStudyHostAuthority(members[1]);
+
+        StudyParticipant result5 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m1 + m3
+        assertAll(
+                () -> assertThat(result5.host().id()).isEqualTo(members[1].getId()),
+                () -> assertThat(result5.participants()).hasSize(3),
+                () -> assertThat(
+                        result5.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), host.getId(), members[3].getId())
+        );
+    }
+
+    @Test
     @DisplayName("스터디 주차별 출석 정보를 조회한다")
     void getAttendances() {
         applyAndApproveMembers(members[0], members[1], members[2]);
