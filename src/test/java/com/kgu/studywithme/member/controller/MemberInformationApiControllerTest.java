@@ -4,12 +4,11 @@ import com.kgu.studywithme.auth.exception.AuthErrorCode;
 import com.kgu.studywithme.common.ControllerTest;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
-import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
-import com.kgu.studywithme.member.service.dto.response.MemberInformation;
-import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
-import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
+import com.kgu.studywithme.member.service.dto.response.*;
 import com.kgu.studywithme.study.domain.StudyName;
+import com.kgu.studywithme.study.infra.query.dto.response.SimpleGraduatedStudy;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
+import com.kgu.studywithme.study.infra.query.dto.response.StudyReview;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kgu.studywithme.category.domain.Category.INTERVIEW;
@@ -353,7 +353,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
 
-            RelatedStudy response = generateRelatedStudyResponse();
+            GraduatedStudy response = generateGraduatedStudyResponse();
             given(memberInformationService.getGraduatedStudy(MEMBER_ID)).willReturn(response);
 
             // when
@@ -378,7 +378,17 @@ class MemberInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].name").description("졸업한 스터디명"),
                                             fieldWithPath("result[].category").description("졸업한 스터디 카테고리"),
                                             fieldWithPath("result[].thumbnail").description("졸업한 스터디 썸네일 이미지"),
-                                            fieldWithPath("result[].thumbnailBackground").description("졸업한 스터디 썸네일 배경색")
+                                            fieldWithPath("result[].thumbnailBackground").description("졸업한 스터디 썸네일 배경색"),
+                                            fieldWithPath("result[].review").description("작성한 리뷰")
+                                                    .optional(),
+                                            fieldWithPath("result[].review.id").description("작성한 리뷰 ID")
+                                                    .optional(),
+                                            fieldWithPath("result[].review.content").description("작성한 리뷰")
+                                                    .optional(),
+                                            fieldWithPath("result[].review.writtenDate").description("리뷰 작성 날짜")
+                                                    .optional(),
+                                            fieldWithPath("result[].review.lastModifiedDate").description("리뷰 수정 날짜")
+                                                    .optional()
                                     )
                             )
                     );
@@ -482,6 +492,44 @@ class MemberInformationApiControllerTest extends ControllerTest {
                 new SimpleStudy(4L, StudyName.from(AWS.getName()), PROGRAMMING, AWS.getThumbnail())
         );
         return new RelatedStudy(result);
+    }
+
+    private GraduatedStudy generateGraduatedStudyResponse() {
+        List<SimpleGraduatedStudy> result = List.of(
+                new SimpleGraduatedStudy(
+                        1L,
+                        SPRING.getName(),
+                        PROGRAMMING.getName(),
+                        SPRING.getThumbnail().getImageName(),
+                        SPRING.getThumbnail().getBackground(),
+                        null
+                ),
+                new SimpleGraduatedStudy(
+                        2L,
+                        JPA.getName(),
+                        PROGRAMMING.getName(),
+                        JPA.getThumbnail().getImageName(),
+                        JPA.getThumbnail().getBackground(),
+                        new StudyReview(1L, "hello", LocalDateTime.now(), LocalDateTime.now())
+                ),
+                new SimpleGraduatedStudy(
+                        3L,
+                        TOSS_INTERVIEW.getName(),
+                        INTERVIEW.getName(),
+                        TOSS_INTERVIEW.getThumbnail().getImageName(),
+                        TOSS_INTERVIEW.getThumbnail().getBackground(),
+                        new StudyReview(2L, "hello", LocalDateTime.now().minusHours(3), LocalDateTime.now())
+                ),
+                new SimpleGraduatedStudy(
+                        4L,
+                        AWS.getName(),
+                        PROGRAMMING.getName(),
+                        AWS.getThumbnail().getImageName(),
+                        AWS.getThumbnail().getBackground(),
+                        null
+                )
+        );
+        return new GraduatedStudy(result);
     }
 
     private PeerReviewAssembler generatePeerReviewAssembler() {
