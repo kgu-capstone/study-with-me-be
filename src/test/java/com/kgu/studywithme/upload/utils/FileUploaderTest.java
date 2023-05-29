@@ -16,14 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.UUID;
 
-import static com.kgu.studywithme.common.utils.FileMockingUtils.createMultipleMockMultipartFile;
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -128,21 +125,19 @@ class FileUploaderTest extends InfraTest {
     @DisplayName("Weekly 글 첨부파일 업로드")
     class uploadWeeklyAttachments {
         @Test
-        @DisplayName("첨부파일이 존재하지 않으면 빈 리스트를 응답받는다")
-        void getEmptyListByAttachmentIsNotExists() {
+        @DisplayName("파일을 전송하지 않았거나 파일의 사이즈가 0이면 업로드가 불가능하다")
+        void throwExceptionByFileIsEmpty() {
             // given
-            List<MultipartFile> nullFiles = null;
-            List<MultipartFile> emptyFiles = List.of();
+            MultipartFile nullFile = null;
+            MultipartFile emptyFile = new MockMultipartFile("file", "hello.png", "image/png", new byte[]{});
 
-            // when
-            List<String> nullFilesUrls = uploader.uploadWeeklyAttachments(nullFiles);
-            List<String> emptyFilesUrls = uploader.uploadWeeklyAttachments(emptyFiles);
-
-            // then
-            assertAll(
-                    () -> assertThat(nullFilesUrls).hasSize(0),
-                    () -> assertThat(emptyFilesUrls).hasSize(0)
-            );
+            // when - then
+            assertThatThrownBy(() -> uploader.uploadWeeklyAttachment(nullFile))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
+            assertThatThrownBy(() -> uploader.uploadWeeklyAttachment(emptyFile))
+                    .isInstanceOf(StudyWithMeException.class)
+                    .hasMessage(UploadErrorCode.FILE_IS_EMPTY.getMessage());
         }
 
         @Test
@@ -152,27 +147,17 @@ class FileUploaderTest extends InfraTest {
             PutObjectResult putObjectResult = new PutObjectResult();
             given(amazonS3.putObject(any(PutObjectRequest.class))).willReturn(putObjectResult);
 
-            URL mockUrl1 = new URL(createUploadLink(ATTACHMENT, "hello1.txt"));
-            URL mockUrl2 = new URL(createUploadLink(ATTACHMENT, "hello2.hwpx"));
-            URL mockUrl3 = new URL(createUploadLink(ATTACHMENT, "hello3.pdf"));
-            URL mockUrl4 = new URL(createUploadLink(ATTACHMENT, "hello4.png"));
-            given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl1, mockUrl2, mockUrl3, mockUrl4);
+            URL mockUrl = new URL(createUploadLink(ATTACHMENT, "hello1.txt"));
+            given(amazonS3.getUrl(eq(BUCKET), anyString())).willReturn(mockUrl);
 
             // when
-            final List<MultipartFile> files = List.of(
-                    createMultipleMockMultipartFile("hello1.txt", "text/plain"),
-                    createMultipleMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
-                    createMultipleMockMultipartFile("hello3.pdf", "application/pdf"),
-                    createMultipleMockMultipartFile("hello4.png", "image/png")
-            );
-            List<String> uploadUrls = uploader.uploadWeeklyAttachments(files);
+            final MultipartFile file = createSingleMockMultipartFile("hello4.png", "image/png");
+            String uploadUrl = uploader.uploadWeeklyAttachment(file);
 
             // then
-            verify(amazonS3, times(files.size())).putObject(any(PutObjectRequest.class));
-            verify(amazonS3, times(files.size())).getUrl(eq(BUCKET), anyString());
-            assertThat(uploadUrls).containsExactlyInAnyOrder(
-                    mockUrl1.toString(), mockUrl2.toString(), mockUrl3.toString(), mockUrl4.toString()
-            );
+            verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
+            verify(amazonS3, times(1)).getUrl(eq(BUCKET), anyString());
+            assertThat(uploadUrl).isEqualTo(mockUrl.toString());
         }
     }
 

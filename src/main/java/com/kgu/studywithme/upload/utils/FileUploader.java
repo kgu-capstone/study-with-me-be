@@ -9,12 +9,10 @@ import com.kgu.studywithme.upload.exception.UploadErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.UUID;
 
 import static com.kgu.studywithme.upload.utils.BucketMetadata.*;
@@ -49,14 +47,9 @@ public class FileUploader {
     }
 
     // Weekly 글 첨부파일 업로드
-    public List<String> uploadWeeklyAttachments(List<MultipartFile> files) {
-        if (CollectionUtils.isEmpty(files)) {
-            return List.of();
-        }
-
-        return files.stream()
-                .map(file -> uploadFile(ATTACHMENT, file))
-                .toList();
+    public String uploadWeeklyAttachment(MultipartFile file) {
+        validateFileExists(file);
+        return uploadFile(ATTACHMENT, file);
     }
 
     // Weekly 과제 제출
