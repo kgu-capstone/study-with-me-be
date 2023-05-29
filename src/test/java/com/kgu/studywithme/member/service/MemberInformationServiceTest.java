@@ -5,11 +5,13 @@ import com.kgu.studywithme.favorite.domain.Favorite;
 import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.review.PeerReview;
 import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
+import com.kgu.studywithme.member.service.dto.response.GraduatedStudy;
 import com.kgu.studywithme.member.service.dto.response.MemberInformation;
 import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
 import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
 import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
+import com.kgu.studywithme.study.infra.query.dto.response.SimpleGraduatedStudy;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -129,14 +131,16 @@ class MemberInformationServiceTest extends ServiceTest {
         // given
         participateStudy(member, programming[0], programming[1], programming[2], programming[3], programming[4], programming[5], programming[6]);
         graduateStudy(member, programming[1], programming[3], programming[6]);
+        writeStudyReview(member, programming[3]);
 
         // when
-        RelatedStudy relatedStudy = memberInformationService.getGraduatedStudy(member.getId());
+        GraduatedStudy relatedStudy = memberInformationService.getGraduatedStudy(member.getId());
 
         // then
-        assertThatStudiesMatch(
+        assertThatGraduatedStudiesMatch(
                 relatedStudy.result(),
-                List.of(programming[6], programming[3], programming[1])
+                List.of(programming[6], programming[3], programming[1]),
+                List.of(false, true, false)
         );
     }
 
@@ -249,6 +253,12 @@ class MemberInformationServiceTest extends ServiceTest {
         }
     }
 
+    private void writeStudyReview(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.writeReview(member, "hello world");
+        }
+    }
+
     private void assertThatStudiesMatch(List<SimpleStudy> result, List<Study> expect) {
         int expectSize = expect.size();
         assertThat(result).hasSize(expectSize);
@@ -263,6 +273,28 @@ class MemberInformationServiceTest extends ServiceTest {
                     () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName()),
                     () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName()),
                     () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expected.getThumbnail().getBackground())
+            );
+        }
+    }
+
+    private void assertThatGraduatedStudiesMatch(List<SimpleGraduatedStudy> result,
+                                                 List<Study> expect,
+                                                 List<Boolean> reviewWrittens) {
+        int expectSize = expect.size();
+        assertThat(result).hasSize(expectSize);
+
+        for (int i = 0; i < expectSize; i++) {
+            SimpleGraduatedStudy actual = result.get(i);
+            Study expected = expect.get(i);
+            Boolean reviewWritten = reviewWrittens.get(i);
+
+            assertAll(
+                    () -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+                    () -> assertThat(actual.getName()).isEqualTo(expected.getNameValue()),
+                    () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName()),
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName()),
+                    () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expected.getThumbnail().getBackground()),
+                    () -> assertThat(actual.getReview() != null).isEqualTo(reviewWritten)
             );
         }
     }

@@ -21,6 +21,7 @@ import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.NON_A
 import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
 import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
+import static com.kgu.studywithme.study.domain.review.QReview.review;
 import static com.kgu.studywithme.study.domain.week.attachment.QAttachment.attachment;
 import static com.kgu.studywithme.study.domain.week.submit.QSubmit.submit;
 
@@ -65,11 +66,15 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     }
 
     @Override
-    public List<SimpleStudy> findGraduatedStudyByMemberId(Long memberId) {
+    public List<SimpleGraduatedStudy> findGraduatedStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .select(new QSimpleGraduatedStudy(
+                        study.id, study.name, study.category, study.thumbnail,
+                        review.id, review.content, review.createdAt, review.modifiedAt
+                ))
                 .from(study)
                 .innerJoin(participant).on(participant.study.id.eq(study.id))
+                .leftJoin(review).on(review.study.id.eq(study.id))
                 .where(memberIdEq(memberId), participateStatusEq(GRADUATED))
                 .orderBy(study.id.desc())
                 .fetch();
