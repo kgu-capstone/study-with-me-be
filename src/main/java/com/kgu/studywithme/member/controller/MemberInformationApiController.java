@@ -3,10 +3,7 @@ package com.kgu.studywithme.member.controller;
 import com.kgu.studywithme.auth.utils.ExtractPayload;
 import com.kgu.studywithme.global.aop.CheckMemberIdentity;
 import com.kgu.studywithme.member.service.MemberInformationService;
-import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
-import com.kgu.studywithme.member.service.dto.response.MemberInformation;
-import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
-import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
+import com.kgu.studywithme.member.service.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,8 +45,8 @@ public class MemberInformationApiController {
     }
 
     @GetMapping("/studies/graduated")
-    public ResponseEntity<RelatedStudy> getGraduatedStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
-        RelatedStudy response = memberInformationService.getGraduatedStudy(memberId);
+    public ResponseEntity<GraduatedStudy> getGraduatedStudy(@ExtractPayload Long payloadId, @PathVariable Long memberId) {
+        GraduatedStudy response = memberInformationService.getGraduatedStudy(memberId);
         return ResponseEntity.ok(response);
     }
 

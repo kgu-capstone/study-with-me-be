@@ -14,6 +14,7 @@ import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicAttendance;
 import com.kgu.studywithme.study.infra.query.dto.response.BasicWeekly;
+import com.kgu.studywithme.study.infra.query.dto.response.SimpleGraduatedStudy;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -152,20 +153,24 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
     void findGraduatedStudyByMemberId() {
         // Case 1
         graduateStudy(member, programming[0], programming[1], programming[2], programming[3]);
+        writeStudyReview(member, programming[1]);
 
-        List<SimpleStudy> result1 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        assertThatStudiesMatch(
+        List<SimpleGraduatedStudy> result1 = studyRepository.findGraduatedStudyByMemberId(member.getId());
+        assertThatGraduatedStudiesMatch(
                 result1,
-                List.of(programming[3], programming[2], programming[1], programming[0])
+                List.of(programming[3], programming[2], programming[1], programming[0]),
+                List.of(false, false, true, false)
         );
 
         // Case 2
         graduateStudy(member, programming[4], programming[5], programming[6]);
+        writeStudyReview(member, programming[5], programming[3]);
 
-        List<SimpleStudy> result2 = studyRepository.findGraduatedStudyByMemberId(member.getId());
-        assertThatStudiesMatch(
+        List<SimpleGraduatedStudy> result2 = studyRepository.findGraduatedStudyByMemberId(member.getId());
+        assertThatGraduatedStudiesMatch(
                 result2,
-                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0])
+                List.of(programming[6], programming[5], programming[4], programming[3], programming[2], programming[1], programming[0]),
+                List.of(false, true, false, true, false, true, false)
         );
     }
 
@@ -399,6 +404,12 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         }
     }
 
+    private void writeStudyReview(Member member, Study... studies) {
+        for (Study study : studies) {
+            study.writeReview(member, "hello world");
+        }
+    }
+
     private void applyWeekly(Study study, List<Boolean> autoAttendances, List<Period> periods) {
         for (int index = 1; index <= autoAttendances.size(); index++) {
             study.createWeekWithAssignment(
@@ -432,6 +443,28 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
                     () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName()),
                     () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName()),
                     () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expected.getThumbnail().getBackground())
+            );
+        }
+    }
+
+    private void assertThatGraduatedStudiesMatch(List<SimpleGraduatedStudy> result,
+                                                 List<Study> expect,
+                                                 List<Boolean> reviewWrittens) {
+        int expectSize = expect.size();
+        assertThat(result).hasSize(expectSize);
+
+        for (int i = 0; i < expectSize; i++) {
+            SimpleGraduatedStudy actual = result.get(i);
+            Study expected = expect.get(i);
+            Boolean reviewWritten = reviewWrittens.get(i);
+
+            assertAll(
+                    () -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+                    () -> assertThat(actual.getName()).isEqualTo(expected.getNameValue()),
+                    () -> assertThat(actual.getCategory()).isEqualTo(expected.getCategory().getName()),
+                    () -> assertThat(actual.getThumbnail()).isEqualTo(expected.getThumbnail().getImageName()),
+                    () -> assertThat(actual.getThumbnailBackground()).isEqualTo(expected.getThumbnail().getBackground()),
+                    () -> assertThat(actual.getReview() != null).isEqualTo(reviewWritten)
             );
         }
     }

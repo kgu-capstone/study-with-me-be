@@ -4,11 +4,9 @@ import com.kgu.studywithme.member.domain.Member;
 import com.kgu.studywithme.member.domain.MemberRepository;
 import com.kgu.studywithme.member.domain.review.PeerReviewRepository;
 import com.kgu.studywithme.member.infra.query.dto.response.AttendanceRatio;
-import com.kgu.studywithme.member.service.dto.response.AttendanceRatioAssembler;
-import com.kgu.studywithme.member.service.dto.response.MemberInformation;
-import com.kgu.studywithme.member.service.dto.response.PeerReviewAssembler;
-import com.kgu.studywithme.member.service.dto.response.RelatedStudy;
+import com.kgu.studywithme.member.service.dto.response.*;
 import com.kgu.studywithme.study.domain.StudyRepository;
+import com.kgu.studywithme.study.infra.query.dto.response.SimpleGraduatedStudy;
 import com.kgu.studywithme.study.infra.query.dto.response.SimpleStudy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,9 +43,9 @@ public class MemberInformationService {
         return new RelatedStudy(favoriteStudy);
     }
 
-    public RelatedStudy getGraduatedStudy(Long memberId) {
-        List<SimpleStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
-        return new RelatedStudy(graduatedStudy);
+    public GraduatedStudy getGraduatedStudy(Long memberId) {
+        List<SimpleGraduatedStudy> graduatedStudy = studyRepository.findGraduatedStudyByMemberId(memberId);
+        return new GraduatedStudy(graduatedStudy);
     }
 
     public PeerReviewAssembler getPeerReviews(Long memberId) {
