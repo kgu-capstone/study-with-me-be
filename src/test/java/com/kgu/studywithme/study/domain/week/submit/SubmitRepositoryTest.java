@@ -52,8 +52,8 @@ class SubmitRepositoryTest extends RepositoryTest {
     @DisplayName("특정 주차에 제출한 과제를 조회한다")
     void findByParticipantIdAndWeek() {
         // given
-        final Upload upload = Upload.withLink("https://notion.link");
-        week.submitAssignment(host, upload);
+        final UploadAssignment uploadAssignment = UploadAssignment.withLink("https://notion.link");
+        week.submitAssignment(host, uploadAssignment);
 
         // when
         Optional<Submit> hostSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), STUDY_WEEKLY_1.getWeek());
@@ -65,7 +65,7 @@ class SubmitRepositoryTest extends RepositoryTest {
 
         Submit submit = hostSubmit.get();
         assertAll(
-                () -> assertThat(submit.getUpload()).isEqualTo(upload),
+                () -> assertThat(submit.getUploadAssignment()).isEqualTo(uploadAssignment),
                 () -> assertThat(submit.getWeek()).isEqualTo(week),
                 () -> assertThat(submit.getParticipant()).isEqualTo(host)
         );
