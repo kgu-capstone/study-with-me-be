@@ -15,7 +15,7 @@ public enum StudyThumbnail {
     IMAGE_LANGUAGE_003("language_JPT.png", "#FFEBEB"),
     IMAGE_LANGUAGE_004("language_Opic.png", "#FFEBEB"),
     IMAGE_LANGUAGE_005("language_TEPS.png", "#FFFBE8"),
-    IMAGE_LANGUAGE_006("language_TOELF.png", "#FFFFFF"),
+    IMAGE_LANGUAGE_006("language_TOEFL.png", "#FFFFFF"),
     IMAGE_LANGUAGE_007("language_TOEIC.png", "#FFFFFF"),
     IMAGE_LANGUAGE_008("language_001.png", "#E7E7E7"),
     IMAGE_LANGUAGE_009("language_toeic.png", "#E7E7E7"),

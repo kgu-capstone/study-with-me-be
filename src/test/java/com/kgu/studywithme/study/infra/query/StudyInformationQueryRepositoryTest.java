@@ -11,6 +11,7 @@ import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.NoticeRepository;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
 import com.kgu.studywithme.study.domain.notice.comment.CommentRepository;
+import com.kgu.studywithme.study.domain.participant.ParticipantStatus;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
@@ -30,6 +31,8 @@ import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPROVE;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -161,37 +164,46 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
                 )
         );
         List<AttendanceInformation> result1 = studyRepository.findAttendanceByStudyId(study.getId());
-        List<Integer> expectWeek1 = List.of(1, 1, 1, 1);
-        List<Member> expectMember1 = List.of(host, members[0], members[1], members[2]);
-        List<AttendanceStatus> expectStatus1 = List.of(ATTENDANCE, ATTENDANCE, LATE, ABSENCE);
-        assertThatAttendancesMatch(result1, expectWeek1, expectMember1, expectStatus1);
+        assertThatAttendancesMatch(
+                result1,
+                List.of(1, 1, 1, 1),
+                List.of(host, members[0], members[1], members[2]),
+                List.of(APPROVE, APPROVE, APPROVE, APPROVE),
+                List.of(ATTENDANCE, ATTENDANCE, LATE, ABSENCE)
+        );
 
         /* 1주차 + 2주차 출석 */
         applyAndApproveMembers(members[3]);
+        graduate(members[0]);
         applyAttendance(
                 2,
                 Map.of(
-                        host, ATTENDANCE,
-                        members[0], LATE,
+                        host, LATE,
                         members[1], ATTENDANCE,
                         members[2], ATTENDANCE,
                         members[3], ATTENDANCE
                 )
         );
         List<AttendanceInformation> result2 = studyRepository.findAttendanceByStudyId(study.getId());
-        List<Integer> expectWeek2 = List.of(
-                2, 2, 2, 2, 2,
-                1, 1, 1, 1
+        assertThatAttendancesMatch(
+                result2,
+                List.of(
+                        1, 1, 1, 1,
+                        2, 2, 2, 2
+                ),
+                List.of(
+                        host, members[0], members[1], members[2],
+                        host, members[1], members[2], members[3]
+                ),
+                List.of(
+                        APPROVE, GRADUATED, APPROVE, APPROVE,
+                        APPROVE, APPROVE, APPROVE, APPROVE
+                ),
+                List.of(
+                        ATTENDANCE, ATTENDANCE, LATE, ABSENCE,
+                        LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE
+                )
         );
-        List<Member> expectMember2 = List.of(
-                host, members[0], members[1], members[2], members[3],
-                host, members[0], members[1], members[2]
-        );
-        List<AttendanceStatus> expectStatus2 = List.of(
-                ATTENDANCE, LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE,
-                ATTENDANCE, ATTENDANCE, LATE, ABSENCE
-        );
-        assertThatAttendancesMatch(result2, expectWeek2, expectMember2, expectStatus2);
     }
 
     @Test
@@ -400,21 +412,24 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
     private void assertThatAttendancesMatch(List<AttendanceInformation> result,
                                             List<Integer> weeks,
                                             List<Member> members,
-                                            List<AttendanceStatus> status) {
-        int totalSize = status.size();
+                                            List<ParticipantStatus> participantStatuses,
+                                            List<AttendanceStatus> attendanceStatuses) {
+        int totalSize = attendanceStatuses.size();
         assertThat(result).hasSize(totalSize);
 
         for (int i = 0; i < totalSize; i++) {
             AttendanceInformation information = result.get(i);
             int week = weeks.get(i);
             Member member = members.get(i);
-            AttendanceStatus attendanceStatus = status.get(i);
+            ParticipantStatus participantStatus = participantStatuses.get(i);
+            AttendanceStatus attendanceStatus = attendanceStatuses.get(i);
 
             assertAll(
                     () -> assertThat(information.getParticipant().id()).isEqualTo(member.getId()),
                     () -> assertThat(information.getParticipant().nickname()).isEqualTo(member.getNicknameValue()),
+                    () -> assertThat(information.getParticipant().participantStatus()).isEqualTo(participantStatus),
                     () -> assertThat(information.getWeek()).isEqualTo(week),
-                    () -> assertThat(information.getStatus()).isEqualTo(attendanceStatus.getDescription())
+                    () -> assertThat(information.getAttendanceStatus()).isEqualTo(attendanceStatus.getDescription())
             );
         }
     }

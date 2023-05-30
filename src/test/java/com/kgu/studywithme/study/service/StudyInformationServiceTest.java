@@ -7,6 +7,7 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
 import com.kgu.studywithme.study.domain.notice.Notice;
 import com.kgu.studywithme.study.domain.notice.comment.Comment;
+import com.kgu.studywithme.study.domain.participant.ParticipantStatus;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.infra.query.dto.response.CommentInformation;
@@ -27,6 +28,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPROVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -166,7 +168,77 @@ class StudyInformationServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("스터디 주차별 출석 정보를 조회한다")
+    @DisplayName("스터디 참여자 정보를 조회한다")
+    void getApproveParticipants() {
+        StudyParticipant result1 = studyInformationService.getApproveParticipants(study.getId()); // host
+        assertAll(
+                () -> assertThat(result1.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result1.participants()).hasSize(0)
+        );
+
+        /* 신청자 3명 */
+        study.applyParticipation(members[0]);
+        study.applyParticipation(members[1]);
+        study.applyParticipation(members[2]);
+
+        StudyParticipant result2 = studyInformationService.getApproveParticipants(study.getId()); // host
+        assertAll(
+                () -> assertThat(result2.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result2.participants()).hasSize(0)
+        );
+
+        /* 추가 1명 신청 & 2명 승인 */
+        study.applyParticipation(members[3]);
+        study.approveParticipation(members[0]);
+        study.approveParticipation(members[2]);
+
+        StudyParticipant result3 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m2
+        assertAll(
+                () -> assertThat(result3.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result3.participants()).hasSize(2),
+                () -> assertThat(
+                        result3.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), members[2].getId())
+        );
+
+        /* 나머지 2명 승인 & 1명 졸업 */
+        study.approveParticipation(members[1]);
+        study.approveParticipation(members[3]);
+        study.graduateParticipant(members[2]);
+
+        StudyParticipant result4 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m1 + m3
+        assertAll(
+                () -> assertThat(result4.host().id()).isEqualTo(host.getId()),
+                () -> assertThat(result4.participants()).hasSize(3),
+                () -> assertThat(
+                        result4.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), members[1].getId(), members[3].getId())
+        );
+
+        /* host -> m1 팀장 교체 */
+        study.delegateStudyHostAuthority(members[1]);
+
+        StudyParticipant result5 = studyInformationService.getApproveParticipants(study.getId()); // host + m0 + m1 + m3
+        assertAll(
+                () -> assertThat(result5.host().id()).isEqualTo(members[1].getId()),
+                () -> assertThat(result5.participants()).hasSize(3),
+                () -> assertThat(
+                        result5.participants()
+                                .stream()
+                                .map(StudyMember::id)
+                                .toList()
+                ).containsExactlyInAnyOrder(members[0].getId(), host.getId(), members[3].getId())
+        );
+    }
+
+    @Test
+    @DisplayName("스터디 참여자별 출석 정보를 조회한다")
     void getAttendances() {
         applyAndApproveMembers(members[0], members[1], members[2]);
 
@@ -184,14 +256,17 @@ class StudyInformationServiceTest extends ServiceTest {
         AttendanceAssmbler result1 = studyInformationService.getAttendances(study.getId());
         assertThatAttendancesMatch(
                 result1.summaries(),
-                List.of(1),
-                List.of(
-                        Map.of(
-                                host.getId(), ATTENDANCE,
-                                members[0].getId(), ATTENDANCE,
-                                members[1].getId(), LATE,
-                                members[2].getId(), ABSENCE
-                        )
+                Map.of(
+                        host.getId(), APPROVE,
+                        members[0].getId(), APPROVE,
+                        members[1].getId(), APPROVE,
+                        members[2].getId(), APPROVE
+                ),
+                Map.of(
+                        host.getId(), List.of(ATTENDANCE),
+                        members[0].getId(), List.of(ATTENDANCE),
+                        members[1].getId(), List.of(LATE),
+                        members[2].getId(), List.of(ABSENCE)
                 )
         );
 
@@ -211,21 +286,19 @@ class StudyInformationServiceTest extends ServiceTest {
         AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
         assertThatAttendancesMatch(
                 result2.summaries(),
-                List.of(2, 1),
-                List.of(
-                        Map.of(
-                                host.getId(), ATTENDANCE,
-                                members[0].getId(), LATE,
-                                members[1].getId(), ATTENDANCE,
-                                members[2].getId(), ATTENDANCE,
-                                members[3].getId(), ATTENDANCE
-                        ),
-                        Map.of(
-                                host.getId(), ATTENDANCE,
-                                members[0].getId(), ATTENDANCE,
-                                members[1].getId(), LATE,
-                                members[2].getId(), ABSENCE
-                        )
+                Map.of(
+                        host.getId(), APPROVE,
+                        members[0].getId(), APPROVE,
+                        members[1].getId(), APPROVE,
+                        members[2].getId(), APPROVE,
+                        members[3].getId(), APPROVE
+                ),
+                Map.of(
+                        host.getId(), List.of(ATTENDANCE, ATTENDANCE),
+                        members[0].getId(), List.of(ATTENDANCE, LATE),
+                        members[1].getId(), List.of(LATE, ATTENDANCE),
+                        members[2].getId(), List.of(ABSENCE, ATTENDANCE),
+                        members[3].getId(), List.of(ATTENDANCE)
                 )
         );
     }
@@ -490,25 +563,21 @@ class StudyInformationServiceTest extends ServiceTest {
         }
     }
 
-    private void assertThatAttendancesMatch(Map<Integer, List<AttendanceSummary>> result,
-                                            List<Integer> weeks,
-                                            List<Map<Long, AttendanceStatus>> expectSummary) {
-        int totalSize = weeks.size();
-        assertThat(result).hasSize(totalSize);
+    private void assertThatAttendancesMatch(Map<StudyAttendanceMember, List<AttendanceSummary>> result,
+                                            Map<Long, ParticipantStatus> expectParticipantStatuses,
+                                            Map<Long, List<AttendanceStatus>> expectAttendanceStatuses) {
+        for (StudyAttendanceMember attendanceMember : result.keySet()) {
+            // check ParticipantStatus
+            ParticipantStatus participantStatus = expectParticipantStatuses.get(attendanceMember.id());
+            assertThat(attendanceMember.participantStatus()).isEqualTo(participantStatus);
 
-        for (int i = 0; i < weeks.size(); i++) {
-            int week = weeks.get(i);
-            List<AttendanceSummary> attendanceSummaries = result.get(week);
-            Map<Long, AttendanceStatus> expectAttendanceSummaries = expectSummary.get(i);
-
-            for (AttendanceSummary summary : attendanceSummaries) {
-                StudyMember participant = summary.participant();
-                String status = summary.status();
-
-                assertAll(
-                        () -> assertThat(expectAttendanceSummaries.containsKey(participant.id())).isTrue(),
-                        () -> assertThat(expectAttendanceSummaries.get(participant.id()).getDescription()).isEqualTo(status)
-                );
+            // check AttendanceStatus
+            List<AttendanceSummary> attendanceSummaries = result.get(attendanceMember);
+            List<AttendanceStatus> attendanceStatuses = expectAttendanceStatuses.get(attendanceMember.id());
+            for (int i = 0; i < attendanceSummaries.size(); i++) {
+                AttendanceSummary attendanceSummary = attendanceSummaries.get(i);
+                AttendanceStatus attendanceStatus = attendanceStatuses.get(i);
+                assertThat(attendanceSummary.status()).isEqualTo(attendanceStatus.getDescription());
             }
         }
     }

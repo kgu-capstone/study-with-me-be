@@ -90,11 +90,12 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
     @Override
     public List<AttendanceInformation> findAttendanceByStudyId(Long studyId) {
         return query
-                .select(new QAttendanceInformation(member.id, member.nickname, attendance.week, attendance.status))
+                .select(new QAttendanceInformation(member.id, member.nickname, participant.status, attendance.week, attendance.status))
                 .from(attendance)
                 .innerJoin(attendance.participant, member)
+                .leftJoin(participant).on(participant.member.id.eq(member.id))
                 .where(attendance.study.id.eq(studyId))
-                .orderBy(attendance.week.desc(), member.id.asc())
+                .orderBy(attendance.week.asc(), member.id.asc())
                 .fetch();
     }
 

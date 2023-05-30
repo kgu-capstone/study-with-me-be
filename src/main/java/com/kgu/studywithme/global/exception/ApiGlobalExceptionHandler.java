@@ -196,7 +196,7 @@ public class ApiGlobalExceptionHandler {
                 .fields(
                         List.of(
                                 generateSlackField(TITLE_REQUEST_IP, (xffHeader == null) ? request.getRemoteAddr() : xffHeader),
-                                generateSlackField(TITLE_REQUEST_URL, request.getMethod() + " " + request.getRequestURL()),
+                                generateSlackField(TITLE_REQUEST_URL, createRequestFullPath(request)),
                                 generateSlackField(TITLE_ERROR_MESSAGE, e.toString())
                         )
                 )
@@ -209,5 +209,16 @@ public class ApiGlobalExceptionHandler {
                 .value(value)
                 .valueShortEnough(false)
                 .build();
+    }
+
+    private String createRequestFullPath(HttpServletRequest request) {
+        String fullPath = request.getMethod() + " " + request.getRequestURL();
+
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            fullPath += "?" + queryString;
+        }
+
+        return fullPath;
     }
 }

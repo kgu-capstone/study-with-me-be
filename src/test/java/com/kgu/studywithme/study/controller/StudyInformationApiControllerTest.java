@@ -30,6 +30,7 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -312,13 +313,15 @@ class StudyInformationApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
 
-            StudyApplicant response = new StudyApplicant(List.of(
-                    new StudyApplicantInformation(1L, "닉네임1", 100, LocalDateTime.now().minusDays(1)),
-                    new StudyApplicantInformation(2L, "닉네임2", 92, LocalDateTime.now().minusDays(2)),
-                    new StudyApplicantInformation(3L, "닉네임3", 93, LocalDateTime.now().minusDays(3)),
-                    new StudyApplicantInformation(4L, "닉네임4", 98, LocalDateTime.now().minusDays(4)),
-                    new StudyApplicantInformation(5L, "닉네임5", 95, LocalDateTime.now().minusDays(5))
-            ));
+            StudyApplicant response = new StudyApplicant(
+                    List.of(
+                            new StudyApplicantInformation(1L, "닉네임1", 100, LocalDateTime.now().minusDays(1)),
+                            new StudyApplicantInformation(2L, "닉네임2", 92, LocalDateTime.now().minusDays(2)),
+                            new StudyApplicantInformation(3L, "닉네임3", 93, LocalDateTime.now().minusDays(3)),
+                            new StudyApplicantInformation(4L, "닉네임4", 98, LocalDateTime.now().minusDays(4)),
+                            new StudyApplicantInformation(5L, "닉네임5", 95, LocalDateTime.now().minusDays(5))
+                    )
+            );
             given(studyInformationService.getApplicants(STUDY_ID)).willReturn(response);
 
             // when
@@ -343,6 +346,59 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("applicants[].nickname").description("신청자 닉네임"),
                                             fieldWithPath("applicants[].score").description("신청자 점수"),
                                             fieldWithPath("applicants[].applyDate").description("신청 날짜")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("스터디 참여자 조회 API [GET /api/studies/{studyId}/participants] - AccessToken 필수")
+    class getApproveParticipants {
+        private static final String BASE_URL = "/api/studies/{studyId}/participants";
+        private static final Long STUDY_ID = 1L;
+        private static final Long HOST_ID = 1L;
+
+        @Test
+        @DisplayName("스터디 신청자 정보를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
+
+            StudyParticipant response = new StudyParticipant(
+                    new StudyMember(1L, "팀장"),
+                    List.of(
+                            new StudyMember(2L, "참여자1"),
+                            new StudyMember(3L, "참여자2"),
+                            new StudyMember(4L, "참여자3"),
+                            new StudyMember(5L, "참여자4")
+                    )
+            );
+            given(studyInformationService.getApproveParticipants(STUDY_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, STUDY_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "StudyApi/Information/Participants",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("studyId").description("스터디 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("host.id").description("팀장 ID(PK)"),
+                                            fieldWithPath("host.nickname").description("팀장 닉네임"),
+                                            fieldWithPath("participants[].id").description("참여자 ID(PK)"),
+                                            fieldWithPath("participants[].nickname").description("참여자 닉네임")
                                     )
                             )
                     );
@@ -429,10 +485,9 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("summaries.*").description("스터디 각 주차"),
-                                            fieldWithPath("summaries.*[].participant.id").description("스터디 참여자 ID(PK)"),
-                                            fieldWithPath("summaries.*[].participant.nickname").description("스터디 참여자 닉네임"),
-                                            fieldWithPath("summaries.*[].status").description("각 주차별 참여자의 출석 상태")
+                                            fieldWithPath("summaries.*").description("스터디 참여자"),
+                                            fieldWithPath("summaries.*[].week").description("스터디 주차"),
+                                            fieldWithPath("summaries.*[].status").description("해당 주차에 대한 출석 상태")
                                     )
                             )
                     );
@@ -620,49 +675,48 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private AttendanceAssmbler generateStudyAttendances() {
-        Map<Integer, List<AttendanceSummary>> summaries = new HashMap<>();
+        Map<StudyAttendanceMember, List<AttendanceSummary>> summaries = new HashMap<>();
         summaries.put(
-                5,
+                new StudyAttendanceMember(1L, "참여자1", APPROVE),
                 List.of(
-                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), NON_ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), NON_ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), NON_ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(5L, "닉네임5"), ATTENDANCE.getDescription())
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, NON_ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                4,
+                new StudyAttendanceMember(2L, "참여자2", CALCEL),
                 List.of(
-                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), LATE.getDescription()),
-                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(3, LATE.getDescription())
                 )
         );
         summaries.put(
-                3,
+                new StudyAttendanceMember(3L, "참여자3", APPROVE),
                 List.of(
-                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ABSENCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), LATE.getDescription()),
-                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ABSENCE.getDescription()),
+                        new AttendanceSummary(3, LATE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                2,
+                new StudyAttendanceMember(4L, "참여자4", APPROVE),
                 List.of(
-                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(4L, "닉네임4"), ATTENDANCE.getDescription())
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(4, ATTENDANCE.getDescription())
                 )
         );
         summaries.put(
-                1,
+                new StudyAttendanceMember(5L, "참여자5", GRADUATED),
                 List.of(
-                        new AttendanceSummary(new StudyMember(1L, "닉네임1"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(2L, "닉네임2"), ATTENDANCE.getDescription()),
-                        new AttendanceSummary(new StudyMember(3L, "닉네임3"), ATTENDANCE.getDescription())
+                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                        new AttendanceSummary(3, ATTENDANCE.getDescription())
                 )
         );
 

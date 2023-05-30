@@ -8,7 +8,7 @@ import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Study-Week-Submit 도메인 {UploadAssignmentTest VO} 테스트")
+@DisplayName("Study-Week-Submit 도메인 {UploadAssignment VO} 테스트")
 class UploadAssignmentTest {
     @Test
     @DisplayName("Notion, Blog 등 링크를 통해서 과제를 제출한다")
