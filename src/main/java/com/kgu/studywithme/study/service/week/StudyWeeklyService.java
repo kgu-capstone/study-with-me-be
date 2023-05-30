@@ -22,6 +22,7 @@ import com.kgu.studywithme.upload.utils.FileUploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,10 @@ public class StudyWeeklyService {
     }
 
     private List<UploadAttachment> createUploadAttachments(List<MultipartFile> files) {
+        if (CollectionUtils.isEmpty(files)) {
+            return List.of();
+        }
+
         return files.stream()
                 .map(file -> UploadAttachment.of(file.getOriginalFilename(), uploader.uploadWeeklyAttachment(file)))
                 .toList();

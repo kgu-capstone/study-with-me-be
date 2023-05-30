@@ -269,6 +269,10 @@ public class Study extends BaseEntity {
         return participants.getApproveParticipants();
     }
 
+    public List<Member> getApproveParticipantsWithoutHost() {
+        return participants.getApproveParticipantsWithoutHost();
+    }
+
     public List<Member> getGraduatedParticipants() {
         return participants.getGraduatedParticipants();
     }

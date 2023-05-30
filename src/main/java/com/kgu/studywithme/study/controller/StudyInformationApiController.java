@@ -44,6 +44,12 @@ public class StudyInformationApiController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/participants")
+    public ResponseEntity<StudyParticipant> getApproveParticipants(@ExtractPayload Long hostId, @PathVariable Long studyId) {
+        StudyParticipant response = studyInformationService.getApproveParticipants(studyId);
+        return ResponseEntity.ok(response);
+    }
+
     @CheckStudyParticipant
     @GetMapping("/attendances")
     public ResponseEntity<AttendanceAssmbler> getAttendances(@ExtractPayload Long memberId, @PathVariable Long studyId) {
