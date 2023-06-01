@@ -137,11 +137,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .orderBy(weekly.week.desc())
                 .fetch();
 
-        if (weeks.size() == 0) {
-            return 1;
-        }
-
-        return weeks.get(0) + 1;
+        return weeks.size() == 0 ? 1 : weeks.get(0) + 1;
     }
 
     @Override
@@ -176,17 +172,26 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 )
                 .fetchOne();
 
-        query.delete(submit)
-                .where(submit.week.id.eq(weekId))
-                .execute();
+        if (weekId != null) {
+            query.delete(submit)
+                    .where(submit.week.id.eq(weekId))
+                    .execute();
 
-        query.delete(attachment)
-                .where(attachment.week.id.eq(weekId))
-                .execute();
+            query.delete(attachment)
+                    .where(attachment.week.id.eq(weekId))
+                    .execute();
 
-        query.delete(weekly)
-                .where(weekly.id.eq(weekId))
-                .execute();
+            query.delete(attendance)
+                    .where(
+                            attendance.study.id.eq(studyId),
+                            attendance.week.eq(week)
+                    )
+                    .execute();
+
+            query.delete(weekly)
+                    .where(weekly.id.eq(weekId))
+                    .execute();
+        }
     }
 
     private BooleanExpression participateStatusEq(ParticipantStatus status) {
