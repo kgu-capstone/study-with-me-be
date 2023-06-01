@@ -307,12 +307,20 @@ class StudySimpleQueryRepositoryTest extends RepositoryTest {
         // given
         Study study = studyRepository.save(GOOGLE_INTERVIEW.toOfflineStudy(host));
         
-        /* 1주차 */
+        /* next = 1주차 */
         assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(1);
         
-        /* 2주차 */
+        /* next = 2주차 */
         weekRepository.save(STUDY_WEEKLY_1.toWeekWithAssignment(study));
         assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(2);
+
+        /* next = 3주차 */
+        weekRepository.save(STUDY_WEEKLY_2.toWeekWithAssignment(study));
+        assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(3);
+
+        /* next = 4주차 */
+        weekRepository.save(STUDY_WEEKLY_3.toWeekWithAssignment(study));
+        assertThat(studyRepository.getNextWeek(study.getId())).isEqualTo(4);
     }
 
     @Test
