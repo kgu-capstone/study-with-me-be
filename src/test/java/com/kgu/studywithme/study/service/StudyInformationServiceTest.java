@@ -255,7 +255,7 @@ class StudyInformationServiceTest extends ServiceTest {
 
         AttendanceAssmbler result1 = studyInformationService.getAttendances(study.getId());
         assertThatAttendancesMatch(
-                result1.summaries(),
+                result1.result(),
                 Map.of(
                         host.getId(), APPROVE,
                         members[0].getId(), APPROVE,
@@ -285,7 +285,7 @@ class StudyInformationServiceTest extends ServiceTest {
 
         AttendanceAssmbler result2 = studyInformationService.getAttendances(study.getId());
         assertThatAttendancesMatch(
-                result2.summaries(),
+                result2.result(),
                 Map.of(
                         host.getId(), APPROVE,
                         members[0].getId(), APPROVE,
@@ -563,19 +563,19 @@ class StudyInformationServiceTest extends ServiceTest {
         }
     }
 
-    private void assertThatAttendancesMatch(Map<StudyAttendanceMember, List<AttendanceSummary>> result,
+    private void assertThatAttendancesMatch(List<StudyMemberAttendanceResult> result,
                                             Map<Long, ParticipantStatus> expectParticipantStatuses,
                                             Map<Long, List<AttendanceStatus>> expectAttendanceStatuses) {
-        for (StudyAttendanceMember attendanceMember : result.keySet()) {
+        for (StudyMemberAttendanceResult studyMemberAttendanceResult : result) {
             // check ParticipantStatus
-            ParticipantStatus participantStatus = expectParticipantStatuses.get(attendanceMember.id());
-            assertThat(attendanceMember.participantStatus()).isEqualTo(participantStatus);
+            StudyAttendanceMember member = studyMemberAttendanceResult.member();
+            assertThat(member.participantStatus()).isEqualTo(expectParticipantStatuses.get(member.id()));
 
             // check AttendanceStatus
-            List<AttendanceSummary> attendanceSummaries = result.get(attendanceMember);
-            List<AttendanceStatus> attendanceStatuses = expectAttendanceStatuses.get(attendanceMember.id());
-            for (int i = 0; i < attendanceSummaries.size(); i++) {
-                AttendanceSummary attendanceSummary = attendanceSummaries.get(i);
+            List<AttendanceSummary> summaries = studyMemberAttendanceResult.summaries();
+            List<AttendanceStatus> attendanceStatuses = expectAttendanceStatuses.get(member.id());
+            for (int i = 0; i < summaries.size(); i++) {
+                AttendanceSummary attendanceSummary = summaries.get(i);
                 AttendanceStatus attendanceStatus = attendanceStatuses.get(i);
                 assertThat(attendanceSummary.status()).isEqualTo(attendanceStatus.getDescription());
             }
