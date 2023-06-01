@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,17 +58,20 @@ public class StudyInformationService {
     public AttendanceAssmbler getAttendances(Long studyId) {
         List<AttendanceInformation> result = studyRepository.findAttendanceByStudyId(studyId);
 
-        Map<StudyAttendanceMember, List<AttendanceSummary>> summaries = result.stream()
-                .collect(Collectors.groupingBy(
-                        AttendanceInformation::getParticipant, // key = 사용자별
-                        Collectors.mapping(summary -> // value = 각 주차 출석 정보
-                                new AttendanceSummary(
-                                        summary.getWeek(), summary.getAttendanceStatus()
-                                ), Collectors.toList()
+        List<StudyMemberAttendanceResult> attendanceResults = result.stream()
+                .collect(Collectors.groupingBy(AttendanceInformation::getParticipant))
+                .entrySet().stream()
+                .map(entry ->
+                        new StudyMemberAttendanceResult(
+                                entry.getKey(),
+                                entry.getValue().stream()
+                                        .map(info -> new AttendanceSummary(info.getWeek(), info.getAttendanceStatus()))
+                                        .toList()
                         )
-                ));
+                )
+                .toList();
 
-        return new AttendanceAssmbler(summaries);
+        return new AttendanceAssmbler(attendanceResults);
     }
 
     public WeeklyAssembler getWeeks(Long studyId) {
