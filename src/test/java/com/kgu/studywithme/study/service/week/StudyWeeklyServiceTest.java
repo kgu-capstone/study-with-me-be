@@ -37,8 +37,7 @@ import static com.kgu.studywithme.common.utils.FileMockingUtils.createMultipleMo
 import static com.kgu.studywithme.common.utils.FileMockingUtils.createSingleMockMultipartFile;
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
-import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_1;
-import static com.kgu.studywithme.fixture.WeekFixture.STUDY_WEEKLY_2;
+import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
@@ -70,6 +69,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
 
     private static final WeekFixture WEEK_1 = STUDY_WEEKLY_1;
     private static final WeekFixture WEEK_2 = STUDY_WEEKLY_2;
+    private static final WeekFixture WEEK_3 = STUDY_WEEKLY_3;
     private static final UploadAttachment UPLOAD1 = UploadAttachment.of(
             "hello1.txt",
             "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.txt"
@@ -169,6 +169,44 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     ),
                     List.of(
                             NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE,
+                            NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE
+                    )
+            );
+
+            /* given - 3주차 */
+            StudyWeeklyRequest request3 = StudyWeeklyRequestUtils.createWeekWithAssignmentRequest(WEEK_3, files, true);
+
+            /* when - 3주차 */
+            studyWeeklyService.createWeek(study.getId(), request3);
+
+            /* then - 3주차 */
+            Study findStudy3 = studyRepository.findById(study.getId()).orElseThrow();
+
+            List<Week> weeks3 = findStudy3.getWeeks();
+            assertThat(weeks3).hasSize(3);
+            assertThatStudyWeekMatch(weeks2.get(0), 1, request1, true, true);
+            assertThatStudyWeekMatch(weeks2.get(1), 2, request2, true, true);
+            assertThatStudyWeekMatch(weeks2.get(2), 3, request3, true, true);
+            assertThatAttachmentsMatch(weeks2.get(0).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
+            assertThatAttachmentsMatch(weeks2.get(1).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
+            assertThatAttachmentsMatch(weeks2.get(2).getAttachments(), List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4));
+
+            List<Attendance> attendances3 = findStudy3.getAttendances();
+            assertThatAttendancesMatch(
+                    attendances3,
+                    List.of(
+                            1, 1, 1, 1, 1,
+                            2, 2, 2, 2, 2, 2,
+                            3, 3, 3, 3, 3, 3
+                    ),
+                    List.of(
+                            host, members[0], members[1], members[2], members[3],
+                            host, members[0], members[1], members[2], members[3], members[4],
+                            host, members[0], members[1], members[2], members[3], members[4]
+                    ),
+                    List.of(
+                            NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE,
+                            NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE,
                             NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE, NON_ATTENDANCE
                     )
             );
@@ -293,15 +331,29 @@ class StudyWeeklyServiceTest extends ServiceTest {
         void success() {
             // given
             study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+            study.recordAttendance(host, 1, ATTENDANCE);
+
             study.createWeek("Week 2", "Week 2", 2, PeriodFixture.WEEK_2.toPeriod(), List.of());
+            study.recordAttendance(host, 2, NON_ATTENDANCE);
 
             // when
             studyWeeklyService.deleteWeek(study.getId(), 2);
 
             // then
+            /* Weekly */
             assertAll(
                     () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 1)).isPresent(),
                     () -> assertThat(weekRepository.findByStudyIdAndWeek(study.getId(), 2)).isEmpty()
+            );
+
+            /* Attendance */
+            assertAll(
+                    () -> assertThat(attendanceRepository.findByStudyIdAndParticipantIdAndWeek(
+                            study.getId(), host.getId(), 1
+                    )).isPresent(),
+                    () -> assertThat(attendanceRepository.findByStudyIdAndParticipantIdAndWeek(
+                            study.getId(), host.getId(), 2
+                    )).isEmpty()
             );
         }
     }
