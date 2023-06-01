@@ -19,9 +19,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.kgu.studywithme.common.utils.TokenUtils.ACCESS_TOKEN;
 import static com.kgu.studywithme.common.utils.TokenUtils.BEARER_TOKEN;
@@ -485,9 +483,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             parameterWithName("studyId").description("스터디 ID(PK)")
                                     ),
                                     responseFields(
-                                            fieldWithPath("summaries.*").description("스터디 참여자"),
-                                            fieldWithPath("summaries.*[].week").description("스터디 주차"),
-                                            fieldWithPath("summaries.*[].status").description("해당 주차에 대한 출석 상태")
+                                            fieldWithPath("result[].member.id").description("스터디 참여자 ID(PK)"),
+                                            fieldWithPath("result[].member.nickname").description("스터디 참여자 닉네임"),
+                                            fieldWithPath("result[].member.participantStatus").description("스터디 참여자 참여 상태"),
+                                            fieldWithPath("result[].summaries[].week").description("스터디 주차"),
+                                            fieldWithPath("result[].summaries[].status").description("해당 주차 출석 상태")
                                     )
                             )
                     );
@@ -675,52 +675,62 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     private AttendanceAssmbler generateStudyAttendances() {
-        Map<StudyAttendanceMember, List<AttendanceSummary>> summaries = new HashMap<>();
-        summaries.put(
-                new StudyAttendanceMember(1L, "참여자1", APPROVE),
-                List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, NON_ATTENDANCE.getDescription())
+        List<StudyMemberAttendanceResult> result = new ArrayList<>();
+        result.add(
+                new StudyMemberAttendanceResult(
+                        new StudyAttendanceMember(1L, "참여자1", APPROVE),
+                        List.of(
+                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(4, NON_ATTENDANCE.getDescription())
+                        )
                 )
         );
-        summaries.put(
-                new StudyAttendanceMember(2L, "참여자2", CALCEL),
-                List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, LATE.getDescription())
+        result.add(
+                new StudyMemberAttendanceResult(
+                        new StudyAttendanceMember(2L, "참여자2", CALCEL),
+                        List.of(
+                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(3, LATE.getDescription())
+                        )
                 )
         );
-        summaries.put(
-                new StudyAttendanceMember(3L, "참여자3", APPROVE),
-                List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ABSENCE.getDescription()),
-                        new AttendanceSummary(3, LATE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription())
+        result.add(
+                new StudyMemberAttendanceResult(
+                        new StudyAttendanceMember(3L, "참여자3", APPROVE),
+                        List.of(
+                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(2, ABSENCE.getDescription()),
+                                new AttendanceSummary(3, LATE.getDescription()),
+                                new AttendanceSummary(4, ATTENDANCE.getDescription())
+                        )
                 )
         );
-        summaries.put(
-                new StudyAttendanceMember(4L, "참여자4", APPROVE),
-                List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(4, ATTENDANCE.getDescription())
+        result.add(
+                new StudyMemberAttendanceResult(
+                        new StudyAttendanceMember(4L, "참여자4", APPROVE),
+                        List.of(
+                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(3, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(4, ATTENDANCE.getDescription())
+                        )
                 )
         );
-        summaries.put(
-                new StudyAttendanceMember(5L, "참여자5", GRADUATED),
-                List.of(
-                        new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                        new AttendanceSummary(3, ATTENDANCE.getDescription())
+        result.add(
+                new StudyMemberAttendanceResult(
+                        new StudyAttendanceMember(5L, "참여자5", GRADUATED),
+                        List.of(
+                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
+                                new AttendanceSummary(3, ATTENDANCE.getDescription())
+                        )
                 )
         );
 
-        return new AttendanceAssmbler(summaries);
+        return new AttendanceAssmbler(result);
     }
 
     private WeeklyAssembler generateStudyWeeks() {
