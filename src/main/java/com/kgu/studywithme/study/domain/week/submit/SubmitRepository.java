@@ -9,8 +9,9 @@ import java.util.Optional;
 public interface SubmitRepository extends JpaRepository<Submit, Long> {
     @Query("SELECT s" +
             " FROM Submit s" +
-            " INNER JOIN s.week w" +
-            " WHERE s.participant.id = :participantId AND w.week = :week")
+            " JOIN FETCH s.week w" +
+            " JOIN FETCH s.participant p" +
+            " WHERE p.id = :participantId AND w.week = :week")
     Optional<Submit> findByParticipantIdAndWeek(@Param("participantId") Long participantId,
                                                 @Param("week") Integer week);
 }

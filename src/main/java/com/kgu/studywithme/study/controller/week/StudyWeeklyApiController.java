@@ -64,7 +64,7 @@ public class StudyWeeklyApiController {
                                                         @PathVariable Long studyId,
                                                         @PathVariable Integer week,
                                                         @ModelAttribute @Valid WeeklyAssignmentSubmitRequest request) {
-        studyWeeklyService.editSubmittedAssignment(memberId, week, request.type(), request.file(), request.link());
+        studyWeeklyService.editSubmittedAssignment(memberId, studyId, week, request.type(), request.file(), request.link());
         return ResponseEntity.noContent().build();
     }
 }
