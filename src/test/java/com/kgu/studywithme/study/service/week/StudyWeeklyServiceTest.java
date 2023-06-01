@@ -11,13 +11,13 @@ import com.kgu.studywithme.study.domain.Study;
 import com.kgu.studywithme.study.domain.attendance.Attendance;
 import com.kgu.studywithme.study.domain.attendance.AttendanceRepository;
 import com.kgu.studywithme.study.domain.attendance.AttendanceStatus;
+import com.kgu.studywithme.study.domain.week.Period;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.domain.week.WeekRepository;
 import com.kgu.studywithme.study.domain.week.attachment.Attachment;
 import com.kgu.studywithme.study.domain.week.attachment.UploadAttachment;
 import com.kgu.studywithme.study.domain.week.submit.Submit;
 import com.kgu.studywithme.study.domain.week.submit.SubmitRepository;
-import com.kgu.studywithme.study.domain.week.submit.UploadAssignment;
 import com.kgu.studywithme.study.exception.StudyErrorCode;
 import com.kgu.studywithme.upload.utils.FileUploader;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,6 +87,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
             "https://kr.object.ncloudstorage.com/bucket/attachments/uuid.png"
     );
     private static final List<UploadAttachment> uploadAttachments = List.of(UPLOAD1, UPLOAD2, UPLOAD3, UPLOAD4);
+    private MultipartFile file;
     private List<MultipartFile> files;
 
     @BeforeEach
@@ -101,6 +102,7 @@ class StudyWeeklyServiceTest extends ServiceTest {
         study = studyRepository.save(SPRING.toOnlineStudy(host));
         beParticipation(study, members[0], members[1], members[2], members[3]);
 
+        file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
         files = List.of(
                 createMultipleMockMultipartFile("hello1.txt", "text/plain"),
                 createMultipleMockMultipartFile("hello2.hwpx", "application/x-hwpml"),
@@ -271,7 +273,18 @@ class StudyWeeklyServiceTest extends ServiceTest {
     @DisplayName("주차를 수정한다")
     void updateWeek() {
         // given
-        study.createWeek("Week 1", "Week 1", 1, PeriodFixture.WEEK_1.toPeriod(), List.of());
+        studyWeeklyService.createWeek(
+                study.getId(),
+                new StudyWeeklyRequest(
+                        STUDY_WEEKLY_1.getTitle(),
+                        STUDY_WEEKLY_1.getContent(),
+                        STUDY_WEEKLY_1.getPeriod().getStartDate(),
+                        STUDY_WEEKLY_1.getPeriod().getEndDate(),
+                        STUDY_WEEKLY_1.isAssignmentExists(),
+                        STUDY_WEEKLY_1.isAutoAttendance(),
+                        List.of()
+                )
+        );
 
         // when
         mockingAttachmentsUpload();
@@ -717,7 +730,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @Test
         @DisplayName("과제 제출물을 업로드 하지 않으면 예외가 발생한다")
         void throwExceptionByMissingSubmission() {
-            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, null))
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(
+                    host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, null)
+            )
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.MISSING_SUBMISSION.getMessage());
         }
@@ -730,7 +745,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
             final MultipartFile file = createSingleMockMultipartFile("hello3.pdf", "application/pdf");
 
             // when - then
-            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", file, submitLink))
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(
+                    host.getId(), study.getId(), WEEK_1.getWeek(), "link", file, submitLink)
+            )
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.DUPLICATE_SUBMISSION.getMessage());
         }
@@ -742,7 +759,9 @@ class StudyWeeklyServiceTest extends ServiceTest {
             final String submitLink = "https://notion.so";
 
             // when - then
-            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, submitLink))
+            assertThatThrownBy(() -> studyWeeklyService.editSubmittedAssignment(
+                    host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, submitLink)
+            )
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.SUBMIT_NOT_FOUND.getMessage());
         }
@@ -751,12 +770,30 @@ class StudyWeeklyServiceTest extends ServiceTest {
         @DisplayName("제출한 과제를 수정한다")
         void success() {
             // given
-            Week week = weekRepository.save(WEEK_1.toWeekWithAssignment(study));
+            studyWeeklyService.createWeek(
+                    study.getId(),
+                    new StudyWeeklyRequest(
+                            STUDY_WEEKLY_1.getTitle(),
+                            STUDY_WEEKLY_1.getContent(),
+                            LocalDateTime.now().minusDays(1),
+                            LocalDateTime.now().plusDays(1),
+                            STUDY_WEEKLY_1.isAssignmentExists(),
+                            STUDY_WEEKLY_1.isAutoAttendance(),
+                            List.of()
+                    )
+            );
 
             /* Case 1) File 제출 */
             // when
-            final UploadAssignment previous = UploadAssignment.withFile("hello3.pdf", UPLOAD3.getLink());
-            week.submitAssignment(host, previous);
+            mockingAssignmentUpload();
+            studyWeeklyService.submitAssignment(
+                    host.getId(),
+                    study.getId(),
+                    WEEK_1.getWeek(),
+                    "file",
+                    file,
+                    null
+            );
 
             // then
             Submit previousSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
@@ -764,14 +801,21 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     () -> assertThat(previousSubmit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
                     () -> assertThat(previousSubmit.getUploadAssignment().getLink()).isEqualTo(UPLOAD3.getLink()),
                     () -> assertThat(previousSubmit.getUploadAssignment().getType()).isEqualTo(FILE),
-                    () -> assertThat(previousSubmit.getWeek()).isEqualTo(week),
-                    () -> assertThat(previousSubmit.getParticipant()).isEqualTo(host)
+                    () -> assertThat(previousSubmit.getWeek().getWeek()).isEqualTo(WEEK_1.getWeek()),
+                    () -> assertThat(previousSubmit.getParticipant()).isEqualTo(host),
+                    () -> assertThat(previousSubmit.getParticipant().getScore()).isEqualTo(81), // 출석 + 1
+                    () -> assertThat(
+                            attendanceRepository
+                                    .findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek())
+                                    .orElseThrow()
+                                    .getStatus()
+                    ).isEqualTo(ATTENDANCE)
             );
 
             /* Case 2) 링크 제출로 수정 */
             // when
             final String uploadLink = "https://notion.so";
-            studyWeeklyService.editSubmittedAssignment(host.getId(), WEEK_1.getWeek(), "link", null, uploadLink);
+            studyWeeklyService.editSubmittedAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, uploadLink);
 
             // then
             Submit currentSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
@@ -779,8 +823,85 @@ class StudyWeeklyServiceTest extends ServiceTest {
                     () -> assertThat(currentSubmit.getUploadAssignment().getUploadFileName()).isNull(),
                     () -> assertThat(currentSubmit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
                     () -> assertThat(currentSubmit.getUploadAssignment().getType()).isEqualTo(LINK),
-                    () -> assertThat(currentSubmit.getWeek()).isEqualTo(week),
-                    () -> assertThat(currentSubmit.getParticipant()).isEqualTo(host)
+                    () -> assertThat(currentSubmit.getWeek().getWeek()).isEqualTo(WEEK_1.getWeek()),
+                    () -> assertThat(currentSubmit.getParticipant()).isEqualTo(host),
+                    () -> assertThat(currentSubmit.getParticipant().getScore()).isEqualTo(81), // 출석 + 1
+                    () -> assertThat(
+                            attendanceRepository
+                                    .findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek())
+                                    .orElseThrow()
+                                    .getStatus()
+                    ).isEqualTo(ATTENDANCE)
+            );
+        }
+
+        @Test
+        @DisplayName("제출한 과제를 수정한다 [Period 이후 수정으로 인한 지각 처리]")
+        void successOnLate() {
+            // given
+            studyWeeklyService.createWeek(
+                    study.getId(),
+                    new StudyWeeklyRequest(
+                            STUDY_WEEKLY_1.getTitle(),
+                            STUDY_WEEKLY_1.getContent(),
+                            LocalDateTime.now().minusDays(1),
+                            LocalDateTime.now().plusDays(1),
+                            STUDY_WEEKLY_1.isAssignmentExists(),
+                            STUDY_WEEKLY_1.isAutoAttendance(),
+                            List.of()
+                    )
+            );
+
+            /* Case 1) File 제출 */
+            // when
+            mockingAssignmentUpload();
+            studyWeeklyService.submitAssignment(
+                    host.getId(),
+                    study.getId(),
+                    WEEK_1.getWeek(),
+                    "file",
+                    file,
+                    null
+            );
+
+            // then
+            Submit previousSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(previousSubmit.getUploadAssignment().getUploadFileName()).isEqualTo("hello3.pdf"),
+                    () -> assertThat(previousSubmit.getUploadAssignment().getLink()).isEqualTo(UPLOAD3.getLink()),
+                    () -> assertThat(previousSubmit.getUploadAssignment().getType()).isEqualTo(FILE),
+                    () -> assertThat(previousSubmit.getWeek().getWeek()).isEqualTo(WEEK_1.getWeek()),
+                    () -> assertThat(previousSubmit.getParticipant()).isEqualTo(host),
+                    () -> assertThat(previousSubmit.getParticipant().getScore()).isEqualTo(81), // 출석 + 1
+                    () -> assertThat(
+                            attendanceRepository
+                                    .findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek())
+                                    .orElseThrow()
+                                    .getStatus()
+                    ).isEqualTo(ATTENDANCE)
+            );
+
+            /* Case 2) 링크 제출로 수정 */
+            // when
+            makeSubmitPeriodEnd();
+            final String uploadLink = "https://notion.so";
+            studyWeeklyService.editSubmittedAssignment(host.getId(), study.getId(), WEEK_1.getWeek(), "link", null, uploadLink);
+
+            // then
+            Submit currentSubmit = submitRepository.findByParticipantIdAndWeek(host.getId(), WEEK_1.getWeek()).orElseThrow();
+            assertAll(
+                    () -> assertThat(currentSubmit.getUploadAssignment().getUploadFileName()).isNull(),
+                    () -> assertThat(currentSubmit.getUploadAssignment().getLink()).isEqualTo(uploadLink),
+                    () -> assertThat(currentSubmit.getUploadAssignment().getType()).isEqualTo(LINK),
+                    () -> assertThat(currentSubmit.getWeek().getWeek()).isEqualTo(WEEK_1.getWeek()),
+                    () -> assertThat(currentSubmit.getParticipant()).isEqualTo(host),
+                    () -> assertThat(currentSubmit.getParticipant().getScore()).isEqualTo(79), // 지각 - 1
+                    () -> assertThat(
+                            attendanceRepository
+                                    .findByStudyIdAndParticipantIdAndWeek(study.getId(), host.getId(), WEEK_1.getWeek())
+                                    .orElseThrow()
+                                    .getStatus()
+                    ).isEqualTo(LATE)
             );
         }
     }
@@ -790,6 +911,17 @@ class StudyWeeklyServiceTest extends ServiceTest {
         given(fileUploader.uploadWeeklyAttachment(files.get(1))).willReturn(UPLOAD2.getLink());
         given(fileUploader.uploadWeeklyAttachment(files.get(2))).willReturn(UPLOAD3.getLink());
         given(fileUploader.uploadWeeklyAttachment(files.get(3))).willReturn(UPLOAD4.getLink());
+    }
+
+    private void mockingAssignmentUpload() {
+        given(fileUploader.uploadWeeklySubmit(file)).willReturn(UPLOAD3.getLink());
+    }
+
+    private void makeSubmitPeriodEnd() {
+        Period period = study.getWeeks().get(0).getPeriod();
+
+        ReflectionTestUtils.setField(period, "startDate", LocalDateTime.now().minusDays(2));
+        ReflectionTestUtils.setField(period, "endDate", LocalDateTime.now().minusDays(1));
     }
 
     private void beParticipation(Study study, Member... members) {
