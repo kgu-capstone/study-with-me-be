@@ -49,4 +49,22 @@ class AttendanceTest {
         // then
         assertThat(attendance.getStatus()).isEqualTo(LATE);
     }
+
+    @Test
+    @DisplayName("AttendanceStatus가 출석인지 확인한다")
+    void isAttendanceStatus() {
+        // given
+        Attendance attendance1 = Attendance.recordAttendance(STUDY, HOST, 1, ATTENDANCE);
+        Attendance attendance2 = Attendance.recordAttendance(STUDY, HOST, 2, LATE);
+
+        // when
+        boolean actual1 = attendance1.isAttendanceStatus();
+        boolean actual2 = attendance2.isAttendanceStatus();
+
+        // then
+        assertAll(
+                () -> assertThat(actual1).isTrue(),
+                () -> assertThat(actual2).isFalse()
+        );
+    }
 }

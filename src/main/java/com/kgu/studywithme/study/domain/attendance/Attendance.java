@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.ATTENDANCE;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -45,5 +47,9 @@ public class Attendance {
 
     public void updateAttendanceStatus(AttendanceStatus status) {
         this.status = status;
+    }
+
+    public boolean isAttendanceStatus() {
+        return status == ATTENDANCE;
     }
 }

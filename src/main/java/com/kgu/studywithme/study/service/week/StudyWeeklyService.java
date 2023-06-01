@@ -189,16 +189,32 @@ public class StudyWeeklyService {
     }
 
     @Transactional
-    public void editSubmittedAssignment(Long participantId, Integer week, String type, MultipartFile file, String link) {
+    public void editSubmittedAssignment(Long participantId, Long studyId, Integer week, String type, MultipartFile file, String link) {
         validateAssignmentSubmissionExists(file, link);
 
         Submit submit = getParticipantSubmit(participantId, week);
         UploadAssignment newUploadAssignment = createUpload(type, file, link);
         submit.editUpload(newUploadAssignment);
+
+        validateSubmitTimeAndApplyLateSubmissionPenalty(submit.getWeek(), submit.getParticipant(), studyId);
     }
 
     private Submit getParticipantSubmit(Long participantId, Integer week) {
         return submitRepository.findByParticipantIdAndWeek(participantId, week)
                 .orElseThrow(() -> StudyWithMeException.type(StudyErrorCode.SUBMIT_NOT_FOUND));
+    }
+
+    private void validateSubmitTimeAndApplyLateSubmissionPenalty(Week week, Member participant, Long studyId) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Period period = week.getPeriod();
+
+        if (week.isAutoAttendance() && !period.isDateWithInRange(now)) {
+            Attendance attendance = getParticipantAttendance(studyId, participant.getId(), week.getWeek());
+
+            if (attendance.isAttendanceStatus()) {
+                attendance.updateAttendanceStatus(LATE);
+                participant.applyScoreByAttendanceStatus(ATTENDANCE, LATE);
+            }
+        }
     }
 }

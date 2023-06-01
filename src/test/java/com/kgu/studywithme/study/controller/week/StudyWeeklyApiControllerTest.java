@@ -854,7 +854,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.MISSING_SUBMISSION))
                     .when(studyWeeklyService)
-                    .editSubmittedAssignment(any(), any(), any(), any(), any());
+                    .editSubmittedAssignment(any(), any(), any(), any(), any(), any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
@@ -907,7 +907,7 @@ class StudyWeeklyApiControllerTest extends ControllerTest {
             given(jwtTokenProvider.getId(anyString())).willReturn(HOST_ID);
             doThrow(StudyWithMeException.type(StudyErrorCode.DUPLICATE_SUBMISSION))
                     .when(studyWeeklyService)
-                    .editSubmittedAssignment(any(), any(), any(), any(), any());
+                    .editSubmittedAssignment(any(), any(), any(), any(), any(), any());
 
             // when
             MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
