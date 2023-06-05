@@ -1,6 +1,75 @@
 spring:
-  config:
-    import:
-      - security/application-external.yml
-      - security/application-local-datasource.yml
-      - application-logging.yml
+  datasource:
+    url: jdbc:h2:~/test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 50
+
+  thymeleaf:
+    cache: false
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.naver.com
+    port: 465
+    username: ${NAVER_EMAIL_USERNAME}
+    password: ${NAVER_EMAIL_PASSWORD}
+    properties:
+      mail:
+        mime:
+          charset: UTF-8
+        transport:
+          protocol: smtp
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+
+jwt:
+  secret-key: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+  access-token-validity: 7200
+  refresh-token-validity: 129600
+
+oauth2:
+  google:
+    grant-type: authorization_code
+    client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+    client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+    redirect-url: ${OAUTH_GOOGLE_REDIRECT_URL}
+    scope: openid, profile, email
+    auth-url: https://accounts.google.com/o/oauth2/v2/auth
+    token-url: https://www.googleapis.com/oauth2/v4/token
+    user-info-url: https://www.googleapis.com/oauth2/v3/userinfo
+
+cloud:
+  ncp:
+    region: kr-standard
+    end-point: kr.object.ncloudstorage.com
+    credentials:
+      access-key: ${NCP_ACCESS_KEY}
+      secret-key: ${NCP_SECRET_KEY}
+    storage:
+      bucket: ${NCP_BUCKET_NAME}
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}

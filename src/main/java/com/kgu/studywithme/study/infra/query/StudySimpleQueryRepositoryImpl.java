@@ -34,7 +34,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findApplyStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .selectDistinct(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(participant).on(participant.study.id.eq(study.id))
                 .where(memberIdEq(memberId), participateStatusEq(APPLY))
@@ -45,7 +45,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findParticipateStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .selectDistinct(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
@@ -57,7 +57,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleStudy> findFavoriteStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
+                .selectDistinct(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(favorite).on(favorite.studyId.eq(study.id))
                 .where(favorite.memberId.eq(memberId))
@@ -68,7 +68,7 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
     @Override
     public List<SimpleGraduatedStudy> findGraduatedStudyByMemberId(Long memberId) {
         return query
-                .select(new QSimpleGraduatedStudy(
+                .selectDistinct(new QSimpleGraduatedStudy(
                         study.id, study.name, study.category, study.thumbnail,
                         review.id, review.content, review.createdAt, review.modifiedAt
                 ))
