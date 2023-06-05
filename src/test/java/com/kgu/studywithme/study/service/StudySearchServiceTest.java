@@ -76,7 +76,7 @@ class StudySearchServiceTest extends ServiceTest {
         programming[10] = RUST.toOnlineStudy(host);
         programming[11] = OS.toOnlineStudy(host);
     }
-    
+
     @Test
     @DisplayName("특정 카테고리에 해당하는 스터디 리스트를 조회한다 [프로그래밍 카테고리 & 최신순 정렬]")
     void findStudyByCategory() {

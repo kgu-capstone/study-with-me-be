@@ -1,3 +1,79 @@
 spring:
-  profiles:
-    active: test
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MYSQL;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        default_batch_fetch_size: 50
+
+  thymeleaf:
+    cache: false
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.naver.com
+    port: 465
+    username: username
+    password: password
+    properties:
+      mail:
+        mime:
+          charset: UTF-8
+        transport:
+          protocol: smtp
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+
+jwt:
+  secret-key: abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  access-token-validity: 1234
+  refresh-token-validity: 1234
+
+oauth2:
+  google:
+    grant-type: authorization_code
+    client-id: client_id
+    client-secret: client_secret
+    redirect-url: http://localhost:8080/login/oauth2/code/google
+    scope: openid, profile, email
+    auth-url: https://accounts.google.com/o/oauth2/v2/auth
+    token-url: https://www.googleapis.com/oauth2/v4/token
+    user-info-url: https://www.googleapis.com/oauth2/v3/userinfo
+
+cloud:
+  ncp:
+    region: kr-standard
+    end-point: kr.object.ncloudstorage.com
+    credentials:
+      access-key: access-key
+      secret-key: secret-key
+    storage:
+      bucket: bucket-name
+
+slack:
+  webhook:
+    url: slack-webhook-url
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

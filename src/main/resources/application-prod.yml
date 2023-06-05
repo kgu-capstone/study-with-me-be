@@ -1,8 +1,0 @@
-spring:
-  config:
-    activate:
-      on-profile: prod
-    import:
-      - security/application-external.yml
-      - security/application-prod-datasource.yml
-      - application-logging.yml
