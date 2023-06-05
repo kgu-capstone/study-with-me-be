@@ -1,21 +1,17 @@
 spring:
-  config:
-    import:
-      - application-logging.yml
-
   datasource:
-    url: jdbc:h2:mem:test;MODE=MYSQL;
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ${MYSQL_DB_URL}
+    username: ${MYSQL_DB_USERNAME}
+    password: ${MYSQL_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
-        show_sql: false
+        show_sql: true
         format_sql: true
         default_batch_fetch_size: 50
 
@@ -26,8 +22,8 @@ spring:
     default-encoding: UTF-8
     host: smtp.naver.com
     port: 465
-    username: username
-    password: password
+    username: ${NAVER_EMAIL_USERNAME}
+    password: ${NAVER_EMAIL_PASSWORD}
     properties:
       mail:
         mime:
@@ -43,16 +39,16 @@ spring:
             enable: true
 
 jwt:
-  secret-key: abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
-  access-token-validity: 1234
-  refresh-token-validity: 1234
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-validity: 7200 # 2시간
+  refresh-token-validity: 129600 # 2주
 
 oauth2:
   google:
     grant-type: authorization_code
-    client-id: client_id
-    client-secret: client_secret
-    redirect-url: http://localhost:8080/login/oauth2/code/google
+    client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+    client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+    redirect-url: ${OAUTH_GOOGLE_REDIRECT_URL}
     scope: openid, profile, email
     auth-url: https://accounts.google.com/o/oauth2/v2/auth
     token-url: https://www.googleapis.com/oauth2/v4/token
@@ -63,11 +59,11 @@ cloud:
     region: kr-standard
     end-point: kr.object.ncloudstorage.com
     credentials:
-      access-key: access-key
-      secret-key: secret-key
+      access-key: ${NCP_ACCESS_KEY}
+      secret-key: ${NCP_SECRET_KEY}
     storage:
-      bucket: bucket-name
+      bucket: ${NCP_BUCKET_NAME}
 
 slack:
   webhook:
-    url: slack-webhook-url
+    url: ${SLACK_WEBHOOK_URL}
