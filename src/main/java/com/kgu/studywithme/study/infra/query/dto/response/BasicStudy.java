@@ -41,7 +41,7 @@ public class BasicStudy {
         this.thumbnailBackground = thumbnail.getBackground();
         this.type = type.getDescription();
         this.recruitmentStatus = recruitmentStatus.getDescription();
-        this.currentMembers = currentMembers + 1;
+        this.currentMembers = currentMembers + 1; // + host
         this.maxMembers = capacity.getValue();
         this.registerDate = registerDate;
     }

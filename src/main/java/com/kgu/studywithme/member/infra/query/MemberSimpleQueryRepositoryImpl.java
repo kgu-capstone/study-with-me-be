@@ -69,10 +69,10 @@ public class MemberSimpleQueryRepositoryImpl implements MemberSimpleQueryReposit
                 .groupBy(attendance.status)
                 .fetch();
 
-        return includeMissingAttendanceStatuses(fetchResult);
+        return includeMissingAttendanceStatus(fetchResult);
     }
 
-    private List<AttendanceRatio> includeMissingAttendanceStatuses(List<AttendanceRatio> fetchResult) {
+    private List<AttendanceRatio> includeMissingAttendanceStatus(List<AttendanceRatio> fetchResult) {
         List<AttendanceRatio> result = new ArrayList<>();
 
         for (AttendanceStatus status : AttendanceStatus.getAttendanceStatuses()) {
