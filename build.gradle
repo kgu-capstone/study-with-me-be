@@ -103,4 +103,8 @@ bootJar {
 		from file("src/main/resources/static")
 		into file("build/resources/main/static")
 	}
+
+	archivesBaseName = 'StudyWithMe'
+	archiveFileName = 'StudyWithMe.jar'
+	archiveVersion = "0.0.1"
 }
