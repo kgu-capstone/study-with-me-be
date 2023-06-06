@@ -41,7 +41,7 @@ public class ParticipationService {
         Member applier = memberFindService.findById(applierId);
         study.validateMemberIsApplier(applier);
 
-        participantRepository.deleteApplier(study, applier);
+        participantRepository.deleteParticipantAssociatedMember(study, applier);
     }
 
     @Transactional
@@ -95,6 +95,7 @@ public class ParticipationService {
         Member newHost = memberFindService.findById(participantId);
 
         study.delegateStudyHostAuthority(newHost);
+        participantRepository.deleteParticipantAssociatedMember(study, newHost);
     }
 
     @Transactional

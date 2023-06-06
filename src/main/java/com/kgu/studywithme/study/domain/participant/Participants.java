@@ -205,6 +205,12 @@ public class Participants {
                 .toList();
     }
 
+    public List<Member> getParticipantsWithoutHost() {
+        return participants.stream()
+                .map(Participant::getMember)
+                .toList();
+    }
+
     public List<Member> getApplier() {
         return participants.stream()
                 .filter(participant -> participant.getStatus() == APPLY)
