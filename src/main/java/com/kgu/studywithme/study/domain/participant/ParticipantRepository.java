@@ -10,5 +10,5 @@ import org.springframework.data.repository.query.Param;
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("DELETE FROM Participant p WHERE p.study = :study AND p.member = :member")
-    void deleteApplier(@Param("study") Study study, @Param("member") Member member);
+    void deleteParticipantAssociatedMember(@Param("study") Study study, @Param("member") Member member);
 }

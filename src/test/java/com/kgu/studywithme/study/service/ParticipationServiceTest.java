@@ -17,6 +17,10 @@ import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
+
 import static com.kgu.studywithme.fixture.MemberFixture.*;
 import static com.kgu.studywithme.fixture.StudyFixture.SPRING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ParticipationServiceTest extends ServiceTest {
     @Autowired
     private ParticipationService participationService;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Autowired
     private ApplicationEvents events;
@@ -57,7 +64,7 @@ class ParticipationServiceTest extends ServiceTest {
                     .isInstanceOf(StudyWithMeException.class)
                     .hasMessage(StudyErrorCode.RECRUITMENT_IS_COMPLETE.getMessage());
         }
-        
+
         @Test
         @DisplayName("스터디 팀장은 참여 신청을 할 수 없다")
         void throwExceptionByMemberIsHost() {
@@ -193,7 +200,7 @@ class ParticipationServiceTest extends ServiceTest {
             int count = (int) events.stream(StudyApprovedEvent.class).count();
             assertThat(count).isEqualTo(0);
         }
-        
+
         @Test
         @DisplayName("참여 신청자가 아니면 참여 승인을 할 수 없다")
         void throwExceptionByMemberIsNotApplier() {
@@ -204,14 +211,14 @@ class ParticipationServiceTest extends ServiceTest {
             int count = (int) events.stream(StudyApprovedEvent.class).count();
             assertThat(count).isEqualTo(0);
         }
-        
+
         @Test
         @DisplayName("참여 인원이 꽉 찼다면 더이상 참여 승인을 할 수 없다")
         void throwExceptionByStudyCapacityIsFull() {
             // given
             study.applyParticipation(applierWithEmailOptIn);
             makeCapacityFull();
-            
+
             // when - then
             assertThatThrownBy(() -> participationService.approve(study.getId(), applierWithEmailOptIn.getId(), host.getId()))
                     .isInstanceOf(StudyWithMeException.class)
@@ -604,7 +611,9 @@ class ParticipationServiceTest extends ServiceTest {
 
             assertAll(
                     () -> assertThat(study.getHost()).isEqualTo(host),
-                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(host, participant)
+                    () -> assertThat(study.getApproveParticipants()).containsExactlyInAnyOrder(host, participant),
+                    () -> assertThat(study.getParticipantsWithoutHost()).containsExactlyInAnyOrder(participant),
+                    () -> assertThat(getParticipantMemberIds()).containsExactlyInAnyOrder(participant.getId())
             );
 
             // when
@@ -613,9 +622,31 @@ class ParticipationServiceTest extends ServiceTest {
             // then
             Study findStudy = studyRepository.findById(study.getId()).orElseThrow();
             assertAll(
-                    () -> assertThat(findStudy.getHost()).isEqualTo(participant),
-                    () -> assertThat(findStudy.getApproveParticipants()).containsExactlyInAnyOrder(host, participant)
+                    () -> assertThat(findStudy.getHost().getId()).isEqualTo(participant.getId()),
+                    () -> assertThat(
+                            findStudy.getApproveParticipants()
+                                    .stream()
+                                    .map(Member::getId)
+                                    .toList()
+                    ).containsExactlyInAnyOrder(host.getId(), participant.getId()),
+                    () -> assertThat(
+                            findStudy.getParticipantsWithoutHost()
+                                    .stream()
+                                    .map(Member::getId)
+                                    .toList()
+                    ).containsExactlyInAnyOrder(host.getId()),
+                    () -> assertThat(getParticipantMemberIds()).containsExactlyInAnyOrder(host.getId())
             );
+        }
+
+        private List<Long> getParticipantMemberIds() {
+            return em.createQuery(
+                            "SELECT p.member.id" +
+                                    " FROM Participant p" +
+                                    " WHERE p.study.id = :studyId",
+                            Long.class)
+                    .setParameter("studyId", study.getId())
+                    .getResultList();
         }
     }
 }
