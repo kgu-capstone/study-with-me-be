@@ -47,7 +47,7 @@ class ParticipantRepositoryTest extends RepositoryTest {
         participantRepository.save(participant);
 
         // when
-        participantRepository.deleteApplier(study, member);
+        participantRepository.deleteParticipantAssociatedMember(study, member);
 
         // then
         Optional<Participant> findParticipant = participantRepository.findById(participant.getId());
