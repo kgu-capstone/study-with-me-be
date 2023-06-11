@@ -23,7 +23,7 @@ include::{snippets}/MemberApi/SignUp/Success/request-fields.adoc[]
 HTTP Response
 include::{snippets}/MemberApi/SignUp/Success/http-response.adoc[]
 
-== 정보 수정 [AccessToken 필수]
+== 사용자 정보 수정 [AccessToken 필수]
 HTTP Request
 include::{snippets}/MemberApi/Update/http-request.adoc[]
 include::{snippets}/MemberApi/Update/request-headers.adoc[]

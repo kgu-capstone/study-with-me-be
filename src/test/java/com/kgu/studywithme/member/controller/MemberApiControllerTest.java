@@ -139,14 +139,14 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자 정보 수정 [PATCH /api/members/{memberId}]")
+    @DisplayName("사용자 정보 수정 [PATCH /api/members/{memberId}] - AccessToken 필수")
     class update {
         private static final String BASE_URL = "/api/members/{memberId}";
         private static final Long MEMBER_ID = 1L;
 
         @Test
         @DisplayName("사용자 정보를 수정한다")
-        void update() throws Exception {
+        void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
             given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);

@@ -45,7 +45,7 @@ include::{snippets}/StudyApi/Review/Remove/Success/path-parameters.adoc[]
 HTTP Response
 include::{snippets}/StudyApi/Review/Remove/Success/http-response.adoc[]
 
-== 리뷰 수정 [AccessToken 필수]
+== 스터디 리뷰 수정 [AccessToken 필수]
 === 1. 작성자가 아니면 리뷰를 수정할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Review/Update/Failure/http-request.adoc[]
