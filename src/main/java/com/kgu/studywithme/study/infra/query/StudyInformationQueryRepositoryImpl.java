@@ -1,15 +1,14 @@
 package com.kgu.studywithme.study.infra.query;
 
-import com.kgu.studywithme.member.domain.QMember;
 import com.kgu.studywithme.study.domain.week.QWeek;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -97,28 +96,35 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
 
     @Override
     public List<AttendanceInformation> findAttendanceByStudyId(Long studyId) {
-        QMember host = new QMember("host");
-
-        List<AttendanceInformation> hostAttendances = query
-                .select(new QAttendanceInformation(host.id, host.nickname, Expressions.asEnum(APPROVE), attendance.week, attendance.status))
+        Long hostId = query
+                .select(study.participants.host.id)
                 .from(study)
-                .innerJoin(study.participants.host, host)
-                .innerJoin(attendance).on(attendance.participant.id.eq(host.id))
                 .where(study.id.eq(studyId))
-                .orderBy(attendance.week.asc())
+                .fetchOne();
+
+        List<Long> participantIds = query
+                .select(participant.member.id)
+                .from(participant)
+                .where(
+                        participant.study.id.eq(studyId),
+                        participant.status.eq(APPROVE)
+                )
                 .fetch();
 
-        List<AttendanceInformation> participantAttendances = query
-                .select(new QAttendanceInformation(member.id, member.nickname, participant.status, attendance.week, attendance.status))
+        List<Long> totalIds = Stream.of(List.of(hostId), participantIds)
+                .flatMap(Collection::stream)
+                .toList();
+
+        return query
+                .select(new QAttendanceInformation(member.id, member.nickname, attendance.week, attendance.status))
                 .from(attendance)
                 .innerJoin(attendance.participant, member)
-                .innerJoin(participant).on(participant.member.id.eq(member.id))
-                .where(attendance.study.id.eq(studyId))
+                .where(
+                        attendance.study.id.eq(studyId),
+                        member.id.in(totalIds)
+                )
                 .orderBy(member.id.asc(), attendance.week.asc())
                 .fetch();
-
-        return Stream.concat(hostAttendances.stream(), participantAttendances.stream())
-                .toList();
     }
 
     @Override
