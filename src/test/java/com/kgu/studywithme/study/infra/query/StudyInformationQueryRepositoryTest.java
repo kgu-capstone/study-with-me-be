@@ -188,20 +188,32 @@ class StudyInformationQueryRepositoryTest extends RepositoryTest {
         assertThatAttendancesMatch(
                 result2,
                 List.of(
-                        1, 1, 1, 1,
-                        2, 2, 2, 2
+                        1, 2,
+                        1,
+                        1, 2,
+                        1, 2,
+                        2
                 ),
                 List.of(
-                        host, members[0], members[1], members[2],
-                        host, members[1], members[2], members[3]
+                        host, host,
+                        members[0],
+                        members[1], members[1],
+                        members[2], members[2],
+                        members[3]
                 ),
                 List.of(
-                        APPROVE, GRADUATED, APPROVE, APPROVE,
-                        APPROVE, APPROVE, APPROVE, APPROVE
+                        APPROVE, APPROVE,
+                        GRADUATED,
+                        APPROVE, APPROVE,
+                        APPROVE, APPROVE,
+                        APPROVE
                 ),
                 List.of(
-                        ATTENDANCE, ATTENDANCE, LATE, ABSENCE,
-                        LATE, ATTENDANCE, ATTENDANCE, ATTENDANCE
+                        ATTENDANCE, LATE,
+                        ATTENDANCE,
+                        LATE, ATTENDANCE,
+                        ABSENCE, ATTENDANCE,
+                        ATTENDANCE
                 )
         );
     }

@@ -1,21 +1,24 @@
 package com.kgu.studywithme.study.infra.query;
 
+import com.kgu.studywithme.member.domain.QMember;
 import com.kgu.studywithme.study.domain.week.QWeek;
 import com.kgu.studywithme.study.domain.week.Week;
 import com.kgu.studywithme.study.infra.query.dto.response.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.kgu.studywithme.member.domain.QMember.member;
+import static com.kgu.studywithme.study.domain.QStudy.study;
 import static com.kgu.studywithme.study.domain.attendance.QAttendance.attendance;
 import static com.kgu.studywithme.study.domain.notice.QNotice.notice;
 import static com.kgu.studywithme.study.domain.notice.comment.QComment.comment;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPLY;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.GRADUATED;
+import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.participant.QParticipant.participant;
 import static com.kgu.studywithme.study.domain.review.QReview.review;
 import static com.kgu.studywithme.study.domain.week.submit.QSubmit.submit;
@@ -38,7 +41,7 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
     @Override
     public List<ReviewInformation> findReviewByStudyId(Long studyId) {
         return query
-                .select(new QReviewInformation(member.id, member.nickname, review.content, review.modifiedAt))
+                .select(new QReviewInformation(review.id, review.content, review.modifiedAt, member.id, member.nickname))
                 .from(review)
                 .innerJoin(review.writer, member)
                 .where(review.study.id.eq(studyId))
@@ -51,7 +54,8 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
         List<NoticeInformation> noticeResult = query
                 .select(new QNoticeInformation(
                         notice.id, notice.title, notice.content, notice.createdAt, notice.modifiedAt,
-                        member.id, member.nickname))
+                        member.id, member.nickname
+                ))
                 .from(notice)
                 .innerJoin(notice.writer, member)
                 .where(notice.study.id.eq(studyId))
@@ -64,9 +68,13 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
 
     private void applyCommentsInNotice(List<NoticeInformation> noticeResult) {
         List<CommentInformation> commentResult = query
-                .select(new QCommentInformation(comment.id, comment.notice.id, comment.content, member.id, member.nickname))
+                .select(new QCommentInformation(
+                        comment.id, comment.notice.id, comment.content, comment.modifiedAt,
+                        member.id, member.nickname
+                ))
                 .from(comment)
                 .innerJoin(comment.writer, member)
+                .orderBy(comment.id.asc())
                 .fetch();
 
         noticeResult.forEach(notice -> notice.applyComments(
@@ -83,20 +91,34 @@ public class StudyInformationQueryRepositoryImpl implements StudyInformationQuer
                 .from(participant)
                 .innerJoin(participant.member, member)
                 .where(studyIdEq(studyId), applyStatus())
-                .orderBy(participant.id.desc())
+                .orderBy(member.id.desc())
                 .fetch();
     }
 
     @Override
     public List<AttendanceInformation> findAttendanceByStudyId(Long studyId) {
-        return query
+        QMember host = new QMember("host");
+
+        List<AttendanceInformation> hostAttendances = query
+                .select(new QAttendanceInformation(host.id, host.nickname, Expressions.asEnum(APPROVE), attendance.week, attendance.status))
+                .from(study)
+                .innerJoin(study.participants.host, host)
+                .innerJoin(attendance).on(attendance.participant.id.eq(host.id))
+                .where(study.id.eq(studyId))
+                .orderBy(attendance.week.asc())
+                .fetch();
+
+        List<AttendanceInformation> participantAttendances = query
                 .select(new QAttendanceInformation(member.id, member.nickname, participant.status, attendance.week, attendance.status))
                 .from(attendance)
                 .innerJoin(attendance.participant, member)
-                .leftJoin(participant).on(participant.member.id.eq(member.id))
+                .innerJoin(participant).on(participant.member.id.eq(member.id))
                 .where(attendance.study.id.eq(studyId))
-                .orderBy(attendance.week.asc(), member.id.asc())
+                .orderBy(member.id.asc(), attendance.week.asc())
                 .fetch();
+
+        return Stream.concat(hostAttendances.stream(), participantAttendances.stream())
+                .toList();
     }
 
     @Override

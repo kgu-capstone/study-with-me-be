@@ -8,8 +8,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.APPROVE;
-
 @Getter
 @AllArgsConstructor
 public class AttendanceInformation {
@@ -25,7 +23,7 @@ public class AttendanceInformation {
         this.participant = new StudyAttendanceMember(
                 id,
                 nickname.getValue(),
-                (participantStatus == null) ? APPROVE : participantStatus
+                participantStatus
         );
         this.week = week;
         this.attendanceStatus = attendanceStatus.getDescription();

@@ -117,11 +117,36 @@ class StudyInformationApiControllerTest extends ControllerTest {
             ReviewAssembler response = new ReviewAssembler(
                     9,
                     List.of(
-                            new ReviewInformation(new StudyMember(1L, "닉네임1"), "리뷰1", LocalDateTime.now().minusDays(1)),
-                            new ReviewInformation(new StudyMember(2L, "닉네임2"), "리뷰2", LocalDateTime.now().minusDays(2)),
-                            new ReviewInformation(new StudyMember(3L, "닉네임3"), "리뷰3", LocalDateTime.now().minusDays(3)),
-                            new ReviewInformation(new StudyMember(4L, "닉네임4"), "리뷰4", LocalDateTime.now().minusDays(4)),
-                            new ReviewInformation(new StudyMember(5L, "닉네임5"), "리뷰5", LocalDateTime.now().minusDays(5))
+                            new ReviewInformation(
+                                    5L,
+                                    "리뷰5",
+                                    LocalDateTime.now().minusDays(5),
+                                    new StudyMember(1L, "닉네임1")
+                            ),
+                            new ReviewInformation(
+                                    4L,
+                                    "리뷰4",
+                                    LocalDateTime.now().minusDays(4),
+                                    new StudyMember(2L, "닉네임2")
+                            ),
+                            new ReviewInformation(
+                                    3L,
+                                    "리뷰3",
+                                    LocalDateTime.now().minusDays(3),
+                                    new StudyMember(3L, "닉네임3")
+                            ),
+                            new ReviewInformation(
+                                    2L,
+                                    "리뷰2",
+                                    LocalDateTime.now().minusDays(2),
+                                    new StudyMember(4L, "닉네임4")
+                            ),
+                            new ReviewInformation(
+                                    1L,
+                                    "리뷰1",
+                                    LocalDateTime.now().minusDays(1),
+                                    new StudyMember(5L, "닉네임5")
+                            )
                     )
             );
             given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
@@ -143,10 +168,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     ),
                                     responseFields(
                                             fieldWithPath("graduateCount").description("졸업한 사람 수"),
-                                            fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
-                                            fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임"),
+                                            fieldWithPath("reviews[].id").description("리뷰 ID(PK)"),
                                             fieldWithPath("reviews[].content").description("리뷰 내용"),
-                                            fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜")
+                                            fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜"),
+                                            fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
+                                            fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임")
                                                     .attributes(constraint("날짜 내림차순 정렬로 응답"))
                                     )
                             )
@@ -244,6 +270,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].comments[].id").description("공지사항 댓글 ID(PK)"),
                                             fieldWithPath("result[].comments[].noticeId").description("공지사항 ID(PK)"),
                                             fieldWithPath("result[].comments[].content").description("공지사항 댓글 내용"),
+                                            fieldWithPath("result[].comments[].writeDate").description("공지사항 댓글 작성/수정 날짜"),
                                             fieldWithPath("result[].comments[].writer.id").description("공지사항 댓글 작성자 ID(PK)"),
                                             fieldWithPath("result[].comments[].writer.nickname").description("공지사항 댓글 작성자 닉네임")
                                     )
@@ -655,6 +682,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     index,
                     id,
                     "댓글",
+                    LocalDateTime.now().minusDays(index),
                     new StudyMember(generateRandomId(), "댓글작성자")
             ));
         }
