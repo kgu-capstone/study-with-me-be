@@ -444,7 +444,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 참여자가 아니라면 스터디 주차별 출석 정보를 조회할 수 없다")
+        @DisplayName("스터디 참여자가 아니라면 스터디 사용자별 출석 정보를 조회할 수 없다")
         void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -482,7 +482,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 주차별 출석 정보를 조회한다")
+        @DisplayName("스터디 사용자별 출석 정보를 조회한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);

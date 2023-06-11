@@ -71,8 +71,8 @@ HTTP Response
 include::{snippets}/StudyApi/Information/Participants/response-body.adoc[]
 include::{snippets}/StudyApi/Information/Participants/response-fields.adoc[]
 
-== 스터디 주차별 출석 정보 조회 [AccessToken 필수]
-=== 1. 스터디 참여자가 아니라면 스터디 주차별 출석 정보를 조회할 수 없다
+== 스터디 사용자별 출석 정보 조회 [AccessToken 필수]
+=== 1. 스터디 참여자가 아니라면 스터디 사용자별 출석 정보를 조회할 수 없다
 HTTP Request
 include::{snippets}/StudyApi/Information/Attendances/Failure/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Attendances/Failure/request-headers.adoc[]
@@ -81,7 +81,7 @@ include::{snippets}/StudyApi/Information/Attendances/Failure/path-parameters.ado
 HTTP Response
 include::{snippets}/StudyApi/Information/Attendances/Failure/response-body.adoc[]
 
-=== 2. 스터디 주차별 출석 정보를 조회한다
+=== 2. 스터디 사용자별 출석 정보를 조회한다
 HTTP Request
 include::{snippets}/StudyApi/Information/Attendances/Success/http-request.adoc[]
 include::{snippets}/StudyApi/Information/Attendances/Success/path-parameters.adoc[]
