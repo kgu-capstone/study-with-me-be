@@ -33,7 +33,7 @@ HTTP Response
 include::{snippets}/OAuthApi/Login/Success/response-body.adoc[]
 include::{snippets}/OAuthApi/Login/Success/response-fields.adoc[]
 
-== 로그아웃 [AccessToken 필수]
+== 사용자 로그아웃 [AccessToken 필수]
 HTTP Request
 include::{snippets}/OAuthApi/Logout/http-request.adoc[]
 include::{snippets}/OAuthApi/Logout/request-headers.adoc[]

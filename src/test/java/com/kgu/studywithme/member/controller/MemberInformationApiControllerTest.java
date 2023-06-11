@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Member [Controller Layer] -> MemberInformationApiController 테스트")
 class MemberInformationApiControllerTest extends ControllerTest {
     @Nested
-    @DisplayName("사용자 기본 정보 조회 API [GET /api/members/{memberId}] - AccessToken 필수")
+    @DisplayName("사용자 기본 정보 조회 API [GET /api/members/{memberId}]")
     class getInformation {
         private static final String BASE_URL = "/api/members/{memberId}";
         private static final Long MEMBER_ID = 1L;
@@ -175,89 +175,6 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자가 참여중인 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/participate] - AccessToken 필수")
-    class getParticipateStudy {
-        private static final String BASE_URL = "/api/members/{memberId}/studies/participate";
-        private static final Long MEMBER_ID = 1L;
-
-        @Test
-        @DisplayName("Private한 사용자 정보는 타인이 조회할 수 없다 (Token PayloadId != PathVariable memberId)")
-        void throwExceptionByInvalidPermission() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID + 10000L);
-
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, MEMBER_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
-
-            // then
-            final AuthErrorCode expectedError = AuthErrorCode.INVALID_PERMISSION;
-            mockMvc.perform(requestBuilder)
-                    .andExpectAll(
-                            status().isForbidden(),
-                            jsonPath("$.status").exists(),
-                            jsonPath("$.status").value(expectedError.getStatus().value()),
-                            jsonPath("$.errorCode").exists(),
-                            jsonPath("$.errorCode").value(expectedError.getErrorCode()),
-                            jsonPath("$.message").exists(),
-                            jsonPath("$.message").value(expectedError.getMessage())
-                    )
-                    .andDo(
-                            document(
-                                    "MemberApi/Information/RelatedStudy/Participate/Failure",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    getHeaderWithAccessToken(),
-                                    pathParameters(
-                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
-                                    ),
-                                    getExceptionResponseFiels()
-                            )
-                    );
-        }
-
-        @Test
-        @DisplayName("사용자가 참여중인 스터디 리스트를 조회한다")
-        void success() throws Exception {
-            // given
-            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
-            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
-
-            RelatedStudy response = generateRelatedStudyResponse();
-            given(memberInformationService.getParticipateStudy(MEMBER_ID)).willReturn(response);
-
-            // when
-            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
-                    .get(BASE_URL, MEMBER_ID)
-                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
-
-            // then
-            mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andDo(
-                            document(
-                                    "MemberApi/Information/RelatedStudy/Participate/Success",
-                                    getDocumentRequest(),
-                                    getDocumentResponse(),
-                                    getHeaderWithAccessToken(),
-                                    pathParameters(
-                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
-                                    ),
-                                    responseFields(
-                                            fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
-                                            fieldWithPath("result[].name").description("참여중인 스터디명"),
-                                            fieldWithPath("result[].category").description("참여중인 스터디 카테고리"),
-                                            fieldWithPath("result[].thumbnail").description("참여중인 스터디 썸네일 이미지"),
-                                            fieldWithPath("result[].thumbnailBackground").description("참여중인 스터디 썸네일 배경색")
-                                    )
-                            )
-                    );
-        }
-    }
-
-    @Nested
     @DisplayName("사용자가 찜한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/favorite] - AccessToken 필수")
     class getFavoriteStudy {
         private static final String BASE_URL = "/api/members/{memberId}/studies/favorite";
@@ -341,7 +258,52 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자가 졸업한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/graduated] - AccessToken 필수")
+    @DisplayName("사용자가 참여중인 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/participate]")
+    class getParticipateStudy {
+        private static final String BASE_URL = "/api/members/{memberId}/studies/participate";
+        private static final Long MEMBER_ID = 1L;
+
+        @Test
+        @DisplayName("사용자가 참여중인 스터디 리스트를 조회한다")
+        void success() throws Exception {
+            // given
+            given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
+            given(jwtTokenProvider.getId(anyString())).willReturn(MEMBER_ID);
+
+            RelatedStudy response = generateRelatedStudyResponse();
+            given(memberInformationService.getParticipateStudy(MEMBER_ID)).willReturn(response);
+
+            // when
+            MockHttpServletRequestBuilder requestBuilder = RestDocumentationRequestBuilders
+                    .get(BASE_URL, MEMBER_ID)
+                    .header(AUTHORIZATION, String.join(" ", BEARER_TOKEN, ACCESS_TOKEN));
+
+            // then
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "MemberApi/Information/RelatedStudy/Participate",
+                                    getDocumentRequest(),
+                                    getDocumentResponse(),
+                                    getHeaderWithAccessToken(),
+                                    pathParameters(
+                                            parameterWithName("memberId").description("조회할 사용자 ID(PK)")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("result[].id").description("참여중인 스터디 ID(PK)"),
+                                            fieldWithPath("result[].name").description("참여중인 스터디명"),
+                                            fieldWithPath("result[].category").description("참여중인 스터디 카테고리"),
+                                            fieldWithPath("result[].thumbnail").description("참여중인 스터디 썸네일 이미지"),
+                                            fieldWithPath("result[].thumbnailBackground").description("참여중인 스터디 썸네일 배경색")
+                                    )
+                            )
+                    );
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자가 졸업한 스터디 리스트 조회 API [GET /api/members/{memberId}/studies/graduated]")
     class getGraduatedStudy {
         private static final String BASE_URL = "/api/members/{memberId}/studies/graduated";
         private static final Long MEMBER_ID = 1L;
@@ -396,7 +358,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자의 피어리뷰 조회 API [GET /api/members/{memberId}/reviews] - AccessToken 필수")
+    @DisplayName("사용자의 피어리뷰 조회 API [GET /api/members/{memberId}/reviews]")
     class getReviews {
         private static final String BASE_URL = "/api/members/{memberId}/reviews";
         private static final Long MEMBER_ID = 1L;
@@ -437,7 +399,7 @@ class MemberInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("사용자 출석률 조회 API [GET /api/members/{memberId}/attendances] - AccessToken 필수")
+    @DisplayName("사용자 출석률 조회 API [GET /api/members/{memberId}/attendances]")
     class getAttendanceRatio {
         private static final String BASE_URL = "/api/members/{memberId}/attendances";
         private static final Long MEMBER_ID = 1L;

@@ -52,6 +52,7 @@ public class StudyInformationService {
                 .stream()
                 .map(StudyMember::new)
                 .toList();
+
         return new StudyParticipant(host, participants);
     }
 

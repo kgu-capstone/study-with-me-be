@@ -37,7 +37,11 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .selectDistinct(new QSimpleStudy(study.id, study.name, study.category, study.thumbnail))
                 .from(study)
                 .innerJoin(participant).on(participant.study.id.eq(study.id))
-                .where(memberIdEq(memberId), participateStatusEq(APPLY))
+                .where(
+                        memberIdEq(memberId),
+                        participateStatusEq(APPLY),
+                        studyIsNotClosed()
+                )
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -49,7 +53,10 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
                 .from(study)
                 .innerJoin(study.participants.host, host)
                 .leftJoin(participant).on(participant.study.id.eq(study.id))
-                .where(hostIdEq(memberId).or(participantIdEqAndApproveStatus(memberId)))
+                .where(
+                        hostIdEq(memberId).or(participantIdEqAndApproveStatus(memberId)),
+                        studyIsNotClosed()
+                )
                 .orderBy(study.id.desc())
                 .fetch();
     }
@@ -212,5 +219,9 @@ public class StudySimpleQueryRepositoryImpl implements StudySimpleQueryRepositor
 
     private BooleanExpression isMemberInParticipant(Long memberId, List<Long> participantIds) {
         return !CollectionUtils.isEmpty(participantIds) ? Expressions.asNumber(memberId).in(participantIds) : null;
+    }
+
+    private BooleanExpression studyIsNotClosed() {
+        return study.closed.eq(false);
     }
 }

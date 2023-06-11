@@ -5,7 +5,7 @@
 :toc: left
 :toclevels: 2
 
-== 사용자 기본 정보 [AccessToken 필수]
+== 사용자 기본 정보
 HTTP Request
 include::{snippets}/MemberApi/Information/Basic/http-request.adoc[]
 include::{snippets}/MemberApi/Information/Basic/request-headers.adoc[]
@@ -36,27 +36,6 @@ HTTP Response
 include::{snippets}/MemberApi/Information/RelatedStudy/Apply/Success/response-body.adoc[]
 include::{snippets}/MemberApi/Information/RelatedStudy/Apply/Success/response-fields.adoc[]
 
-== 사용자가 참여중인 스터디 리스트 [AccessToken 필수]
-=== 1. Private한 사용자 정보는 타인이 조회할 수 없다 (Token PayloadId != PathVariable memberId)
-HTTP Request
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/http-request.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/request-headers.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/response-body.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Failure/response-fields.adoc[]
-
-=== 2. 사용자가 참여중인 스터디 리스트를 조회한다
-HTTP Request
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/http-request.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/request-headers.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/path-parameters.adoc[]
-
-HTTP Response
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/response-body.adoc[]
-include::{snippets}/MemberApi/Information/RelatedStudy/Participate/Success/response-fields.adoc[]
-
 == 사용자가 찜한 스터디 리스트 [AccessToken 필수]
 === 1. Private한 사용자 정보는 타인이 조회할 수 없다 (Token PayloadId != PathVariable memberId)
 HTTP Request
@@ -78,7 +57,17 @@ HTTP Response
 include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-body.adoc[]
 include::{snippets}/MemberApi/Information/RelatedStudy/Favorite/Success/response-fields.adoc[]
 
-== 사용자가 졸업한 스터디 리스트 [AccessToken 필수]
+== 사용자가 참여중인 스터디 리스트
+HTTP Request
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/http-request.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/request-headers.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/path-parameters.adoc[]
+
+HTTP Response
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/response-body.adoc[]
+include::{snippets}/MemberApi/Information/RelatedStudy/Participate/response-fields.adoc[]
+
+== 사용자가 졸업한 스터디 리스트
 HTTP Request
 include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/http-request.adoc[]
 include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/request-headers.adoc[]
@@ -88,7 +77,7 @@ HTTP Response
 include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/response-body.adoc[]
 include::{snippets}/MemberApi/Information/RelatedStudy/Graduated/response-fields.adoc[]
 
-== 사용자의 피어리뷰 조회 [AccessToken 필수]
+== 사용자의 피어리뷰 조회
 HTTP Request
 include::{snippets}/MemberApi/Information/PeerReview/http-request.adoc[]
 include::{snippets}/MemberApi/Information/PeerReview/request-headers.adoc[]
@@ -98,7 +87,7 @@ HTTP Response
 include::{snippets}/MemberApi/Information/PeerReview/response-body.adoc[]
 include::{snippets}/MemberApi/Information/PeerReview/response-fields.adoc[]
 
-== 사용자 출석률 조회 [AccessToken 필수]
+== 사용자 출석률 조회
 HTTP Request
 include::{snippets}/MemberApi/Information/Attendances/http-request.adoc[]
 include::{snippets}/MemberApi/Information/Attendances/request-headers.adoc[]

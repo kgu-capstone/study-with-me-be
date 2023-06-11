@@ -79,13 +79,9 @@ public class MemberSimpleQueryRepositoryImpl implements MemberSimpleQueryReposit
             AttendanceRatio specificAttendanceRatio = fetchResult.stream()
                     .filter(ratio -> ratio.status() == status)
                     .findFirst()
-                    .orElse(null);
+                    .orElse(new AttendanceRatio(status, 0));
 
-            result.add(
-                    specificAttendanceRatio != null
-                            ? specificAttendanceRatio
-                            : new AttendanceRatio(status, 0)
-            );
+            result.add(specificAttendanceRatio);
         }
 
         return result;

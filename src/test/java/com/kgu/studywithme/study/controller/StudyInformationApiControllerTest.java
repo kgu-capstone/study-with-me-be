@@ -28,7 +28,6 @@ import static com.kgu.studywithme.fixture.MemberFixture.JIWON;
 import static com.kgu.studywithme.fixture.StudyFixture.TOSS_INTERVIEW;
 import static com.kgu.studywithme.fixture.WeekFixture.*;
 import static com.kgu.studywithme.study.domain.attendance.AttendanceStatus.*;
-import static com.kgu.studywithme.study.domain.participant.ParticipantStatus.*;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.FILE;
 import static com.kgu.studywithme.study.domain.week.submit.UploadType.LINK;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -117,11 +116,36 @@ class StudyInformationApiControllerTest extends ControllerTest {
             ReviewAssembler response = new ReviewAssembler(
                     9,
                     List.of(
-                            new ReviewInformation(new StudyMember(1L, "닉네임1"), "리뷰1", LocalDateTime.now().minusDays(1)),
-                            new ReviewInformation(new StudyMember(2L, "닉네임2"), "리뷰2", LocalDateTime.now().minusDays(2)),
-                            new ReviewInformation(new StudyMember(3L, "닉네임3"), "리뷰3", LocalDateTime.now().minusDays(3)),
-                            new ReviewInformation(new StudyMember(4L, "닉네임4"), "리뷰4", LocalDateTime.now().minusDays(4)),
-                            new ReviewInformation(new StudyMember(5L, "닉네임5"), "리뷰5", LocalDateTime.now().minusDays(5))
+                            new ReviewInformation(
+                                    5L,
+                                    "리뷰5",
+                                    LocalDateTime.now().minusDays(5),
+                                    new StudyMember(1L, "닉네임1")
+                            ),
+                            new ReviewInformation(
+                                    4L,
+                                    "리뷰4",
+                                    LocalDateTime.now().minusDays(4),
+                                    new StudyMember(2L, "닉네임2")
+                            ),
+                            new ReviewInformation(
+                                    3L,
+                                    "리뷰3",
+                                    LocalDateTime.now().minusDays(3),
+                                    new StudyMember(3L, "닉네임3")
+                            ),
+                            new ReviewInformation(
+                                    2L,
+                                    "리뷰2",
+                                    LocalDateTime.now().minusDays(2),
+                                    new StudyMember(4L, "닉네임4")
+                            ),
+                            new ReviewInformation(
+                                    1L,
+                                    "리뷰1",
+                                    LocalDateTime.now().minusDays(1),
+                                    new StudyMember(5L, "닉네임5")
+                            )
                     )
             );
             given(studyInformationService.getReviews(STUDY_ID)).willReturn(response);
@@ -143,10 +167,11 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     ),
                                     responseFields(
                                             fieldWithPath("graduateCount").description("졸업한 사람 수"),
-                                            fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
-                                            fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임"),
+                                            fieldWithPath("reviews[].id").description("리뷰 ID(PK)"),
                                             fieldWithPath("reviews[].content").description("리뷰 내용"),
-                                            fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜")
+                                            fieldWithPath("reviews[].reviewDate").description("리뷰 작성 날짜"),
+                                            fieldWithPath("reviews[].reviewer.id").description("리뷰어 ID(PK)"),
+                                            fieldWithPath("reviews[].reviewer.nickname").description("리뷰어 닉네임")
                                                     .attributes(constraint("날짜 내림차순 정렬로 응답"))
                                     )
                             )
@@ -244,6 +269,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                             fieldWithPath("result[].comments[].id").description("공지사항 댓글 ID(PK)"),
                                             fieldWithPath("result[].comments[].noticeId").description("공지사항 ID(PK)"),
                                             fieldWithPath("result[].comments[].content").description("공지사항 댓글 내용"),
+                                            fieldWithPath("result[].comments[].writeDate").description("공지사항 댓글 작성/수정 날짜"),
                                             fieldWithPath("result[].comments[].writer.id").description("공지사항 댓글 작성자 ID(PK)"),
                                             fieldWithPath("result[].comments[].writer.nickname").description("공지사항 댓글 작성자 닉네임")
                                     )
@@ -404,7 +430,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
     }
 
     @Nested
-    @DisplayName("스터디 주차별 출석 정보 조회 API [GET /api/studies/{studyId}/attendances] - AccessToken 필수")
+    @DisplayName("스터디 사용자별 출석 정보 조회 API [GET /api/studies/{studyId}/attendances] - AccessToken 필수")
     class getAttendances {
         private static final String BASE_URL = "/api/studies/{studyId}/attendances";
         private static final Long STUDY_ID = 1L;
@@ -418,7 +444,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 참여자가 아니라면 스터디 주차별 출석 정보를 조회할 수 없다")
+        @DisplayName("스터디 참여자가 아니라면 스터디 사용자별 출석 정보를 조회할 수 없다")
         void throwExceptionByMemberIsNotParticipant() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -456,7 +482,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
         }
 
         @Test
-        @DisplayName("스터디 주차별 출석 정보를 조회한다")
+        @DisplayName("스터디 사용자별 출석 정보를 조회한다")
         void success() throws Exception {
             // given
             given(jwtTokenProvider.isTokenValid(anyString())).willReturn(true);
@@ -485,7 +511,6 @@ class StudyInformationApiControllerTest extends ControllerTest {
                                     responseFields(
                                             fieldWithPath("result[].member.id").description("스터디 참여자 ID(PK)"),
                                             fieldWithPath("result[].member.nickname").description("스터디 참여자 닉네임"),
-                                            fieldWithPath("result[].member.participantStatus").description("스터디 참여자 참여 상태"),
                                             fieldWithPath("result[].summaries[].week").description("스터디 주차"),
                                             fieldWithPath("result[].summaries[].status").description("해당 주차 출석 상태")
                                     )
@@ -655,6 +680,7 @@ class StudyInformationApiControllerTest extends ControllerTest {
                     index,
                     id,
                     "댓글",
+                    LocalDateTime.now().minusDays(index),
                     new StudyMember(generateRandomId(), "댓글작성자")
             ));
         }
@@ -678,28 +704,18 @@ class StudyInformationApiControllerTest extends ControllerTest {
         List<StudyMemberAttendanceResult> result = new ArrayList<>();
         result.add(
                 new StudyMemberAttendanceResult(
-                        new StudyAttendanceMember(1L, "참여자1", APPROVE),
+                        new StudyMember(1L, "참여자1"),
                         List.of(
                                 new AttendanceSummary(1, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(2, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(3, ATTENDANCE.getDescription()),
-                                new AttendanceSummary(4, NON_ATTENDANCE.getDescription())
+                                new AttendanceSummary(4, LATE.getDescription())
                         )
                 )
         );
         result.add(
                 new StudyMemberAttendanceResult(
-                        new StudyAttendanceMember(2L, "참여자2", CALCEL),
-                        List.of(
-                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                                new AttendanceSummary(3, LATE.getDescription())
-                        )
-                )
-        );
-        result.add(
-                new StudyMemberAttendanceResult(
-                        new StudyAttendanceMember(3L, "참여자3", APPROVE),
+                        new StudyMember(3L, "참여자3"),
                         List.of(
                                 new AttendanceSummary(1, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(2, ABSENCE.getDescription()),
@@ -710,22 +726,12 @@ class StudyInformationApiControllerTest extends ControllerTest {
         );
         result.add(
                 new StudyMemberAttendanceResult(
-                        new StudyAttendanceMember(4L, "참여자4", APPROVE),
+                        new StudyMember(4L, "참여자4"),
                         List.of(
                                 new AttendanceSummary(1, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(2, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(3, ATTENDANCE.getDescription()),
                                 new AttendanceSummary(4, ATTENDANCE.getDescription())
-                        )
-                )
-        );
-        result.add(
-                new StudyMemberAttendanceResult(
-                        new StudyAttendanceMember(5L, "참여자5", GRADUATED),
-                        List.of(
-                                new AttendanceSummary(1, ATTENDANCE.getDescription()),
-                                new AttendanceSummary(2, ATTENDANCE.getDescription()),
-                                new AttendanceSummary(3, ATTENDANCE.getDescription())
                         )
                 )
         );

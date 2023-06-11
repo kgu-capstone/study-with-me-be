@@ -11,14 +11,16 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class ReviewInformation {
-    private final StudyMember reviewer;
+    private final Long id;
     private final String content;
     private final LocalDateTime reviewDate;
+    private final StudyMember reviewer;
 
     @QueryProjection
-    public ReviewInformation(Long reviewerId, Nickname reviewerNickname, String content, LocalDateTime reviewDate) {
-        this.reviewer = new StudyMember(reviewerId, reviewerNickname.getValue());
+    public ReviewInformation(Long id, String content, LocalDateTime reviewDate, Long reviewerId, Nickname reviewerNickname) {
+        this.id = id;
         this.content = content;
         this.reviewDate = reviewDate;
+        this.reviewer = new StudyMember(reviewerId, reviewerNickname.getValue());
     }
 }
